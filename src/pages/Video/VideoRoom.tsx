@@ -17,7 +17,6 @@ export const VideoRoom = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [message, setMessage] = useState('');
   const [streams, setStreams] = useState<UserStreams>({});
-  console.log('=>(VideoRoom.tsx:20) streams', streams);
 
   const chatRef = useRef<HTMLDivElement>(null);
 
