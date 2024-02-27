@@ -189,6 +189,7 @@ export const VideoRoom = () => {
                       className="video"
                       playsInline
                       autoPlay
+                      muted={stream.id === userMediaStream?.id}
                       ref={(video) => {
                         if (video) {
                           video.srcObject = stream;
