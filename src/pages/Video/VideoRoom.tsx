@@ -17,16 +17,20 @@ export const VideoRoom = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [message, setMessage] = useState('');
   const [streams, setStreams] = useState<UserStreams>({});
+  console.log('=>(VideoRoom.tsx:20) streams', streams);
 
   const chatRef = useRef<HTMLDivElement>(null);
 
   const { user, users, setUser } = useUser();
   const { socket } = useSocket(user);
   const { peer, peerId } = usePeer();
-  const userMediaStream = useUserMediaStream({
-    audio: true,
-    video: true,
-  });
+  const userMediaStream = useUserMediaStream(
+    {
+      audio: true,
+      video: true,
+    },
+    !!user
+  );
 
   const addVideoStream = useCallback((stream: MediaStream) => {
     setStreams((prev) => ({ ...prev, [stream.id]: stream }));
@@ -65,7 +69,6 @@ export const VideoRoom = () => {
       });
 
       call.on('close', () => {
-        console.log('=>(VideoRoom.tsx:66) close_1');
         removeVideoStream();
       });
     },
@@ -106,7 +109,6 @@ export const VideoRoom = () => {
       });
 
       call.on('close', () => {
-        console.log('=>(VideoRoom.tsx:108) close_2');
         removeVideoStream();
       });
     });
