@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Peer from 'peerjs';
+import { PEER_PORT, PEER_SERVER } from '../api/apiConstants.ts';
 
 export const usePeer = () => {
   const [peerId, setPeerId] = useState('');
@@ -10,8 +11,8 @@ export const usePeer = () => {
     if (isConnected || peerId) return;
 
     const peer = new Peer('', {
-      host: '/',
-      port: 5000,
+      host: PEER_SERVER,
+      port: PEER_PORT,
       path: '/peerjs/video',
     });
 

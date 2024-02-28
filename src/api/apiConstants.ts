@@ -1,9 +1,8 @@
 import { projectEnv } from '../config/projectEnv';
 
-const LOCAL_SERVER = projectEnv.localAPIURL;
-const PRODUCTION_SERVER = projectEnv.productionAPIURL;
-
-export const SERVER = LOCAL_SERVER || PRODUCTION_SERVER;
+export const SERVER = projectEnv.apiUrl;
+export const PEER_SERVER = projectEnv.peerUrl;
+export const PEER_PORT = projectEnv.peerPort;
 
 export const queryKeys = {
   users: 'users',
