@@ -3,6 +3,7 @@ import { projectEnv } from '../config/projectEnv';
 export const SERVER = projectEnv.apiUrl;
 export const PEER_SERVER = projectEnv.peerUrl;
 export const PEER_PORT = projectEnv.peerPort;
+export const PEER_SECURE = projectEnv.peerSecure;
 
 export const queryKeys = {
   users: 'users',
