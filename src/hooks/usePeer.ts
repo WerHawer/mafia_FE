@@ -15,6 +15,8 @@ export const usePeer = () => {
       port: PEER_PORT,
       path: '/peerjs/video',
     });
+    console.log('=>(usePeer.ts:18) PEER_PORT', PEER_PORT);
+    console.log('=>(usePeer.ts:18) PEER_SERVER', PEER_SERVER);
 
     peer.on('open', (id) => {
       setPeerId(id);
