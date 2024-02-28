@@ -16,6 +16,10 @@ export const usePeer = () => {
       path: '/peerjs/video',
       secure: import.meta.env.NODE_ENV === 'production',
     });
+    console.log(
+      "=>(usePeer.ts:19) import.meta.env.NODE_ENV === 'production'",
+      import.meta.env.NODE_ENV === 'production'
+    );
     console.log('=>(usePeer.ts:18) PEER_PORT->1', PEER_PORT);
     console.log('=>(usePeer.ts:18) PEER_SERVER->1', PEER_SERVER);
 
