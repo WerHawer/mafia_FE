@@ -11,9 +11,7 @@ export const useSocket = (user?: IUser) => {
   useEffect(() => {
     if (!user || isConnected) return;
 
-    const server = SERVER;
-
-    const socket = io(server, {
+    const socket = io(SERVER, {
       transports: ['websocket'],
       query: {
         user: user.id,
@@ -38,6 +36,7 @@ export const useSocket = (user?: IUser) => {
       socketInstance?.disconnect();
       setIsConnected(false);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { socket: socketInstance, userCount, isConnected };
