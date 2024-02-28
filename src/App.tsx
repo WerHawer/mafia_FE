@@ -2,15 +2,10 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-import { LOCAL_SERVER, PRODUCTION_SERVER } from './api/apiConstants.ts';
+import { SERVER } from './api/apiConstants.ts';
 import { useSocket } from './hooks/useSocket.ts';
 import { useUser } from './hooks/useUser.ts';
 import { UserModal } from './UserModal.tsx';
-
-export interface IUserAvatar {
-  url: string;
-  _id?: string;
-}
 
 export interface IUser {
   email: string;
@@ -18,14 +13,15 @@ export interface IUser {
   nikName?: string;
   friendList: [];
   isOnline: true;
-  avatar?: IUserAvatar[];
-  password?: string;
-  _id: string;
+  avatar?: string;
+  id: string;
   // history: [],
 }
 
+type MessageTypes = 'user' | 'all' | 'room';
+
 type To = {
-  type: 'user' | 'all' | 'room';
+  type: MessageTypes;
   id?: string;
 };
 
@@ -35,16 +31,14 @@ export interface IMessageDTO {
   to?: To;
   date: Date;
   isRead: boolean;
-  _id?: string;
+  id?: string;
 }
 
 export interface IMessage extends Omit<IMessageDTO, 'sender'> {
   sender: IUser;
 }
 
-axios.defaults.baseURL = LOCAL_SERVER || PRODUCTION_SERVER;
-console.log('=>(App.tsx:46) PRODUCTION_SERVER', PRODUCTION_SERVER);
-console.log('=>(App.tsx:46) LOCAL_SERVER', LOCAL_SERVER);
+axios.defaults.baseURL = SERVER;
 
 function App() {
   const [count, setCount] = useState(0);
@@ -83,7 +77,7 @@ function App() {
       isRead: false,
     };
 
-    const messageDTO: IMessageDTO = { ...message, sender: user._id };
+    const messageDTO: IMessageDTO = { ...message, sender: user.id };
 
     setNewMessage('');
     setMessages((prev) => [...prev, message]);
@@ -113,11 +107,11 @@ function App() {
 
         <div className="chatMessages" ref={chatRef}>
           {messages.map(
-            ({ text, sender: { _id: userId, name: userName } }, index) => (
+            ({ text, sender: { id: userId, name: userName } }, index) => (
               <p
                 key={userId + index}
                 className={
-                  userId === user?._id ? 'messageText myMessage' : 'messageText'
+                  userId === user?.id ? 'messageText myMessage' : 'messageText'
                 }
               >
                 <span className="strong">{userName}: </span>
@@ -157,7 +151,7 @@ function App() {
       </div>
       <p className="read-the-docs">
         {t('Click on the Vite and React logos to learn more')}
-        {'                               '}
+        {'   '}
         {t('hello')}
       </p>
     </div>

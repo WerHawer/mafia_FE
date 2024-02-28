@@ -159,7 +159,7 @@ export const VideoRoom = () => {
       isRead: false,
     };
 
-    const messageDTO: IMessageDTO = { ...newMessage, sender: user._id };
+    const messageDTO: IMessageDTO = { ...newMessage, sender: user.id };
 
     setMessages((prev) => [...prev, newMessage]);
     setMessage('');
@@ -225,7 +225,7 @@ export const VideoRoom = () => {
               {!!messages.length &&
                 messages.map(({ sender, text }, index) => {
                   return (
-                    <div key={sender._id + index} className="message">
+                    <div key={sender.id + index} className="message">
                       <p>{sender.name}:</p>
                       <p>{text}</p>
                     </div>

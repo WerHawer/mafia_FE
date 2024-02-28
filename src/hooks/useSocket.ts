@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { LOCAL_SERVER, PRODUCTION_SERVER } from '../api/apiConstants.ts';
+import { SERVER } from '../api/apiConstants.ts';
 import { IUser } from '../App.tsx';
 
 export const useSocket = (user?: IUser) => {
@@ -11,12 +11,12 @@ export const useSocket = (user?: IUser) => {
   useEffect(() => {
     if (!user || isConnected) return;
 
-    const server = LOCAL_SERVER || PRODUCTION_SERVER;
+    const server = SERVER;
 
     const socket = io(server, {
       transports: ['websocket'],
       query: {
-        user: user._id,
+        user: user.id,
       },
     });
 

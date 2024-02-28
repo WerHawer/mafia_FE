@@ -12,7 +12,7 @@ export const UserModal = ({ setUser, users, user }: UserModalProps) => {
     (user: IUser) => () => {
       setUser(user);
     },
-    []
+    [setUser]
   );
 
   if (user) return null;
@@ -23,7 +23,7 @@ export const UserModal = ({ setUser, users, user }: UserModalProps) => {
         {users
           ? users.map((user) => (
               <div
-                key={user._id}
+                key={user.id}
                 className="userCard"
                 onClick={handleUserClick(user)}
               >
