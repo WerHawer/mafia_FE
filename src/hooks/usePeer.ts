@@ -1,25 +1,24 @@
 import { useEffect, useState } from 'react';
 import Peer from 'peerjs';
-import { PEER_PORT, PEER_SERVER } from '../api/apiConstants.ts';
+import { IS_PROD, PEER_PORT, PEER_SERVER } from '../api/apiConstants.ts';
+import { IUser } from '../App.tsx';
 
-export const usePeer = () => {
+export const usePeer = (user?: IUser) => {
   const [peerId, setPeerId] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [peerInstance, setPeerInstance] = useState<Peer>();
 
   useEffect(() => {
-    if (isConnected || peerId) return;
+    if (isConnected || peerId || !user) return;
 
     const peer = new Peer('', {
       host: PEER_SERVER,
-      port: PEER_PORT,
-      path: '/peerjs/video',
-      secure: import.meta.env.PROD,
+      port: IS_PROD ? undefined : PEER_PORT,
+      path: '/peerjs/mafia',
+      secure: IS_PROD,
     });
-    console.log(
-      "=>(usePeer.ts:19) import.meta.env.PROD'",
-      import.meta.env.PROD
-    );
+
+    console.log("=>(usePeer.ts:19) import.meta.env.PROD'", IS_PROD);
     console.log('=>(usePeer.ts:18) PEER_PORT->2', PEER_PORT);
     console.log('=>(usePeer.ts:18) PEER_SERVER->2', PEER_SERVER);
 
@@ -28,7 +27,7 @@ export const usePeer = () => {
       setIsConnected(true);
       setPeerInstance(peer);
     });
-  }, [peerId, isConnected]);
+  }, [peerId, isConnected, user]);
 
   useEffect(() => {
     return () => {

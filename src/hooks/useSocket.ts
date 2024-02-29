@@ -12,7 +12,6 @@ export const useSocket = (user?: IUser) => {
     if (!user || isConnected) return;
 
     const socket = io(SERVER, {
-      transports: ['websocket'],
       query: {
         user: user.id,
       },

@@ -4,4 +4,5 @@ export const projectEnv = {
   peerUrl: import.meta.env.VITE_PEER_URL,
   apiUrl: import.meta.env.VITE_API_URL,
   peerPort: import.meta.env.VITE_PEER_PORT,
+  isProd: import.meta.env.PROD,
 };

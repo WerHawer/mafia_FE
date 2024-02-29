@@ -8,7 +8,6 @@ import { UserModal } from '../../UserModal.tsx';
 import { IMessage, IMessageDTO } from '../../App.tsx';
 import Peer from 'peerjs';
 import { useUserMediaStream } from '../../hooks/useUserMediaStream.ts';
-// import { uniqBy } from 'lodash/fp';
 
 type UserStreams = Record<string, MediaStream>;
 
@@ -22,7 +21,7 @@ export const VideoRoom = () => {
 
   const { user, users, setUser } = useUser();
   const { socket } = useSocket(user);
-  const { peer, peerId } = usePeer();
+  const { peer, peerId } = usePeer(user);
   const userMediaStream = useUserMediaStream(
     {
       audio: true,
@@ -70,6 +69,8 @@ export const VideoRoom = () => {
       call.on('close', () => {
         removeVideoStream();
       });
+
+      return call;
     },
     [removeVideoStream]
   );
@@ -111,26 +112,6 @@ export const VideoRoom = () => {
         removeVideoStream();
       });
     });
-
-    socket.on('userConnectedToRoom', (otherUserId) => {
-      const connectCb = (userVideoStream: MediaStream) => {
-        addVideoStream(userVideoStream);
-      };
-
-      connectToNewUser(otherUserId, userMediaStream, peer, connectCb);
-    });
-
-    socket.on('userDisconnectedFromRoom', (userId) => {
-      setStreams((prev) => {
-        const newStreams = { ...prev };
-
-        if (newStreams[userId]) {
-          delete newStreams[userId];
-        }
-
-        return newStreams;
-      });
-    });
   }, [
     addVideoStream,
     connectToNewUser,
@@ -140,6 +121,18 @@ export const VideoRoom = () => {
     socket,
     userMediaStream,
   ]);
+
+  useEffect(() => {
+    if (!socket || !userMediaStream || !peer) return;
+
+    socket.on('userConnectedToRoom', (otherUserId) => {
+      const connectCb = (userVideoStream: MediaStream) => {
+        addVideoStream(userVideoStream);
+      };
+
+      connectToNewUser(otherUserId, userMediaStream, peer, connectCb);
+    });
+  }, [addVideoStream, connectToNewUser, peer, socket, userMediaStream]);
 
   const handleChangeMessage = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
