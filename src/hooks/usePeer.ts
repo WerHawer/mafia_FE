@@ -13,7 +13,7 @@ export const usePeer = (user?: IUser) => {
 
     const peer = new Peer('', {
       host: PEER_SERVER,
-      port: IS_PROD ? undefined : PEER_PORT,
+      port: IS_PROD ? 443 : PEER_PORT,
       path: '/peerjs/mafia',
       secure: IS_PROD,
     });
