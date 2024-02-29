@@ -17,11 +17,11 @@ export const usePeer = () => {
       secure: import.meta.env.PROD,
     });
     console.log(
-      "=>(usePeer.ts:19) import.meta.env.NODE_ENV === 'production'",
+      "=>(usePeer.ts:19) import.meta.env.PROD'",
       import.meta.env.PROD
     );
-    console.log('=>(usePeer.ts:18) PEER_PORT->1', PEER_PORT);
-    console.log('=>(usePeer.ts:18) PEER_SERVER->1', PEER_SERVER);
+    console.log('=>(usePeer.ts:18) PEER_PORT->2', PEER_PORT);
+    console.log('=>(usePeer.ts:18) PEER_SERVER->2', PEER_SERVER);
 
     peer.on('open', (id) => {
       setPeerId(id);
