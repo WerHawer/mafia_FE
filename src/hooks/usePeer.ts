@@ -19,8 +19,8 @@ export const usePeer = (user?: IUser) => {
     });
 
     console.log("=>(usePeer.ts:19) import.meta.env.PROD'", IS_PROD);
-    console.log('=>(usePeer.ts:18) PEER_PORT->3', PEER_PORT);
-    console.log('=>(usePeer.ts:18) PEER_SERVER->3', PEER_SERVER);
+    console.log('=>(usePeer.ts:18) PEER_PORT->4', PEER_PORT);
+    console.log('=>(usePeer.ts:18) PEER_SERVER->4', PEER_SERVER);
 
     peer.on('open', (id) => {
       setPeerId(id);
