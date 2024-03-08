@@ -1,11 +1,19 @@
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { SERVER } from './api/apiConstants.ts';
-import { useSocket } from './hooks/useSocket.ts';
-import { useUser } from './hooks/useUser.ts';
-import { UserModal } from './UserModal.tsx';
+import { SocketContext, UserContext } from './context/SocketProvider.tsx';
+import { wsEvents } from './config/wsEvents.ts';
+import { Link } from 'react-router-dom';
+import { routes } from './router/routs.ts';
 
 export interface IUser {
   email: string;
@@ -41,28 +49,33 @@ export interface IMessage extends Omit<IMessageDTO, 'sender'> {
 axios.defaults.baseURL = SERVER;
 
 function App() {
-  const [count, setCount] = useState(0);
   const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [userCount, setUserCount] = useState(0);
   const chatRef = useRef<HTMLDivElement>(null);
+  const socket = useContext(SocketContext);
+  const user = useContext(UserContext);
 
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
   }, [messages]);
 
-  const { user, users, setUser } = useUser();
-  const { socket, userCount } = useSocket(user);
-
   useEffect(() => {
     if (!socket) return;
 
-    socket.on('getAllMessages', (messages) => {
+    socket.emit(wsEvents.messagesGetAll);
+
+    socket.on(wsEvents.messagesGetAll, (messages) => {
       setMessages(messages);
     });
 
-    socket.on('chatMessage', (data) => {
+    socket.on(wsEvents.messageSend, (data) => {
       setMessages((prev) => [...prev, data]);
+    });
+
+    socket.on(wsEvents.userConnectedCount, (usersCount) => {
+      setUserCount(usersCount);
     });
   }, [socket]);
 
@@ -82,7 +95,7 @@ function App() {
     setNewMessage('');
     setMessages((prev) => [...prev, message]);
 
-    socket?.emit('chatMessage', messageDTO);
+    socket?.emit(wsEvents.messageSend, messageDTO);
   }, [newMessage, socket, user]);
 
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -91,8 +104,6 @@ function App() {
 
   return (
     <div className="main_container">
-      <UserModal setUser={setUser} users={users} user={user} />
-
       {user && <h3>Hello {user.name}</h3>}
       <div>
         <button onClick={() => i18n.changeLanguage('en')}>en</button>
@@ -142,9 +153,8 @@ function App() {
       </div>
 
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+        <Link to={routes.video}>Video Chat</Link>
+
         <p className="text-3xl font-bold underline">
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>

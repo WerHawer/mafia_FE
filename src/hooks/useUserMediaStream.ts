@@ -5,25 +5,38 @@ export const useUserMediaStream = (
   enabled: boolean
 ) => {
   const [userMediaStream, setMediaStream] = useState<MediaStream | null>(null);
-  const [isStreamConnected, setIsStreamConnected] = useState(false);
 
   useEffect(() => {
-    if (!enabled || isStreamConnected) return;
+    if (!enabled || userMediaStream) return;
 
+    console.log('userMediaStream');
+
+    // TODO: think how I can prevent this from being called multiple times. Async fn created 2 streams
     const enableStream = async () => {
       try {
-        setIsStreamConnected(true);
-
         const stream = await navigator.mediaDevices.getUserMedia(options);
-        setMediaStream(stream);
+
+        setMediaStream((prev) => prev ?? stream);
       } catch (err) {
-        setIsStreamConnected(false);
         console.error('Error accessing media devices.', err);
       }
     };
 
     enableStream();
-  }, [options, enabled, isStreamConnected]);
+  }, [options, userMediaStream, enabled]);
+
+  useEffect(() => {
+    return () => {
+      userMediaStream?.getTracks().forEach((track) => {
+        track.stop();
+      });
+
+      setMediaStream(null);
+
+      navigator.mediaDevices;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return userMediaStream;
 };

@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react';
 import Peer from 'peerjs';
 import { IS_PROD, PEER_PORT, PEER_SERVER } from '../api/apiConstants.ts';
-import { IUser } from '../App.tsx';
 
-export const usePeer = (user?: IUser) => {
+export const usePeer = (userId?: string) => {
   const [peerId, setPeerId] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [peerInstance, setPeerInstance] = useState<Peer>();
 
   useEffect(() => {
-    if (isConnected || peerId || !user) return;
+    if (isConnected || peerId || !userId) return;
 
-    const peer = new Peer('', {
+    const peer = new Peer(userId, {
       host: PEER_SERVER,
       port: IS_PROD ? 443 : PEER_PORT,
       path: '/peerjs/mafia',
@@ -27,7 +26,7 @@ export const usePeer = (user?: IUser) => {
       setIsConnected(true);
       setPeerInstance(peer);
     });
-  }, [peerId, isConnected, user]);
+  }, [peerId, isConnected, userId]);
 
   useEffect(() => {
     return () => {

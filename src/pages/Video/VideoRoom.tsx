@@ -1,13 +1,19 @@
 import { useParams } from 'react-router-dom';
 import './video.css';
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { useSocket } from '../../hooks/useSocket.ts';
+import {
+  ChangeEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { usePeer } from '../../hooks/usePeer.ts';
-import { useUser } from '../../hooks/useUser.ts';
-import { UserModal } from '../../UserModal.tsx';
 import { IMessage, IMessageDTO } from '../../App.tsx';
 import Peer from 'peerjs';
 import { useUserMediaStream } from '../../hooks/useUserMediaStream.ts';
+import { SocketContext, UserContext } from '../../context/SocketProvider.tsx';
+import { wsEvents } from '../../config/wsEvents.ts';
 
 type UserStreams = Record<string, MediaStream>;
 
@@ -16,12 +22,11 @@ export const VideoRoom = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [message, setMessage] = useState('');
   const [streams, setStreams] = useState<UserStreams>({});
+  const user = useContext(UserContext);
+  const socket = useContext(SocketContext);
 
   const chatRef = useRef<HTMLDivElement>(null);
 
-  const { user, users, setUser } = useUser();
-  const { socket } = useSocket(user);
-  const { peer, peerId } = usePeer(user);
   const userMediaStream = useUserMediaStream(
     {
       audio: true,
@@ -30,27 +35,21 @@ export const VideoRoom = () => {
     !!user
   );
 
+  const { peer, peerId } = usePeer(userMediaStream?.id);
+
   const addVideoStream = useCallback((stream: MediaStream) => {
     setStreams((prev) => ({ ...prev, [stream.id]: stream }));
   }, []);
 
-  const removeVideoStream = useCallback(() => {
-    setTimeout(
-      () =>
-        setStreams((prev) => {
-          const newStreams = { ...prev };
-          const notActiveStreams = Object.values(prev).filter((s) => !s.active);
+  const removeVideoStream = useCallback((id: string) => {
+    setStreams((prev) => {
+      if (!prev[id]) return prev;
 
-          if (!notActiveStreams.length) return prev;
+      const newStreams = { ...prev };
+      delete newStreams[id];
 
-          notActiveStreams.forEach((s) => {
-            delete newStreams[s.id];
-          });
-
-          return newStreams;
-        }),
-      0
-    );
+      return newStreams;
+    });
   }, []);
 
   const connectToNewUser = useCallback(
@@ -66,13 +65,9 @@ export const VideoRoom = () => {
         cb(userMediaStream);
       });
 
-      call.on('close', () => {
-        removeVideoStream();
-      });
-
       return call;
     },
-    [removeVideoStream]
+    []
   );
 
   useEffect(() => {
@@ -80,24 +75,31 @@ export const VideoRoom = () => {
   }, [messages]);
 
   useEffect(() => {
-    if (!peerId || !socket) return;
+    if (!peerId || !socket || !userMediaStream) return;
 
-    socket.emit('joinRoom', id, peerId);
+    socket.emit(wsEvents.roomConnection, id, peerId, userMediaStream.id);
 
-    socket.on('getRoomMessages', (messages: IMessage[]) => {
+    socket.on(wsEvents.messagesGetRoom, (messages: IMessage[]) => {
       setMessages(messages);
     });
-    socket.on('roomMessage', (message: IMessage) => {
+
+    socket.on(wsEvents.messageSendPrivate, (message: IMessage) => {
       setMessages((prev) => [...prev, message]);
     });
-  }, [id, peerId, socket]);
 
+    socket.on(wsEvents.peerDisconnect, (userId: string) => {
+      removeVideoStream(userId);
+    });
+  }, [id, peerId, removeVideoStream, socket, userMediaStream]);
+
+  // add my video stream
   useEffect(() => {
-    if (!userMediaStream || !user) return;
+    if (!userMediaStream) return;
 
     addVideoStream(userMediaStream);
-  }, [userMediaStream, user, peer, addVideoStream, peerId]);
+  }, [userMediaStream, addVideoStream]);
 
+  // add user who already in room to me when I connect.
   useEffect(() => {
     if (!peer || !socket || !userMediaStream) return;
 
@@ -107,25 +109,14 @@ export const VideoRoom = () => {
       call.on('stream', (userVideoStream) => {
         addVideoStream(userVideoStream);
       });
-
-      call.on('close', () => {
-        removeVideoStream();
-      });
     });
-  }, [
-    addVideoStream,
-    connectToNewUser,
-    peer,
-    peerId,
-    removeVideoStream,
-    socket,
-    userMediaStream,
-  ]);
+  }, [addVideoStream, connectToNewUser, peer, peerId, socket, userMediaStream]);
 
+  // add new user when he connects to room
   useEffect(() => {
     if (!socket || !userMediaStream || !peer) return;
 
-    socket.on('userConnectedToRoom', (otherUserId) => {
+    socket.on(wsEvents.roomConnection, (otherUserId) => {
       const connectCb = (userVideoStream: MediaStream) => {
         addVideoStream(userVideoStream);
       };
@@ -157,13 +148,11 @@ export const VideoRoom = () => {
     setMessages((prev) => [...prev, newMessage]);
     setMessage('');
 
-    socket?.emit('roomMessage', messageDTO);
+    socket?.emit(wsEvents.messageSendPrivate, messageDTO);
   }, [socket, user, message, id]);
 
   return (
     <>
-      <UserModal setUser={setUser} users={users} user={user} />
-
       <div className="header">
         <div className="video_logo">
           <h3>Video Chat {id}</h3>

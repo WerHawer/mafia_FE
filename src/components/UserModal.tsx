@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
-import { IUser } from './App.tsx';
+import { IUser } from '../App.tsx';
 
 type UserModalProps = {
   setUser: (user: IUser) => void;
   users?: IUser[];
-  user?: IUser;
+  user: IUser | null;
 };
 
 export const UserModal = ({ setUser, users, user }: UserModalProps) => {
