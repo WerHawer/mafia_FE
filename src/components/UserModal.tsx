@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { IUser } from '../App.tsx';
+import { IUser } from '../pages/App/App.tsx';
 
 type UserModalProps = {
   setUser: (user: IUser) => void;

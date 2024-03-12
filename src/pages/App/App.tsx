@@ -8,45 +8,11 @@ import {
 } from 'react';
 import './App.css';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
-import { SERVER } from './api/apiConstants.ts';
-import { SocketContext, UserContext } from './context/SocketProvider.tsx';
-import { wsEvents } from './config/wsEvents.ts';
+import { SocketContext, UserContext } from '../../context/SocketProvider.tsx';
+import { wsEvents } from '../../config/wsEvents.ts';
 import { Link } from 'react-router-dom';
-import { routes } from './router/routs.ts';
-
-export interface IUser {
-  email: string;
-  name: string;
-  nikName?: string;
-  friendList: [];
-  isOnline: true;
-  avatar?: string;
-  id: string;
-  // history: [],
-}
-
-type MessageTypes = 'user' | 'all' | 'room';
-
-type To = {
-  type: MessageTypes;
-  id?: string;
-};
-
-export interface IMessageDTO {
-  text: string;
-  sender: string;
-  to?: To;
-  date: Date;
-  isRead: boolean;
-  id?: string;
-}
-
-export interface IMessage extends Omit<IMessageDTO, 'sender'> {
-  sender: IUser;
-}
-
-axios.defaults.baseURL = SERVER;
+import { routes } from '../../router/routs.ts';
+import { IMessage, IMessageDTO } from '../../types/message';
 
 function App() {
   const { t, i18n } = useTranslation();

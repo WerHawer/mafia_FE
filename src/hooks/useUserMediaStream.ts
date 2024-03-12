@@ -9,9 +9,6 @@ export const useUserMediaStream = (
   useEffect(() => {
     if (!enabled || userMediaStream) return;
 
-    console.log('userMediaStream');
-
-    // TODO: think how I can prevent this from being called multiple times. Async fn created 2 streams
     const enableStream = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia(options);
@@ -30,13 +27,8 @@ export const useUserMediaStream = (
       userMediaStream?.getTracks().forEach((track) => {
         track.stop();
       });
-
-      setMediaStream(null);
-
-      navigator.mediaDevices;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userMediaStream]);
 
   return userMediaStream;
 };

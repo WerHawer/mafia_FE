@@ -4,7 +4,7 @@ import { SERVER } from '../api/apiConstants.ts';
 import { wsEvents } from '../config/wsEvents.ts';
 import { useUser } from '../hooks/useUser.ts';
 import { UserModal } from '../components/UserModal.tsx';
-import { IUser } from '../App.tsx';
+import { IUser } from '../types/user';
 
 export const SocketContext = createContext<Socket | null>(null);
 export const UserContext = createContext<IUser | null>(null);

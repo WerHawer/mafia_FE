@@ -1,5 +1,5 @@
 import { useGetUsersQuery } from '../api/user/queries.ts';
-import { IUser } from '../App.tsx';
+import { IUser } from '../pages/App/App.tsx';
 import { useState } from 'react';
 
 export const useUser = () => {

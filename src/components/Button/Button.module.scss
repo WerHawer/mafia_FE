@@ -1,0 +1,60 @@
+@import 'src/styles/theme.scss';
+
+.button {
+  padding: 0.8rem 1.6rem;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 4px;
+  transition:
+    background-color 0.3s,
+    opacity 0.3s;
+
+  &.small {
+    padding: 0.4rem 0.8rem;
+    font-size: 1.2rem;
+  }
+
+  &.medium {
+    padding: 0.8rem 1.6rem;
+    font-size: 1.4rem;
+  }
+
+  &.large {
+    padding: 1.2rem 2.4rem;
+    font-size: 1.6rem;
+  }
+
+  &.primary {
+    background-color: $color-accent-primary;
+    color: $color-text-tertiary;
+
+    &:hover {
+      background-color: lighten($color-accent-primary, 10%);
+    }
+
+    &:disabled {
+      background-color: $color-accent-primary;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &.secondary {
+    background-color: $color-accent-secondary;
+    color: $color-text-tertiary;
+
+    &:hover {
+      background-color: lighten($color-accent-secondary, 10%);
+    }
+
+    &:disabled {
+      background-color: $color-accent-secondary;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &.uppercase {
+    text-transform: uppercase;
+  }
+}

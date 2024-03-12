@@ -9,11 +9,11 @@ import {
   useState,
 } from 'react';
 import { usePeer } from '../../hooks/usePeer.ts';
-import { IMessage, IMessageDTO } from '../../App.tsx';
 import Peer from 'peerjs';
 import { useUserMediaStream } from '../../hooks/useUserMediaStream.ts';
 import { SocketContext, UserContext } from '../../context/SocketProvider.tsx';
 import { wsEvents } from '../../config/wsEvents.ts';
+import { IMessage, IMessageDTO } from '../../types/message';
 
 type UserStreams = Record<string, MediaStream>;
 
