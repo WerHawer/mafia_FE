@@ -1,5 +1,5 @@
-import styles from './GamePage.module.scss';
-import classNames from 'classnames';
+import styles from "./GamePage.module.scss";
+import classNames from "classnames";
 
 export const GamePage = () => {
   return (

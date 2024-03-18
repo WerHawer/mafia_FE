@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
-import { IUser } from '../pages/App/App.tsx';
+import { useCallback } from "react";
+import { IUser } from "../types/user";
 
 type UserModalProps = {
   setUser: (user: IUser) => void;
@@ -12,7 +12,7 @@ export const UserModal = ({ setUser, users, user }: UserModalProps) => {
     (user: IUser) => () => {
       setUser(user);
     },
-    [setUser]
+    [setUser],
   );
 
   if (user) return null;
@@ -31,7 +31,7 @@ export const UserModal = ({ setUser, users, user }: UserModalProps) => {
                 <p>Email: {user.email}</p>
               </div>
             ))
-          : 'Loading...'}
+          : "Loading..."}
       </div>
     </div>
   );
