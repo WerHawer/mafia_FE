@@ -1,0 +1,34 @@
+@import 'src/styles/mixins.scss';
+@import 'src/styles/theme.scss';
+
+.pageContainer {
+  display: grid;
+  width: 100%;
+  min-height: 100%;
+  grid-template-columns: 1fr 20%;
+  overflow: hidden;
+
+  font-size: 1.8rem;
+}
+
+.leftContainer {
+  border-right: $border-color 1px solid;
+}
+
+.rightContainer {
+  @include flex(column, flex-start, center);
+}
+
+.asideSection {
+  width: 100%;
+  height: 20%;
+  border-bottom: $border-color 1px solid;
+}
+
+.personalInfo,
+.voteList {
+}
+
+.chatContainer {
+  width: 100%;
+}
