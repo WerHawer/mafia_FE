@@ -1,5 +1,5 @@
-import { useParams } from 'react-router-dom';
-import './video.css';
+import { useParams } from "react-router-dom";
+import "./video.css";
 import {
   ChangeEvent,
   useCallback,
@@ -7,20 +7,20 @@ import {
   useEffect,
   useRef,
   useState,
-} from 'react';
-import { usePeer } from '../../hooks/usePeer.ts';
-import Peer from 'peerjs';
-import { useUserMediaStream } from '../../hooks/useUserMediaStream.ts';
-import { SocketContext, UserContext } from '../../context/SocketProvider.tsx';
-import { wsEvents } from '../../config/wsEvents.ts';
-import { IMessage, IMessageDTO } from '../../types/message';
+} from "react";
+import { usePeer } from "../../hooks/usePeer.ts";
+import Peer from "peerjs";
+import { useUserMediaStream } from "../../hooks/useUserMediaStream.ts";
+import { SocketContext, UserContext } from "../../context/SocketProvider.tsx";
+import { wsEvents } from "../../config/wsEvents.ts";
+import { IMessage, IMessageDTO } from "../../types/message";
 
 type UserStreams = Record<string, MediaStream>;
 
 export const VideoRoom = () => {
-  const { id = '' } = useParams();
+  const { id = "" } = useParams();
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [streams, setStreams] = useState<UserStreams>({});
   const user = useContext(UserContext);
   const socket = useContext(SocketContext);
@@ -32,7 +32,7 @@ export const VideoRoom = () => {
       audio: true,
       video: true,
     },
-    !!user
+    !!user,
   );
 
   const { peer, peerId } = usePeer(userMediaStream?.id);
@@ -57,17 +57,17 @@ export const VideoRoom = () => {
       otherUserId: string,
       stream: MediaStream,
       peer: Peer,
-      cb: (userMediaStream: MediaStream) => void
+      cb: (userMediaStream: MediaStream) => void,
     ) => {
       const call = peer.call(otherUserId, stream);
 
-      call.on('stream', (userMediaStream) => {
+      call.on(wsEvents.stream, (userMediaStream) => {
         cb(userMediaStream);
       });
 
       return call;
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -103,10 +103,10 @@ export const VideoRoom = () => {
   useEffect(() => {
     if (!peer || !socket || !userMediaStream) return;
 
-    peer.on('call', (call) => {
+    peer.on(wsEvents.call, (call) => {
       call.answer(userMediaStream);
 
-      call.on('stream', (userVideoStream) => {
+      call.on(wsEvents.stream, (userVideoStream) => {
         addVideoStream(userVideoStream);
       });
     });
@@ -129,7 +129,7 @@ export const VideoRoom = () => {
     (e: ChangeEvent<HTMLInputElement>) => {
       setMessage(e.target.value);
     },
-    []
+    [],
   );
 
   const handleSendMessage = useCallback(() => {
@@ -138,7 +138,7 @@ export const VideoRoom = () => {
     const newMessage: IMessage = {
       text: message,
       sender: user,
-      to: { type: 'room', id },
+      to: { type: "room", id },
       date: new Date(),
       isRead: false,
     };
@@ -146,7 +146,7 @@ export const VideoRoom = () => {
     const messageDTO: IMessageDTO = { ...newMessage, sender: user.id };
 
     setMessages((prev) => [...prev, newMessage]);
-    setMessage('');
+    setMessage("");
 
     socket?.emit(wsEvents.messageSendPrivate, messageDTO);
   }, [socket, user, message, id]);
@@ -167,8 +167,6 @@ export const VideoRoom = () => {
                   return (
                     <video
                       key={stream.id}
-                      data-id={stream.id}
-                      className="video"
                       playsInline
                       autoPlay
                       muted={stream.id === userMediaStream?.id}

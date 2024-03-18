@@ -1,0 +1,11 @@
+@import "src/styles/theme";
+
+.container {
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-right: $border-color 1px solid;
+}

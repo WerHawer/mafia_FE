@@ -1,0 +1,39 @@
+@import "src/styles/theme.scss";
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $border-color;
+  border-radius: 5px;
+  box-shadow: $shadow;
+  aspect-ratio: 2/1;
+}
+
+.myVideoContainer {
+  position: fixed;
+  bottom: 3rem;
+  right: 2rem;
+  width: 200px;
+  height: 150px;
+
+  display: none;
+
+  &.myVideoActive {
+    display: block;
+  }
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 2rem;
+}

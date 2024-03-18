@@ -1,4 +1,5 @@
 {
   "hello": "Привіт світ",
-  "createGame": "Створити Гру"
+  "createGame": "Створити Гру",
+  "waitingForPlayers": "Очікування гравців"
 }

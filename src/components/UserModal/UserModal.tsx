@@ -1,5 +1,7 @@
 import { useCallback } from "react";
-import { IUser } from "../types/user";
+import { IUser } from "../../types/user";
+import styles from "./UserModal.module.scss";
+import classNames from "classnames";
 
 type UserModalProps = {
   setUser: (user: IUser) => void;
@@ -18,13 +20,13 @@ export const UserModal = ({ setUser, users, user }: UserModalProps) => {
   if (user) return null;
 
   return (
-    <div className="userModal active">
-      <div className="userContainer">
+    <div className={classNames(styles.userModal, styles.active)}>
+      <div className={styles.userContainer}>
         {users
           ? users.map((user) => (
               <div
                 key={user.id}
-                className="userCard"
+                className={styles.userCard}
                 onClick={handleUserClick(user)}
               >
                 <p>Name: {user.name}</p>

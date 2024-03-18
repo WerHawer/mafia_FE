@@ -1,5 +1,5 @@
-@import 'src/styles/mixins.scss';
-@import 'src/styles/theme.scss';
+@import "src/styles/mixins.scss";
+@import "src/styles/theme.scss";
 
 .pageContainer {
   display: grid;
@@ -12,6 +12,11 @@
 }
 
 .leftContainer {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
   border-right: $border-color 1px solid;
 }
 

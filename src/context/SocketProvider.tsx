@@ -1,10 +1,10 @@
-import { createContext, PropsWithChildren, useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { SERVER } from '../api/apiConstants.ts';
-import { wsEvents } from '../config/wsEvents.ts';
-import { useUser } from '../hooks/useUser.ts';
-import { UserModal } from '../components/UserModal.tsx';
-import { IUser } from '../types/user';
+import { createContext, PropsWithChildren, useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
+import { SERVER } from "../api/apiConstants.ts";
+import { wsEvents } from "../config/wsEvents.ts";
+import { useUser } from "../hooks/useUser.ts";
+import { UserModal } from "../components/UserModal/UserModal.tsx";
+import { IUser } from "../types/user";
 
 export const SocketContext = createContext<Socket | null>(null);
 export const UserContext = createContext<IUser | null>(null);
@@ -24,7 +24,7 @@ export const SocketProvider = ({ children }: PropsWithChildren) => {
     });
 
     socket.on(wsEvents.connectionError, (err) => {
-      console.log('Error connecting to WebSocket server:', err.message);
+      console.log("Error connecting to WebSocket server:", err.message);
     });
 
     socket.on(wsEvents.connection, () => {

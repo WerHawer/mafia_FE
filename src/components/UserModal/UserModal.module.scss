@@ -1,0 +1,56 @@
+.userModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  z-index: 1000;
+
+  &.active {
+    display: flex;
+  }
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.userContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2em;
+  border-radius: 1em;
+  background-color: lightgrey;
+  width: 50%;
+}
+
+.userCard {
+  width: 80%;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 1em;
+  margin: 1em 0;
+  border-radius: 1em;
+  background-color: #ffffff;
+
+  cursor: pointer;
+  transition:
+    background-color 300ms,
+    color 300ms;
+
+  &:hover {
+    background-color: #61dafb;
+    color: white;
+  }
+}

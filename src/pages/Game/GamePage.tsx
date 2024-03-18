@@ -1,10 +1,11 @@
 import styles from "./GamePage.module.scss";
 import classNames from "classnames";
+import { GameVideoContainer } from "../../components/GameVideoContainer";
 
 export const GamePage = () => {
   return (
     <div className={styles.pageContainer}>
-      <div className={styles.leftContainer}>left</div>
+      <GameVideoContainer />
       <aside className={styles.rightContainer}>
         <section
           className={classNames(styles.asideSection, styles.personalInfo)}

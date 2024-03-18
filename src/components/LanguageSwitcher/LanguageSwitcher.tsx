@@ -1,27 +1,27 @@
-import styles from './LanguageSwitcher.module.scss';
-import { useTranslation } from 'react-i18next';
-import { useCallback } from 'react';
-import classNames from 'classnames';
+import styles from "./LanguageSwitcher.module.scss";
+import { useTranslation } from "react-i18next";
+import { Fragment, memo, useCallback } from "react";
+import classNames from "classnames";
 
 const languages = [
-  { label: 'En', code: 'en' },
-  { label: 'Укр', code: 'ua' },
+  { label: "En", code: "en" },
+  { label: "Укр", code: "ua" },
 ];
 
-export const LanguageSwitcher = () => {
+export const LanguageSwitcher = memo(() => {
   const { i18n } = useTranslation();
 
   const handleLanguageChange = useCallback(
     (lang: string) => () => {
       i18n.changeLanguage(lang.toLowerCase());
     },
-    [i18n]
+    [i18n],
   );
 
   return (
     <div className={styles.container}>
       {languages.map(({ label, code }, i) => (
-        <>
+        <Fragment key={code}>
           <button
             key={label}
             className={classNames(styles.button, {
@@ -35,8 +35,8 @@ export const LanguageSwitcher = () => {
           {i + 1 !== languages.length && (
             <span className={styles.separator}>|</span>
           )}
-        </>
+        </Fragment>
       ))}
     </div>
   );
-};
+});
