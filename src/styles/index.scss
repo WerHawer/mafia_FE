@@ -1,9 +1,9 @@
-@import 'theme';
+@import "theme";
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Poppins:wght@300;400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Poppins:wght@300;400;500;600&display=swap");
 
 :root {
-  font-family: 'Cinzel', 'Poppins', sans-serif, Inter, system-ui, Avenir,
+  font-family: "Cinzel", "Poppins", sans-serif, Inter, system-ui, Avenir,
     Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -22,7 +22,8 @@
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
 *,
@@ -30,6 +31,7 @@ body {
 *::after {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 h1 {

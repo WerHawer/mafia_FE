@@ -1,9 +1,10 @@
-import { Button } from '../../components/Button';
-import { useCallback } from 'react';
-import { v4 as uuid } from 'uuid';
-import { useNavigate } from 'react-router-dom';
-import { routes } from '../../router/routs.ts';
-import { useTranslation } from 'react-i18next';
+import { Button } from "../../UI/Button";
+import { useCallback } from "react";
+import { v4 as uuid } from "uuid";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../../router/routs.ts";
+import { useTranslation } from "react-i18next";
+import { ButtonSize, ButtonVariant } from "../../UI/Button/Button.tsx";
 
 export const LobbyPage = () => {
   const navigate = useNavigate();
@@ -21,11 +22,11 @@ export const LobbyPage = () => {
 
       <Button
         onClick={handleCreateGame}
-        variant="secondary"
-        size="large"
+        variant={ButtonVariant.Secondary}
+        size={ButtonSize.Large}
         uppercase
       >
-        {t('createGame')}
+        {t("createGame")}
       </Button>
     </div>
   );

@@ -2,10 +2,17 @@
 
 .container {
   display: grid;
-  grid-template-rows: repeat(3, 1fr);
-  grid-template-columns: repeat(3, 1fr);
-  align-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(24%, 1fr));
+  align-items: start;
   gap: 1rem;
-  padding: 1rem;
+  padding: 0 1rem;
   border-right: $border-color 1px solid;
+
+  &.groupGrid {
+    grid-template-columns: repeat(auto-fit, minmax(24%, 1fr));
+  }
+
+  &.fiveGrid {
+    grid-template-columns: repeat(auto-fit, minmax(19%, 1fr));
+  }
 }

@@ -12,7 +12,7 @@ export type Stream = {
   stream?: MediaStream;
 };
 
-const INITIAL_STREAMS_COUNT = 10;
+const INITIAL_STREAMS_COUNT = 11;
 const INITIAL_STREAM = () =>
   ({
     id: uuid(),

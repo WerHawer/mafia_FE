@@ -17,3 +17,31 @@
   justify-content: $justify;
   align-items: $align;
 }
+
+@mixin flexCenter {
+  @include flex(center, center);
+}
+
+@mixin noScroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@mixin customScrollbar($width: 8px, $color: #30363d) {
+  scrollbar-width: thin;
+  scrollbar-color: $color transparent;
+
+  &::-webkit-scrollbar {
+    width: $width;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $color;
+    border-radius: 4px;
+  }
+}

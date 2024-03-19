@@ -4,20 +4,10 @@
 .pageContainer {
   display: grid;
   width: 100%;
-  min-height: 100%;
-  grid-template-columns: 1fr 20%;
-  overflow: hidden;
+  grid-template-columns: 1fr 23%;
+  grid-template-rows: calc(100vh - 87px);
 
   font-size: 1.8rem;
-}
-
-.leftContainer {
-  display: grid;
-  grid-template-rows: 1fr 1fr 1fr;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 1rem;
-  padding: 1rem;
-  border-right: $border-color 1px solid;
 }
 
 .rightContainer {
@@ -34,6 +24,7 @@
 .voteList {
 }
 
-.chatContainer {
+.chatSection {
   width: 100%;
+  height: 60%;
 }

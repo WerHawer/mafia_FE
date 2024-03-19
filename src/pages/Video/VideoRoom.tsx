@@ -13,7 +13,7 @@ import Peer from "peerjs";
 import { useUserMediaStream } from "../../hooks/useUserMediaStream.ts";
 import { SocketContext, UserContext } from "../../context/SocketProvider.tsx";
 import { wsEvents } from "../../config/wsEvents.ts";
-import { IMessage, IMessageDTO } from "../../types/message";
+import { IMessage, IMessageDTO, MessageTypes } from "../../types/message";
 
 type UserStreams = Record<string, MediaStream>;
 
@@ -138,7 +138,7 @@ export const VideoRoom = () => {
     const newMessage: IMessage = {
       text: message,
       sender: user,
-      to: { type: "room", id },
+      to: { type: MessageTypes.Room, id },
       date: new Date(),
       isRead: false,
     };

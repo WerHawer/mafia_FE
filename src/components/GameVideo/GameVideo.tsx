@@ -8,25 +8,33 @@ type GameVideoProps = {
   stream?: MediaStream;
   muted?: boolean;
   isMyStream?: boolean;
+  isActive?: boolean;
 };
 
 export const GameVideo = memo(
-  ({ stream, muted = false, isMyStream = false }: GameVideoProps) => {
+  ({
+    stream,
+    muted = false,
+    isMyStream = false,
+    isActive = false,
+  }: GameVideoProps) => {
     const { t } = useTranslation();
     const isMyStreamActive = isMyStream && stream;
 
     return (
       <div
-        className={classNames(
-          styles.container,
-          isMyStream && styles.myVideoContainer,
-          isMyStreamActive && styles.myVideoActive,
-        )}
+        className={classNames(styles.container, {
+          [styles.myVideoContainer]: isMyStream,
+          [styles.myVideoActive]: isMyStreamActive,
+          [styles.active]: isActive,
+        })}
       >
         {stream ? (
           <video
             key={stream.id}
-            className={styles.video}
+            className={classNames(styles.video, {
+              [styles.active]: isActive,
+            })}
             playsInline
             autoPlay
             muted={muted}

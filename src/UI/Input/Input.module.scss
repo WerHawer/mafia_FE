@@ -1,0 +1,14 @@
+@import "src/styles/theme";
+
+.input {
+  width: 100%;
+  max-width: 250px;
+  padding: 5px 15px;
+  background: none;
+  outline: none;
+  border: 1px solid $border-color;
+  border-radius: 3px;
+
+  color: $color-text-secondary;
+  font-size: 1.6rem;
+}

@@ -1,0 +1,48 @@
+@import "src/styles/theme";
+@import "src/styles/mixins";
+
+.container {
+  @include flex(column, flex-end, center);
+  height: 100%;
+}
+
+.messages {
+  @include flex(column, flex-start, flex-start);
+  @include customScrollbar;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 1em;
+}
+
+.messageText {
+  @include flex(column, flex-start, start);
+  padding: 1em;
+  border-radius: $border-radius;
+
+  &.myMessage {
+    align-self: flex-end;
+    background-color: #61dafb;
+    color: white;
+  }
+
+  > .strong {
+    font-weight: bold;
+  }
+}
+
+.inputContainer {
+  @include flex(row, space-around, center);
+  width: 100%;
+  padding: 1.4rem;
+  border-top: $border-color 1px solid;
+  border-bottom: $border-color 1px solid;
+}
+
+.sendButton {
+  flex-shrink: 0;
+}
+
+.icon {
+  @include size(1.7rem);
+}
