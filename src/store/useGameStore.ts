@@ -8,5 +8,4 @@ type State = {
 };
 
 //TODO: add types for actions
-
 //TODO: add users state

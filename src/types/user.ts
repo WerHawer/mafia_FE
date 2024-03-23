@@ -1,3 +1,5 @@
+export type UserId = string;
+
 export interface IUser {
   email: string;
   name: string;
@@ -5,6 +7,6 @@ export interface IUser {
   friendList: [];
   isOnline: true;
   avatar?: string;
-  id: string;
+  id: UserId;
   // history: [],
 }

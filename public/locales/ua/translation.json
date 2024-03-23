@@ -1,5 +1,6 @@
 {
   "hello": "Привіт світ",
   "createGame": "Створити Гру",
-  "waitingForPlayers": "Очікування гравців"
+  "waitingForPlayers": "Очікування гравців",
+  "loading": "Завантаження"
 }

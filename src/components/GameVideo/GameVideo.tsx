@@ -1,8 +1,8 @@
 import styles from "./GameVideo.module.scss";
-import { PuffLoader } from "react-spinners";
-import { useTranslation } from "react-i18next";
 import classNames from "classnames";
 import { memo } from "react";
+import { Loader } from "../../UI/Loader";
+import { LoaderDirection } from "../../UI/Loader/LoaderTypes.ts";
 
 type GameVideoProps = {
   stream?: MediaStream;
@@ -18,7 +18,6 @@ export const GameVideo = memo(
     isMyStream = false,
     isActive = false,
   }: GameVideoProps) => {
-    const { t } = useTranslation();
     const isMyStreamActive = isMyStream && stream;
 
     return (
@@ -45,10 +44,10 @@ export const GameVideo = memo(
             }}
           />
         ) : (
-          <div className={styles.loaderContainer}>
-            <PuffLoader size={50} color="#8B949E" speedMultiplier={0.75} />
-            <span>{t("waitingForPlayers")}</span>
-          </div>
+          <Loader
+            i18nKey="waitingForPlayers"
+            direction={LoaderDirection.Column}
+          />
         )}
       </div>
     );

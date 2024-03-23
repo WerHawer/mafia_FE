@@ -10,11 +10,11 @@ import { useParams } from "react-router-dom";
 import { Input } from "../../UI/Input";
 import styles from "./GameChat.module.scss";
 import { Button } from "../../UI/Button";
-import { ButtonVariant } from "../../UI/Button/Button.tsx";
 import { SendOutlined } from "@ant-design/icons";
 import { SocketContext, UserContext } from "../../context/SocketProvider.tsx";
 import { wsEvents } from "../../config/wsEvents.ts";
 import { IMessage, IMessageDTO, MessageTypes } from "../../types/message";
+import { ButtonType, ButtonVariant } from "../../UI/Button/ButtonTypes.ts";
 
 export const GameChat = () => {
   const { id = "" } = useParams();
@@ -98,7 +98,7 @@ export const GameChat = () => {
         <Button
           variant={ButtonVariant.Secondary}
           onClick={handleSendMessage}
-          type="submit"
+          type={ButtonType.Submit}
           rounded
           className={styles.sendButton}
         >

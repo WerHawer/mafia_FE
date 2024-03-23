@@ -1,19 +1,7 @@
 import { HTMLProps, PropsWithChildren } from "react";
 import styles from "./Button.module.scss";
 import classNames from "classnames";
-
-export enum ButtonSize {
-  Small = "small",
-  Medium = "medium",
-  Large = "large",
-}
-
-export enum ButtonVariant {
-  Primary = "primary",
-  Secondary = "secondary",
-}
-
-type buttonType = "button" | "submit" | "reset";
+import { ButtonSize, ButtonType, ButtonVariant } from "./ButtonTypes.ts";
 
 type ButtonProps = Omit<HTMLProps<HTMLButtonElement>, "size"> &
   PropsWithChildren<{
@@ -24,9 +12,10 @@ type ButtonProps = Omit<HTMLProps<HTMLButtonElement>, "size"> &
     uppercase?: boolean;
     rounded?: boolean;
     className?: string;
-    type?: buttonType;
+    type?: ButtonType;
   }>;
 
+//TODO: Add loading state
 export const Button = ({
   children,
   onClick,
@@ -36,7 +25,7 @@ export const Button = ({
   variant = ButtonVariant.Primary,
   rounded = false,
   className,
-  type = "button",
+  type = ButtonType.Button,
   ...rest
 }: ButtonProps) => {
   return (

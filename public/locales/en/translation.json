@@ -1,5 +1,6 @@
 {
   "hello": "Hello world",
   "createGame": "Create Game",
-  "waitingForPlayers": "Waiting for players"
+  "waitingForPlayers": "Waiting for players",
+  "loading": "Loading"
 }
