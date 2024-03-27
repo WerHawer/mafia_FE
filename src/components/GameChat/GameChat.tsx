@@ -1,25 +1,20 @@
-import {
-  ChangeEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Input } from "../../UI/Input";
 import styles from "./GameChat.module.scss";
 import { Button } from "../../UI/Button";
 import { SendOutlined } from "@ant-design/icons";
-import { SocketContext, UserContext } from "../../context/SocketProvider.tsx";
+import { useSocket } from "../../context/SocketProvider.tsx";
 import { wsEvents } from "../../config/wsEvents.ts";
 import { IMessage, IMessageDTO, MessageTypes } from "../../types/message";
 import { ButtonType, ButtonVariant } from "../../UI/Button/ButtonTypes.ts";
+import { userStore } from "../../store/mobx/userStore.ts";
+import { observer } from "mobx-react-lite";
 
-export const GameChat = () => {
+export const GameChat = observer(() => {
   const { id = "" } = useParams();
-  const user = useContext(UserContext);
-  const socket = useContext(SocketContext);
+  const { me: user } = userStore;
+  const { subscribe, sendMessage } = useSocket();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [message, setMessage] = useState("");
 
@@ -29,16 +24,25 @@ export const GameChat = () => {
   const containerHeight = containerRef.current?.clientHeight || 0;
 
   useEffect(() => {
-    if (!socket) return;
+    const unsubscribeGetMessages = subscribe(
+      wsEvents.messagesGetRoom,
+      (messages: IMessage[]) => {
+        setMessages(messages);
+      },
+    );
 
-    socket.on(wsEvents.messagesGetRoom, (messages: IMessage[]) => {
-      setMessages(messages);
-    });
+    const unsubscribePrivateMessage = subscribe(
+      wsEvents.messageSendPrivate,
+      (message: IMessage) => {
+        setMessages((prev) => [...prev, message]);
+      },
+    );
 
-    socket.on(wsEvents.messageSendPrivate, (message: IMessage) => {
-      setMessages((prev) => [...prev, message]);
-    });
-  }, [socket]);
+    return () => {
+      unsubscribeGetMessages();
+      unsubscribePrivateMessage();
+    };
+  }, [subscribe]);
 
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
@@ -67,8 +71,8 @@ export const GameChat = () => {
     setMessages((prev) => [...prev, newMessage]);
     setMessage("");
 
-    socket?.emit(wsEvents.messageSendPrivate, messageDTO);
-  }, [socket, user, message, id]);
+    sendMessage(wsEvents.messageSendPrivate, messageDTO);
+  }, [message, user, id, sendMessage]);
 
   return (
     <div className={styles.container} ref={containerRef}>
@@ -107,4 +111,4 @@ export const GameChat = () => {
       </form>
     </div>
   );
-};
+});

@@ -5,7 +5,7 @@ import { ButtonSize, ButtonType, ButtonVariant } from "./ButtonTypes.ts";
 
 type ButtonProps = Omit<HTMLProps<HTMLButtonElement>, "size"> &
   PropsWithChildren<{
-    onClick: () => void;
+    onClick?: () => void;
     disabled?: boolean;
     variant?: ButtonVariant;
     size?: ButtonSize;

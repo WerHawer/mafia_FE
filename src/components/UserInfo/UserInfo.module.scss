@@ -1,9 +1,11 @@
-@import '../../styles/mixins';
-@import '../../styles/theme';
+@import "../../styles/mixins";
+@import "../../styles/theme";
 
 .container {
   @include flex;
   column-gap: 1rem;
+
+  cursor: pointer;
 }
 
 .name {
@@ -18,5 +20,15 @@
   img {
     width: 100%;
     height: auto;
+  }
+}
+
+.menuElement {
+  cursor: pointer;
+  color: $color-accent-tertiary;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: $color-accent-secondary;
   }
 }

@@ -5,4 +5,5 @@ export const projectEnv = {
   apiUrl: import.meta.env.VITE_API_URL,
   peerPort: import.meta.env.VITE_PEER_PORT,
   isProd: import.meta.env.PROD,
+  isDev: import.meta.env.DEV,
 };

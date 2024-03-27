@@ -1,5 +1,5 @@
 import { Button } from "../../UI/Button";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { routes } from "../../router/routs.ts";
 import { useTranslation } from "react-i18next";
@@ -8,16 +8,17 @@ import {
   useFetchActiveGamesQuery,
 } from "../../api/game/queries.ts";
 import { Loader } from "../../UI/Loader";
-import { UserContext } from "../../context/SocketProvider.tsx";
 import { createGameObj } from "../../helpers/createGameObj.ts";
 import { ButtonSize, ButtonVariant } from "../../UI/Button/ButtonTypes.ts";
+import { userStore } from "../../store/mobx/userStore.ts";
+import { observer } from "mobx-react-lite";
 
-export const LobbyPage = () => {
+export const LobbyPage = observer(() => {
+  const { me: user } = userStore;
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { data: activeGames, isLoading: isActiveGamesLoading } =
     useFetchActiveGamesQuery();
-  const user = useContext(UserContext);
 
   const { mutate: createGame } = useCreateGameMutation();
 
@@ -46,7 +47,7 @@ export const LobbyPage = () => {
           }}
         >
           {activeGames?.map((game, i) => (
-            <li>
+            <li key={game.id}>
               <Link to={`${routes.game}/${game.id}`} key={game.id}>
                 game {i + 1}
               </Link>
@@ -65,4 +66,4 @@ export const LobbyPage = () => {
       </Button>
     </div>
   );
-};
+});

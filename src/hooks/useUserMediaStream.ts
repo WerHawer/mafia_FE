@@ -1,34 +1,35 @@
-import { useEffect, useState } from 'react';
+import { useRef, useState } from "react";
+import { useMount, useUnmount } from "react-use";
 
-export const useUserMediaStream = (
-  options: MediaStreamConstraints,
-  enabled: boolean
-) => {
+export const useUserMediaStream = (options: MediaStreamConstraints) => {
   const [userMediaStream, setMediaStream] = useState<MediaStream | null>(null);
+  const isFirstRender = useRef(true);
 
-  useEffect(() => {
-    if (!enabled || userMediaStream) return;
+  useMount(() => {
+    if (!isFirstRender.current) return;
+
+    isFirstRender.current = false;
 
     const enableStream = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia(options);
 
-        setMediaStream((prev) => prev ?? stream);
+        setMediaStream(stream);
       } catch (err) {
-        console.error('Error accessing media devices.', err);
+        console.error("Error accessing media devices.", err);
       }
     };
 
     enableStream();
-  }, [options, userMediaStream, enabled]);
+  });
 
-  useEffect(() => {
-    return () => {
-      userMediaStream?.getTracks().forEach((track) => {
-        track.stop();
-      });
-    };
-  }, [userMediaStream]);
+  useUnmount(() => {
+    setMediaStream(null);
+
+    userMediaStream?.getTracks().forEach((track) => {
+      track.stop();
+    });
+  });
 
   return userMediaStream;
 };

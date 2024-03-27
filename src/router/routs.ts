@@ -1,6 +1,7 @@
 export const routes = {
-  home: '/',
-  video: '/video',
-  game: '/game',
-  lobby: '/lobby',
+  home: "/",
+  video: "/video",
+  game: "/game",
+  lobby: "/lobby",
+  login: "/login",
 };

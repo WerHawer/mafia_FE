@@ -1,68 +1,69 @@
-import {
-  ChangeEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import './App.css';
-import { useTranslation } from 'react-i18next';
-import { SocketContext, UserContext } from '../../context/SocketProvider.tsx';
-import { wsEvents } from '../../config/wsEvents.ts';
-import { Link } from 'react-router-dom';
-import { routes } from '../../router/routs.ts';
-import { IMessage, IMessageDTO } from '../../types/message';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-i18next";
+import "./App.css";
+import { useSocket } from "../../context/SocketProvider.tsx";
+import { wsEvents } from "../../config/wsEvents.ts";
+import { routes } from "../../router/routs.ts";
+import { IMessage, IMessageDTO, MessageTypes } from "../../types/message";
+import { userStore } from "../../store/mobx/userStore.ts";
 
-function App() {
+const App = observer(() => {
   const { t, i18n } = useTranslation();
+  const { subscribe, sendMessage } = useSocket();
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [userCount, setUserCount] = useState(0);
   const chatRef = useRef<HTMLDivElement>(null);
-  const socket = useContext(SocketContext);
-  const user = useContext(UserContext);
+  const { me: user } = userStore;
 
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
   }, [messages]);
 
   useEffect(() => {
-    if (!socket) return;
+    sendMessage(wsEvents.messagesGetAll);
+    sendMessage(wsEvents.userConnectedCount);
 
-    socket.emit(wsEvents.messagesGetAll);
+    const unsubscribeAllMessages = subscribe(
+      wsEvents.messagesGetAll,
+      (messages: IMessage[]) => setMessages(messages),
+    );
+    const unsubscribeIncoming = subscribe(
+      wsEvents.messageSend,
+      (message: IMessage) => setMessages((prev) => [...prev, message]),
+    );
+    const unsubscribeCount = subscribe(
+      wsEvents.userConnectedCount,
+      (usersCount: number) => setUserCount(usersCount),
+    );
 
-    socket.on(wsEvents.messagesGetAll, (messages) => {
-      setMessages(messages);
-    });
+    return () => {
+      unsubscribeAllMessages();
+      unsubscribeIncoming();
+      unsubscribeCount();
+    };
+  }, [sendMessage, subscribe]);
 
-    socket.on(wsEvents.messageSend, (data) => {
-      setMessages((prev) => [...prev, data]);
-    });
-
-    socket.on(wsEvents.userConnectedCount, (usersCount) => {
-      setUserCount(usersCount);
-    });
-  }, [socket]);
-
-  const sendMessage = useCallback(() => {
+  const sendChatMessage = useCallback(() => {
     if (!newMessage || !user) return;
 
     const message: IMessage = {
       text: newMessage,
       sender: user,
-      to: { type: 'all' },
+      to: { type: MessageTypes.All },
       date: new Date(),
       isRead: false,
     };
 
     const messageDTO: IMessageDTO = { ...message, sender: user.id };
 
-    setNewMessage('');
+    setNewMessage("");
     setMessages((prev) => [...prev, message]);
 
-    socket?.emit(wsEvents.messageSend, messageDTO);
-  }, [newMessage, socket, user]);
+    sendMessage(wsEvents.messageSend, messageDTO);
+  }, [newMessage, sendMessage, user]);
 
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
@@ -72,9 +73,9 @@ function App() {
     <div className="main_container">
       {user && <h3>Hello {user.name}</h3>}
       <div>
-        <button onClick={() => i18n.changeLanguage('en')}>en</button>
-        {'    '}
-        <button onClick={() => i18n.changeLanguage('ua')}>ua</button>
+        <button onClick={() => i18n.changeLanguage("en")}>en</button>
+        {"    "}
+        <button onClick={() => i18n.changeLanguage("ua")}>ua</button>
       </div>
 
       <h2>{i18n.language}</h2>
@@ -88,13 +89,13 @@ function App() {
               <p
                 key={userId + index}
                 className={
-                  userId === user?.id ? 'messageText myMessage' : 'messageText'
+                  userId === user?.id ? "messageText myMessage" : "messageText"
                 }
               >
                 <span className="strong">{userName}: </span>
                 <span>{text}</span>
               </p>
-            )
+            ),
           )}
         </div>
 
@@ -108,7 +109,7 @@ function App() {
             />
             <button
               className="sendButton"
-              onClick={sendMessage}
+              onClick={sendChatMessage}
               disabled={!newMessage}
               type="submit"
             >
@@ -126,12 +127,12 @@ function App() {
         </p>
       </div>
       <p className="read-the-docs">
-        {t('Click on the Vite and React logos to learn more')}
-        {'   '}
-        {t('hello')}
+        {"Click on the Vite and React logos to learn more"}
+        {"   "}
+        {t("hello")}
       </p>
     </div>
   );
-}
+});
 
 export default App;

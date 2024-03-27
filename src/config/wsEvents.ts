@@ -4,6 +4,7 @@ export enum wsEvents {
   peerConnection = "peerConnection",
   peerDisconnect = "peerDisconnect",
   roomConnection = "roomConnection",
+  roomLeave = "roomLeave",
   roomDisconnect = "roomDisconnect",
   userConnectedCount = "userConnectedCount",
   messagesGetAll = "messagesGetAll",
@@ -13,4 +14,5 @@ export enum wsEvents {
   disconnect = "disconnect",
   stream = "stream",
   call = "call",
+  gameCreated = "gameCreated",
 }

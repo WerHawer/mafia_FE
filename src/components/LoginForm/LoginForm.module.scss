@@ -1,0 +1,17 @@
+@import "src/styles/theme.scss";
+@import "src/styles/mixins.scss";
+
+.container {
+  @include flex(center, center);
+  width: 100%;
+}
+
+.form {
+  @include flex(column, center, center);
+  max-width: 500px;
+  row-gap: 1rem;
+  padding: 1.5rem;
+  border-radius: $border-radius;
+  background-color: $color-dark-secondary;
+  box-shadow: $shadow;
+}

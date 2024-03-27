@@ -13,11 +13,8 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
       <SocketProvider>
-        <ReactQueryDevtools
-          initialIsOpen={false}
-          buttonPosition="bottom-left"
-        />
         <RouterProvider router={router} />
       </SocketProvider>
     </QueryClientProvider>

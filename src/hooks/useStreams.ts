@@ -1,11 +1,12 @@
 import { useParams } from "react-router-dom";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { SocketContext, UserContext } from "../context/SocketProvider.tsx";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSocket } from "../context/SocketProvider.tsx";
 import { useUserMediaStream } from "./useUserMediaStream.ts";
 import { usePeer } from "./usePeer.ts";
 import Peer from "peerjs";
 import { wsEvents } from "../config/wsEvents.ts";
 import { v4 as uuid } from "uuid";
+import { useUnmount } from "react-use";
 
 export type Stream = {
   id: string;
@@ -13,20 +14,19 @@ export type Stream = {
 };
 
 const INITIAL_STREAMS_COUNT = 11;
-const INITIAL_STREAM = () =>
+const getInitialStream = () =>
   ({
     id: uuid(),
   }) as Stream;
 
 const initialStreams = new Array(INITIAL_STREAMS_COUNT)
   .fill(null)
-  .map(INITIAL_STREAM);
+  .map(getInitialStream);
 
 export const useStreams = () => {
   const { id = "" } = useParams();
   const [streams, setStreams] = useState<Stream[]>(initialStreams);
-  const user = useContext(UserContext);
-  const socket = useContext(SocketContext);
+  const { subscribe, sendMessage } = useSocket();
 
   const sortedStreams = useMemo(() => {
     const streamsCopy = [...streams];
@@ -41,13 +41,10 @@ export const useStreams = () => {
     return streamsCopy;
   }, [streams]);
 
-  const userMediaStream = useUserMediaStream(
-    {
-      audio: true,
-      video: true,
-    },
-    !!user,
-  );
+  const userMediaStream = useUserMediaStream({
+    audio: true,
+    video: true,
+  });
 
   const { peer, peerId } = usePeer(userMediaStream?.id);
 
@@ -69,7 +66,7 @@ export const useStreams = () => {
 
   const removeVideoStream = useCallback((id: string) => {
     setStreams((prev) =>
-      prev.map((item) => (item.id !== id ? item : INITIAL_STREAM())),
+      prev.map((item) => (item.id !== id ? item : getInitialStream())),
     );
   }, []);
 
@@ -92,14 +89,22 @@ export const useStreams = () => {
   );
 
   useEffect(() => {
-    if (!peerId || !socket || !userMediaStream) return;
+    if (!peerId || !userMediaStream) return;
 
-    socket.emit(wsEvents.roomConnection, id, peerId, userMediaStream.id);
+    sendMessage(wsEvents.roomConnection, id, peerId, userMediaStream.id);
 
-    socket.on(wsEvents.peerDisconnect, (userId: string) => {
-      removeVideoStream(userId);
-    });
-  }, [id, peerId, removeVideoStream, socket, userMediaStream]);
+    const unsubscribe = subscribe(
+      wsEvents.peerDisconnect,
+      (streamId: string) => {
+        removeVideoStream(streamId);
+      },
+    );
+
+    return () => {
+      unsubscribe();
+      sendMessage(wsEvents.roomLeave, id, peerId);
+    };
+  }, [id, peerId, removeVideoStream, sendMessage, subscribe, userMediaStream]);
 
   // add my video stream
   useEffect(() => {
@@ -110,7 +115,7 @@ export const useStreams = () => {
 
   // add user who already in room to me when I connect.
   useEffect(() => {
-    if (!peer || !socket || !userMediaStream) return;
+    if (!peer || !userMediaStream) return;
 
     peer.on(wsEvents.call, (call) => {
       call.answer(userMediaStream);
@@ -119,20 +124,32 @@ export const useStreams = () => {
         addVideoStream(userVideoStream);
       });
     });
-  }, [addVideoStream, connectToNewUser, peer, peerId, socket, userMediaStream]);
+
+    return () => {
+      peer.off(wsEvents.call);
+    };
+  }, [addVideoStream, connectToNewUser, peer, peerId, userMediaStream]);
 
   // add new user when he connects to room
   useEffect(() => {
-    if (!socket || !userMediaStream || !peer) return;
+    if (!userMediaStream || !peer) return;
 
-    socket.on(wsEvents.roomConnection, (otherUserId) => {
+    const unsubscribe = subscribe(wsEvents.roomConnection, (otherUserId) => {
       const connectCb = (userVideoStream: MediaStream) => {
         addVideoStream(userVideoStream);
       };
 
       connectToNewUser(otherUserId, userMediaStream, peer, connectCb);
     });
-  }, [addVideoStream, connectToNewUser, peer, socket, userMediaStream]);
+
+    return () => {
+      unsubscribe();
+    };
+  }, [addVideoStream, connectToNewUser, peer, subscribe, userMediaStream]);
+
+  useUnmount(() => {
+    setStreams(initialStreams);
+  });
 
   return {
     streams: sortedStreams,
