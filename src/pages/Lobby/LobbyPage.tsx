@@ -10,31 +10,32 @@ import {
 import { Loader } from "../../UI/Loader";
 import { createGameObj } from "../../helpers/createGameObj.ts";
 import { ButtonSize, ButtonVariant } from "../../UI/Button/ButtonTypes.ts";
-import { userStore } from "../../store/mobx/userStore.ts";
+import { usersStore } from "../../store/usersStore.ts";
 import { observer } from "mobx-react-lite";
+import { useUpdateGameSubs } from "../../hooks/useUpdateGameSubs.ts";
 
-export const LobbyPage = observer(() => {
-  const { me: user } = userStore;
+const LobbyPage = observer(() => {
+  const { myId } = usersStore;
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { data: activeGames, isLoading: isActiveGamesLoading } =
     useFetchActiveGamesQuery();
 
+  useUpdateGameSubs();
+
   const { mutate: createGame } = useCreateGameMutation();
 
   const handleCreateGame = useCallback(() => {
-    const userId = user?.id;
+    if (!myId) return;
 
-    if (!userId) return;
-
-    const game = createGameObj({ owner: userId });
+    const game = createGameObj({ owner: myId });
 
     createGame(game, {
       onSuccess: (data) => {
         navigate(`${routes.game}/${data.data.id}`);
       },
     });
-  }, [createGame, navigate, user?.id]);
+  }, [createGame, navigate, myId]);
 
   return (
     <div>
@@ -49,7 +50,7 @@ export const LobbyPage = observer(() => {
           {activeGames?.map((game, i) => (
             <li key={game.id}>
               <Link to={`${routes.game}/${game.id}`} key={game.id}>
-                game {i + 1}
+                game {i + 1} - in game: {game.players.length}
               </Link>
             </li>
           ))}
@@ -67,3 +68,5 @@ export const LobbyPage = observer(() => {
     </div>
   );
 });
+
+export default LobbyPage;

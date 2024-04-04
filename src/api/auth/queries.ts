@@ -18,6 +18,7 @@ export const useAuthQuery = (token?: string) => {
   return useQuery({
     queryKey: [queryKeys.auth, token],
     queryFn: () => auth(token),
+    select: ({ data }) => data,
     retry: false,
     enabled: !!token,
   });

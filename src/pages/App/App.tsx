@@ -3,48 +3,49 @@ import { Link } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 import "./App.css";
-import { useSocket } from "../../context/SocketProvider.tsx";
 import { wsEvents } from "../../config/wsEvents.ts";
 import { routes } from "../../router/routs.ts";
 import { IMessage, IMessageDTO, MessageTypes } from "../../types/message";
-import { userStore } from "../../store/mobx/userStore.ts";
+import { usersStore } from "../../store/usersStore.ts";
+import { useSocket } from "../../hooks/useSocket.ts";
+import { useGetAllMessages } from "../../api/messages/queries.ts";
+import { messagesStore } from "../../store/messagesStore.ts";
 
 const App = observer(() => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { subscribe, sendMessage } = useSocket();
-  const [messages, setMessages] = useState<IMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [userCount, setUserCount] = useState(0);
   const chatRef = useRef<HTMLDivElement>(null);
-  const { me: user } = userStore;
+  const { me: user } = usersStore;
+  const {
+    publicMessages,
+    setNewMessage: setNewMessageToStore,
+    setNewLocalMessage,
+  } = messagesStore;
+  useGetAllMessages();
 
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
-  }, [messages]);
+  }, [publicMessages]);
 
   useEffect(() => {
-    sendMessage(wsEvents.messagesGetAll);
     sendMessage(wsEvents.userConnectedCount);
 
-    const unsubscribeAllMessages = subscribe(
-      wsEvents.messagesGetAll,
-      (messages: IMessage[]) => setMessages(messages),
+    const unsubscribeIncoming = subscribe(wsEvents.messageSend, (message) =>
+      setNewMessageToStore(message),
     );
-    const unsubscribeIncoming = subscribe(
-      wsEvents.messageSend,
-      (message: IMessage) => setMessages((prev) => [...prev, message]),
-    );
+
     const unsubscribeCount = subscribe(
       wsEvents.userConnectedCount,
-      (usersCount: number) => setUserCount(usersCount),
+      (usersCount) => setUserCount(usersCount),
     );
 
     return () => {
-      unsubscribeAllMessages();
       unsubscribeIncoming();
       unsubscribeCount();
     };
-  }, [sendMessage, subscribe]);
+  }, [sendMessage, setNewMessageToStore, subscribe]);
 
   const sendChatMessage = useCallback(() => {
     if (!newMessage || !user) return;
@@ -53,17 +54,17 @@ const App = observer(() => {
       text: newMessage,
       sender: user,
       to: { type: MessageTypes.All },
-      date: new Date(),
+      createdAt: Date.now(),
       isRead: false,
     };
 
     const messageDTO: IMessageDTO = { ...message, sender: user.id };
 
     setNewMessage("");
-    setMessages((prev) => [...prev, message]);
+    setNewLocalMessage(message);
 
     sendMessage(wsEvents.messageSend, messageDTO);
-  }, [newMessage, sendMessage, user]);
+  }, [newMessage, sendMessage, setNewLocalMessage, user]);
 
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
@@ -72,22 +73,15 @@ const App = observer(() => {
   return (
     <div className="main_container">
       {user && <h3>Hello {user.name}</h3>}
-      <div>
-        <button onClick={() => i18n.changeLanguage("en")}>en</button>
-        {"    "}
-        <button onClick={() => i18n.changeLanguage("ua")}>ua</button>
-      </div>
-
-      <h2>{i18n.language}</h2>
 
       <div className="chatContainer">
         <h4>{userCount} users connected to chat</h4>
 
         <div className="chatMessages" ref={chatRef}>
-          {messages.map(
-            ({ text, sender: { id: userId, name: userName } }, index) => (
+          {publicMessages?.map(
+            ({ text, sender: { id: userId, name: userName }, createdAt }) => (
               <p
-                key={userId + index}
+                key={createdAt}
                 className={
                   userId === user?.id ? "messageText myMessage" : "messageText"
                 }

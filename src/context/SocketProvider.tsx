@@ -1,17 +1,8 @@
-import {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, PropsWithChildren, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { SERVER } from "../api/apiConstants.ts";
 import { wsEvents } from "../config/wsEvents.ts";
-import { userStore } from "../store/mobx/userStore.ts";
 import { observer } from "mobx-react-lite";
-import { EventParams } from "@socket.io/component-emitter";
 
 export const SocketContext = createContext<{
   socket: Socket | null;
@@ -46,7 +37,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       console.log(message);
     });
 
-    socket.on("disconnect", (reason) => {
+    socket.on(wsEvents.disconnect, (reason) => {
       if (reason === "io server disconnect") {
         socket.connect();
       }
@@ -59,43 +50,3 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
     </SocketContext.Provider>
   );
 });
-
-export const useSocket = () => {
-  const { socket, isContext } = useContext(SocketContext);
-
-  if (!isContext) {
-    throw new Error("useSocket must be used within a SocketProvider");
-  }
-
-  const isConnected = socket?.connected;
-
-  const sendMessage = useCallback(
-    (event: wsEvents, ...data: EventParams<any, any>) => {
-      socket?.emit(event, ...data);
-    },
-    [socket],
-  );
-
-  const subscribe = useCallback(
-    (event: wsEvents, cb: (data?: any) => void) => {
-      const cbHandler = cb;
-
-      socket?.on(event, cbHandler);
-
-      return () => {
-        socket?.off(event, cbHandler);
-      };
-    },
-    [socket],
-  );
-
-  const connect = useCallback(() => {
-    socket?.connect();
-  }, [socket]);
-
-  const disconnect = useCallback(() => {
-    socket?.disconnect();
-  }, [socket]);
-
-  return { socket, sendMessage, subscribe, isConnected, disconnect, connect };
-};

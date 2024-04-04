@@ -1,4 +1,5 @@
 import axios from "axios";
+import { IUser } from "../../types/user.ts";
 
 export const userLogin = async (loginData: {
   email: string;
@@ -6,7 +7,7 @@ export const userLogin = async (loginData: {
 }) => axios.post(`/login`, loginData);
 
 export const auth = async (token?: string) => {
-  return axios.get(`/auth`, {
+  return axios.get<{ message: string; user: IUser }>(`/auth`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
 };

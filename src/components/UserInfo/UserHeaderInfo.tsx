@@ -6,11 +6,11 @@ import { removeTokenFromAxios } from "../../helpers/removeTokenFromAxios.ts";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../../router/routs.ts";
 import { observer } from "mobx-react-lite";
-import { userStore } from "../../store/mobx/userStore.ts";
-import { useSocket } from "../../context/SocketProvider.tsx";
+import { usersStore } from "../../store/usersStore.ts";
+import { useSocket } from "../../hooks/useSocket.ts";
 
 export const UserHeaderInfo = observer(() => {
-  const { me: user, logout } = userStore;
+  const { me: user, logout } = usersStore;
   const { disconnect } = useSocket();
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ export const UserHeaderInfo = observer(() => {
 
   if (!user) return null;
 
-  const { name, avatar } = user;
+  const { name, avatar, id } = user;
 
   return (
     <PopupMenu
@@ -34,7 +34,9 @@ export const UserHeaderInfo = observer(() => {
       }
     >
       <div className={styles.container}>
-        <span className={styles.name}>{name}</span>
+        <span className={styles.name}>
+          {name}: {id}
+        </span>
 
         <div className={styles.avatar}>
           <img src={avatar ?? noAvatar} alt={name} width="46" height="46" />

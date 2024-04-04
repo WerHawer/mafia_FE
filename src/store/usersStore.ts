@@ -1,8 +1,9 @@
-import { IUser } from "../../types/user.ts";
-import { makeAutoObservable } from "mobx";
+import { IUser } from "../types/user.ts";
+import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 
 class Users {
+  myUser: IUser | null = null;
   users: Record<string, IUser> = {};
   token: string = "";
 
@@ -10,8 +11,8 @@ class Users {
     makeAutoObservable(this, {}, { autoBind: true });
     makePersistable(this, {
       name: "Users_mobx",
-      properties: ["token", "users"],
-      storage: localStorage,
+      properties: ["token", "myUser"],
+      storage: sessionStorage,
     });
   }
 
@@ -20,7 +21,7 @@ class Users {
   }
 
   setMyUser(user: IUser) {
-    this.users.me = user;
+    this.myUser = user;
   }
 
   setToken(token: string) {
@@ -31,17 +32,30 @@ class Users {
     this.token = "";
   }
 
-  logout() {
-    this.token = "";
+  removeUsers() {
     this.users = {};
   }
 
+  removeMyUser() {
+    this.myUser = null;
+  }
+
+  logout() {
+    this.removeUsers();
+    this.removeToken();
+    this.removeMyUser();
+  }
+
   get me() {
-    return this.users.me;
+    return toJS(this.myUser);
   }
 
   get myId() {
-    return this.users.me?.id;
+    return this.myUser?.id;
+  }
+
+  get allUsers() {
+    return toJS(this.users);
   }
 
   getUser(id: string) {
@@ -49,4 +63,4 @@ class Users {
   }
 }
 
-export const userStore = new Users();
+export const usersStore = new Users();

@@ -1,5 +1,6 @@
 import axios from "axios";
-import { IGame, IGameDTO } from "../../types/game.ts";
+import { GameId, IGame, IGameDTO } from "../../types/game.ts";
+import { UserId } from "../../types/user.ts";
 
 const GAMES_URL = "/games";
 
@@ -13,4 +14,28 @@ export const fetchGames = async () => {
 
 export const createGame = async (game: IGameDTO) => {
   return axios.post<IGame>(GAMES_URL, game);
+};
+
+export const fetchGame = async (id: GameId) => {
+  return axios.get<IGame>(`${GAMES_URL}/${id}`);
+};
+
+export const addUserToGame = async ({
+  gameId,
+  userId,
+}: {
+  gameId: GameId;
+  userId: UserId;
+}) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/addUser/${userId}`);
+};
+
+export const removeUserFromGame = async ({
+  gameId,
+  userId,
+}: {
+  gameId: GameId;
+  userId: UserId;
+}) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/removeUser/${userId}`);
 };

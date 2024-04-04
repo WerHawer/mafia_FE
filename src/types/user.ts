@@ -1,4 +1,5 @@
 export type UserId = string;
+export type UserStreamId = string;
 
 export interface IUser {
   email: string;

@@ -1,11 +1,14 @@
-import { createBrowserRouter } from "react-router-dom";
-import App from "../pages/App/App.tsx";
+import { Suspense } from "react";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RootLayout } from "../layouts/RootLayout.tsx";
-import { GamePage } from "../pages/Game/GamePage.tsx";
-import { LobbyPage } from "../pages/Lobby/LobbyPage.tsx";
 import { routes } from "./routs.ts";
-import { LoginPage } from "../pages/Login";
 import { AuthGate } from "../components/AuthGate.tsx";
+import {
+  LazyApp,
+  LazyGamePage,
+  LazyLobbyPage,
+  LazyLoginPage,
+} from "./lazyComponents.ts";
 
 export const router = createBrowserRouter([
   {
@@ -17,27 +20,43 @@ export const router = createBrowserRouter([
     children: [
       {
         path: routes.home,
-        element: <App />,
+        element: (
+          <Suspense>
+            <LazyApp />
+          </Suspense>
+        ),
       },
 
       {
         path: routes.lobby,
-        element: <LobbyPage />,
+        element: (
+          <Suspense>
+            <LazyLobbyPage />
+          </Suspense>
+        ),
       },
 
       {
         path: routes.game,
-        element: <GamePage />,
+        element: <Navigate to={routes.lobby} />,
       },
 
       {
         path: `${routes.game}/:id`,
-        element: <GamePage />,
+        element: (
+          <Suspense>
+            <LazyGamePage />
+          </Suspense>
+        ),
       },
 
       {
         path: routes.login,
-        element: <LoginPage />,
+        element: (
+          <Suspense>
+            <LazyLoginPage />
+          </Suspense>
+        ),
       },
 
       {

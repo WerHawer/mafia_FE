@@ -1,12 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSocket } from "../context/SocketProvider.tsx";
 import { useUserMediaStream } from "./useUserMediaStream.ts";
 import { usePeer } from "./usePeer.ts";
 import Peer from "peerjs";
 import { wsEvents } from "../config/wsEvents.ts";
 import { v4 as uuid } from "uuid";
-import { useUnmount } from "react-use";
+import { usersStore } from "../store/usersStore.ts";
+import { useSocket } from "./useSocket.ts";
 
 export type Stream = {
   id: string;
@@ -27,6 +27,7 @@ export const useStreams = () => {
   const { id = "" } = useParams();
   const [streams, setStreams] = useState<Stream[]>(initialStreams);
   const { subscribe, sendMessage } = useSocket();
+  const { myId } = usersStore;
 
   const sortedStreams = useMemo(() => {
     const streamsCopy = [...streams];
@@ -89,22 +90,19 @@ export const useStreams = () => {
   );
 
   useEffect(() => {
-    if (!peerId || !userMediaStream) return;
+    if (!userMediaStream || !myId) return;
 
-    sendMessage(wsEvents.roomConnection, id, peerId, userMediaStream.id);
+    sendMessage(wsEvents.roomConnection, [id, myId, userMediaStream.id]);
 
-    const unsubscribe = subscribe(
-      wsEvents.peerDisconnect,
-      (streamId: string) => {
-        removeVideoStream(streamId);
-      },
-    );
+    const unsubscribe = subscribe(wsEvents.peerDisconnect, (streamId) => {
+      removeVideoStream(streamId);
+    });
 
     return () => {
       unsubscribe();
-      sendMessage(wsEvents.roomLeave, id, peerId);
+      sendMessage(wsEvents.roomLeave, [id, myId]);
     };
-  }, [id, peerId, removeVideoStream, sendMessage, subscribe, userMediaStream]);
+  }, [id, myId, removeVideoStream, sendMessage, subscribe, userMediaStream]);
 
   // add my video stream
   useEffect(() => {
@@ -146,10 +144,6 @@ export const useStreams = () => {
       unsubscribe();
     };
   }, [addVideoStream, connectToNewUser, peer, subscribe, userMediaStream]);
-
-  useUnmount(() => {
-    setStreams(initialStreams);
-  });
 
   return {
     streams: sortedStreams,

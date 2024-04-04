@@ -4,16 +4,16 @@ import { Input } from "../../UI/Input";
 import styles from "./GameChat.module.scss";
 import { Button } from "../../UI/Button";
 import { SendOutlined } from "@ant-design/icons";
-import { useSocket } from "../../context/SocketProvider.tsx";
 import { wsEvents } from "../../config/wsEvents.ts";
 import { IMessage, IMessageDTO, MessageTypes } from "../../types/message";
 import { ButtonType, ButtonVariant } from "../../UI/Button/ButtonTypes.ts";
-import { userStore } from "../../store/mobx/userStore.ts";
+import { usersStore } from "../../store/usersStore.ts";
 import { observer } from "mobx-react-lite";
+import { useSocket } from "../../hooks/useSocket.ts";
 
 export const GameChat = observer(() => {
   const { id = "" } = useParams();
-  const { me: user } = userStore;
+  const { me: user } = usersStore;
   const { subscribe, sendMessage } = useSocket();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [message, setMessage] = useState("");
@@ -26,14 +26,14 @@ export const GameChat = observer(() => {
   useEffect(() => {
     const unsubscribeGetMessages = subscribe(
       wsEvents.messagesGetRoom,
-      (messages: IMessage[]) => {
+      (messages) => {
         setMessages(messages);
       },
     );
 
     const unsubscribePrivateMessage = subscribe(
       wsEvents.messageSendPrivate,
-      (message: IMessage) => {
+      (message) => {
         setMessages((prev) => [...prev, message]);
       },
     );
@@ -62,7 +62,7 @@ export const GameChat = observer(() => {
       text: message,
       sender: user,
       to: { type: MessageTypes.Room, id },
-      date: new Date(),
+      createdAt: Date.now(),
       isRead: false,
     };
 

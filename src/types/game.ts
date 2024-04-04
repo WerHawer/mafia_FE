@@ -1,7 +1,14 @@
 import { UserId } from "./user.ts";
 
+export type GameId = string;
+
+export enum GameType {
+  Standard = "standard",
+  Expand = "expand",
+}
+
 export interface IGameFlow {
-  id: string;
+  id: GameId;
   speaker: UserId;
   speakTimer: number;
   isStarted: boolean;
@@ -9,13 +16,8 @@ export interface IGameFlow {
   isNight: boolean;
 }
 
-export enum GameType {
-  Standard = "standard",
-  Expand = "expand",
-}
-
 export interface IGame {
-  id: string;
+  id: GameId;
   owner: UserId;
   players: UserId[];
   password?: string;

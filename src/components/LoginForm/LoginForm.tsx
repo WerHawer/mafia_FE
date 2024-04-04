@@ -12,9 +12,9 @@ import { addErrorFromBEToForm } from "../../helpers/addErrorFromBEToForm.ts";
 import { useLoginMutation } from "../../api/auth/queries.ts";
 import { addTokenToAxios } from "../../helpers/addTokenToAxios.ts";
 import { InputPassword } from "../../UI/Input/InputPassword";
-import { userStore } from "../../store/mobx/userStore.ts";
+import { usersStore } from "../../store/usersStore.ts";
 import { observer } from "mobx-react-lite";
-import { useSocket } from "../../context/SocketProvider.tsx";
+import { useSocket } from "../../hooks/useSocket.ts";
 
 const MIN_PASSWORD_LENGTH = 8;
 type LoginFormInputs = {
@@ -32,7 +32,7 @@ const schema = yup
 export const LoginForm = observer(() => {
   const { mutate } = useLoginMutation();
   const { isConnected, connect, socket } = useSocket();
-  const { setToken, setMyUser } = userStore;
+  const { setToken, setMyUser } = usersStore;
 
   const navigate = useNavigate();
 

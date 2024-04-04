@@ -18,12 +18,16 @@ type To =
 export interface IMessageDTO {
   text: string;
   sender: string;
-  to?: To;
-  date: Date;
+  to: To;
+  createdAt: number;
   isRead: boolean;
   id?: string;
 }
 
 export interface IMessage extends Omit<IMessageDTO, "sender"> {
   sender: IUser;
+}
+
+export interface IMessageWithLocal extends IMessage {
+  isLocal?: boolean;
 }
