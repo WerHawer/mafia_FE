@@ -4,7 +4,7 @@ import { getUserById, getUsers } from "./api.ts";
 import { getQueriesStatus } from "../../helpers/getQueriesStatus.ts";
 import { getDataFromQueries } from "../../helpers/getDataFromQueries.ts";
 import { usersStore } from "../../store/usersStore.ts";
-import { IUser } from "../../types/user.ts";
+import { IUser } from "../../types/user.types.ts";
 
 export const useGetUsersQuery = () => {
   return useQuery({

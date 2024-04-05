@@ -1,6 +1,6 @@
 import axios from "axios";
-import { GameId, IGame, IGameDTO } from "../../types/game.ts";
-import { UserId } from "../../types/user.ts";
+import { GameId, IGame, IGameDTO } from "../../types/game.types.ts";
+import { UserId } from "../../types/user.types.ts";
 
 const GAMES_URL = "/games";
 

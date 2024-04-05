@@ -1,4 +1,4 @@
-import { IUser } from "./user";
+import { IUser } from "./user.types.ts";
 
 export enum MessageTypes {
   User = "user",

@@ -9,9 +9,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../apiConstants.ts";
 import { useEffect } from "react";
 import { wsEvents } from "../../config/wsEvents.ts";
-import { UserId } from "../../types/user.ts";
-import { GameId } from "../../types/game.ts";
 import { useSocket } from "../../hooks/useSocket.ts";
+import { gamesStore } from "../../store/gamesStore.ts";
+import { GameId } from "../../types/game.types.ts";
+import { UserId } from "../../types/user.types.ts";
 
 export const useFetchActiveGamesQuery = () => {
   return useQuery({
@@ -19,6 +20,19 @@ export const useFetchActiveGamesQuery = () => {
     queryFn: fetchActiveGames,
     select: ({ data }) => data,
   });
+};
+
+export const useGetGamesWithStore = () => {
+  const { data, ...rest } = useFetchActiveGamesQuery();
+  const { setGames } = gamesStore;
+
+  useEffect(() => {
+    if (!data) return;
+
+    setGames(data);
+  }, [data, setGames]);
+
+  return { data, ...rest };
 };
 
 export const useCreateGameMutation = () => {

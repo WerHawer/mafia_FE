@@ -9,12 +9,20 @@ import { usersStore } from "../../store/usersStore.ts";
 import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useUpdateGameSubs } from "../../hooks/useUpdateGameSubs.ts";
+import { gamesStore } from "../../store/gamesStore.ts";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
   const { myId } = usersStore;
+  const { setActiveGame } = gamesStore;
   const { mutate } = useAddUserToGameMutation();
   useUpdateGameSubs();
+
+  useEffect(() => {
+    if (!id) return;
+
+    setActiveGame(id);
+  }, [id, setActiveGame]);
 
   useEffect(() => {
     if (!myId || !id) return;

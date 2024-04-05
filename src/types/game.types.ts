@@ -1,4 +1,4 @@
-import { UserId } from "./user.ts";
+import { UserId } from "./user.types.ts";
 
 export type GameId = string;
 

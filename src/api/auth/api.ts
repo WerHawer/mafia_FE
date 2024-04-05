@@ -1,5 +1,5 @@
 import axios from "axios";
-import { IUser } from "../../types/user.ts";
+import { IUser } from "../../types/user.types.ts";
 
 export const userLogin = async (loginData: {
   email: string;

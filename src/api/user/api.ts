@@ -1,5 +1,5 @@
 import axios from "axios";
-import { IUser } from "../../types/user";
+import { IUser } from "../../types/user.types.ts";
 
 const USER_URL = "/users";
 

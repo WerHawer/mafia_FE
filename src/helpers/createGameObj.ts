@@ -1,5 +1,5 @@
-import { GameType, IGameDTO } from "../types/game.ts";
-import { UserId } from "../types/user.ts";
+import { UserId } from "../types/user.types.ts";
+import { GameType, IGameDTO } from "../types/game.types.ts";
 
 type CreateGameProps = {
   owner: UserId;

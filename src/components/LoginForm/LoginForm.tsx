@@ -17,7 +17,7 @@ import { observer } from "mobx-react-lite";
 import { useSocket } from "../../hooks/useSocket.ts";
 
 const MIN_PASSWORD_LENGTH = 8;
-type LoginFormInputs = {
+export type LoginFormInputs = {
   email: string;
   password: string;
 };
@@ -64,7 +64,7 @@ export const LoginForm = observer(() => {
         navigate(routes.home);
       },
       onError: (error) => {
-        addErrorFromBEToForm(error, setError);
+        addErrorFromBEToForm<{ email: ""; password: "" }>(error, setError);
       },
     });
   };

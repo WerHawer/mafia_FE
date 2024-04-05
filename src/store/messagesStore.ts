@@ -1,6 +1,12 @@
-import { IMessage, IMessageWithLocal, MessageTypes } from "../types/message.ts";
 import { makeAutoObservable, toJS } from "mobx";
 import { flow, sortBy, sortedUniqBy } from "lodash/fp";
+import {
+  IMessage,
+  IMessageWithLocal,
+  MessageTypes,
+} from "../types/message.types.ts";
+
+const PUBLIC = "public";
 
 class Messages {
   messages: Record<string, IMessageWithLocal[]> = {};
@@ -9,28 +15,31 @@ class Messages {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  setPublicMessages(messages: IMessage[]) {
-    this.messages.public = flow([sortBy("createdAt"), sortedUniqBy("id")])([
-      ...(this.messages.public ?? []),
+  setMessages(messages: IMessage[]) {
+    if (!messages.length) return;
+
+    const key =
+      messages[0].to.type === MessageTypes.All ? PUBLIC : messages[0].to.id;
+
+    this.messages[key] = flow([sortBy("createdAt"), sortedUniqBy("id")])([
+      ...(this.messages[key] ?? []),
       ...messages,
     ]);
   }
 
-  setPrivateMessages(messages: IMessage[], id: string) {
-    this.messages[id] = messages;
-  }
-
   setNewLocalMessage(message: IMessage) {
-    const key = message.to.type === MessageTypes.All ? "public" : message.to.id;
+    const key = message.to.type === MessageTypes.All ? PUBLIC : message.to.id;
 
-    this.messages[key] = [...this.messages[key], { ...message, isLocal: true }];
+    this.messages[key] = [
+      ...(this.messages[key] ?? []),
+      { ...message, isLocal: true },
+    ];
   }
 
   setNewMessage(message: IMessage) {
-    const key = message.to.type === MessageTypes.All ? "public" : message.to.id;
-    const messagesNoLocal = this.messages[key]?.filter(
-      ({ isLocal }) => !isLocal,
-    );
+    const key = message.to.type === MessageTypes.All ? PUBLIC : message.to.id;
+    const messagesNoLocal =
+      this.messages[key]?.filter(({ isLocal }) => !isLocal) ?? [];
 
     this.messages[key] = [...messagesNoLocal, message];
   }
@@ -39,8 +48,12 @@ class Messages {
     return toJS(this.messages.public);
   }
 
-  getRoomMessages(id: string) {
-    return toJS(this.messages[id]);
+  get allMessages() {
+    return toJS(this.messages);
+  }
+
+  getMessages(id: string) {
+    return toJS(this.messages[id] ?? []);
   }
 }
 

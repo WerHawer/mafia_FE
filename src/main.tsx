@@ -1,5 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./styles/index.scss";
@@ -10,13 +10,13 @@ import { SocketProvider } from "./context/SocketProvider.tsx";
 
 const queryClient = new QueryClient();
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
       <SocketProvider>
         <RouterProvider router={router} />
       </SocketProvider>
     </QueryClientProvider>
-  </React.StrictMode>,
+  </StrictMode>,
 );

@@ -5,11 +5,15 @@ import { useTranslation } from "react-i18next";
 import "./App.css";
 import { wsEvents } from "../../config/wsEvents.ts";
 import { routes } from "../../router/routs.ts";
-import { IMessage, IMessageDTO, MessageTypes } from "../../types/message";
 import { usersStore } from "../../store/usersStore.ts";
 import { useSocket } from "../../hooks/useSocket.ts";
-import { useGetAllMessages } from "../../api/messages/queries.ts";
+import { useGetAllMessagesWithStore } from "../../api/messages/queries.ts";
 import { messagesStore } from "../../store/messagesStore.ts";
+import {
+  IMessage,
+  IMessageDTO,
+  MessageTypes,
+} from "../../types/message.types.ts";
 
 const App = observer(() => {
   const { t } = useTranslation();
@@ -23,7 +27,7 @@ const App = observer(() => {
     setNewMessage: setNewMessageToStore,
     setNewLocalMessage,
   } = messagesStore;
-  useGetAllMessages();
+  useGetAllMessagesWithStore();
 
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);

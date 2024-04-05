@@ -1,11 +1,12 @@
-import { IUser } from "../types/user.ts";
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
+import { IUser } from "../types/user.types.ts";
 
 class Users {
   myUser: IUser | null = null;
   users: Record<string, IUser> = {};
   token: string = "";
+  socketConnectedCount: number = 0;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -16,50 +17,59 @@ class Users {
     });
   }
 
-  setUser(user: IUser) {
+  setUser = (user: IUser) => {
     this.users[user.id] = user;
-  }
+  };
 
-  setMyUser(user: IUser) {
+  setMyUser = (user: IUser) => {
     this.myUser = user;
-  }
+    this.users[user.id] = user;
+  };
 
-  setToken(token: string) {
+  setToken = (token: string) => {
     this.token = token;
-  }
+  };
 
-  removeToken() {
+  setSocketConnectedCount = (count: number) => {
+    this.socketConnectedCount = count;
+  };
+
+  removeToken = () => {
     this.token = "";
-  }
+  };
 
-  removeUsers() {
+  removeUsers = () => {
     this.users = {};
-  }
+  };
 
-  removeMyUser() {
+  removeMyUser = () => {
     this.myUser = null;
-  }
+  };
 
-  logout() {
-    this.removeUsers();
+  logout = () => {
     this.removeToken();
     this.removeMyUser();
-  }
+    this.removeUsers();
+  };
+
+  getUser = (id: string) => {
+    return toJS(this.users[id]);
+  };
 
   get me() {
     return toJS(this.myUser);
   }
 
   get myId() {
-    return this.myUser?.id;
+    return toJS(this.myUser?.id);
   }
 
   get allUsers() {
     return toJS(this.users);
   }
 
-  getUser(id: string) {
-    return this.users[id];
+  get socketConnected() {
+    return this.socketConnectedCount > 0;
   }
 }
 

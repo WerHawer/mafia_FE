@@ -1,12 +1,10 @@
 import { AxiosError } from "axios";
 import { IFormBEError } from "../api/apiTypes.ts";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 import { UseFormSetError } from "react-hook-form/dist/types/form";
 
-export const addErrorFromBEToForm = (
+export const addErrorFromBEToForm = <V extends Record<string, any>>(
   error: unknown,
-  formErrorSet: UseFormSetError,
+  formErrorSet: UseFormSetError<V>,
 ) => {
   const errorResponse = (error as AxiosError)?.response?.data as IFormBEError;
 
@@ -14,5 +12,6 @@ export const addErrorFromBEToForm = (
 
   const { message, field } = errorResponse;
 
+  // @ts-ignore
   formErrorSet(field ?? "root", { message });
 };
