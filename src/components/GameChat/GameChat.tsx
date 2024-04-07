@@ -10,37 +10,26 @@ import { usersStore } from "../../store/usersStore.ts";
 import { observer } from "mobx-react-lite";
 import { useSocket } from "../../hooks/useSocket.ts";
 import { messagesStore } from "../../store/messagesStore.ts";
-import { useGetRoomMessagesWithStore } from "../../api/messages/queries.ts";
 import {
   IMessage,
   IMessageDTO,
   MessageTypes,
 } from "../../types/message.types.ts";
+import { useGetMessagesQueryWithStore } from "../../api/messages/queries.ts";
 
 export const GameChat = observer(() => {
   const { id = "" } = useParams();
   const { me: user } = usersStore;
-  const { getMessages, setMessages, setNewMessage, setNewLocalMessage } =
-    messagesStore;
+  const { getMessages, setNewLocalMessage } = messagesStore;
   const messages = getMessages(id);
-  const { subscribe, sendMessage } = useSocket();
+  const { sendMessage } = useSocket();
   const [message, setMessage] = useState("");
-  useGetRoomMessagesWithStore(id);
+  useGetMessagesQueryWithStore(id);
 
   const chatRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const containerHeight = containerRef.current?.clientHeight || 0;
-
-  useEffect(() => {
-    const unsubscribe = subscribe(wsEvents.messageSend, (message) => {
-      setNewMessage(message);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [setMessages, setNewMessage, subscribe]);
 
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);

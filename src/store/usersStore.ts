@@ -69,7 +69,7 @@ class Users {
   }
 
   get socketConnected() {
-    return this.socketConnectedCount > 0;
+    return this.socketConnectedCount;
   }
 }
 

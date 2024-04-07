@@ -1,55 +1,28 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import { useTranslation } from "react-i18next";
 import "./App.css";
 import { wsEvents } from "../../config/wsEvents.ts";
-import { routes } from "../../router/routs.ts";
 import { usersStore } from "../../store/usersStore.ts";
 import { useSocket } from "../../hooks/useSocket.ts";
-import { useGetAllMessagesWithStore } from "../../api/messages/queries.ts";
 import { messagesStore } from "../../store/messagesStore.ts";
 import {
   IMessage,
   IMessageDTO,
   MessageTypes,
 } from "../../types/message.types.ts";
+import { useGetMessagesQueryWithStore } from "../../api/messages/queries.ts";
 
 const App = observer(() => {
-  const { t } = useTranslation();
-  const { subscribe, sendMessage } = useSocket();
+  const { sendMessage } = useSocket();
   const [newMessage, setNewMessage] = useState("");
-  const [userCount, setUserCount] = useState(0);
   const chatRef = useRef<HTMLDivElement>(null);
-  const { me: user } = usersStore;
-  const {
-    publicMessages,
-    setNewMessage: setNewMessageToStore,
-    setNewLocalMessage,
-  } = messagesStore;
-  useGetAllMessagesWithStore();
+  const { me: user, socketConnected } = usersStore;
+  const { publicMessages, setNewLocalMessage } = messagesStore;
+  useGetMessagesQueryWithStore();
 
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
   }, [publicMessages]);
-
-  useEffect(() => {
-    sendMessage(wsEvents.userConnectedCount);
-
-    const unsubscribeIncoming = subscribe(wsEvents.messageSend, (message) =>
-      setNewMessageToStore(message),
-    );
-
-    const unsubscribeCount = subscribe(
-      wsEvents.userConnectedCount,
-      (usersCount) => setUserCount(usersCount),
-    );
-
-    return () => {
-      unsubscribeIncoming();
-      unsubscribeCount();
-    };
-  }, [sendMessage, setNewMessageToStore, subscribe]);
 
   const sendChatMessage = useCallback(() => {
     if (!newMessage || !user) return;
@@ -79,7 +52,7 @@ const App = observer(() => {
       {user && <h3>Hello {user.name}</h3>}
 
       <div className="chatContainer">
-        <h4>{userCount} users connected to chat</h4>
+        <h4>{socketConnected} users connected to chat</h4>
 
         <div className="chatMessages" ref={chatRef}>
           {publicMessages?.map(
@@ -116,19 +89,6 @@ const App = observer(() => {
           </form>
         </div>
       </div>
-
-      <div className="card">
-        <Link to={routes.video}>Video Chat</Link>
-
-        <p className="text-3xl font-bold underline">
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        {"Click on the Vite and React logos to learn more"}
-        {"   "}
-        {t("hello")}
-      </p>
     </div>
   );
 });

@@ -8,7 +8,6 @@ import { GameInfoSection } from "../../components/GameInfoSection";
 import { usersStore } from "../../store/usersStore.ts";
 import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { useUpdateGameSubs } from "../../hooks/useUpdateGameSubs.ts";
 import { gamesStore } from "../../store/gamesStore.ts";
 
 const GamePage = observer(() => {
@@ -16,7 +15,6 @@ const GamePage = observer(() => {
   const { myId } = usersStore;
   const { setActiveGame } = gamesStore;
   const { mutate } = useAddUserToGameMutation();
-  useUpdateGameSubs();
 
   useEffect(() => {
     if (!id) return;

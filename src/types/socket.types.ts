@@ -5,7 +5,6 @@ import { UserId, UserStreamId } from "./user.types.ts";
 
 export interface WSSentEventData {
   [wsEvents.messageSend]: IMessageDTO;
-  [wsEvents.userConnectedCount]: undefined;
   [wsEvents.roomLeave]: [GameId, UserId];
   [wsEvents.roomConnection]: [GameId, UserId, UserStreamId];
 }
@@ -16,14 +15,33 @@ export type SendMessageFunction = <T extends keyof WSSentEventData>(
 ) => void;
 
 export interface WSSubscribedEventData {
-  [wsEvents.roomConnection]: (id: UserId) => void;
-  [wsEvents.userConnectedCount]: (connections: number) => void;
-  [wsEvents.messageSend]: (message: IMessage) => void;
-  [wsEvents.updateGame]: (game: IGame) => void;
-  [wsEvents.peerDisconnect]: (id: UserId) => void;
+  [wsEvents.roomConnection]: UserId;
+  [wsEvents.messageSend]: IMessage;
+  [wsEvents.updateGame]: IGame;
+  [wsEvents.peerDisconnect]: UserId;
+  [wsEvents.connection]: { message: string; connectedUsers: number };
+  [wsEvents.disconnect]: string;
+  [wsEvents.socketDisconnect]: number;
+  [wsEvents.connectionError]: Error;
 }
 
-export type SubscribeFunction = <T extends keyof WSSubscribedEventData>(
+export type SubscribeEvent = keyof WSSubscribedEventData;
+export type SubscribeCallback<T extends SubscribeEvent> = (
+  data: WSSubscribedEventData[T],
+) => void;
+
+export type ListenFunction = <T extends SubscribeEvent>(
   event: T,
-  cb: WSSubscribedEventData[T],
+  data: WSSubscribedEventData[T],
+) => void;
+
+export type SubscribeFunction = <T extends SubscribeEvent>(
+  event: T,
+  cb: SubscribeCallback<T>,
 ) => () => void;
+
+export type MassSubscribeEvents = {
+  [Event in SubscribeEvent]?: SubscribeCallback<Event>;
+};
+
+export type MassSubscribeFunction = (events: MassSubscribeEvents) => () => void;

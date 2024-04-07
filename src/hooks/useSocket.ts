@@ -1,7 +1,9 @@
 import { useCallback, useContext } from "react";
 import { SocketContext } from "../context/SocketProvider.tsx";
 import {
+  MassSubscribeFunction,
   SendMessageFunction,
+  SubscribeEvent,
   SubscribeFunction,
 } from "../types/socket.types.ts";
 
@@ -14,22 +16,47 @@ export const useSocket = () => {
 
   const isConnected = socket?.connected;
 
-  const sendMessage: SendMessageFunction = useCallback(
-    (event, data) => {
-      socket?.emit(event, data);
+  const subscribe: SubscribeFunction = useCallback(
+    (event, cb) => {
+      if (!socket) {
+        throw new Error("Socket instance is not available.");
+      }
+
+      // @ts-ignore
+      socket.on(event, cb);
+
+      return () => {
+        // @ts-ignore
+        socket.off(event, cb);
+      };
     },
     [socket],
   );
 
-  const subscribe: SubscribeFunction = useCallback(
-    (event, cb) => {
-      // @ts-ignore
-      socket?.on(event, cb);
+  const massSubscribe: MassSubscribeFunction = useCallback(
+    (events) => {
+      const unsubscribeFunctions: Array<() => void> = [];
 
-      return () => {
-        // @ts-ignore
-        socket?.off(event, cb);
-      };
+      Object.entries(events).forEach(([event, callback]) => {
+        if (callback) {
+          // @ts-ignore
+          const unsubscribe = subscribe(event as SubscribeEvent, callback);
+          unsubscribeFunctions.push(unsubscribe);
+        }
+      });
+
+      return () => unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
+    },
+    [subscribe],
+  );
+
+  const sendMessage: SendMessageFunction = useCallback(
+    (event, data) => {
+      if (!socket) {
+        throw new Error("Socket instance is not available.");
+      }
+
+      socket.emit(event, data);
     },
     [socket],
   );
@@ -42,5 +69,13 @@ export const useSocket = () => {
     socket?.disconnect();
   }, [socket]);
 
-  return { socket, sendMessage, subscribe, isConnected, disconnect, connect };
+  return {
+    socket,
+    sendMessage,
+    subscribe,
+    isConnected,
+    disconnect,
+    connect,
+    massSubscribe,
+  };
 };
