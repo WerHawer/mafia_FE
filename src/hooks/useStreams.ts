@@ -1,10 +1,9 @@
 import { useParams } from "react-router-dom";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useUserMediaStream } from "./useUserMediaStream.ts";
 import { usePeer } from "./usePeer.ts";
 import Peer from "peerjs";
 import { wsEvents } from "../config/wsEvents.ts";
-import { v4 as uuid } from "uuid";
 import { usersStore } from "../store/usersStore.ts";
 import { useSocket } from "./useSocket.ts";
 
@@ -13,34 +12,13 @@ export type Stream = {
   stream?: MediaStream;
 };
 
-const INITIAL_STREAMS_COUNT = 11;
-const getInitialStream = () =>
-  ({
-    id: uuid(),
-  }) as Stream;
-
-const initialStreams = new Array(INITIAL_STREAMS_COUNT)
-  .fill(null)
-  .map(getInitialStream);
+const MAX_STREAMS = 11;
 
 export const useStreams = () => {
   const { id = "" } = useParams();
-  const [streams, setStreams] = useState<Stream[]>(initialStreams);
+  const [streams, setStreams] = useState<Stream[]>([]);
   const { subscribe, sendMessage } = useSocket();
   const { myId } = usersStore;
-
-  const sortedStreams = useMemo(() => {
-    const streamsCopy = [...streams];
-
-    streamsCopy.sort((a, b) => {
-      if (a.stream) return -1;
-      if (b.stream) return 1;
-
-      return 0;
-    });
-
-    return streamsCopy;
-  }, [streams]);
 
   const userMediaStream = useUserMediaStream({
     audio: true,
@@ -50,25 +28,27 @@ export const useStreams = () => {
   const { peer, peerId } = usePeer(userMediaStream?.id);
 
   const addVideoStream = useCallback((stream: MediaStream) => {
+    // const fakeStreams: Stream[] = [];
+    //
+    // for (let i = 0; i < 11; i++) {
+    //   fakeStreams.push({ id: stream.id + i, stream });
+    // }
+
     setStreams((prev) => {
+      if (prev.length >= MAX_STREAMS) return prev;
+
       const isStreamExist = prev.find((item) => item.id === stream.id);
 
       if (isStreamExist) return prev;
 
-      const firstInitial = prev.find((item) => !item.stream);
+      return [...prev, { id: stream.id, stream }];
 
-      if (!firstInitial) return prev;
-
-      return prev.map((item) =>
-        item.id === firstInitial.id ? { id: stream.id, stream } : item,
-      );
+      // return fakeStreams;
     });
   }, []);
 
   const removeVideoStream = useCallback((id: string) => {
-    setStreams((prev) =>
-      prev.map((item) => (item.id !== id ? item : getInitialStream())),
-    );
+    setStreams((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
   const connectToNewUser = useCallback(
@@ -94,7 +74,7 @@ export const useStreams = () => {
 
     sendMessage(wsEvents.roomConnection, [id, myId, userMediaStream.id]);
 
-    const unsubscribe = subscribe(wsEvents.peerDisconnect, (streamId) => {
+    const unsubscribe = subscribe(wsEvents.peerDisconnect, ({ streamId }) => {
       removeVideoStream(streamId);
     });
 
@@ -132,12 +112,12 @@ export const useStreams = () => {
   useEffect(() => {
     if (!userMediaStream || !peer) return;
 
-    const unsubscribe = subscribe(wsEvents.roomConnection, (otherUserId) => {
+    const unsubscribe = subscribe(wsEvents.roomConnection, ({ streamId }) => {
       const connectCb = (userVideoStream: MediaStream) => {
         addVideoStream(userVideoStream);
       };
 
-      connectToNewUser(otherUserId, userMediaStream, peer, connectCb);
+      connectToNewUser(streamId, userMediaStream, peer, connectCb);
     });
 
     return () => {
@@ -146,7 +126,7 @@ export const useStreams = () => {
   }, [addVideoStream, connectToNewUser, peer, subscribe, userMediaStream]);
 
   return {
-    streams: sortedStreams,
+    streams,
     userMediaStream,
     addVideoStream,
     removeVideoStream,

@@ -8,6 +8,6 @@ export enum wsEvents {
   disconnect = "disconnect",
   stream = "stream",
   call = "call",
-  updateGame = "updateGame",
+  gameUpdate = "gameUpdate",
   socketDisconnect = "socketDisconnect",
 }

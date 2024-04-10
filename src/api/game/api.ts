@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GameId, IGame, IGameDTO } from "../../types/game.types.ts";
+import { GameId, IGame, IGameDTO, IGameRoles } from "../../types/game.types.ts";
 import { UserId } from "../../types/user.types.ts";
 
 const GAMES_URL = "/games";
@@ -38,4 +38,33 @@ export const removeUserFromGame = async ({
   userId: UserId;
 }) => {
   return axios.patch<IGame>(`${GAMES_URL}/${gameId}/removeUser/${userId}`);
+};
+
+export const addRolesToGame = async (
+  gameId: GameId,
+  roles: Partial<IGameRoles>,
+) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/addRoles`, roles);
+};
+
+export const updateGameGM = async ({
+  gameId,
+  userId,
+}: {
+  gameId: GameId;
+  userId: UserId;
+}) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/updateGM`, { gm: userId });
+};
+
+export const updateGameFlow = async ({
+  gameId,
+  flow,
+}: {
+  gameId: GameId;
+  flow: Partial<IGame["gameFlow"]>;
+}) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/updateFlow`, {
+    gameFlow: flow,
+  });
 };

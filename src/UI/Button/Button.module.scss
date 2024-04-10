@@ -24,6 +24,26 @@
     font-size: 1.6rem;
   }
 
+  &.uppercase {
+    text-transform: uppercase;
+  }
+
+  &.rounded {
+    &.small {
+      padding: 0.4rem;
+    }
+
+    &.medium {
+      padding: 0.8rem;
+    }
+
+    &.large {
+      padding: 1rem;
+    }
+
+    border-radius: 50%;
+  }
+
   &.primary {
     background-color: $color-accent-primary;
     color: $color-text-tertiary;
@@ -52,36 +72,31 @@
       opacity: 0.5;
       cursor: not-allowed;
     }
+  }
 
-    &.tertiary {
-      background-color: transparent;
-      color: inherit;
+  &.tertiary {
+    background-color: transparent;
+    color: inherit;
 
-      &:disabled {
-        background-color: $color-accent-tertiary;
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
+    &:disabled {
+      background-color: $color-accent-tertiary;
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   }
 
-  &.uppercase {
-    text-transform: uppercase;
-  }
+  &.success {
+    background-color: $color-success;
+    color: $color-text-tertiary;
 
-  &.rounded {
-    &.small {
-      padding: 0.4rem;
+    &:hover {
+      background-color: lighten($color-success, 10%);
     }
 
-    &.medium {
-      padding: 0.8rem;
+    &:disabled {
+      background-color: $color-success;
+      opacity: 0.5;
+      cursor: not-allowed;
     }
-
-    &.large {
-      padding: 1rem;
-    }
-
-    border-radius: 50%;
   }
 }

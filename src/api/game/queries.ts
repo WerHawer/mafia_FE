@@ -1,15 +1,17 @@
 import {
+  addRolesToGame,
   addUserToGame,
   createGame,
   fetchActiveGames,
   fetchGame,
-  removeUserFromGame,
+  updateGameFlow,
+  updateGameGM,
 } from "./api.ts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../apiConstants.ts";
 import { useEffect } from "react";
 import { gamesStore } from "../../store/gamesStore.ts";
-import { GameId } from "../../types/game.types.ts";
+import { GameId, IGame, IGameRoles } from "../../types/game.types.ts";
 import { UserId } from "../../types/user.types.ts";
 
 export const useFetchActiveGamesQuery = () => {
@@ -59,14 +61,36 @@ export const useAddUserToGameMutation = () => {
   });
 };
 
-export const useRemoveUserFromGameMutation = () => {
-  const queryClient = useQueryClient();
-
+export const useAddRolesToGameMutation = () => {
   return useMutation({
-    mutationFn: (args: { gameId: GameId; userId: UserId }) =>
-      removeUserFromGame(args),
-    onSuccess: (data, variables) => {
-      queryClient.setQueryData([queryKeys.game, variables.gameId], data);
+    mutationFn: ({
+      gameId,
+      roles,
+    }: {
+      gameId: GameId;
+      roles: Partial<IGameRoles>;
+    }) => addRolesToGame(gameId, roles),
+  });
+};
+
+export const useUpdateGameGMMutation = () => {
+  return useMutation({
+    mutationFn: ({ gameId, userId }: { gameId: GameId; userId: UserId }) => {
+      return updateGameGM({ gameId, userId });
+    },
+  });
+};
+
+export const useUpdateGameFlowMutation = () => {
+  return useMutation({
+    mutationFn: ({
+      gameId,
+      flow,
+    }: {
+      gameId: GameId;
+      flow: Partial<IGame["gameFlow"]>;
+    }) => {
+      return updateGameFlow({ gameId, flow });
     },
   });
 };

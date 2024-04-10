@@ -1,5 +1,16 @@
 import { UserId } from "../types/user.types.ts";
-import { GameType, IGameDTO } from "../types/game.types.ts";
+import { GameType, IGameDTO, IGameFlow } from "../types/game.types.ts";
+
+export const initialGameFlow: IGameFlow = {
+  speaker: "",
+  speakTime: 60,
+  isStarted: false,
+  isFinished: false,
+  isNight: false,
+  day: 0,
+  proposed: [],
+  killed: [],
+};
 
 type CreateGameProps = {
   owner: UserId;
@@ -12,26 +23,19 @@ export const createGameObj = ({
   password,
   gameType = GameType.Standard,
 }: CreateGameProps): IGameDTO => {
-  const expandedRoles =
-    gameType === GameType.Expand ? { maniac: null, prostitute: null } : {};
-
   return {
     owner,
     players: [owner],
     password,
     isPrivate: !!password,
     isActive: true,
-    day: 0,
     gm: owner,
     mafia: [],
     citizens: [],
-    cherif: null,
-    doctor: null,
-    killed: [],
     startTime: null,
     finishTime: null,
     creatingTime: Date.now(),
     gameType,
-    ...expandedRoles,
+    gameFlow: initialGameFlow,
   };
 };

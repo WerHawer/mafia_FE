@@ -1,0 +1,55 @@
+@import "src/styles/theme";
+@import "src/styles/mixins";
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.8rem;
+  font-size: 1.5rem;
+
+  margin-bottom: 10px;
+}
+
+.container {
+  @include flexCenter;
+  height: 100%;
+  padding: 10px 20px;
+}
+
+.buttonContainer {
+  @include flexCenter;
+  width: 100%;
+  height: 100%;
+}
+
+.roles {
+  &.mafia {
+    color: #d91a1a;
+  }
+
+  &.cherif {
+    color: #5865f2;
+  }
+
+  &.citizen {
+    color: #6cc7fd;
+  }
+
+  &.doctor {
+    color: #2ea043;
+  }
+
+  &.maniac {
+    color: #ec7878;
+  }
+
+  &.prostitute {
+    color: #e782fd;
+  }
+
+  &.gm {
+    color: #f5c564;
+  }
+
+  transition: color 0.3s;
+}

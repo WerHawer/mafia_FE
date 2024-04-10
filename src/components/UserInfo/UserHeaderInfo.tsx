@@ -1,6 +1,6 @@
 import styles from "./UserInfo.module.scss";
 import noAvatar from "../../assets/images/noAvatar.jpg";
-import { PopupMenu } from "../PopupMenu/PopupMenu.tsx";
+import { PopupMenu, PopupMenuElement } from "../PopupMenu";
 import { useCallback } from "react";
 import { removeTokenFromAxios } from "../../helpers/removeTokenFromAxios.ts";
 import { useNavigate } from "react-router-dom";
@@ -28,9 +28,7 @@ export const UserHeaderInfo = observer(() => {
   return (
     <PopupMenu
       content={
-        <p onClick={handleLogout} className={styles.menuElement}>
-          Logout
-        </p>
+        <PopupMenuElement onClick={handleLogout}>Logout</PopupMenuElement>
       }
     >
       <div className={styles.container}>

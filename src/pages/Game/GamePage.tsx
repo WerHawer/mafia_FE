@@ -1,20 +1,21 @@
-import styles from "./GamePage.module.scss";
+import { useEffect } from "react";
+import { observer } from "mobx-react-lite";
+import { useParams } from "react-router-dom";
 import classNames from "classnames";
 import { GameVideoContainer } from "../../components/GameVideoContainer";
 import { GameChat } from "../../components/GameChat";
-import { useParams } from "react-router-dom";
 import { useAddUserToGameMutation } from "../../api/game/queries.ts";
 import { GameInfoSection } from "../../components/GameInfoSection";
 import { usersStore } from "../../store/usersStore.ts";
-import { useEffect } from "react";
-import { observer } from "mobx-react-lite";
 import { gamesStore } from "../../store/gamesStore.ts";
+import styles from "./GamePage.module.scss";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
   const { myId } = usersStore;
-  const { setActiveGame } = gamesStore;
-  const { mutate } = useAddUserToGameMutation();
+  const { setActiveGame, activeGame } = gamesStore;
+  console.log("=>(GamePage.tsx:20) activeGame", activeGame);
+  const { mutate: addUserToGame } = useAddUserToGameMutation();
 
   useEffect(() => {
     if (!id) return;
@@ -27,14 +28,14 @@ const GamePage = observer(() => {
 
     // hack to prevent double request
     const requestTimer = setTimeout(() => {
-      mutate({
+      addUserToGame({
         userId: myId,
         gameId: id,
       });
     }, 100);
 
     return () => clearTimeout(requestTimer);
-  }, [id, mutate, myId]);
+  }, [id, addUserToGame, myId]);
 
   return (
     <div className={styles.pageContainer}>

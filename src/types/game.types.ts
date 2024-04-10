@@ -8,12 +8,14 @@ export enum GameType {
 }
 
 export interface IGameFlow {
-  id: GameId;
   speaker: UserId;
-  speakTimer: number;
+  speakTime: number;
   isStarted: boolean;
   isFinished: boolean;
   isNight: boolean;
+  day: number;
+  proposed: UserId[];
+  killed: UserId[];
 }
 
 export interface IGame {
@@ -23,19 +25,27 @@ export interface IGame {
   password?: string;
   isPrivate: boolean;
   isActive: boolean;
-  day: number;
   gm: UserId;
-  mafia: UserId[];
-  citizens: UserId[];
-  cherif: UserId | null;
-  doctor: UserId | null;
-  maniac?: UserId | null;
-  slut?: UserId | null;
-  killed: UserId[];
+  mafia?: UserId[];
+  citizens?: UserId[];
+  cherif?: UserId;
+  doctor?: UserId;
+  maniac?: UserId;
+  prostitute?: UserId;
   startTime: number | null;
   finishTime: number | null;
   creatingTime: number;
   gameType: GameType;
+  gameFlow: IGameFlow;
+}
+
+export interface IGameRoles {
+  mafia: IGame["mafia"];
+  citizens: IGame["citizens"];
+  cherif: IGame["cherif"];
+  doctor: IGame["doctor"];
+  maniac: IGame["maniac"];
+  prostitute: IGame["prostitute"];
 }
 
 export interface IGameDTO extends Omit<IGame, "id"> {}

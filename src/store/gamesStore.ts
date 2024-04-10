@@ -1,26 +1,18 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
-import { GameId, IGame, IGameFlow } from "../types/game.types.ts";
-
-const initialGameFlow: IGameFlow = {
-  id: "",
-  speaker: "",
-  speakTimer: 60,
-  isStarted: false,
-  isFinished: false,
-  isNight: false,
-};
+import { GameId, IGame } from "../types/game.types.ts";
+import { isDefined } from "../helpers/isDefined.ts";
+import { initialGameFlow } from "../helpers/createGameObj.ts";
 
 class GamesStore {
   _games: IGame[] = [];
   _activeGame: GameId | null = null;
-  _gameFlow: IGameFlow = initialGameFlow;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
     makePersistable(this, {
       name: "Users_mobx_gameFlow",
-      properties: ["gameFlow", "_activeGame"],
+      properties: ["_activeGame"],
       storage: sessionStorage,
     });
   }
@@ -47,22 +39,50 @@ class GamesStore {
     );
   }
 
-  setGameFlow(gameFlow: Partial<IGameFlow>) {
-    this._gameFlow = { ...this._gameFlow, ...gameFlow };
-  }
-
-  resetGameFlow() {
-    this._gameFlow = initialGameFlow;
-  }
-
   get activeGame() {
     const active = this._games.find((game) => game.id === this._activeGame);
 
     return toJS(active);
   }
 
+  get activeGameId() {
+    return this._activeGame;
+  }
+
+  get activeGameGm() {
+    return this.activeGame?.gm;
+  }
+
+  get activeGameOwner() {
+    return this.activeGame?.owner;
+  }
+
+  get activeGamePlayers() {
+    return this.activeGame?.players;
+  }
+
+  get activeGameRoles() {
+    const activeGame = this.activeGame;
+
+    if (!activeGame) return null;
+
+    const { mafia, cherif, citizens, doctor, maniac, prostitute } = activeGame;
+
+    return { mafia, cherif, citizens, doctor, maniac, prostitute };
+  }
+
+  get activeGaveUserIds() {
+    return [
+      ...new Set([
+        ...(this.activeGamePlayers ?? []),
+        this.activeGameGm,
+        this.activeGameOwner,
+      ]),
+    ].filter(isDefined);
+  }
+
   get gameFlow() {
-    return toJS(this._gameFlow);
+    return this.activeGame?.gameFlow ?? initialGameFlow;
   }
 
   get games() {

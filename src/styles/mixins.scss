@@ -19,7 +19,7 @@
 }
 
 @mixin flexCenter {
-  @include flex(center, center);
+  @include flex(row, center, center);
 }
 
 @mixin noScroll {

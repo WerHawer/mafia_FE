@@ -1,34 +1,48 @@
 import { useGetUsersWithAddToStore } from "../../api/user/queries.ts";
 import { usersStore } from "../../store/usersStore.ts";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
 import { gamesStore } from "../../store/gamesStore.ts";
+import styles from "./GameInfoSection.module.scss";
+import { GmPanel } from "./GmPanel";
+import { PlayerPanel } from "./PlayerPanel.tsx";
 
 export const GameInfoSection = observer(() => {
-  const { activeGame } = gamesStore;
-  const { getUser } = usersStore;
+  const { activeGameGm, activeGaveUserIds } = gamesStore;
+  const { myId } = usersStore;
+  const isPlayerGM = activeGameGm === myId;
 
-  const usersIds = useMemo(() => {
-    if (!activeGame) return [];
-
-    return [
-      ...new Set([...activeGame.players, activeGame.gm, activeGame.owner]),
-    ];
-  }, [activeGame]);
-
-  const { isLoading: isUsersLoading } = useGetUsersWithAddToStore(usersIds);
-
-  const gameMaster = activeGame ? getUser(activeGame.gm)?.name : null;
+  useGetUsersWithAddToStore(activeGaveUserIds);
 
   return (
-    <div>
-      <ul style={{ fontSize: "1.2rem" }}>
-        {!isUsersLoading && activeGame
-          ? activeGame.players.map((id) => <li key={id}>{getUser(id).name}</li>)
-          : null}
-      </ul>
+    <div className={styles.container}>
+      {isPlayerGM ? <GmPanel /> : <PlayerPanel />}
 
-      {gameMaster && <p>GM: {gameMaster}</p>}
+      {/*<ul className={styles.list}>*/}
+      {/*  {!isUsersLoading && activeGamePlayers*/}
+      {/*    ? activeGamePlayers.map((id) => (*/}
+      {/*        <li*/}
+      {/*          key={id}*/}
+      {/*          className={classNames(styles.roles, {*/}
+      {/*            [styles.mafia]: activeGameRoles?.mafia?.includes(id),*/}
+      {/*            [styles.citizen]: activeGameRoles?.citizens?.includes(id),*/}
+      {/*            [styles.cherif]: activeGameRoles?.cherif === id,*/}
+      {/*            [styles.doctor]: activeGameRoles?.doctor === id,*/}
+      {/*            [styles.maniac]: activeGameRoles?.maniac === id,*/}
+      {/*            [styles.prostitute]: activeGameRoles?.prostitute === id,*/}
+      {/*            [styles.gm]: id === activeGameGm,*/}
+      {/*          })}*/}
+      {/*        >*/}
+      {/*          {getUser(id).name};*/}
+      {/*        </li>*/}
+      {/*      ))*/}
+      {/*    : null}*/}
+      {/*</ul>*/}
+
+      {/*<div className={styles.footer}>*/}
+      {/*  <Button variant={ButtonVariant.Primary} onClick={handleSetRoles}>*/}
+      {/*    Set roles*/}
+      {/*  </Button>*/}
+      {/*</div>*/}
     </div>
   );
 });

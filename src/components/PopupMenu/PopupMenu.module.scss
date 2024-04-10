@@ -1,0 +1,11 @@
+@import "src/styles/theme.scss";
+
+.menuElement {
+  cursor: pointer;
+  color: $color-accent-tertiary;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: $color-accent-secondary;
+  }
+}

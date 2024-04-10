@@ -8,10 +8,6 @@
   padding: 0 1rem;
   border-right: $border-color 1px solid;
 
-  &.groupGrid {
-    grid-template-columns: repeat(auto-fit, minmax(24%, 1fr));
-  }
-
   &.fiveGrid {
     grid-template-columns: repeat(auto-fit, minmax(19%, 1fr));
   }

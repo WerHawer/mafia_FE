@@ -14,11 +14,21 @@ export type SendMessageFunction = <T extends keyof WSSentEventData>(
   data?: WSSentEventData[T],
 ) => void;
 
+export type StreamsArr = Array<
+  [UserStreamId, { roomId: GameId; userId: UserId }]
+>;
+
 export interface WSSubscribedEventData {
-  [wsEvents.roomConnection]: UserId;
+  [wsEvents.roomConnection]: {
+    streamId: UserStreamId;
+    streams: StreamsArr;
+  };
   [wsEvents.messageSend]: IMessage;
-  [wsEvents.updateGame]: IGame;
-  [wsEvents.peerDisconnect]: UserId;
+  [wsEvents.gameUpdate]: IGame;
+  [wsEvents.peerDisconnect]: {
+    streamId: UserStreamId;
+    streams: StreamsArr;
+  };
   [wsEvents.connection]: { message: string; connectedUsers: number };
   [wsEvents.disconnect]: string;
   [wsEvents.socketDisconnect]: number;
