@@ -23,7 +23,6 @@ export const GmPanel = observer(() => {
     if (!activeGameId || !activeGameGm) return;
 
     const userRoles = rolesCreator(activeGamePlayers, activeGameGm);
-    console.log("=>(GmPanel.tsx:26) activeGameGm", activeGameGm);
 
     addRoles(
       {

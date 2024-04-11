@@ -29,8 +29,9 @@ export const useStreams = () => {
 
   const addVideoStream = useCallback((stream: MediaStream) => {
     // const fakeStreams: Stream[] = [];
+    // const videoCount = 10;
     //
-    // for (let i = 0; i < 11; i++) {
+    // for (let i = 0; i < videoCount; i++) {
     //   fakeStreams.push({ id: stream.id + i, stream });
     // }
 

@@ -2,11 +2,19 @@
 
 .container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(24%, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(49%, 1fr));
   align-items: start;
   gap: 1rem;
   padding: 0 1rem;
   border-right: $border-color 1px solid;
+
+  &.threeGrid {
+    grid-template-columns: repeat(auto-fit, minmax(32%, 1fr));
+  }
+
+  &.fourGrid {
+    grid-template-columns: repeat(auto-fit, minmax(24%, 1fr));
+  }
 
   &.fiveGrid {
     grid-template-columns: repeat(auto-fit, minmax(19%, 1fr));

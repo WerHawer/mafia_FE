@@ -18,10 +18,6 @@ export const rolesCreator = (
   const shuffledPlayersWithoutGM = shuffle(
     players.filter((player) => player !== gm),
   );
-  console.log(
-    "=>(rolesCreator.ts:21) shuffledPlayersWithoutGM",
-    shuffledPlayersWithoutGM,
-  );
 
   const standardRoles = {
     mafia: mafiaCount,

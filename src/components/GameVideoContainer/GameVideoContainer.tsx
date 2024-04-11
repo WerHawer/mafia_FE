@@ -6,9 +6,17 @@ import styles from "./GameVideoContainer.module.scss";
 
 export const GameVideoContainer = memo(() => {
   const { streams, userMediaStream } = useStreams();
+  const streamsLength = streams.length;
+  const hasActiveSpeaker = false;
 
   return (
-    <div className={classNames(styles.container)}>
+    <div
+      className={classNames(styles.container, {
+        [styles.threeGrid]: streamsLength >= 5,
+        [styles.fourGrid]: streamsLength >= 7,
+        [styles.fiveGrid]: hasActiveSpeaker || streamsLength >= 13,
+      })}
+    >
       {streams.map((item, i) => {
         const isMy = userMediaStream?.id
           ? item.id === userMediaStream.id
@@ -21,6 +29,7 @@ export const GameVideoContainer = memo(() => {
             // isMyStream={isMy}
             muted
             streamsLength={streams.length}
+            // isActive={i === 0}
           />
         );
       })}

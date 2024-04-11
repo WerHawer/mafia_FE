@@ -13,12 +13,6 @@ export const GameInfoSection = observer(() => {
   return (
     <div className={styles.container}>
       {isPlayerGM ? <GmPanel /> : <PlayerPanel />}
-
-      {/*<div className={styles.footer}>*/}
-      {/*  <Button variant={ButtonVariant.Primary} onClick={handleSetRoles}>*/}
-      {/*    Set roles*/}
-      {/*  </Button>*/}
-      {/*</div>*/}
     </div>
   );
 });

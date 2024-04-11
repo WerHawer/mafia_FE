@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./GameVideo.module.scss";
 import classNames from "classnames";
 import { throttle } from "lodash";
 import { observer } from "mobx-react-lite";
 import { UserId } from "../../types/user.types.ts";
 import { usersStore } from "../../store/usersStore.ts";
-import { PopupMenu, PopupMenuElement } from "../PopupMenu";
-import { useUpdateGameGMMutation } from "../../api/game/queries.ts";
 import { gamesStore } from "../../store/gamesStore.ts";
 import { PlayerVideo } from "../PlayerVideo";
+import { VideoMenu } from "./VideoMenu.tsx";
 
 type GameVideoProps = {
   stream?: MediaStream;
@@ -29,12 +28,10 @@ export const GameVideo = observer(
     isActive = false,
     streamsLength,
   }: GameVideoProps) => {
-    const isMyStreamActive = isMyStream && stream;
     const [isWidthProportion, setIsWidthProportion] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
-    const { mutate: updateGM } = useUpdateGameGMMutation();
     const { userStreams, users } = usersStore;
-    const { activeGameId, activeGameGm } = gamesStore;
+    const { activeGameGm } = gamesStore;
 
     const currentUser = useMemo(() => {
       if (!stream) return;
@@ -45,6 +42,7 @@ export const GameVideo = observer(
       return users[userId];
     }, [stream, userStreams, users]);
 
+    const isMyStreamActive = isMyStream && stream;
     const isCurrentUserGM = activeGameGm === currentUser?.id;
 
     useEffect(() => {
@@ -66,14 +64,6 @@ export const GameVideo = observer(
       };
     }, [userStreams, streamsLength]);
 
-    const handleUpdateGM = useCallback(() => {
-      if (!currentUser || !activeGameId) return;
-
-      if (isCurrentUserGM) return;
-
-      updateGM({ gameId: activeGameId, userId: currentUser.id });
-    }, [activeGameId, currentUser, isCurrentUserGM, updateGM]);
-
     return (
       <div
         className={classNames(styles.container, {
@@ -86,19 +76,10 @@ export const GameVideo = observer(
         {isCurrentUserGM ? (
           <h3 className={styles.gmLabel}>GM</h3>
         ) : (
-          <PopupMenu
-            content={
-              <PopupMenuElement onClick={handleUpdateGM}>
-                Do GM
-              </PopupMenuElement>
-            }
-          >
-            <div className={styles.menu}>
-              <span className={styles.dot} />
-              <span className={styles.dot} />
-              <span className={styles.dot} />
-            </div>
-          </PopupMenu>
+          <VideoMenu
+            userId={currentUser?.id}
+            isCurrentUserGM={isCurrentUserGM}
+          />
         )}
         {stream && (
           <PlayerVideo
