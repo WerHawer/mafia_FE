@@ -20,6 +20,7 @@ export const GameVideoContainer = memo(() => {
             stream={item.stream}
             // isMyStream={isMy}
             muted
+            streamsLength={streams.length}
           />
         );
       })}

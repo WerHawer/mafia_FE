@@ -1,23 +1,29 @@
 import { useCallback } from "react";
+import { observer } from "mobx-react-lite";
 import { ButtonSize, ButtonVariant } from "../../../UI/Button/ButtonTypes.ts";
 import { Button } from "../../../UI/Button";
 import { rolesCreator } from "../../../helpers/rolesCreator.ts";
 import { gamesStore } from "../../../store/gamesStore.ts";
 import {
   useAddRolesToGameMutation,
+  useRestartGameMutation,
   useUpdateGameFlowMutation,
 } from "../../../api/game/queries.ts";
 import styles from "../GameInfoSection.module.scss";
+import { UsersInfo } from "./UsersInfo.tsx";
 
-export const GmPanel = () => {
-  const { activeGameId, activeGameGm, activeGaveUserIds, gameFlow } =
+export const GmPanel = observer(() => {
+  const { activeGameId, activeGameGm, activeGamePlayers, gameFlow } =
     gamesStore;
   const { mutate: addRoles } = useAddRolesToGameMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
+  const { mutate: restartGame } = useRestartGameMutation();
+
   const handleStartGame = useCallback(() => {
     if (!activeGameId || !activeGameGm) return;
 
-    const userRoles = rolesCreator(activeGaveUserIds, activeGameGm);
+    const userRoles = rolesCreator(activeGamePlayers, activeGameGm);
+    console.log("=>(GmPanel.tsx:26) activeGameGm", activeGameGm);
 
     addRoles(
       {
@@ -29,18 +35,26 @@ export const GmPanel = () => {
           updateGameFlow({
             gameId: activeGameId,
             flow: {
+              ...gameFlow,
               isStarted: true,
             },
           });
         },
       },
     );
-  }, [activeGameId, activeGameGm, activeGaveUserIds, addRoles, updateGameFlow]);
+  }, [
+    activeGameId,
+    activeGameGm,
+    activeGamePlayers,
+    addRoles,
+    updateGameFlow,
+    gameFlow,
+  ]);
 
   return (
     <div className={styles.gmPanel}>
-      {!gameFlow.isStarted ? (
-        <div className={styles.buttonContainer}>
+      <div className={styles.buttonContainer}>
+        {!gameFlow.isStarted ? (
           <Button
             size={ButtonSize.Large}
             variant={ButtonVariant.Success}
@@ -48,19 +62,12 @@ export const GmPanel = () => {
           >
             Start game
           </Button>
-        </div>
-      ) : (
-        <p
-          onClick={() =>
-            updateGameFlow({
-              gameId: activeGameId || "",
-              flow: { isStarted: false },
-            })
-          }
-        >
-          Game is Started
-        </p>
-      )}
+        ) : (
+          <p onClick={() => restartGame(activeGameId)}>Game Started</p>
+        )}
+      </div>
+
+      <UsersInfo />
     </div>
   );
-};
+});

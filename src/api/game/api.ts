@@ -68,3 +68,7 @@ export const updateGameFlow = async ({
     gameFlow: flow,
   });
 };
+
+export const restartGame = async (gameId: GameId) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/restart`);
+};

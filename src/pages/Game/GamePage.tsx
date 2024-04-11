@@ -9,13 +9,14 @@ import { GameInfoSection } from "../../components/GameInfoSection";
 import { usersStore } from "../../store/usersStore.ts";
 import { gamesStore } from "../../store/gamesStore.ts";
 import styles from "./GamePage.module.scss";
+import { useGetUsersWithAddToStore } from "../../api/user/queries.ts";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
   const { myId } = usersStore;
-  const { setActiveGame, activeGame } = gamesStore;
-  console.log("=>(GamePage.tsx:20) activeGame", activeGame);
+  const { setActiveGame, activeGamePlayers } = gamesStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
+  useGetUsersWithAddToStore(activeGamePlayers);
 
   useEffect(() => {
     if (!id) return;

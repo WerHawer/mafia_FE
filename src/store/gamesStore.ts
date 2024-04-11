@@ -6,7 +6,7 @@ import { initialGameFlow } from "../helpers/createGameObj.ts";
 
 class GamesStore {
   _games: IGame[] = [];
-  _activeGame: GameId | null = null;
+  _activeGame: GameId = "";
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -46,7 +46,7 @@ class GamesStore {
   }
 
   get activeGameId() {
-    return this._activeGame;
+    return toJS(this._activeGame);
   }
 
   get activeGameGm() {
@@ -58,7 +58,7 @@ class GamesStore {
   }
 
   get activeGamePlayers() {
-    return this.activeGame?.players;
+    return this.activeGame?.players ?? [];
   }
 
   get activeGameRoles() {
@@ -69,16 +69,6 @@ class GamesStore {
     const { mafia, cherif, citizens, doctor, maniac, prostitute } = activeGame;
 
     return { mafia, cherif, citizens, doctor, maniac, prostitute };
-  }
-
-  get activeGaveUserIds() {
-    return [
-      ...new Set([
-        ...(this.activeGamePlayers ?? []),
-        this.activeGameGm,
-        this.activeGameOwner,
-      ]),
-    ].filter(isDefined);
   }
 
   get gameFlow() {

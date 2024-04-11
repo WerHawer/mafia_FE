@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./GameVideo.module.scss";
 import classNames from "classnames";
 import { throttle } from "lodash";
@@ -8,6 +8,7 @@ import { usersStore } from "../../store/usersStore.ts";
 import { PopupMenu, PopupMenuElement } from "../PopupMenu";
 import { useUpdateGameGMMutation } from "../../api/game/queries.ts";
 import { gamesStore } from "../../store/gamesStore.ts";
+import { PlayerVideo } from "../PlayerVideo";
 
 type GameVideoProps = {
   stream?: MediaStream;
@@ -15,6 +16,7 @@ type GameVideoProps = {
   isMyStream?: boolean;
   isActive?: boolean;
   userId?: UserId;
+  streamsLength?: number;
 };
 
 const INDEX_RATIO = 0.75;
@@ -25,6 +27,7 @@ export const GameVideo = observer(
     muted = false,
     isMyStream = false,
     isActive = false,
+    streamsLength,
   }: GameVideoProps) => {
     const isMyStreamActive = isMyStream && stream;
     const [isWidthProportion, setIsWidthProportion] = useState(false);
@@ -33,14 +36,14 @@ export const GameVideo = observer(
     const { userStreams, users } = usersStore;
     const { activeGameId, activeGameGm } = gamesStore;
 
-    const currentUser = (() => {
+    const currentUser = useMemo(() => {
       if (!stream) return;
 
-      const streamsMap = new Map(userStreams);
-      const userId = streamsMap.get(stream.id)?.userId;
+      const userId =
+        userStreams.find(([id]) => id === stream.id)?.[1].userId ?? "";
 
-      return userId ? users[userId] : undefined;
-    })();
+      return users[userId];
+    }, [stream, userStreams, users]);
 
     const isCurrentUserGM = activeGameGm === currentUser?.id;
 
@@ -56,15 +59,12 @@ export const GameVideo = observer(
 
       window.addEventListener("resize", resize);
 
-      const timer = setTimeout(() => {
-        resize();
-      }, 100);
+      resize();
 
       return () => {
         window.removeEventListener("resize", resize);
-        clearTimeout(timer);
       };
-    }, [userStreams]);
+    }, [userStreams, streamsLength]);
 
     const handleUpdateGM = useCallback(() => {
       if (!currentUser || !activeGameId) return;
@@ -101,25 +101,11 @@ export const GameVideo = observer(
           </PopupMenu>
         )}
         {stream && (
-          <video
-            key={stream.id}
-            className={classNames(
-              styles.video,
-              {
-                [styles.active]: isActive,
-              },
-              isWidthProportion
-                ? styles.widthProportion
-                : styles.heightProportion,
-            )}
-            playsInline
-            autoPlay
+          <PlayerVideo
+            stream={stream}
             muted={muted}
-            ref={(video) => {
-              if (video) {
-                video.srcObject = stream;
-              }
-            }}
+            isActive={isActive}
+            isWidthProportion={isWidthProportion}
           />
         )}
         {currentUser && (

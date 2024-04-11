@@ -4,8 +4,8 @@ import { IGameRoles } from "../types/game.types.ts";
 
 type Options = {
   isStandard?: boolean;
-  mafiaCount?: 3;
-  sheriffCount?: 1;
+  mafiaCount?: number;
+  sheriffCount?: number;
 };
 
 export const rolesCreator = (
@@ -18,15 +18,18 @@ export const rolesCreator = (
   const shuffledPlayersWithoutGM = shuffle(
     players.filter((player) => player !== gm),
   );
+  console.log(
+    "=>(rolesCreator.ts:21) shuffledPlayersWithoutGM",
+    shuffledPlayersWithoutGM,
+  );
 
   const standardRoles = {
     mafia: mafiaCount,
     cherif: sheriffCount,
-    doctor: 1,
   };
 
   const customRoles = {
-    maniac: 1,
+    doctor: 1,
     prostitute: 1,
   };
 

@@ -41,10 +41,10 @@ export const useGetUsersByIds = (ids: string[]) => {
 
 export const useGetUsersWithAddToStore = (ids: string[]) => {
   const users = useGetUsersByIds(ids);
-  const { setUser, allUsers } = usersStore;
+  const { setUser, users: storedUsers } = usersStore;
 
   users.data.forEach((user: IUser) => {
-    if (!allUsers[user.id]) {
+    if (!storedUsers[user.id]) {
       setUser(user);
     }
   });

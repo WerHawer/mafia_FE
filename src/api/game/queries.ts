@@ -4,6 +4,7 @@ import {
   createGame,
   fetchActiveGames,
   fetchGame,
+  restartGame,
   updateGameFlow,
   updateGameGM,
 } from "./api.ts";
@@ -91,6 +92,14 @@ export const useUpdateGameFlowMutation = () => {
       flow: Partial<IGame["gameFlow"]>;
     }) => {
       return updateGameFlow({ gameId, flow });
+    },
+  });
+};
+
+export const useRestartGameMutation = () => {
+  return useMutation({
+    mutationFn: (gameId: GameId) => {
+      return restartGame(gameId);
     },
   });
 };

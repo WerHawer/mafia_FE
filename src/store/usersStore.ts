@@ -4,48 +4,48 @@ import { IUser } from "../types/user.types.ts";
 import { StreamsArr } from "../types/socket.types.ts";
 
 class Users {
-  myUser: IUser | null = null;
-  users: Record<string, IUser> = {};
-  token: string = "";
-  socketConnectedCount: number = 0;
+  _myUser: IUser | null = null;
+  _users: Record<string, IUser> = {};
+  _token: string = "";
+  _socketConnectedCount: number = 0;
   _userStreams: StreamsArr = [];
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
     makePersistable(this, {
       name: "Users_mobx",
-      properties: ["token", "myUser"],
+      properties: ["_token", "_myUser"],
       storage: sessionStorage,
     });
   }
 
   setUser = (user: IUser) => {
-    this.users[user.id] = user;
+    this._users[user.id] = user;
   };
 
   setMyUser = (user: IUser) => {
-    this.myUser = user;
-    this.users[user.id] = user;
+    this._myUser = user;
+    this._users[user.id] = user;
   };
 
   setToken = (token: string) => {
-    this.token = token;
+    this._token = token;
   };
 
   setSocketConnectedCount = (count: number) => {
-    this.socketConnectedCount = count;
+    this._socketConnectedCount = count;
   };
 
   removeToken = () => {
-    this.token = "";
+    this._token = "";
   };
 
   removeUsers = () => {
-    this.users = {};
+    this._users = {};
   };
 
   removeMyUser = () => {
-    this.myUser = null;
+    this._myUser = null;
   };
 
   logout = () => {
@@ -59,23 +59,27 @@ class Users {
   }
 
   getUser = (id: string) => {
-    return toJS(this.users[id]);
+    return toJS(this._users[id]);
   };
 
+  get token() {
+    return toJS(this._token);
+  }
+
   get me() {
-    return toJS(this.myUser);
+    return toJS(this._myUser);
   }
 
   get myId() {
-    return toJS(this.myUser?.id);
+    return toJS(this._myUser?.id);
   }
 
-  get allUsers() {
-    return toJS(this.users);
+  get users() {
+    return toJS(this._users);
   }
 
   get socketConnected() {
-    return this.socketConnectedCount;
+    return this._socketConnectedCount;
   }
 
   get userStreams() {

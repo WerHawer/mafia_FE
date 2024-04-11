@@ -18,8 +18,10 @@
 
 .buttonContainer {
   @include flexCenter;
+  min-width: 50%;
   width: 100%;
   height: 100%;
+  flex-grow: 2;
 }
 
 .roles {
@@ -52,4 +54,9 @@
   }
 
   transition: color 0.3s;
+}
+
+.gmPanel {
+  @include flex;
+  column-gap: 2rem;
 }
