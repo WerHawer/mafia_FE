@@ -1,13 +1,18 @@
-import { memo } from "react";
+import { memo, useCallback, useState } from "react";
 import classNames from "classnames";
 import { GameVideo } from "../GameVideo";
-import { useStreams } from "../../hooks/useStreams.ts";
+import { useStreams } from "@/hooks/useStreams.ts";
 import styles from "./GameVideoContainer.module.scss";
 
 export const GameVideoContainer = memo(() => {
   const { streams, userMediaStream } = useStreams();
+  const [sizeTrigger, setSizeTrigger] = useState<number>(0);
   const streamsLength = streams.length;
   const hasActiveSpeaker = false;
+
+  const handleTrigger = useCallback(() => {
+    setSizeTrigger((prev) => prev + 1);
+  }, []);
 
   return (
     <div
@@ -27,9 +32,11 @@ export const GameVideoContainer = memo(() => {
             key={item.id}
             stream={item.stream}
             // isMyStream={isMy}
+            // isActive={i === 0}
             muted
             streamsLength={streams.length}
-            // isActive={i === 0}
+            trigger={sizeTrigger}
+            handleTrigger={handleTrigger}
           />
         );
       })}

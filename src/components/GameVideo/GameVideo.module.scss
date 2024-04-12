@@ -45,10 +45,14 @@
 }
 
 .userInfo {
+  @include flex(row, flex-start, center);
+  column-gap: 1.5rem;
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
+  padding-left: 2rem;
+  padding-bottom: 2rem;
 }
 
 .menu {

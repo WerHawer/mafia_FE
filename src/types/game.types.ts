@@ -28,7 +28,7 @@ export interface IGame {
   gm: UserId;
   mafia?: UserId[];
   citizens?: UserId[];
-  cherif?: UserId;
+  sheriff?: UserId;
   doctor?: UserId;
   maniac?: UserId;
   prostitute?: UserId;
@@ -42,7 +42,7 @@ export interface IGame {
 export interface IGameRoles {
   mafia: IGame["mafia"];
   citizens: IGame["citizens"];
-  cherif: IGame["cherif"];
+  sheriff: IGame["sheriff"];
   doctor: IGame["doctor"];
   maniac: IGame["maniac"];
   prostitute: IGame["prostitute"];

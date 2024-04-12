@@ -17,4 +17,12 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'warn',
     '@typescript-eslint/ban-ts-comment': 'warn',
   },
+  settings: {
+    react: { version: 'detect' },
+    'import/resolver': {
+      typescript: {
+        'project': './tsconfig.json',
+      },
+    },
+  },
 };

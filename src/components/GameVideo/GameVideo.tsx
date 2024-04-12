@@ -3,11 +3,12 @@ import styles from "./GameVideo.module.scss";
 import classNames from "classnames";
 import { throttle } from "lodash";
 import { observer } from "mobx-react-lite";
-import { UserId } from "../../types/user.types.ts";
-import { usersStore } from "../../store/usersStore.ts";
-import { gamesStore } from "../../store/gamesStore.ts";
+import { UserId } from "@/types/user.types.ts";
+import { usersStore } from "@/store/usersStore.ts";
+import { gamesStore } from "@/store/gamesStore.ts";
 import { PlayerVideo } from "../PlayerVideo";
 import { VideoMenu } from "./VideoMenu.tsx";
+import { VideoUserInfo } from "./VideoUserInfo.tsx";
 
 type GameVideoProps = {
   stream?: MediaStream;
@@ -16,6 +17,8 @@ type GameVideoProps = {
   isActive?: boolean;
   userId?: UserId;
   streamsLength?: number;
+  trigger?: number;
+  handleTrigger?: () => void;
 };
 
 const INDEX_RATIO = 0.75;
@@ -26,6 +29,8 @@ export const GameVideo = observer(
     muted = false,
     isMyStream = false,
     isActive = false,
+    trigger,
+    handleTrigger,
     streamsLength,
   }: GameVideoProps) => {
     const [isWidthProportion, setIsWidthProportion] = useState(false);
@@ -62,7 +67,7 @@ export const GameVideo = observer(
       return () => {
         window.removeEventListener("resize", resize);
       };
-    }, [userStreams, streamsLength]);
+    }, [userStreams, trigger, streamsLength]);
 
     return (
       <div
@@ -87,12 +92,11 @@ export const GameVideo = observer(
             muted={muted}
             isActive={isActive}
             isWidthProportion={isWidthProportion}
+            onMount={handleTrigger}
           />
         )}
         {currentUser && (
-          <div className={styles.userInfo}>
-            <div className={styles.userName}>{currentUser.name}</div>
-          </div>
+          <VideoUserInfo userName={currentUser.name} userId={currentUser.id} />
         )}
       </div>
     );

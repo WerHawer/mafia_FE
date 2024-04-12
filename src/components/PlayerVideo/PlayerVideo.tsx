@@ -7,10 +7,17 @@ type PlayerVideoProps = {
   muted: boolean;
   isActive: boolean;
   isWidthProportion: boolean;
+  onMount?: () => void;
 };
 
 export const PlayerVideo = memo(
-  ({ stream, muted, isWidthProportion, isActive }: PlayerVideoProps) => {
+  ({
+    stream,
+    muted,
+    isWidthProportion,
+    isActive,
+    onMount,
+  }: PlayerVideoProps) => {
     return (
       <video
         className={classNames(
@@ -26,6 +33,7 @@ export const PlayerVideo = memo(
         ref={(video) => {
           if (video) {
             video.srcObject = stream;
+            onMount?.();
           }
         }}
       />

@@ -71,7 +71,7 @@ class Users {
   }
 
   get myId() {
-    return toJS(this._myUser?.id);
+    return toJS(this._myUser?.id) ?? "";
   }
 
   get users() {

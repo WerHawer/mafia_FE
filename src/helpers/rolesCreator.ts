@@ -21,7 +21,7 @@ export const rolesCreator = (
 
   const standardRoles = {
     mafia: mafiaCount,
-    cherif: sheriffCount,
+    sheriff: sheriffCount,
   };
 
   const customRoles = {
@@ -33,21 +33,19 @@ export const rolesCreator = (
     ? standardRoles
     : { ...standardRoles, ...customRoles };
 
-  const allActiveRolesCount = Object.values(allActiveRoles).reduce(
-    (a, b) => a + b,
-  );
-
-  const citizens = {
-    citizens: shuffledPlayersWithoutGM.length - allActiveRolesCount,
-  };
+  // const allActiveRolesCount = Object.values(allActiveRoles).reduce(
+  //   (a, b) => a + b,
+  // );
+  //
+  // const citizens = {
+  //   citizens: shuffledPlayersWithoutGM.length - allActiveRolesCount,
+  // };
 
   type AllRoles = keyof IGameRoles;
 
-  const roles = Object.entries({ ...allActiveRoles, ...citizens }) as Array<
-    [AllRoles, number]
-  >;
+  const roles = Object.entries(allActiveRoles) as Array<[AllRoles, number]>;
 
-  return roles.reduce(
+  const userRoles = roles.reduce(
     (acc, [role, count]) => {
       const spliced = shuffledPlayersWithoutGM.splice(0, count);
 
@@ -58,4 +56,6 @@ export const rolesCreator = (
     },
     {} as { [Key in AllRoles]?: IGameRoles[Key] },
   );
+
+  return { ...userRoles, citizens: shuffledPlayersWithoutGM };
 };

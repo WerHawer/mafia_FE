@@ -39,6 +39,12 @@ class GamesStore {
     );
   }
 
+  isUserGM(userId?: string) {
+    if (!userId) return false;
+
+    return this.activeGameGm === userId;
+  }
+
   get activeGame() {
     const active = this._games.find((game) => game.id === this._activeGame);
 
@@ -66,13 +72,13 @@ class GamesStore {
 
     if (!activeGame) return null;
 
-    const { mafia, cherif, citizens, doctor, maniac, prostitute } = activeGame;
+    const { mafia, sheriff, citizens, doctor, maniac, prostitute } = activeGame;
 
-    return { mafia, cherif, citizens, doctor, maniac, prostitute };
+    return { mafia, sheriff, citizens, doctor, maniac, prostitute };
   }
 
   get gameFlow() {
-    return this.activeGame?.gameFlow ?? initialGameFlow;
+    return toJS(this.activeGame?.gameFlow) ?? initialGameFlow;
   }
 
   get games() {
