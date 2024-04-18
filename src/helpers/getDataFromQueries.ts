@@ -1,6 +1,4 @@
-// @ts-ignore
-import { QueriesResults } from "@tanstack/react-query/build/legacy/useQueries";
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getDataFromQueries = (data: any[]) => {
   return data.reduce((acc, query) => {
     if (query.data) {

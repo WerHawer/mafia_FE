@@ -33,7 +33,7 @@ const GamePage = observer(() => {
         userId: myId,
         gameId: id,
       });
-    }, 100);
+    }, 0);
 
     return () => clearTimeout(requestTimer);
   }, [id, addUserToGame, myId]);
@@ -57,5 +57,7 @@ const GamePage = observer(() => {
     </div>
   );
 });
+
+GamePage.displayName = "GamePage";
 
 export default GamePage;

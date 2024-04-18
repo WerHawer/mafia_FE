@@ -59,6 +59,9 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       [wsEvents.peerDisconnect]: ({ streams }) => {
         setUserStreams(streams);
       },
+      [wsEvents.userStreamStatus]: (streams) => {
+        setUserStreams(streams);
+      },
     };
   }, [
     setNewMessage,

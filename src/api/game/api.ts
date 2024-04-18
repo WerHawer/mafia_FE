@@ -1,5 +1,11 @@
 import axios from "axios";
-import { GameId, IGame, IGameDTO, IGameRoles } from "../../types/game.types.ts";
+import {
+  GameId,
+  IGame,
+  IGameDTO,
+  IGameFlow,
+  IGameRoles,
+} from "../../types/game.types.ts";
 import { UserId } from "../../types/user.types.ts";
 
 const GAMES_URL = "/games";
@@ -62,7 +68,7 @@ export const updateGameFlow = async ({
   flow,
 }: {
   gameId: GameId;
-  flow: Partial<IGame["gameFlow"]>;
+  flow: IGameFlow;
 }) => {
   return axios.patch<IGame>(`${GAMES_URL}/${gameId}/updateFlow`, {
     gameFlow: flow,

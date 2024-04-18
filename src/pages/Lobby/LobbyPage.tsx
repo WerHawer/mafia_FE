@@ -1,18 +1,18 @@
-import { Button } from "../../UI/Button";
+import { Button } from "@/UI/Button";
 import { useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { routes } from "../../router/routs.ts";
+import { routes } from "@/router/routs.ts";
 import { useTranslation } from "react-i18next";
 import {
   useCreateGameMutation,
   useGetGamesWithStore,
-} from "../../api/game/queries.ts";
-import { Loader } from "../../UI/Loader";
-import { createGameObj } from "../../helpers/createGameObj.ts";
-import { ButtonSize, ButtonVariant } from "../../UI/Button/ButtonTypes.ts";
-import { usersStore } from "../../store/usersStore.ts";
+} from "@/api/game/queries.ts";
+import { Loader } from "@/UI/Loader";
+import { createGameObj } from "@/helpers/createGameObj.ts";
+import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { usersStore } from "@/store/usersStore.ts";
 import { observer } from "mobx-react-lite";
-import { gamesStore } from "../../store/gamesStore.ts";
+import { gamesStore } from "@/store/gamesStore.ts";
 
 const LobbyPage = observer(() => {
   const { myId } = usersStore;

@@ -13,6 +13,7 @@ export const PlayerPanel = observer(() => {
     <div>
       {role !== Roles.Unknown && <p>Player is {role}</p>}
       {gameFlow.isStarted && <p>Game is started</p>}
+      {gameFlow.isNight ? <p>Night</p> : <p>Day</p>}
     </div>
   );
 });

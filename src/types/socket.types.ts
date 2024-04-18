@@ -3,10 +3,28 @@ import { IMessage, IMessageDTO } from "./message.types.ts";
 import { GameId, IGame } from "./game.types.ts";
 import { UserId, UserStreamId } from "./user.types.ts";
 
+export type OffParams = "self" | "other";
+
 export interface WSSentEventData {
   [wsEvents.messageSend]: IMessageDTO;
   [wsEvents.roomLeave]: [GameId, UserId];
   [wsEvents.roomConnection]: [GameId, UserId, UserStreamId];
+  [wsEvents.userAudioStatus]: {
+    streamId: UserStreamId;
+    roomId: GameId;
+    audio: boolean;
+    offParams?: OffParams;
+  };
+  [wsEvents.userVideoStatus]: {
+    streamId: UserStreamId;
+    roomId: GameId;
+    video: boolean;
+    offParams?: OffParams;
+  };
+  [wsEvents.startNight]: { gameId: GameId; gm: UserId | undefined };
+  [wsEvents.startDay]: { gameId: GameId; gm: UserId | undefined };
+  [wsEvents.updateSpeaker]: { userId: UserId; gameId: GameId };
+  [wsEvents.wakeUp]: { gameId: GameId; users: UserId[] | UserId; gm?: UserId };
 }
 
 export type SendMessageFunction = <T extends keyof WSSentEventData>(
@@ -15,7 +33,19 @@ export type SendMessageFunction = <T extends keyof WSSentEventData>(
 ) => void;
 
 export type StreamsArr = Array<
-  [UserStreamId, { roomId: GameId; userId: UserId }]
+  [
+    UserStreamId,
+    {
+      roomId: GameId;
+      useTo?: UserStreamId[];
+      user: {
+        id: UserId;
+        audio: boolean;
+        video: boolean;
+        offParams?: OffParams;
+      };
+    },
+  ]
 >;
 
 export interface WSSubscribedEventData {
@@ -33,6 +63,7 @@ export interface WSSubscribedEventData {
   [wsEvents.disconnect]: string;
   [wsEvents.socketDisconnect]: number;
   [wsEvents.connectionError]: Error;
+  [wsEvents.userStreamStatus]: StreamsArr;
 }
 
 export type SubscribeEvent = keyof WSSubscribedEventData;

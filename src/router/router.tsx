@@ -3,12 +3,8 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RootLayout } from "../layouts/RootLayout.tsx";
 import { routes } from "./routs.ts";
 import { AuthGate } from "../components/AuthGate.tsx";
-import {
-  LazyApp,
-  LazyGamePage,
-  LazyLobbyPage,
-  LazyLoginPage,
-} from "./lazyComponents.ts";
+import { LazyApp, LazyLobbyPage, LazyLoginPage } from "./lazyComponents.ts";
+import GamePage from "@/pages/Game";
 
 export const router = createBrowserRouter([
   {
@@ -43,11 +39,7 @@ export const router = createBrowserRouter([
 
       {
         path: `${routes.game}/:id`,
-        element: (
-          <Suspense>
-            <LazyGamePage />
-          </Suspense>
-        ),
+        element: <GamePage />,
       },
 
       {

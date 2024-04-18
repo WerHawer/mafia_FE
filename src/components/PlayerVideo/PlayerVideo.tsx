@@ -40,3 +40,5 @@ export const PlayerVideo = memo(
     );
   },
 );
+
+PlayerVideo.displayName = "PlayerVideo";

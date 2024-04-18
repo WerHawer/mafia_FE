@@ -1,21 +1,17 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Input } from "../../UI/Input";
-import styles from "./GameChat.module.scss";
-import { Button } from "../../UI/Button";
-import { SendOutlined } from "@ant-design/icons";
-import { wsEvents } from "../../config/wsEvents.ts";
-import { ButtonType, ButtonVariant } from "../../UI/Button/ButtonTypes.ts";
-import { usersStore } from "../../store/usersStore.ts";
 import { observer } from "mobx-react-lite";
-import { useSocket } from "../../hooks/useSocket.ts";
-import { messagesStore } from "../../store/messagesStore.ts";
-import {
-  IMessage,
-  IMessageDTO,
-  MessageTypes,
-} from "../../types/message.types.ts";
-import { useGetMessagesQueryWithStore } from "../../api/messages/queries.ts";
+import { Input } from "@/UI/Input";
+import styles from "./GameChat.module.scss";
+import { Button } from "@/UI/Button";
+import { SendOutlined } from "@ant-design/icons";
+import { wsEvents } from "@/config/wsEvents.ts";
+import { ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { usersStore } from "@/store/usersStore.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
+import { messagesStore } from "@/store/messagesStore.ts";
+import { IMessage, IMessageDTO, MessageTypes } from "@/types/message.types.ts";
+import { useGetMessagesQueryWithStore } from "@/api/messages/queries.ts";
 
 export const GameChat = observer(() => {
   const { id = "" } = useParams();

@@ -1,6 +1,6 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
-import { IUser } from "../types/user.types.ts";
+import { IUser, UserStreamId } from "../types/user.types.ts";
 import { StreamsArr } from "../types/socket.types.ts";
 
 class Users {
@@ -21,6 +21,14 @@ class Users {
 
   setUser = (user: IUser) => {
     this._users[user.id] = user;
+  };
+
+  setUsers = (users: IUser[]) => {
+    for (const user of users) {
+      if (this._users[user.id]) continue;
+
+      this._users[user.id] = user;
+    }
   };
 
   setMyUser = (user: IUser) => {
@@ -84,6 +92,10 @@ class Users {
 
   get userStreams() {
     return toJS(this._userStreams);
+  }
+
+  get userStreamsMap() {
+    return new Map(this.userStreams);
   }
 }
 

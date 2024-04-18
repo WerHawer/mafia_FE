@@ -8,16 +8,10 @@ type Options = {
   sheriffCount?: number;
 };
 
-export const rolesCreator = (
-  players: UserId[],
-  gm: UserId | null,
-  options?: Options,
-) => {
+export const rolesCreator = (playersWithoutGM: UserId[], options?: Options) => {
   const { isStandard = true, mafiaCount = 3, sheriffCount = 1 } = options || {};
 
-  const shuffledPlayersWithoutGM = shuffle(
-    players.filter((player) => player !== gm),
-  );
+  const shuffledPlayersWithoutGM = shuffle(playersWithoutGM);
 
   const standardRoles = {
     mafia: mafiaCount,

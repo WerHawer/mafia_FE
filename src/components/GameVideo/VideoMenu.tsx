@@ -1,9 +1,10 @@
 import { PopupMenu, PopupMenuElement } from "../PopupMenu";
 import styles from "./GameVideo.module.scss";
 import { memo, useCallback } from "react";
-import { useUpdateGameGMMutation } from "../../api/game/queries.ts";
-import { gamesStore } from "../../store/gamesStore.ts";
-import { UserId } from "../../types/user.types.ts";
+import { useUpdateGameGMMutation } from "@/api/game/queries.ts";
+import { gamesStore } from "@/store/gamesStore.ts";
+import { UserId } from "@/types/user.types.ts";
+import { MoreOutlined } from "@ant-design/icons";
 
 type VideoMenuProps = {
   userId?: UserId;
@@ -27,11 +28,9 @@ export const VideoMenu = memo(({ userId, isCurrentUserGM }: VideoMenuProps) => {
         <PopupMenuElement onClick={handleUpdateGM}>Do GM</PopupMenuElement>
       }
     >
-      <div className={styles.menu}>
-        <span className={styles.dot} />
-        <span className={styles.dot} />
-        <span className={styles.dot} />
-      </div>
+      <MoreOutlined className={styles.menu} />
     </PopupMenu>
   );
 });
+
+VideoMenu.displayName = "VideoMenu";

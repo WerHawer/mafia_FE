@@ -1,0 +1,40 @@
+@import "src/styles/theme";
+
+.container {
+}
+
+.input {
+  display: none;
+}
+
+.label {
+  display: block;
+  width: 40px;
+  height: 15px;
+  background-color: $color-text-secondary;
+  border-radius: 15px;
+  position: relative;
+
+  cursor: pointer;
+
+  &::after {
+    content: "";
+    display: block;
+    width: 25px;
+    height: 25px;
+    background-color: $color-accent-tertiary;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    translate: 0 -50%;
+    transition: 0.3s;
+  }
+
+  &:has(input:checked) {
+    &::after {
+      translate: 15px -50%;
+      background-color: $color-accent-secondary;
+    }
+  }
+}

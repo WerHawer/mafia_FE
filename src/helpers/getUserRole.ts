@@ -4,7 +4,7 @@ import { UserId } from "../types/user.types.ts";
 export enum Roles {
   Mafia = "mafia",
   Don = "don",
-  Citizen = "citizen",
+  Citizens = "citizens",
   Sheriff = "sheriff",
   Doctor = "doctor",
   Maniac = "maniac",
@@ -18,27 +18,30 @@ export const getUserRole = (
 ) => {
   if (!activeGameRoles) return Roles.Unknown;
 
-  if (activeGameRoles.mafia?.includes(userId)) {
-    return activeGameRoles.mafia[0] === userId ? Roles.Don : Roles.Mafia;
+  const { mafia, citizens, sheriff, doctor, maniac, prostitute } =
+    activeGameRoles;
+
+  if (mafia?.includes(userId)) {
+    return mafia[0] === userId ? Roles.Don : Roles.Mafia;
   }
 
-  if (activeGameRoles.citizens?.includes(userId)) {
-    return Roles.Citizen;
+  if (citizens?.includes(userId)) {
+    return Roles.Citizens;
   }
 
-  if (activeGameRoles.sheriff === userId) {
+  if (sheriff === userId) {
     return Roles.Sheriff;
   }
 
-  if (activeGameRoles.doctor === userId) {
+  if (doctor === userId) {
     return Roles.Doctor;
   }
 
-  if (activeGameRoles.maniac === userId) {
+  if (maniac === userId) {
     return Roles.Maniac;
   }
 
-  if (activeGameRoles.prostitute === userId) {
+  if (prostitute === userId) {
     return Roles.Prostitute;
   }
 

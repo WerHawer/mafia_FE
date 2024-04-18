@@ -13,3 +13,5 @@ export const GmPanel = observer(() => {
     </div>
   );
 });
+
+GmPanel.displayName = "GmPanel";

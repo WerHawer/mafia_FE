@@ -18,8 +18,8 @@
   align-items: $align;
 }
 
-@mixin flexCenter {
-  @include flex(row, center, center);
+@mixin flexCenter($direction: row) {
+  @include flex($direction, center, center);
 }
 
 @mixin noScroll {

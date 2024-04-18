@@ -7,16 +7,11 @@ import { wsEvents } from "../config/wsEvents.ts";
 import { usersStore } from "../store/usersStore.ts";
 import { useSocket } from "./useSocket.ts";
 
-export type Stream = {
-  id: string;
-  stream?: MediaStream;
-};
-
 const MAX_STREAMS = 11;
 
 export const useStreams = () => {
   const { id = "" } = useParams();
-  const [streams, setStreams] = useState<Stream[]>([]);
+  const [streams, setStreams] = useState<MediaStream[]>([]);
   const { subscribe, sendMessage } = useSocket();
   const { myId } = usersStore;
 
@@ -42,7 +37,7 @@ export const useStreams = () => {
 
       if (isStreamExist) return prev;
 
-      return [...prev, { id: stream.id, stream }];
+      return [...prev, stream];
 
       // return fakeStreams;
     });

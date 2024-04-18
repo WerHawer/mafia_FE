@@ -1,7 +1,23 @@
-export const Switcher = () => {
+import styles from "./Switcher.module.scss";
+
+type SwitcherProps = {
+  checked: boolean;
+  onChange: () => void;
+};
+
+export const Switcher = ({ checked, onChange }: SwitcherProps) => {
   return (
-    <div>
-      <h1>Switcher</h1>
+    <div className={styles.container}>
+      <label className={styles.label}>
+        <input
+          type="checkbox"
+          className={styles.input}
+          checked={checked}
+          onChange={onChange}
+        />
+      </label>
     </div>
   );
 };
+
+Switcher.displayName = "Switcher";

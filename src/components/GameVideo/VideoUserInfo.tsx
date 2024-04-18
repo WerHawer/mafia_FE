@@ -13,15 +13,22 @@ type VideoUserInfoProps = {
 export const VideoUserInfo = observer(
   ({ userName, userId }: VideoUserInfoProps) => {
     const { myId } = usersStore;
-    const { activeGameRoles, isUserGM } = gamesStore;
+    const { activeGameRoles, isUserGM, activeGamePlayersWithoutGM } =
+      gamesStore;
     const role = getUserRole(activeGameRoles, userId);
+    const userNumber =
+      activeGamePlayersWithoutGM.findIndex((id) => id === userId) + 1;
 
     return (
       <div className={styles.userInfo}>
         {isUserGM(myId) && <RoleIcon role={role} />}
 
-        <div className={styles.userName}>{userName}</div>
+        <div className={styles.userName}>
+          {userName} {userNumber ? `#${userNumber}` : ""}
+        </div>
       </div>
     );
   },
 );
+
+VideoUserInfo.displayName = "VideoUserInfo";

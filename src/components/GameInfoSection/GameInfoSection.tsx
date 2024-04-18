@@ -8,7 +8,6 @@ import { PlayerPanel } from "./PlayerPanel.tsx";
 export const GameInfoSection = observer(() => {
   const { isUserGM } = gamesStore;
   const { myId } = usersStore;
-
   const isPlayerGM = isUserGM(myId);
 
   return (

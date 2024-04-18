@@ -1,18 +1,17 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 import { GameId, IGame } from "../types/game.types.ts";
-import { isDefined } from "../helpers/isDefined.ts";
 import { initialGameFlow } from "../helpers/createGameObj.ts";
 
 class GamesStore {
   _games: IGame[] = [];
-  _activeGame: GameId = "";
+  _activeGameId: GameId = "";
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
     makePersistable(this, {
       name: "Users_mobx_gameFlow",
-      properties: ["_activeGame"],
+      properties: ["_activeGameId"],
       storage: sessionStorage,
     });
   }
@@ -22,7 +21,7 @@ class GamesStore {
   }
 
   setActiveGame(gameId: GameId) {
-    this._activeGame = gameId;
+    this._activeGameId = gameId;
   }
 
   updateGames(newGame: IGame) {
@@ -46,13 +45,13 @@ class GamesStore {
   }
 
   get activeGame() {
-    const active = this._games.find((game) => game.id === this._activeGame);
+    const active = this._games.find((game) => game.id === this._activeGameId);
 
     return toJS(active);
   }
 
   get activeGameId() {
-    return toJS(this._activeGame);
+    return toJS(this._activeGameId);
   }
 
   get activeGameGm() {
@@ -67,6 +66,12 @@ class GamesStore {
     return this.activeGame?.players ?? [];
   }
 
+  get activeGamePlayersWithoutGM() {
+    return this.activeGamePlayers.filter(
+      (player) => player !== this.activeGameGm,
+    );
+  }
+
   get activeGameRoles() {
     const activeGame = this.activeGame;
 
@@ -79,6 +84,10 @@ class GamesStore {
 
   get gameFlow() {
     return toJS(this.activeGame?.gameFlow) ?? initialGameFlow;
+  }
+
+  get speaker() {
+    return this.gameFlow.speaker;
   }
 
   get games() {

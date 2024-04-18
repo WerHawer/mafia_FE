@@ -8,17 +8,17 @@ import {
 } from "@/api/game/queries.ts";
 import { rolesCreator } from "@/helpers/rolesCreator.ts";
 import styles from "./GmPanel.module.scss";
+import { observer } from "mobx-react-lite";
 
-export const InitialPanel = () => {
-  const { activeGameId, activeGameGm, activeGamePlayers, gameFlow } =
-    gamesStore;
+export const InitialPanel = observer(() => {
+  const { activeGameId, activeGamePlayersWithoutGM, gameFlow } = gamesStore;
   const { mutate: addRoles } = useAddRolesToGameMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
   const handleStartGame = useCallback(() => {
-    if (!activeGameId || !activeGameGm) return;
+    if (!activeGameId) return;
 
-    const userRoles = rolesCreator(activeGamePlayers, activeGameGm);
+    const userRoles = rolesCreator(activeGamePlayersWithoutGM);
 
     addRoles(
       {
@@ -32,6 +32,7 @@ export const InitialPanel = () => {
             flow: {
               ...gameFlow,
               isStarted: true,
+              day: 1,
             },
           });
         },
@@ -39,8 +40,7 @@ export const InitialPanel = () => {
     );
   }, [
     activeGameId,
-    activeGameGm,
-    activeGamePlayers,
+    activeGamePlayersWithoutGM,
     addRoles,
     updateGameFlow,
     gameFlow,
@@ -57,4 +57,4 @@ export const InitialPanel = () => {
       </Button>
     </div>
   );
-};
+});

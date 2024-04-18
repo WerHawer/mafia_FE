@@ -16,17 +16,23 @@
 }
 
 .myVideoContainer {
+  display: none;
   position: fixed;
   bottom: 70%;
   right: 2rem;
   width: 200px;
   height: 150px;
 
-  display: none;
+  z-index: 99;
+  cursor: grab;
 
   &.myVideoActive {
     display: block;
   }
+}
+
+.dragging {
+  cursor: grabbing;
 }
 
 .video {
@@ -52,26 +58,19 @@
   right: 0;
   bottom: 0;
   padding-left: 2rem;
-  padding-bottom: 2rem;
+  padding-bottom: 0.5rem;
 }
 
 .menu {
-  @include flex(center, center);
-  column-gap: 2px;
   position: absolute;
-  width: 40px;
-  top: 10px;
-  right: 5px;
+  top: 0;
+  right: 10px;
+  font-size: 3rem;
+  color: $color-accent-primary;
+  rotate: 90deg;
+
   z-index: 10;
-
   cursor: pointer;
-
-  > .dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background-color: $color-accent-primary;
-  }
 }
 
 .gmLabel {
@@ -81,4 +80,24 @@
   z-index: 10;
 
   color: $color-accent-tertiary;
+}
+
+.statusIconsContainer {
+  @include flex(row, flex-start, center);
+  column-gap: 1.5rem;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 2rem;
+  color: $color-dark-tertiary;
+
+  z-index: 10;
+}
+
+.statusIcon {
+  cursor: pointer;
+}
+
+.statusDisabled {
+  color: $color-error;
 }

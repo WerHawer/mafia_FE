@@ -13,7 +13,7 @@ export const RoleIcon = ({ role }: { role: Roles }) => {
   const icons = {
     [Roles.Mafia]: mafiaIcon,
     [Roles.Don]: donIcon,
-    [Roles.Citizen]: citizenIcon,
+    [Roles.Citizens]: citizenIcon,
     [Roles.Sheriff]: sheriffIcon,
     [Roles.Doctor]: doctorIcon,
     [Roles.Maniac]: maniacIcon,
