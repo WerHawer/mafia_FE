@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 import Draggable from "react-draggable";
-import styles from "./GameVideo.module.scss";
 import { throttle } from "lodash";
 import { observer } from "mobx-react-lite";
+import styles from "./GameVideo.module.scss";
 import { UserId } from "@/types/user.types.ts";
 import { usersStore } from "@/store/usersStore.ts";
 import { gamesStore } from "@/store/gamesStore.ts";
@@ -11,6 +11,9 @@ import { PlayerVideo } from "../PlayerVideo";
 import { VideoMenu } from "./VideoMenu.tsx";
 import { VideoUserInfo } from "./VideoUserInfo.tsx";
 import { StreamStatus } from "@/components/GameVideo/StreamStatus.tsx";
+import { VoteIcon } from "@/UI/VoteIcon/VoteIcon.tsx";
+import { ButtonSize } from "@/UI/Button/ButtonTypes.ts";
+import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 
 type GameVideoProps = {
   stream?: MediaStream;
@@ -34,28 +37,24 @@ export const GameVideo = observer(
     trigger,
     handleTrigger,
     streamsLength,
+    userId,
   }: GameVideoProps) => {
     const [isWidthProportion, setIsWidthProportion] = useState(false);
+    const { myId, userStreamsMap, getUser, me } = usersStore;
+    const { isUserGM, speaker, gameFlow, activeGameId } = gamesStore;
+    const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
     const containerRef = useRef<HTMLDivElement>(null);
-    const { users, myId, userStreams } = usersStore;
-    const { isUserGM, speaker, gameFlow } = gamesStore;
 
-    const currentUser = useMemo(() => {
-      if (!stream) return null;
-
-      if (isMyStream) {
-        return users[myId];
-      }
-
-      const userId =
-        userStreams.find(([id]) => id === stream.id)?.[1].user.id ?? "";
-
-      return users[userId];
-    }, [isMyStream, myId, stream, userStreams, users]);
-
+    const currentUser = isMyStream ? me : getUser(userId);
     const isMyStreamActive = isMyStream && stream;
-    const isCurrentUserGM = isUserGM(currentUser?.id);
+    const isCurrentUserGM = isUserGM(userId);
     const isIGM = isUserGM(myId);
+    const isISpeaker = speaker === myId;
+    const isUserAddedToVoteList = userId
+      ? gameFlow.proposed.includes(userId)
+      : false;
+    const shouldShowVoteIcon =
+      !!speaker && (isISpeaker || isIGM) && !isMyStream && !isCurrentUserGM;
 
     useEffect(() => {
       if (!containerRef.current) return;
@@ -74,13 +73,36 @@ export const GameVideo = observer(
       return () => {
         window.removeEventListener("resize", resize);
       };
-    }, [userStreams, trigger, streamsLength, speaker, gameFlow.isStarted]);
+    }, [userStreamsMap, trigger, streamsLength, speaker, gameFlow.isStarted]);
+
+    const handleVote = useCallback(() => {
+      if ((myId !== speaker && !isUserGM(myId)) || !userId) return;
+
+      const newList = isUserAddedToVoteList
+        ? gameFlow.proposed.filter((id) => id !== userId)
+        : [...gameFlow.proposed, userId];
+
+      updateGameFlow({
+        gameId: activeGameId,
+        flow: { ...gameFlow, proposed: newList },
+      });
+    }, [
+      activeGameId,
+      gameFlow,
+      isUserAddedToVoteList,
+      isUserGM,
+      myId,
+      speaker,
+      updateGameFlow,
+      userId,
+    ]);
 
     return (
       <Draggable
         disabled={!(isMyStream && gameFlow.isStarted)}
         defaultClassNameDragging={styles.dragging}
         position={!gameFlow.isStarted ? { x: 0, y: 0 } : undefined}
+        nodeRef={containerRef}
       >
         <div
           className={classNames(styles.container, {
@@ -90,6 +112,15 @@ export const GameVideo = observer(
           })}
           ref={containerRef}
         >
+          {shouldShowVoteIcon && (
+            <VoteIcon
+              className={styles.voteIcon}
+              size={ButtonSize.Small}
+              isVoted={isUserAddedToVoteList}
+              onClick={handleVote}
+            />
+          )}
+
           {stream && (
             <StreamStatus
               stream={stream}

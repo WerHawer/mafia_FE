@@ -2,7 +2,7 @@
 @import "src/styles/mixins.scss";
 
 .container {
-  @include flex(center, center);
+  @include flexCenter;
   position: relative;
   border-radius: $border-radius;
   width: 100%;
@@ -36,7 +36,7 @@
 }
 
 .video {
-  object-fit: contain;
+  object-fit: cover;
   transform: scaleX(-1);
 
   &.widthProportion {
@@ -100,4 +100,12 @@
 
 .statusDisabled {
   color: $color-error;
+}
+
+.voteIcon {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+
+  z-index: 10;
 }

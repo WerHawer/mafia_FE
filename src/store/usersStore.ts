@@ -66,7 +66,9 @@ class Users {
     this._userStreams = streams;
   }
 
-  getUser = (id: string) => {
+  getUser = (id?: string) => {
+    if (!id) return;
+
     return toJS(this._users[id]);
   };
 

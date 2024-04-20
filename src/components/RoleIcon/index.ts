@@ -1,1 +1,0 @@
-export { RoleIcon } from "./RoleIcon";

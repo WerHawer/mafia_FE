@@ -29,6 +29,8 @@
   }
 
   &.rounded {
+    border-radius: 50%;
+
     &.small {
       padding: 0.4rem;
     }
@@ -40,8 +42,6 @@
     &.large {
       padding: 1rem;
     }
-
-    border-radius: 50%;
   }
 
   &.primary {

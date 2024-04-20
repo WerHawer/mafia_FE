@@ -10,6 +10,7 @@ import { usersStore } from "../../store/usersStore.ts";
 import { gamesStore } from "../../store/gamesStore.ts";
 import styles from "./GamePage.module.scss";
 import { useGetUsersWithAddToStore } from "../../api/user/queries.ts";
+import { GameVote } from "@/components/GameVote";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
@@ -48,7 +49,7 @@ const GamePage = observer(() => {
           <GameInfoSection />
         </section>
         <section className={classNames(styles.asideSection, styles.voteList)}>
-          vote
+          <GameVote />
         </section>
         <section className={styles.chatSection}>
           <GameChat />

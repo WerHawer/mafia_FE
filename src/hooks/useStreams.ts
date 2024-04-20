@@ -23,11 +23,11 @@ export const useStreams = () => {
   const { peer, peerId } = usePeer(userMediaStream?.id);
 
   const addVideoStream = useCallback((stream: MediaStream) => {
-    // const fakeStreams: Stream[] = [];
-    // const videoCount = 10;
+    // const fakeStreams: MediaStream[] = [];
+    // const videoCount = 12;
     //
     // for (let i = 0; i < videoCount; i++) {
-    //   fakeStreams.push({ id: stream.id + i, stream });
+    //   fakeStreams.push(stream);
     // }
 
     setStreams((prev) => {

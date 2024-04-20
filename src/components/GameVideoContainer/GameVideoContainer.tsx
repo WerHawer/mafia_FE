@@ -10,10 +10,15 @@ import { gamesStore } from "@/store/gamesStore.ts";
 export const GameVideoContainer = observer(() => {
   const { streams, userMediaStream } = useStreams();
   const { userStreamsMap, myId } = usersStore;
-  const { isUserGM, speaker } = gamesStore;
+  const { isUserGM, speaker, gameFlow } = gamesStore;
   const [sizeTrigger, setSizeTrigger] = useState<number>(0);
   const streamsLength = streams.length;
-  const hasActiveSpeaker = !!speaker;
+
+  const VIDEO_COUNT = {
+    ThreeGrid: gameFlow.isStarted ? 5 : 4,
+    FourGrid: gameFlow.isStarted ? 7 : 6,
+    FiveGrid: gameFlow.isStarted ? 13 : 12,
+  };
 
   useEffect(() => {
     streams.forEach((stream) => {
@@ -55,13 +60,19 @@ export const GameVideoContainer = observer(() => {
   return (
     <div
       className={classNames(styles.container, {
-        [styles.threeGrid]: streamsLength > 5,
-        [styles.fourGrid]: streamsLength > 7,
+        [styles.twoGrid]: streamsLength <= VIDEO_COUNT.ThreeGrid,
+        [styles.threeGrid]:
+          streamsLength > VIDEO_COUNT.ThreeGrid &&
+          streamsLength <= VIDEO_COUNT.FourGrid,
+        [styles.fourGrid]:
+          streamsLength > VIDEO_COUNT.FourGrid &&
+          streamsLength <= VIDEO_COUNT.FiveGrid,
         [styles.fiveGrid]:
-          (hasActiveSpeaker && speaker !== myId) || streamsLength > 13,
+          (!!speaker && speaker !== myId) ||
+          streamsLength > VIDEO_COUNT.FiveGrid,
       })}
     >
-      {streams.map((stream) => {
+      {streams.map((stream, i) => {
         const isMy = stream.id === userMediaStream?.id;
         const userId = userStreamsMap.get(stream.id)?.user.id;
         const isActive = speaker === userId;
@@ -76,6 +87,7 @@ export const GameVideoContainer = observer(() => {
             streamsLength={streams.length}
             trigger={sizeTrigger}
             handleTrigger={handleTrigger}
+            userId={userId}
           />
         );
       })}

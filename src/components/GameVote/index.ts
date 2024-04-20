@@ -1,0 +1,1 @@
+export { GameVote } from "./GameVote";

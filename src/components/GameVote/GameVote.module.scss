@@ -1,0 +1,19 @@
+@import "src/styles/theme";
+@import "src/styles/mixins";
+
+.container {
+  height: 100%;
+  padding: 1rem;
+}
+
+.listContainer {
+  height: 85%;
+}
+
+.list {
+  @include flex(column, flex-start, flex-start);
+  flex-wrap: wrap;
+  max-height: 100%;
+
+  font-size: 1.2rem;
+}

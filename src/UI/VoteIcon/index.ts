@@ -1,0 +1,1 @@
+export { VoteIcon } from "./VoteIcon";

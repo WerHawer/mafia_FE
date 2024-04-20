@@ -5,7 +5,7 @@ import {
   useRestartGameMutation,
   useUpdateGameFlowMutation,
 } from "@/api/game/queries.ts";
-import { Switcher } from "@/components/Switcher";
+import { Switcher } from "../../../UI/Switcher";
 import styles from "./GmPanel.module.scss";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
@@ -27,6 +27,7 @@ export const GamePanel = observer(() => {
           isNight: !gameFlow.isNight,
           day: gameFlow.isNight ? gameFlow.day + 1 : gameFlow.day,
           speaker: "",
+          proposed: [],
         },
         gameId: activeGameId,
       },

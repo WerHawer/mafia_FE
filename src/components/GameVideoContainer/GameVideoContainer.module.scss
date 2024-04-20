@@ -2,11 +2,15 @@
 
 .container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(49%, 1fr));
-  align-items: start;
+  align-items: center;
   gap: 1rem;
   padding: 0 1rem;
+
   border-right: $border-color 1px solid;
+
+  &.twoGrid {
+    grid-template-columns: repeat(auto-fit, minmax(49%, 1fr));
+  }
 
   &.threeGrid {
     grid-template-columns: repeat(auto-fit, minmax(32%, 1fr));
