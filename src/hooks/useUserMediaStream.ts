@@ -1,9 +1,10 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useMount, useUnmount } from "react-use";
+import { streamStore } from "@/store/streamsStore.ts";
 
 export const useUserMediaStream = (options: MediaStreamConstraints) => {
-  const [userMediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const isFirstRender = useRef(true);
+  const { setMyStream, resetMyStream } = streamStore;
 
   useMount(() => {
     if (!isFirstRender.current) return;
@@ -14,7 +15,7 @@ export const useUserMediaStream = (options: MediaStreamConstraints) => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia(options);
 
-        setMediaStream(stream);
+        setMyStream(stream);
       } catch (err) {
         console.error("Error accessing media devices.", err);
       }
@@ -24,12 +25,6 @@ export const useUserMediaStream = (options: MediaStreamConstraints) => {
   });
 
   useUnmount(() => {
-    setMediaStream(null);
-
-    userMediaStream?.getTracks().forEach((track) => {
-      track.stop();
-    });
+    resetMyStream();
   });
-
-  return userMediaStream;
 };

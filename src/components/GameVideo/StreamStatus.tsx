@@ -1,5 +1,5 @@
 import styles from "./GameVideo.module.scss";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import {
   AudioMutedOutlined,
   AudioOutlined,
@@ -7,9 +7,9 @@ import {
 } from "@ant-design/icons";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { usersStore } from "@/store/usersStore.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
+import { streamStore } from "@/store/streamsStore.ts";
 
 type StreamStatusProps = {
   stream: MediaStream;
@@ -19,16 +19,20 @@ type StreamStatusProps = {
 
 export const StreamStatus = observer(
   ({ stream, isMyStream, isIGM }: StreamStatusProps) => {
-    const { userStreams } = usersStore;
+    const { getUserStreamInfo, userStreamsMap } = streamStore;
     const { sendMessage } = useSocket();
 
-    const userStreamData = useMemo(() => {
-      return userStreams.find(([id]) => id === stream.id);
-    }, [stream, userStreams]);
+    // TODO: re-work this to use stream by fact, not this data...
+    const { audio, video, roomId } = useMemo(() => {
+      const userStreamData = getUserStreamInfo(stream.id);
+      const audio = userStreamData?.user.audio ?? true;
+      const video = userStreamData?.user.video ?? true;
+      const roomId = userStreamData?.roomId ?? "";
 
-    const audio = userStreamData?.[1].user.audio ?? true;
-    const video = userStreamData?.[1].user.video ?? true;
-    const roomId = userStreamData?.[1].roomId ?? "";
+      return { audio, video, roomId };
+      // we need userStreamsMap to be updated in write way
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [getUserStreamInfo, stream, userStreamsMap]);
 
     const handleAudioClick = () => {
       if (!isMyStream && !isIGM) return;

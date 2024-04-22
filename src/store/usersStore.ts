@@ -1,14 +1,12 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
-import { IUser, UserStreamId } from "../types/user.types.ts";
-import { StreamsArr } from "../types/socket.types.ts";
+import { IUser } from "../types/user.types.ts";
 
 class Users {
   _myUser: IUser | null = null;
   _users: Record<string, IUser> = {};
   _token: string = "";
   _socketConnectedCount: number = 0;
-  _userStreams: StreamsArr = [];
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -62,10 +60,6 @@ class Users {
     this.removeUsers();
   };
 
-  setUserStreams(streams: StreamsArr) {
-    this._userStreams = streams;
-  }
-
   getUser = (id?: string) => {
     if (!id) return;
 
@@ -90,14 +84,6 @@ class Users {
 
   get socketConnected() {
     return this._socketConnectedCount;
-  }
-
-  get userStreams() {
-    return toJS(this._userStreams);
-  }
-
-  get userStreamsMap() {
-    return new Map(this.userStreams);
   }
 }
 

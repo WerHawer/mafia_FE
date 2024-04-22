@@ -7,6 +7,7 @@ export const initialGameFlow: IGameFlow = {
   isStarted: false,
   isFinished: false,
   isNight: false,
+  isVoteTime: false,
   day: 0,
   proposed: [],
   killed: [],

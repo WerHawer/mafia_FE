@@ -1,18 +1,23 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { GameVideo } from "../GameVideo";
-import { useStreams } from "@/hooks/useStreams.ts";
 import styles from "./GameVideoContainer.module.scss";
 import { usersStore } from "@/store/usersStore.ts";
 import { gamesStore } from "@/store/gamesStore.ts";
+import { streamStore } from "@/store/streamsStore.ts";
 
 export const GameVideoContainer = observer(() => {
-  const { streams, userMediaStream } = useStreams();
-  const { userStreamsMap, myId } = usersStore;
+  const { myId } = usersStore;
   const { isUserGM, speaker, gameFlow } = gamesStore;
-  const [sizeTrigger, setSizeTrigger] = useState<number>(0);
-  const streamsLength = streams.length;
+  const {
+    myStream: userMediaStream,
+    streams,
+    streamsLength,
+    userStreamsMap,
+    manageStreamTracks,
+  } = streamStore;
+  const ref = useRef<HTMLDivElement>(null);
 
   const VIDEO_COUNT = {
     ThreeGrid: gameFlow.isStarted ? 5 : 4,
@@ -21,41 +26,8 @@ export const GameVideoContainer = observer(() => {
   };
 
   useEffect(() => {
-    streams.forEach((stream) => {
-      const streamId = stream.id;
-
-      const audioTrack = stream.getAudioTracks()[0];
-      const videoTrack = stream.getVideoTracks()[0];
-
-      const userStreamData = userStreamsMap.get(streamId);
-
-      if (!userStreamData) return;
-
-      const { audio = true, video = true, offParams } = userStreamData.user;
-      const { useTo } = userStreamData;
-      const isSelfMute = offParams === "self";
-
-      if (streamId === userMediaStream?.id && !isSelfMute) return;
-      if (isUserGM(myId) && !isSelfMute) return;
-      // if (isUserGM(id) && !isSelfMute) return;
-
-      if (useTo && !isSelfMute) {
-        const isForMe = useTo.includes(myId);
-
-        audioTrack.enabled = isForMe ? audio : !audio;
-        videoTrack.enabled = isForMe ? video : !video;
-
-        return;
-      }
-
-      audioTrack.enabled = audio;
-      videoTrack.enabled = video;
-    });
-  }, [streams, userMediaStream, isUserGM, myId, userStreamsMap]);
-
-  const handleTrigger = useCallback(() => {
-    setSizeTrigger((prev) => prev + 1);
-  }, []);
+    manageStreamTracks(myId, isUserGM(myId));
+  }, [isUserGM, manageStreamTracks, myId, userStreamsMap]);
 
   return (
     <div
@@ -71,8 +43,9 @@ export const GameVideoContainer = observer(() => {
           (!!speaker && speaker !== myId) ||
           streamsLength > VIDEO_COUNT.FiveGrid,
       })}
+      ref={ref}
     >
-      {streams.map((stream, i) => {
+      {streams.map((stream) => {
         const isMy = stream.id === userMediaStream?.id;
         const userId = userStreamsMap.get(stream.id)?.user.id;
         const isActive = speaker === userId;
@@ -84,9 +57,6 @@ export const GameVideoContainer = observer(() => {
             isMyStream={isMy}
             isActive={isActive}
             muted
-            streamsLength={streams.length}
-            trigger={sizeTrigger}
-            handleTrigger={handleTrigger}
             userId={userId}
           />
         );

@@ -67,9 +67,9 @@ export const GameChat = observer(() => {
         }}
         ref={chatRef}
       >
-        {messages?.map(({ sender, text }, index) => {
+        {messages?.map(({ sender, text, id }, index) => {
           return (
-            <div key={sender.id + index} className={styles.messageText}>
+            <div key={id ?? sender.id + index} className={styles.messageText}>
               <p>{sender.name}:</p>
               <p>{text}</p>
             </div>

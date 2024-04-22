@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import classNames from "classnames";
 import Draggable from "react-draggable";
-import { throttle } from "lodash";
 import { observer } from "mobx-react-lite";
 import styles from "./GameVideo.module.scss";
 import { UserId } from "@/types/user.types.ts";
@@ -21,12 +20,7 @@ type GameVideoProps = {
   isMyStream?: boolean;
   isActive?: boolean;
   userId?: UserId;
-  streamsLength?: number;
-  trigger?: number;
-  handleTrigger?: () => void;
 };
-
-const INDEX_RATIO = 0.75;
 
 export const GameVideo = observer(
   ({
@@ -34,17 +28,14 @@ export const GameVideo = observer(
     muted = false,
     isMyStream = false,
     isActive = false,
-    trigger,
-    handleTrigger,
-    streamsLength,
     userId,
   }: GameVideoProps) => {
-    const [isWidthProportion, setIsWidthProportion] = useState(false);
-    const { myId, userStreamsMap, getUser, me } = usersStore;
+    const { myId, getUser, me } = usersStore;
     const { isUserGM, speaker, gameFlow, activeGameId } = gamesStore;
     const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
     const containerRef = useRef<HTMLDivElement>(null);
 
+    // TODO: create a hook for this
     const currentUser = isMyStream ? me : getUser(userId);
     const isMyStreamActive = isMyStream && stream;
     const isCurrentUserGM = isUserGM(userId);
@@ -55,25 +46,6 @@ export const GameVideo = observer(
       : false;
     const shouldShowVoteIcon =
       !!speaker && (isISpeaker || isIGM) && !isMyStream && !isCurrentUserGM;
-
-    useEffect(() => {
-      if (!containerRef.current) return;
-
-      const container = containerRef.current;
-
-      const resize = throttle(() => {
-        const { width, height } = container.getBoundingClientRect();
-        setIsWidthProportion(height / width < INDEX_RATIO);
-      }, 150);
-
-      window.addEventListener("resize", resize);
-
-      resize();
-
-      return () => {
-        window.removeEventListener("resize", resize);
-      };
-    }, [userStreamsMap, trigger, streamsLength, speaker, gameFlow.isStarted]);
 
     const handleVote = useCallback(() => {
       if ((myId !== speaker && !isUserGM(myId)) || !userId) return;
@@ -142,8 +114,7 @@ export const GameVideo = observer(
               stream={stream}
               muted={muted}
               isActive={isActive}
-              isWidthProportion={isWidthProportion}
-              onMount={handleTrigger}
+              container={containerRef.current}
             />
           )}
           {currentUser && (

@@ -1,51 +1,31 @@
 import { useParams } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useUserMediaStream } from "./useUserMediaStream.ts";
 import { usePeer } from "./usePeer.ts";
 import Peer from "peerjs";
 import { wsEvents } from "../config/wsEvents.ts";
-import { usersStore } from "../store/usersStore.ts";
 import { useSocket } from "./useSocket.ts";
+import { streamStore } from "@/store/streamsStore.ts";
+import { useUnmount } from "react-use";
 
 const MAX_STREAMS = 11;
 
-export const useStreams = () => {
-  const { id = "" } = useParams();
-  const [streams, setStreams] = useState<MediaStream[]>([]);
-  const { subscribe, sendMessage } = useSocket();
-  const { myId } = usersStore;
+type UseStreamsParams = {
+  myStream?: MediaStream;
+  myId: string;
+};
 
-  const userMediaStream = useUserMediaStream({
+export const useStreams = ({ myStream, myId }: UseStreamsParams) => {
+  const { id = "" } = useParams();
+  const { subscribe, sendMessage } = useSocket();
+  const { setStream, removeStream, resetStreams } = streamStore;
+
+  useUserMediaStream({
     audio: true,
     video: true,
   });
 
-  const { peer, peerId } = usePeer(userMediaStream?.id);
-
-  const addVideoStream = useCallback((stream: MediaStream) => {
-    // const fakeStreams: MediaStream[] = [];
-    // const videoCount = 12;
-    //
-    // for (let i = 0; i < videoCount; i++) {
-    //   fakeStreams.push(stream);
-    // }
-
-    setStreams((prev) => {
-      if (prev.length >= MAX_STREAMS) return prev;
-
-      const isStreamExist = prev.find((item) => item.id === stream.id);
-
-      if (isStreamExist) return prev;
-
-      return [...prev, stream];
-
-      // return fakeStreams;
-    });
-  }, []);
-
-  const removeVideoStream = useCallback((id: string) => {
-    setStreams((prev) => prev.filter((item) => item.id !== id));
-  }, []);
+  const { peer, peerId } = usePeer(myStream?.id);
 
   const connectToNewUser = useCallback(
     (
@@ -66,65 +46,62 @@ export const useStreams = () => {
   );
 
   useEffect(() => {
-    if (!userMediaStream || !myId) return;
+    if (!myStream || !myId) return;
 
-    sendMessage(wsEvents.roomConnection, [id, myId, userMediaStream.id]);
+    sendMessage(wsEvents.roomConnection, [id, myId, myStream.id]);
 
     const unsubscribe = subscribe(wsEvents.peerDisconnect, ({ streamId }) => {
-      removeVideoStream(streamId);
+      removeStream(streamId);
     });
 
     return () => {
       unsubscribe();
       sendMessage(wsEvents.roomLeave, [id, myId]);
     };
-  }, [id, myId, removeVideoStream, sendMessage, subscribe, userMediaStream]);
+  }, [id, myId, removeStream, sendMessage, subscribe, myStream]);
 
   // add my video stream
   useEffect(() => {
-    if (!userMediaStream) return;
+    if (!myStream) return;
 
-    addVideoStream(userMediaStream);
-  }, [userMediaStream, addVideoStream]);
+    setStream(myStream, MAX_STREAMS);
+  }, [myStream, setStream]);
 
   // add user who already in room to me when I connect.
   useEffect(() => {
-    if (!peer || !userMediaStream) return;
+    if (!peer || !myStream) return;
 
     peer.on(wsEvents.call, (call) => {
-      call.answer(userMediaStream);
+      call.answer(myStream);
 
       call.on(wsEvents.stream, (userVideoStream) => {
-        addVideoStream(userVideoStream);
+        setStream(userVideoStream, MAX_STREAMS);
       });
     });
 
     return () => {
       peer.off(wsEvents.call);
     };
-  }, [addVideoStream, connectToNewUser, peer, peerId, userMediaStream]);
+  }, [connectToNewUser, peer, peerId, setStream, myStream]);
 
   // add new user when he connects to room
   useEffect(() => {
-    if (!userMediaStream || !peer) return;
+    if (!myStream || !peer) return;
 
     const unsubscribe = subscribe(wsEvents.roomConnection, ({ streamId }) => {
       const connectCb = (userVideoStream: MediaStream) => {
-        addVideoStream(userVideoStream);
+        setStream(userVideoStream, MAX_STREAMS);
       };
 
-      connectToNewUser(streamId, userMediaStream, peer, connectCb);
+      connectToNewUser(streamId, myStream, peer, connectCb);
     });
 
     return () => {
       unsubscribe();
     };
-  }, [addVideoStream, connectToNewUser, peer, subscribe, userMediaStream]);
+  }, [connectToNewUser, peer, setStream, subscribe, myStream]);
 
-  return {
-    streams,
-    userMediaStream,
-    addVideoStream,
-    removeVideoStream,
-  };
+  useUnmount(() => {
+    resetStreams();
+  });
 };

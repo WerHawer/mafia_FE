@@ -1,16 +1,12 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 import "./App.css";
-import { wsEvents } from "../../config/wsEvents.ts";
-import { usersStore } from "../../store/usersStore.ts";
-import { useSocket } from "../../hooks/useSocket.ts";
-import { messagesStore } from "../../store/messagesStore.ts";
-import {
-  IMessage,
-  IMessageDTO,
-  MessageTypes,
-} from "../../types/message.types.ts";
-import { useGetMessagesQueryWithStore } from "../../api/messages/queries.ts";
+import { wsEvents } from "@/config/wsEvents.ts";
+import { usersStore } from "@/store/usersStore.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
+import { messagesStore } from "@/store/messagesStore.ts";
+import { IMessage, IMessageDTO, MessageTypes } from "@/types/message.types.ts";
+import { useGetMessagesQueryWithStore } from "@/api/messages/queries.ts";
 
 const App = observer(() => {
   const { sendMessage } = useSocket();
@@ -56,9 +52,14 @@ const App = observer(() => {
 
         <div className="chatMessages" ref={chatRef}>
           {publicMessages?.map(
-            ({ text, sender: { id: userId, name: userName }, createdAt }) => (
+            ({
+              text,
+              id,
+              sender: { id: userId, name: userName },
+              createdAt,
+            }) => (
               <p
-                key={createdAt}
+                key={id ?? createdAt + userId}
                 className={
                   userId === user?.id ? "messageText myMessage" : "messageText"
                 }

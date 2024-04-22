@@ -32,21 +32,18 @@ export type SendMessageFunction = <T extends keyof WSSentEventData>(
   data?: WSSentEventData[T],
 ) => void;
 
-export type StreamsArr = Array<
-  [
-    UserStreamId,
-    {
-      roomId: GameId;
-      useTo?: UserStreamId[];
-      user: {
-        id: UserId;
-        audio: boolean;
-        video: boolean;
-        offParams?: OffParams;
-      };
-    },
-  ]
->;
+export type StreamInfo = {
+  roomId: GameId;
+  useTo?: UserStreamId[];
+  user: {
+    id: UserId;
+    audio: boolean;
+    video: boolean;
+    offParams?: OffParams;
+  };
+};
+
+export type StreamsArr = Array<[UserStreamId, StreamInfo]>;
 
 export interface WSSubscribedEventData {
   [wsEvents.roomConnection]: {

@@ -1,23 +1,43 @@
+import { memo, useCallback, useEffect, useState } from "react";
 import classNames from "classnames";
 import styles from "../GameVideo/GameVideo.module.scss";
-import { memo } from "react";
+import { throttle } from "lodash";
 
 type PlayerVideoProps = {
   stream: MediaStream;
   muted: boolean;
   isActive: boolean;
-  isWidthProportion: boolean;
-  onMount?: () => void;
+  container?: HTMLDivElement | null;
 };
 
+const INDEX_RATIO = 0.75;
+
 export const PlayerVideo = memo(
-  ({
-    stream,
-    muted,
-    isWidthProportion,
-    isActive,
-    onMount,
-  }: PlayerVideoProps) => {
+  ({ stream, muted, isActive, container }: PlayerVideoProps) => {
+    const [isWidthProportion, setIsWidthProportion] = useState(false);
+
+    const getSizeDirection = useCallback(() => {
+      if (!container) return;
+
+      const { width, height } = container.getBoundingClientRect();
+      setIsWidthProportion(height / width < INDEX_RATIO);
+    }, [container]);
+
+    useEffect(() => {
+      if (!container) return;
+
+      const throttledResize = throttle(getSizeDirection, 150);
+      const resizeObserver = new ResizeObserver(throttledResize);
+
+      resizeObserver.observe(container);
+
+      return () => {
+        if (container) {
+          resizeObserver.unobserve(container);
+        }
+      };
+    }, [container, getSizeDirection]);
+
     return (
       <video
         className={classNames(
@@ -33,7 +53,6 @@ export const PlayerVideo = memo(
         ref={(video) => {
           if (video) {
             video.srcObject = stream;
-            onMount?.();
           }
         }}
       />

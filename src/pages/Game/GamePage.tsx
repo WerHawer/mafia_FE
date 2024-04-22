@@ -2,22 +2,26 @@ import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useParams } from "react-router-dom";
 import classNames from "classnames";
-import { GameVideoContainer } from "../../components/GameVideoContainer";
-import { GameChat } from "../../components/GameChat";
-import { useAddUserToGameMutation } from "../../api/game/queries.ts";
-import { GameInfoSection } from "../../components/GameInfoSection";
-import { usersStore } from "../../store/usersStore.ts";
-import { gamesStore } from "../../store/gamesStore.ts";
+import { GameVideoContainer } from "@/components/GameVideoContainer";
+import { GameChat } from "@/components/GameChat";
+import { useAddUserToGameMutation } from "@/api/game/queries.ts";
+import { GameInfoSection } from "@/components/GameInfoSection";
+import { usersStore } from "@/store/usersStore.ts";
+import { gamesStore } from "@/store/gamesStore.ts";
 import styles from "./GamePage.module.scss";
-import { useGetUsersWithAddToStore } from "../../api/user/queries.ts";
+import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import { GameVote } from "@/components/GameVote";
+import { useStreams } from "@/hooks/useStreams.ts";
+import { streamStore } from "@/store/streamsStore.ts";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
   const { myId } = usersStore;
   const { setActiveGame, activeGamePlayers } = gamesStore;
+  const { myStream } = streamStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   useGetUsersWithAddToStore(activeGamePlayers);
+  useStreams({ myStream, myId });
 
   useEffect(() => {
     if (!id) return;

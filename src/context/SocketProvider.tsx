@@ -13,6 +13,7 @@ import { ListenFunction, MassSubscribeEvents } from "../types/socket.types.ts";
 import { messagesStore } from "../store/messagesStore.ts";
 import { gamesStore } from "../store/gamesStore.ts";
 import { usersStore } from "../store/usersStore.ts";
+import { streamStore } from "@/store/streamsStore.ts";
 
 export const SocketContext = createContext<{
   socket: Socket | null;
@@ -26,7 +27,8 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const { setNewMessage } = messagesStore;
   const { updateGames } = gamesStore;
-  const { setSocketConnectedCount, setUserStreams } = usersStore;
+  const { setSocketConnectedCount } = usersStore;
+  const { setUserStreamsMap } = streamStore;
 
   const subscribers: MassSubscribeEvents = useMemo(() => {
     if (!socket) return {};
@@ -54,19 +56,19 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
         setSocketConnectedCount(connectedUsers);
       },
       [wsEvents.roomConnection]: ({ streams }) => {
-        setUserStreams(streams);
+        setUserStreamsMap(streams);
       },
       [wsEvents.peerDisconnect]: ({ streams }) => {
-        setUserStreams(streams);
+        setUserStreamsMap(streams);
       },
       [wsEvents.userStreamStatus]: (streams) => {
-        setUserStreams(streams);
+        setUserStreamsMap(streams);
       },
     };
   }, [
     setNewMessage,
     setSocketConnectedCount,
-    setUserStreams,
+    setUserStreamsMap,
     socket,
     updateGames,
   ]);
