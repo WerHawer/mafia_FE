@@ -16,6 +16,7 @@ export interface IGameFlow {
   isVoteTime: boolean;
   day: number;
   proposed: UserId[];
+  voted: Record<UserId, UserId[]>;
   killed: UserId[];
 }
 

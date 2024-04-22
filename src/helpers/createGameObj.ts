@@ -10,6 +10,7 @@ export const initialGameFlow: IGameFlow = {
   isVoteTime: false,
   day: 0,
   proposed: [],
+  voted: {},
   killed: [],
 };
 

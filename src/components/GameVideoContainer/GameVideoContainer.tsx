@@ -12,12 +12,23 @@ export const GameVideoContainer = observer(() => {
   const { isUserGM, speaker, gameFlow } = gamesStore;
   const {
     myStream: userMediaStream,
-    streams,
-    streamsLength,
     userStreamsMap,
     manageStreamTracks,
+    getFilteredStreams,
   } = streamStore;
   const ref = useRef<HTMLDivElement>(null);
+
+  const filterVariant = gameFlow.isVoteTime ? "opposite" : "direct";
+  const arrForFilter = gameFlow.isVoteTime
+    ? gameFlow.proposed
+    : gameFlow.killed;
+
+  const filteredStreams = getFilteredStreams({
+    arrForFilter,
+    variant: filterVariant,
+    myId,
+  });
+  const streamsLength = filteredStreams.length;
 
   const VIDEO_COUNT = {
     ThreeGrid: gameFlow.isStarted ? 5 : 4,
@@ -26,8 +37,8 @@ export const GameVideoContainer = observer(() => {
   };
 
   useEffect(() => {
-    manageStreamTracks(myId, isUserGM(myId));
-  }, [isUserGM, manageStreamTracks, myId, userStreamsMap]);
+    manageStreamTracks(filteredStreams, myId, isUserGM(myId));
+  }, [isUserGM, manageStreamTracks, myId, userStreamsMap, filteredStreams]);
 
   return (
     <div
@@ -45,7 +56,7 @@ export const GameVideoContainer = observer(() => {
       })}
       ref={ref}
     >
-      {streams.map((stream) => {
+      {filteredStreams.map((stream) => {
         const isMy = stream.id === userMediaStream?.id;
         const userId = userStreamsMap.get(stream.id)?.user.id;
         const isActive = speaker === userId;

@@ -28,6 +28,8 @@ export const GamePanel = observer(() => {
           day: gameFlow.isNight ? gameFlow.day + 1 : gameFlow.day,
           speaker: "",
           proposed: [],
+          voted: {},
+          isVoteTime: false,
         },
         gameId: activeGameId,
       },

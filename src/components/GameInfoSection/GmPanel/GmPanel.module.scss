@@ -34,8 +34,9 @@
   cursor: pointer;
 }
 
-.nightContainer {
-  @include flex(row, flex-start);
+.nightContainer,
+.dayContainer {
+  @include flex(row, space-around, flex-end);
   width: 100%;
   column-gap: 1rem;
   font-size: 1.5rem;

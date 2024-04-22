@@ -56,6 +56,29 @@ class StreamStore {
     return toJS(this._streams);
   }
 
+  getFilteredStreams({
+    arrForFilter,
+    variant = "direct",
+    myId,
+  }: {
+    arrForFilter?: UserId[];
+    variant: "opposite" | "direct";
+    myId?: UserId;
+  }) {
+    if (!arrForFilter) return this.streams;
+
+    return this.streams.filter((stream) => {
+      const userId = this.getUserStreamInfo(stream.id)?.user.id;
+
+      if (!userId) return true;
+      if (myId === userId) return true;
+
+      return variant === "direct"
+        ? !arrForFilter.includes(userId)
+        : arrForFilter.includes(userId);
+    });
+  }
+
   get myStream() {
     return toJS(this._myStream);
   }
@@ -72,8 +95,8 @@ class StreamStore {
     return this.streams.length;
   }
 
-  manageStreamTracks(myId: UserId, isIGm: boolean) {
-    this.streams.forEach((stream) => {
+  manageStreamTracks(streams: MediaStream[], myId: UserId, isIGm: boolean) {
+    streams.forEach((stream) => {
       const streamId = stream.id;
 
       const audioTrack = stream.getAudioTracks()[0];

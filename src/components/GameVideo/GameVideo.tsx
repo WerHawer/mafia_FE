@@ -11,7 +11,7 @@ import { VideoMenu } from "./VideoMenu.tsx";
 import { VideoUserInfo } from "./VideoUserInfo.tsx";
 import { StreamStatus } from "@/components/GameVideo/StreamStatus.tsx";
 import { VoteIcon } from "@/UI/VoteIcon/VoteIcon.tsx";
-import { ButtonSize } from "@/UI/Button/ButtonTypes.ts";
+import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 
 type GameVideoProps = {
@@ -28,7 +28,7 @@ export const GameVideo = observer(
     muted = false,
     isMyStream = false,
     isActive = false,
-    userId,
+    userId = "",
   }: GameVideoProps) => {
     const { myId, getUser, me } = usersStore;
     const { isUserGM, speaker, gameFlow, activeGameId } = gamesStore;
@@ -46,8 +46,9 @@ export const GameVideo = observer(
       : false;
     const shouldShowVoteIcon =
       !!speaker && (isISpeaker || isIGM) && !isMyStream && !isCurrentUserGM;
+    const thisUserVoted = gameFlow.voted?.[userId] ?? [];
 
-    const handleVote = useCallback(() => {
+    const handleVotePropose = useCallback(() => {
       if ((myId !== speaker && !isUserGM(myId)) || !userId) return;
 
       const newList = isUserAddedToVoteList
@@ -69,6 +70,23 @@ export const GameVideo = observer(
       userId,
     ]);
 
+    const handleVote = useCallback(() => {
+      if (!userId || !myId) return;
+      if (thisUserVoted.includes(myId)) return;
+      if (isIGM) return;
+
+      updateGameFlow({
+        gameId: activeGameId,
+        flow: {
+          ...gameFlow,
+          voted: {
+            ...(gameFlow.voted ?? {}),
+            [userId]: [...thisUserVoted, myId],
+          },
+        },
+      });
+    }, [gameFlow, myId, thisUserVoted, updateGameFlow, userId]);
+
     return (
       <Draggable
         disabled={!(isMyStream && gameFlow.isStarted)}
@@ -88,9 +106,26 @@ export const GameVideo = observer(
             <VoteIcon
               className={styles.voteIcon}
               size={ButtonSize.Small}
+              variant={ButtonVariant.Secondary}
               isVoted={isUserAddedToVoteList}
+              onClick={handleVotePropose}
+            />
+          )}
+
+          {gameFlow.isVoteTime && gameFlow.proposed.includes(userId) && (
+            <VoteIcon
+              className={styles.voteIcon}
+              size={ButtonSize.Large}
               onClick={handleVote}
             />
+          )}
+
+          {thisUserVoted.length > 0 && (
+            <ul className={styles.voteList}>
+              {thisUserVoted.map((id) => (
+                <li key={id}>{getUser(id)?.name || "Anonimus"}</li>
+              ))}
+            </ul>
           )}
 
           {stream && (

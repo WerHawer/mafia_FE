@@ -13,6 +13,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       {/*<ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />*/}
+
       <SocketProvider>
         <RouterProvider router={router} />
       </SocketProvider>

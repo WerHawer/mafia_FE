@@ -1,12 +1,13 @@
-import { SoundOutlined } from "@ant-design/icons";
-import { SpeakerTimer } from "@/components/SpeakerTimer/SpeakerTimer.tsx";
+import { observer } from "mobx-react-lite";
+import { useCallback } from "react";
+import { SoundOutlined, UsergroupDeleteOutlined } from "@ant-design/icons";
+import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
 import { gamesStore } from "@/store/gamesStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
-import { useCallback } from "react";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
-import { observer } from "mobx-react-lite";
+import styles from "./GmPanel.module.scss";
 
 export const DayPanel = observer(() => {
   const { activeGameId, gameFlow, activeGamePlayersWithoutGM } = gamesStore;
@@ -21,7 +22,9 @@ export const DayPanel = observer(() => {
     let speaker = "";
 
     if (!gameFlow.speaker) {
-      speaker = activeGamePlayersWithoutGM[day - 1];
+      const maxCount = activeGamePlayersWithoutGM.length;
+      const index = day - 1 >= maxCount ? 0 : day - 1;
+      speaker = activeGamePlayersWithoutGM[index];
     } else {
       const currentSpeakerIndex = activeGamePlayersWithoutGM.findIndex(
         (player) => player === gameFlow.speaker,
@@ -67,18 +70,38 @@ export const DayPanel = observer(() => {
     updateGameFlow,
   ]);
 
+  const handleVoteClick = useCallback(() => {
+    updateGameFlow({
+      flow: {
+        ...gameFlow,
+        isVoteTime: !gameFlow.isVoteTime,
+        speaker: "",
+      },
+      gameId: activeGameId,
+    });
+  }, [gameFlow, updateGameFlow, activeGameId]);
+
   return (
-    <>
+    <div className={styles.dayContainer}>
       <p>Day {day}</p>
 
-      <SoundOutlined onClick={handleSpeaker} style={{ cursor: "pointer" }} />
+      <div>
+        <SoundOutlined onClick={handleSpeaker} style={{ cursor: "pointer" }} />
+        {speaker && (
+          <p>
+            Speaker: {speaker.name} - <Timer resetTrigger={gameFlow.speaker} />
+          </p>
+        )}
 
-      {speaker && (
-        <p>
-          Speaker: {speaker.name} - <SpeakerTimer />
-        </p>
-      )}
-    </>
+        {/*TODO: add trigger for timer reset when all players voted*/}
+        {gameFlow.isVoteTime && <Timer timer={15} />}
+      </div>
+
+      <UsergroupDeleteOutlined
+        onClick={handleVoteClick}
+        style={{ cursor: "pointer" }}
+      />
+    </div>
   );
 });
 
