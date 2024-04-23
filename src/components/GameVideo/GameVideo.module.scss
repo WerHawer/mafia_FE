@@ -113,26 +113,3 @@
 .statusDisabled {
   color: $color-error;
 }
-
-.voteIcon {
-  position: absolute;
-  top: 5px;
-  left: 5px;
-
-  z-index: 10;
-}
-
-.voteList {
-  @include flex(column, flex-start, flex-start);
-  column-gap: 1rem;
-  position: absolute;
-  top: 60px;
-  left: 5px;
-  padding: 0.5rem;
-  background-color: rgba($color-dark-primary, 50%);
-  border-radius: $border-radius;
-  color: $color-text-tertiary;
-  font-size: 1.4rem;
-
-  z-index: 10;
-}

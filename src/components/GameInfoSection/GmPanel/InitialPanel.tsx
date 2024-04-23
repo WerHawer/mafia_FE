@@ -13,7 +13,7 @@ import { observer } from "mobx-react-lite";
 export const InitialPanel = observer(() => {
   const { activeGameId, activeGamePlayersWithoutGM, gameFlow } = gamesStore;
   const { mutate: addRoles } = useAddRolesToGameMutation();
-  const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
+  const { mutate: updateGameFlow } = useUpdateGameFlowMutation(gameFlow);
 
   const handleStartGame = useCallback(() => {
     if (!activeGameId) return;
@@ -29,8 +29,7 @@ export const InitialPanel = observer(() => {
         onSuccess: () => {
           updateGameFlow({
             gameId: activeGameId,
-            flow: {
-              ...gameFlow,
+            newFlow: {
               isStarted: true,
               day: 1,
             },
@@ -38,13 +37,7 @@ export const InitialPanel = observer(() => {
         },
       },
     );
-  }, [
-    activeGameId,
-    activeGamePlayersWithoutGM,
-    addRoles,
-    updateGameFlow,
-    gameFlow,
-  ]);
+  }, [activeGameId, activeGamePlayersWithoutGM, addRoles, updateGameFlow]);
 
   return (
     <div className={styles.initialPanelContainer}>

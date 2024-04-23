@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import classNames from "classnames";
 import Draggable from "react-draggable";
 import { observer } from "mobx-react-lite";
@@ -10,9 +10,7 @@ import { PlayerVideo } from "../PlayerVideo";
 import { VideoMenu } from "./VideoMenu.tsx";
 import { VideoUserInfo } from "./VideoUserInfo.tsx";
 import { StreamStatus } from "@/components/GameVideo/StreamStatus.tsx";
-import { VoteIcon } from "@/UI/VoteIcon/VoteIcon.tsx";
-import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
-import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import { VoteFlow } from "@/components/VoteFlow";
 
 type GameVideoProps = {
   stream?: MediaStream;
@@ -31,8 +29,7 @@ export const GameVideo = observer(
     userId = "",
   }: GameVideoProps) => {
     const { myId, getUser, me } = usersStore;
-    const { isUserGM, speaker, gameFlow, activeGameId } = gamesStore;
-    const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
+    const { isUserGM, gameFlow } = gamesStore;
     const containerRef = useRef<HTMLDivElement>(null);
 
     // TODO: create a hook for this
@@ -40,52 +37,6 @@ export const GameVideo = observer(
     const isMyStreamActive = isMyStream && stream;
     const isCurrentUserGM = isUserGM(userId);
     const isIGM = isUserGM(myId);
-    const isISpeaker = speaker === myId;
-    const isUserAddedToVoteList = userId
-      ? gameFlow.proposed.includes(userId)
-      : false;
-    const shouldShowVoteIcon =
-      !!speaker && (isISpeaker || isIGM) && !isMyStream && !isCurrentUserGM;
-    const thisUserVoted = gameFlow.voted?.[userId] ?? [];
-
-    const handleVotePropose = useCallback(() => {
-      if ((myId !== speaker && !isUserGM(myId)) || !userId) return;
-
-      const newList = isUserAddedToVoteList
-        ? gameFlow.proposed.filter((id) => id !== userId)
-        : [...gameFlow.proposed, userId];
-
-      updateGameFlow({
-        gameId: activeGameId,
-        flow: { ...gameFlow, proposed: newList },
-      });
-    }, [
-      activeGameId,
-      gameFlow,
-      isUserAddedToVoteList,
-      isUserGM,
-      myId,
-      speaker,
-      updateGameFlow,
-      userId,
-    ]);
-
-    const handleVote = useCallback(() => {
-      if (!userId || !myId) return;
-      if (thisUserVoted.includes(myId)) return;
-      if (isIGM) return;
-
-      updateGameFlow({
-        gameId: activeGameId,
-        flow: {
-          ...gameFlow,
-          voted: {
-            ...(gameFlow.voted ?? {}),
-            [userId]: [...thisUserVoted, myId],
-          },
-        },
-      });
-    }, [gameFlow, myId, thisUserVoted, updateGameFlow, userId]);
 
     return (
       <Draggable
@@ -102,31 +53,7 @@ export const GameVideo = observer(
           })}
           ref={containerRef}
         >
-          {shouldShowVoteIcon && (
-            <VoteIcon
-              className={styles.voteIcon}
-              size={ButtonSize.Small}
-              variant={ButtonVariant.Secondary}
-              isVoted={isUserAddedToVoteList}
-              onClick={handleVotePropose}
-            />
-          )}
-
-          {gameFlow.isVoteTime && gameFlow.proposed.includes(userId) && (
-            <VoteIcon
-              className={styles.voteIcon}
-              size={ButtonSize.Large}
-              onClick={handleVote}
-            />
-          )}
-
-          {thisUserVoted.length > 0 && (
-            <ul className={styles.voteList}>
-              {thisUserVoted.map((id) => (
-                <li key={id}>{getUser(id)?.name || "Anonimus"}</li>
-              ))}
-            </ul>
-          )}
+          <VoteFlow isMyStream={isMyStream} userId={userId} />
 
           {stream && (
             <StreamStatus

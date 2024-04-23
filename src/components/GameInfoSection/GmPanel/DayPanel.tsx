@@ -12,7 +12,7 @@ import styles from "./GmPanel.module.scss";
 export const DayPanel = observer(() => {
   const { activeGameId, gameFlow, activeGamePlayersWithoutGM } = gamesStore;
   const { getUser } = usersStore;
-  const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
+  const { mutate: updateGameFlow } = useUpdateGameFlowMutation(gameFlow);
   const { sendMessage } = useSocket();
 
   const speaker = getUser(gameFlow.speaker);
@@ -46,8 +46,7 @@ export const DayPanel = observer(() => {
 
     updateGameFlow(
       {
-        flow: {
-          ...gameFlow,
+        newFlow: {
           speaker,
         },
         gameId: activeGameId,
@@ -72,8 +71,7 @@ export const DayPanel = observer(() => {
 
   const handleVoteClick = useCallback(() => {
     updateGameFlow({
-      flow: {
-        ...gameFlow,
+      newFlow: {
         isVoteTime: !gameFlow.isVoteTime,
         speaker: "",
       },

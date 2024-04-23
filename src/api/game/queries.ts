@@ -11,14 +11,9 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../apiConstants.ts";
 import { useEffect } from "react";
-import { gamesStore } from "../../store/gamesStore.ts";
-import {
-  GameId,
-  IGame,
-  IGameFlow,
-  IGameRoles,
-} from "../../types/game.types.ts";
-import { UserId } from "../../types/user.types.ts";
+import { gamesStore } from "@/store/gamesStore.ts";
+import { GameId, IGameFlow, IGameRoles } from "@/types/game.types.ts";
+import { UserId } from "@/types/user.types.ts";
 
 export const useFetchActiveGamesQuery = () => {
   return useQuery({
@@ -87,10 +82,20 @@ export const useUpdateGameGMMutation = () => {
   });
 };
 
-export const useUpdateGameFlowMutation = () => {
+export const useUpdateGameFlowMutation = (gameFlow: IGameFlow) => {
+  const { updateGameFlow: updateLocalGameFlow } = gamesStore;
+
   return useMutation({
-    mutationFn: ({ gameId, flow }: { gameId: GameId; flow: IGameFlow }) => {
-      return updateGameFlow({ gameId, flow });
+    mutationFn: ({
+      gameId,
+      newFlow,
+    }: {
+      gameId: GameId;
+      newFlow: Partial<IGameFlow>;
+    }) => {
+      updateLocalGameFlow(newFlow);
+
+      return updateGameFlow({ gameId, flow: { ...gameFlow, ...newFlow } });
     },
   });
 };

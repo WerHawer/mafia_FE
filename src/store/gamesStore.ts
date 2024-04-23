@@ -1,6 +1,6 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
-import { GameId, IGame } from "../types/game.types.ts";
+import { GameId, IGame, IGameFlow } from "../types/game.types.ts";
 import { initialGameFlow } from "../helpers/createGameObj.ts";
 
 class GamesStore {
@@ -36,6 +36,17 @@ class GamesStore {
     this._games = this._games.map((game) =>
       game.id === newGame.id ? newGame : game,
     );
+  }
+
+  updateGameFlow(newFlow: Partial<IGameFlow>) {
+    const flow = this.activeGame?.gameFlow;
+
+    if (!flow) return;
+
+    this.updateGames({
+      ...this.activeGame,
+      gameFlow: { ...flow, ...newFlow },
+    });
   }
 
   isUserGM(userId?: string) {

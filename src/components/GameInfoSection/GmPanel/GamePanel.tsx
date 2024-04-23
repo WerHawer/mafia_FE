@@ -17,13 +17,12 @@ export const GamePanel = observer(() => {
   const { sendMessage } = useSocket();
 
   const { mutate: restartGame } = useRestartGameMutation();
-  const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
+  const { mutate: updateGameFlow } = useUpdateGameFlowMutation(gameFlow);
 
   const handleSwitch = useCallback(() => {
     updateGameFlow(
       {
-        flow: {
-          ...gameFlow,
+        newFlow: {
           isNight: !gameFlow.isNight,
           day: gameFlow.isNight ? gameFlow.day + 1 : gameFlow.day,
           speaker: "",
