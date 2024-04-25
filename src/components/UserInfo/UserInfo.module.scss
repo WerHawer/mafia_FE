@@ -1,15 +1,12 @@
-@import "../../styles/mixins";
-@import "../../styles/theme";
+@import "src/styles/mixins";
+@import "src/styles/theme";
 
 .container {
   @include flex;
   column-gap: 1rem;
 
   cursor: pointer;
-}
-
-.name {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 }
 
 .avatar {

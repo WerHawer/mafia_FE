@@ -82,20 +82,21 @@ export const useUpdateGameGMMutation = () => {
   });
 };
 
-export const useUpdateGameFlowMutation = (gameFlow: IGameFlow) => {
-  const { updateGameFlow: updateLocalGameFlow } = gamesStore;
+export const useUpdateGameFlowMutation = () => {
+  const {
+    updateGameFlow: updateLocalGameFlow,
+    gameFlow,
+    activeGameId,
+  } = gamesStore;
 
   return useMutation({
-    mutationFn: ({
-      gameId,
-      newFlow,
-    }: {
-      gameId: GameId;
-      newFlow: Partial<IGameFlow>;
-    }) => {
+    mutationFn: (newFlow: Partial<IGameFlow>) => {
       updateLocalGameFlow(newFlow);
 
-      return updateGameFlow({ gameId, flow: { ...gameFlow, ...newFlow } });
+      return updateGameFlow({
+        gameId: activeGameId,
+        flow: { ...gameFlow, ...newFlow },
+      });
     },
   });
 };

@@ -29,7 +29,7 @@ export const GameVideo = observer(
     userId = "",
   }: GameVideoProps) => {
     const { myId, getUser, me } = usersStore;
-    const { isUserGM, gameFlow } = gamesStore;
+    const { isUserGM, gameFlow, activeGameKilledPlayers } = gamesStore;
     const containerRef = useRef<HTMLDivElement>(null);
 
     // TODO: create a hook for this
@@ -37,6 +37,7 @@ export const GameVideo = observer(
     const isMyStreamActive = isMyStream && stream;
     const isCurrentUserGM = isUserGM(userId);
     const isIGM = isUserGM(myId);
+    const isIDead = activeGameKilledPlayers.includes(myId);
 
     return (
       <Draggable
@@ -54,6 +55,10 @@ export const GameVideo = observer(
           ref={containerRef}
         >
           <VoteFlow isMyStream={isMyStream} userId={userId} />
+
+          {isIDead && isMyStream && (
+            <div className={styles.deadOverlay}>Dead</div>
+          )}
 
           {stream && (
             <StreamStatus

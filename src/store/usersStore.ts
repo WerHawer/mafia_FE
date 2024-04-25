@@ -66,6 +66,12 @@ class Users {
     return toJS(this._users[id]);
   };
 
+  getUserName = (id?: string) => {
+    if (!id) return;
+
+    return toJS(this._users[id]?.name);
+  };
+
   get token() {
     return toJS(this._token);
   }

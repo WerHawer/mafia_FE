@@ -1,13 +1,13 @@
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { observer } from "mobx-react-lite";
+import { routes } from "@/router/routs.ts";
 import styles from "./UserInfo.module.scss";
 import noAvatar from "../../assets/images/noAvatar.jpg";
 import { PopupMenu, PopupMenuElement } from "../PopupMenu";
-import { useCallback } from "react";
-import { removeTokenFromAxios } from "../../helpers/removeTokenFromAxios.ts";
-import { useNavigate } from "react-router-dom";
-import { routes } from "../../router/routs.ts";
-import { observer } from "mobx-react-lite";
-import { usersStore } from "../../store/usersStore.ts";
-import { useSocket } from "../../hooks/useSocket.ts";
+import { removeTokenFromAxios } from "@/helpers/removeTokenFromAxios.ts";
+import { usersStore } from "@/store/usersStore.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
 
 export const UserHeaderInfo = observer(() => {
   const { me: user, logout } = usersStore;
@@ -23,7 +23,7 @@ export const UserHeaderInfo = observer(() => {
 
   if (!user) return null;
 
-  const { name, avatar, id } = user;
+  const { name, avatar } = user;
 
   return (
     <PopupMenu
@@ -32,9 +32,7 @@ export const UserHeaderInfo = observer(() => {
       }
     >
       <div className={styles.container}>
-        <span className={styles.name}>
-          {name}: {id}
-        </span>
+        <span className={styles.name}>{name}</span>
 
         <div className={styles.avatar}>
           <img src={avatar ?? noAvatar} alt={name} width="46" height="46" />

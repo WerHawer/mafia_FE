@@ -11,9 +11,9 @@ import styles from "./GmPanel.module.scss";
 import { observer } from "mobx-react-lite";
 
 export const InitialPanel = observer(() => {
-  const { activeGameId, activeGamePlayersWithoutGM, gameFlow } = gamesStore;
+  const { activeGameId, activeGamePlayersWithoutGM } = gamesStore;
   const { mutate: addRoles } = useAddRolesToGameMutation();
-  const { mutate: updateGameFlow } = useUpdateGameFlowMutation(gameFlow);
+  const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
   const handleStartGame = useCallback(() => {
     if (!activeGameId) return;
@@ -28,11 +28,8 @@ export const InitialPanel = observer(() => {
       {
         onSuccess: () => {
           updateGameFlow({
-            gameId: activeGameId,
-            newFlow: {
-              isStarted: true,
-              day: 1,
-            },
+            isStarted: true,
+            day: 1,
           });
         },
       },

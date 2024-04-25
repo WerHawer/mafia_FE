@@ -10,13 +10,16 @@ export enum GameType {
 export interface IGameFlow {
   speaker: UserId;
   speakTime: number;
+  votesTime: number;
   isStarted: boolean;
   isFinished: boolean;
   isNight: boolean;
-  isVoteTime: boolean;
+  isVote: boolean;
+  isReVote: boolean;
+  isExtraSpeech: boolean;
   day: number;
   proposed: UserId[];
-  voted: Record<UserId, UserId[]>;
+  voted: { [key: UserId]: UserId[] };
   killed: UserId[];
 }
 

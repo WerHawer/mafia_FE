@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 type TimerProps = {
   timer?: number;
@@ -6,10 +6,15 @@ type TimerProps = {
 };
 
 export const Timer = memo(({ timer = 60, resetTrigger }: TimerProps) => {
-  const [time, setTime] = useState<number>(timer);
+  const [diff, setDiff] = useState<number>(timer);
+  const [reset, setReset] = useState<boolean>(false);
+
+  const startTime = useMemo(() => Date.now(), [reset]);
+  const endTime = useMemo(() => timer * 1000 + startTime, [startTime, timer]);
 
   const resetTime = useCallback(() => {
-    setTime(timer);
+    setReset((prev) => !prev);
+    setDiff(timer);
   }, [timer]);
 
   useEffect(() => {
@@ -18,13 +23,16 @@ export const Timer = memo(({ timer = 60, resetTrigger }: TimerProps) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTime((prev) => (prev > 0 ? prev - 1 : 0));
+      const currentTime = Date.now();
+      const diff = Math.round((endTime - currentTime) / 1000);
+
+      setDiff(diff <= 0 ? 0 : diff);
     }, 1000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [resetTime]);
+  }, [endTime]);
 
-  return <span>{time}</span>;
+  return <span>{diff}</span>;
 });

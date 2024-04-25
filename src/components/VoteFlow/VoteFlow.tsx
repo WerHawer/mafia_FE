@@ -7,6 +7,7 @@ import { gamesStore } from "@/store/gamesStore.ts";
 import { UserId } from "@/types/user.types.ts";
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import styles from "./VoteFlow.module.scss";
+import { useVoteResult } from "@/hooks/useVoteResult.ts";
 
 type VoteFlowProps = {
   isMyStream: boolean;
@@ -15,8 +16,14 @@ type VoteFlowProps = {
 
 export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   const { myId, getUser } = usersStore;
-  const { isUserGM, speaker, gameFlow, activeGameId } = gamesStore;
-  const { mutate: updateGameFlow } = useUpdateGameFlowMutation(gameFlow);
+  const {
+    isUserGM,
+    speaker,
+    gameFlow,
+    activeGameAlivePlayers,
+    activeGameKilledPlayers,
+  } = gamesStore;
+  const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
   const isUserAddedToVoteList = useMemo(
     () => (userId ? gameFlow.proposed.includes(userId) : false),
@@ -26,9 +33,18 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   const isISpeaker = speaker === myId;
   const isCurrentUserGM = isUserGM(userId);
   const isIGM = isUserGM(myId);
+  const isIDead = activeGameKilledPlayers.includes(myId);
+
+  const shouldShowProposeIcon =
+    !!speaker &&
+    (isISpeaker || isIGM) &&
+    !isMyStream &&
+    !isCurrentUserGM &&
+    !gameFlow.isExtraSpeech &&
+    !isIDead;
 
   const shouldShowVoteIcon =
-    !!speaker && (isISpeaker || isIGM) && !isMyStream && !isCurrentUserGM;
+    gameFlow.isVote && gameFlow.proposed.includes(userId) && !isIDead;
 
   const votesForThisUser = useMemo(
     () => gameFlow.voted?.[userId] ?? [],
@@ -47,12 +63,17 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
       ? gameFlow.proposed.filter((id) => id !== userId)
       : [...gameFlow.proposed, userId];
 
-    updateGameFlow({
-      gameId: activeGameId,
-      newFlow: { proposed: newList },
-    });
+    const newVoted = newList.reduce(
+      (acc, id) => {
+        acc[id] = [];
+
+        return acc;
+      },
+      {} as Record<UserId, UserId[]>,
+    );
+
+    updateGameFlow({ proposed: newList, voted: newVoted });
   }, [
-    activeGameId,
     gameFlow,
     isUserAddedToVoteList,
     isUserGM,
@@ -67,12 +88,9 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     if (amIVoted || isIGM) return;
 
     updateGameFlow({
-      gameId: activeGameId,
-      newFlow: {
-        voted: {
-          ...(gameFlow.voted ?? {}),
-          [userId]: [...votesForThisUser, myId],
-        },
+      voted: {
+        ...(gameFlow.voted ?? {}),
+        [userId]: [...votesForThisUser, myId],
       },
     });
   }, [
@@ -81,14 +99,23 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     amIVoted,
     isIGM,
     updateGameFlow,
-    activeGameId,
     gameFlow.voted,
     votesForThisUser,
   ]);
 
+  useVoteResult({
+    voted: gameFlow.voted,
+    alivePlayers: activeGameAlivePlayers,
+    time: gameFlow.votesTime,
+    enabled: gameFlow.isVote,
+    proposed: gameFlow.proposed,
+    isIGM,
+    updateGameFlow,
+  });
+
   return (
     <>
-      {shouldShowVoteIcon && (
+      {shouldShowProposeIcon && (
         <VoteIcon
           className={styles.voteIcon}
           size={ButtonSize.Small}
@@ -98,7 +125,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
         />
       )}
 
-      {gameFlow.isVoteTime && gameFlow.proposed.includes(userId) && (
+      {shouldShowVoteIcon && (
         <div className={styles.iconContainer}>
           <VoteIcon size={ButtonSize.Large} onClick={handleVote} />
           {votesForThisUser.length > 0 && (
@@ -107,7 +134,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
         </div>
       )}
 
-      {votesForThisUser.length > 0 && (
+      {votesForThisUser.length > 0 && gameFlow.isVote && (
         <ul className={styles.voteList}>
           {votesForThisUser.map((id) => (
             <li key={id}>{getUser(id)?.name || "Anonimus"}</li>

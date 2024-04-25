@@ -6,6 +6,7 @@ import "./i18n";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router/router.tsx";
 import { SocketProvider } from "./context/SocketProvider.tsx";
+import { ModalFabric } from "@/components/Modals";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ createRoot(document.getElementById("root")!).render(
       {/*<ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />*/}
 
       <SocketProvider>
+        <ModalFabric />
         <RouterProvider router={router} />
       </SocketProvider>
     </QueryClientProvider>

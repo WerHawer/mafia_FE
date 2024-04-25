@@ -18,7 +18,7 @@
 .myVideoContainer {
   display: none;
   position: fixed;
-  bottom: 70%;
+  top: 28%;
   right: 2rem;
   width: 200px;
   height: 150px;
@@ -112,4 +112,14 @@
 
 .statusDisabled {
   color: $color-error;
+}
+
+.deadOverlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: $color-error;
+
+  font-weight: 600;
+  z-index: 10;
 }

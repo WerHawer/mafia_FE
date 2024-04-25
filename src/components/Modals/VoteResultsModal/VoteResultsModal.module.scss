@@ -1,0 +1,43 @@
+@import "src/styles/mixins";
+@import "src/styles/theme";
+
+.container {
+  padding: 1.5rem 10rem;
+  font-size: 1.5rem;
+}
+
+.header {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.secondaryHeader {
+  text-align: center;
+  font-size: 1.6rem;
+}
+
+.accentText {
+  color: $color-accent-secondary;
+  font-weight: 500;
+}
+
+.list {
+  margin: 1.5rem 0;
+  list-style: number;
+}
+
+.listItem {
+  margin-left: 2rem;
+  font-size: 1.3rem;
+
+  &:not(:last-of-type) {
+    margin-bottom: 0.3rem;
+  }
+}
+
+.buttonContainer {
+  @include flexCenter;
+
+  margin-top: 5rem;
+}

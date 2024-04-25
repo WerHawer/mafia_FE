@@ -17,20 +17,18 @@ export const GamePanel = observer(() => {
   const { sendMessage } = useSocket();
 
   const { mutate: restartGame } = useRestartGameMutation();
-  const { mutate: updateGameFlow } = useUpdateGameFlowMutation(gameFlow);
+  const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
   const handleSwitch = useCallback(() => {
     updateGameFlow(
       {
-        newFlow: {
-          isNight: !gameFlow.isNight,
-          day: gameFlow.isNight ? gameFlow.day + 1 : gameFlow.day,
-          speaker: "",
-          proposed: [],
-          voted: {},
-          isVoteTime: false,
-        },
-        gameId: activeGameId,
+        isNight: !gameFlow.isNight,
+        day: gameFlow.isNight ? gameFlow.day + 1 : gameFlow.day,
+        speaker: "",
+        proposed: [],
+        voted: {},
+        isVote: false,
+        isExtraSpeech: false,
       },
       {
         onSuccess: () => {
@@ -52,7 +50,7 @@ export const GamePanel = observer(() => {
 
       <div className={styles.dayNightPanelContainer}>
         <Switcher checked={gameFlow.isNight} onChange={handleSwitch} />
-        {gameFlow.isNight ? <p>Night</p> : <p>Day</p>}
+        {gameFlow.isNight ? <p>Night</p> : <p>Day {gameFlow.day}</p>}
       </div>
 
       {gameFlow.isNight ? <NightPanel /> : <DayPanel />}

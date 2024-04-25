@@ -18,10 +18,8 @@ export const GameVideoContainer = observer(() => {
   } = streamStore;
   const ref = useRef<HTMLDivElement>(null);
 
-  const filterVariant = gameFlow.isVoteTime ? "opposite" : "direct";
-  const arrForFilter = gameFlow.isVoteTime
-    ? gameFlow.proposed
-    : gameFlow.killed;
+  const filterVariant = gameFlow.isVote ? "opposite" : "direct";
+  const arrForFilter = gameFlow.isVote ? gameFlow.proposed : gameFlow.killed;
 
   const filteredStreams = getFilteredStreams({
     arrForFilter,

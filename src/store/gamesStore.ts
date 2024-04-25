@@ -74,12 +74,22 @@ class GamesStore {
   }
 
   get activeGamePlayers() {
-    return this.activeGame?.players ?? [];
+    return toJS(this.activeGame?.players) ?? [];
   }
 
   get activeGamePlayersWithoutGM() {
     return this.activeGamePlayers.filter(
       (player) => player !== this.activeGameGm,
+    );
+  }
+
+  get activeGameKilledPlayers() {
+    return toJS(this.gameFlow.killed) ?? [];
+  }
+
+  get activeGameAlivePlayers() {
+    return this.activeGamePlayersWithoutGM.filter(
+      (player) => !this.activeGameKilledPlayers.includes(player),
     );
   }
 
