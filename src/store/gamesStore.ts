@@ -1,7 +1,8 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
-import { GameId, IGame, IGameFlow } from "../types/game.types.ts";
+import { GameId, IGame, IGameFlow, Roles } from "../types/game.types.ts";
 import { initialGameFlow } from "../helpers/createGameObj.ts";
+import { UserId } from "@/types/user.types.ts";
 
 class GamesStore {
   _games: IGame[] = [];
@@ -100,7 +101,15 @@ class GamesStore {
 
     const { mafia, sheriff, citizens, doctor, maniac, prostitute } = activeGame;
 
-    return { mafia, sheriff, citizens, doctor, maniac, prostitute };
+    return toJS({
+      mafia,
+      sheriff,
+      citizens,
+      doctor,
+      maniac,
+      prostitute,
+      don: mafia?.[0],
+    });
   }
 
   get gameFlow() {
@@ -113,6 +122,23 @@ class GamesStore {
 
   get games() {
     return toJS(this._games);
+  }
+
+  getUserRole(id: UserId) {
+    const roles = this.activeGameRoles;
+
+    if (!roles) return Roles.Unknown;
+
+    if (roles.mafia?.includes(id)) {
+      return roles.mafia[0] === id ? Roles.Don : Roles.Mafia;
+    }
+    if (roles.citizens?.includes(id)) return Roles.Citizens;
+    if (roles.sheriff === id) return Roles.Sheriff;
+    if (roles.doctor === id) return Roles.Doctor;
+    if (roles.maniac === id) return Roles.Maniac;
+    if (roles.prostitute === id) return Roles.Prostitute;
+
+    return Roles.Unknown;
   }
 }
 

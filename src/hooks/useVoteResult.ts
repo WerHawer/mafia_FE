@@ -1,4 +1,4 @@
-import { GameId, IGame, IGameFlow } from "@/types/game.types.ts";
+import { IGame, IGameFlow } from "@/types/game.types.ts";
 import { useCallback, useEffect, useMemo } from "react";
 import { modalStore } from "@/store/modalStore.ts";
 import { UserId } from "@/types/user.types.ts";

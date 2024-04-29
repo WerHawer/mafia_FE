@@ -5,8 +5,8 @@ import {
   IGameDTO,
   IGameFlow,
   IGameRoles,
-} from "../../types/game.types.ts";
-import { UserId } from "../../types/user.types.ts";
+} from "@/types/game.types.ts";
+import { UserId } from "@/types/user.types.ts";
 
 const GAMES_URL = "/games";
 

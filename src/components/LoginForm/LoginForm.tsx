@@ -2,19 +2,19 @@ import * as yup from "yup";
 import { SubmitHandler, Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Input } from "../../UI/Input";
+import { Input } from "@/UI/Input";
 import styles from "./LoginForm.module.scss";
-import { Button } from "../../UI/Button";
-import { ButtonType, ButtonVariant } from "../../UI/Button/ButtonTypes.ts";
-import { routes } from "../../router/routs.ts";
-import { InputError } from "../../UI/InputError";
-import { addErrorFromBEToForm } from "../../helpers/addErrorFromBEToForm.ts";
-import { useLoginMutation } from "../../api/auth/queries.ts";
-import { addTokenToAxios } from "../../helpers/addTokenToAxios.ts";
-import { InputPassword } from "../../UI/Input/InputPassword";
-import { usersStore } from "../../store/usersStore.ts";
+import { Button } from "@/UI/Button";
+import { ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { routes } from "@/router/routs.ts";
+import { InputError } from "@/UI/InputError";
+import { addErrorFromBEToForm } from "@/helpers/addErrorFromBEToForm.ts";
+import { useLoginMutation } from "@/api/auth/queries.ts";
+import { addTokenToAxios } from "@/helpers/addTokenToAxios.ts";
+import { InputPassword } from "@/UI/Input/InputPassword";
+import { usersStore } from "@/store/usersStore.ts";
 import { observer } from "mobx-react-lite";
-import { useSocket } from "../../hooks/useSocket.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
 
 const MIN_PASSWORD_LENGTH = 8;
 export type LoginFormInputs = {
@@ -30,7 +30,7 @@ const schema = yup
   .required();
 
 export const LoginForm = observer(() => {
-  const { mutate } = useLoginMutation();
+  const { isPending, mutate } = useLoginMutation();
   const { isConnected, connect, socket } = useSocket();
   const { setToken, setMyUser } = usersStore;
 
@@ -101,7 +101,11 @@ export const LoginForm = observer(() => {
 
         {errors.root && <InputError message={errors.root.message} />}
 
-        <Button type={ButtonType.Submit} variant={ButtonVariant.Secondary}>
+        <Button
+          type={ButtonType.Submit}
+          variant={ButtonVariant.Secondary}
+          disabled={isPending}
+        >
           Login
         </Button>
       </form>

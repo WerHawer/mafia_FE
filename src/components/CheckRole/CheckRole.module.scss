@@ -1,0 +1,36 @@
+@import "src/styles/mixins";
+@import "src/styles/theme";
+
+.icon,
+.sheriffCheckIcon,
+.donCheckIcon {
+  @include size(30px);
+  font-size: 30px;
+
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba($color-dark-tertiary, 0.4);
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  z-index: 10;
+}
+
+.sheriffCheckIcon {
+  color: $color-accent-secondary;
+
+  background-color: transparent;
+}
+
+.donCheckIcon {
+  color: $color-accent-primary;
+
+  background-color: transparent;
+}
+
+.doubleCheck {
+  top: 20px;
+  left: 20px;
+}

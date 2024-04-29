@@ -57,7 +57,10 @@ export const SpeakerBlock = observer(() => {
 
   return (
     <>
-      <SoundOutlined onClick={handleSpeaker} style={{ cursor: "pointer" }} />
+      <SoundOutlined
+        onClick={handleSpeaker}
+        style={{ cursor: "pointer", width: "15%", flexShrink: "0" }}
+      />
 
       {speaker && (
         <p>

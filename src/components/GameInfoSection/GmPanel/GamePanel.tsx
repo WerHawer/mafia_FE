@@ -29,6 +29,9 @@ export const GamePanel = observer(() => {
         voted: {},
         isVote: false,
         isExtraSpeech: false,
+        wakeUp: "",
+        sheriffCheck: "",
+        donCheck: "",
       },
       {
         onSuccess: () => {

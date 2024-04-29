@@ -1,13 +1,13 @@
 import { gamesStore } from "@/store/gamesStore.ts";
-import { getUserRole, Roles } from "@/helpers/getUserRole.ts";
 import { usersStore } from "@/store/usersStore.ts";
 import { observer } from "mobx-react-lite";
+import { Roles } from "@/types/game.types.ts";
 
 export const PlayerPanel = observer(() => {
-  const { gameFlow, activeGameRoles } = gamesStore;
+  const { gameFlow, getUserRole } = gamesStore;
   const { myId } = usersStore;
 
-  const role = getUserRole(activeGameRoles, myId);
+  const role = getUserRole(myId);
 
   return (
     <div>

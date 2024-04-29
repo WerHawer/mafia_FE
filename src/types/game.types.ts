@@ -1,5 +1,18 @@
 import { UserId } from "./user.types.ts";
 
+export enum Roles {
+  Mafia = "mafia",
+  Don = "don",
+  Citizens = "citizens",
+  Sheriff = "sheriff",
+  Doctor = "doctor",
+  Maniac = "maniac",
+  Prostitute = "prostitute",
+  Unknown = "unknown",
+}
+
+export const rolesWhoCanCheck = [Roles.Don, Roles.Sheriff];
+
 export type GameId = string;
 
 export enum GameType {
@@ -20,7 +33,12 @@ export interface IGameFlow {
   day: number;
   proposed: UserId[];
   voted: { [key: UserId]: UserId[] };
+  wakeUp: UserId[] | UserId;
+  shoot: UserId[];
   killed: UserId[];
+  sheriffCheck?: UserId;
+  doctorSave?: UserId;
+  donCheck?: UserId;
 }
 
 export interface IGame {

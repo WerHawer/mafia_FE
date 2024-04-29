@@ -52,17 +52,27 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
 
   return (
     <div className={styles.container}>
-      <h4 className={styles.header}>Draw</h4>
+      <h4 className={styles.header}>
+        {gameFlow.isReVote ? "Second Draw" : "Draw"}
+      </h4>
 
-      <p className={styles.secondaryHeader}>Users to re-vote:</p>
+      {gameFlow.isReVote ? (
+        <p className={styles.secondaryHeader}>
+          Players couldn't decide who to kick out
+        </p>
+      ) : (
+        <>
+          <p className={styles.secondaryHeader}>Users to re-vote:</p>
 
-      <ul className={styles.list}>
-        {candidates.map((candidate) => (
-          <li key={candidate} className={styles.listItem}>
-            {getUserName(candidate)}
-          </li>
-        ))}
-      </ul>
+          <ul className={styles.list}>
+            {candidates.map((candidate) => (
+              <li key={candidate} className={styles.listItem}>
+                {getUserName(candidate)}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       <div className={styles.buttonContainer}>
         <Button

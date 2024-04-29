@@ -5,9 +5,9 @@ import sheriffIcon from "@/assets/icons/sheriff.png";
 import doctorIcon from "@/assets/icons/doctor.webp";
 import maniacIcon from "@/assets/icons/maniac.webp";
 import prostituteIcon from "@/assets/icons/prostitute.webp";
-import { Roles } from "@/helpers/getUserRole.ts";
 import styles from "./RoleIcon.module.scss";
 import Tippy from "@tippyjs/react";
+import { Roles } from "@/types/game.types.ts";
 
 export const RoleIcon = ({ role }: { role: Roles }) => {
   const icons = {

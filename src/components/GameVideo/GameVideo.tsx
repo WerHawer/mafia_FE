@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import classNames from "classnames";
 import Draggable from "react-draggable";
 import { observer } from "mobx-react-lite";
@@ -11,6 +11,8 @@ import { VideoMenu } from "./VideoMenu.tsx";
 import { VideoUserInfo } from "./VideoUserInfo.tsx";
 import { StreamStatus } from "@/components/GameVideo/StreamStatus.tsx";
 import { VoteFlow } from "@/components/VoteFlow";
+import { rolesWhoCanCheck } from "@/types/game.types.ts";
+import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
 
 type GameVideoProps = {
   stream?: MediaStream;
@@ -29,7 +31,8 @@ export const GameVideo = observer(
     userId = "",
   }: GameVideoProps) => {
     const { myId, getUser, me } = usersStore;
-    const { isUserGM, gameFlow, activeGameKilledPlayers } = gamesStore;
+    const { isUserGM, gameFlow, activeGameKilledPlayers, getUserRole } =
+      gamesStore;
     const containerRef = useRef<HTMLDivElement>(null);
 
     // TODO: create a hook for this
@@ -38,6 +41,9 @@ export const GameVideo = observer(
     const isCurrentUserGM = isUserGM(userId);
     const isIGM = isUserGM(myId);
     const isIDead = activeGameKilledPlayers.includes(myId);
+    const myRole = getUserRole(myId);
+    const isIWakedUp = gameFlow.wakeUp?.includes(myId) && !isIDead;
+    const canICheck = rolesWhoCanCheck.includes(myRole) && isIWakedUp;
 
     return (
       <Draggable
@@ -51,10 +57,16 @@ export const GameVideo = observer(
             [styles.myVideoContainer]: isMyStream && gameFlow.isStarted,
             [styles.myVideoActive]: isMyStreamActive,
             [styles.active]: isActive,
+            [styles.gmOverlay]: isUserGM(userId),
           })}
           ref={containerRef}
         >
           <VoteFlow isMyStream={isMyStream} userId={userId} />
+
+          <CheckRole
+            userId={userId}
+            enabled={isIWakedUp && canICheck && !isMyStream && !isCurrentUserGM}
+          />
 
           {isIDead && isMyStream && (
             <div className={styles.deadOverlay}>Dead</div>
