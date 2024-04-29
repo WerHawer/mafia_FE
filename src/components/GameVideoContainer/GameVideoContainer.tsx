@@ -3,11 +3,11 @@ import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { GameVideo } from "../GameVideo";
 import styles from "./GameVideoContainer.module.scss";
-import { usersStore } from "@/store/usersStore.ts";
-import { gamesStore } from "@/store/gamesStore.ts";
 import { streamStore } from "@/store/streamsStore.ts";
+import { rootStore } from "@/store/rootStore.ts";
 
 export const GameVideoContainer = observer(() => {
+  const { usersStore, gamesStore } = rootStore;
   const { myId } = usersStore;
   const { isUserGM, speaker, gameFlow } = gamesStore;
   const {

@@ -1,6 +1,17 @@
 @import "src/styles/theme.scss";
 @import "src/styles/mixins.scss";
 
+@keyframes videoSlide {
+  from {
+    top: 40px;
+    right: 85%;
+  }
+  to {
+    top: 28%;
+    right: 20px;
+  }
+}
+
 .container {
   @include flexCenter;
   position: relative;
@@ -18,8 +29,8 @@
 .myVideoContainer {
   display: none;
   position: fixed;
-  top: 28%;
-  right: 2rem;
+  top: 40px;
+  right: 85%;
   width: 200px;
   height: 150px;
 
@@ -32,6 +43,7 @@
 
   &.myVideoActive {
     display: block;
+    animation: videoSlide 0.3s forwards;
   }
 }
 
@@ -41,7 +53,7 @@
 
 .video {
   object-fit: cover;
-  transform: scaleX(-1);
+  scale: -1 1;
 
   &.widthProportion {
     width: 100%;

@@ -1,8 +1,8 @@
 import { observer } from "mobx-react-lite";
 import styles from "./GameVideo.module.scss";
-import { gamesStore } from "@/store/gamesStore.ts";
 import { RoleIcon } from "@/UI/RoleIcon";
-import { usersStore } from "@/store/usersStore.ts";
+import { rootStore } from "@/store/rootStore.ts";
+import { useMemo } from "react";
 
 type VideoUserInfoProps = {
   userName: string;
@@ -11,15 +11,18 @@ type VideoUserInfoProps = {
 
 export const VideoUserInfo = observer(
   ({ userName, userId }: VideoUserInfoProps) => {
-    const { myId } = usersStore;
-    const { getUserRole, isUserGM, activeGamePlayersWithoutGM } = gamesStore;
+    const { gamesStore, isIGM } = rootStore;
+    const { getUserRole, activeGamePlayersWithoutGM } = gamesStore;
     const role = getUserRole(userId);
-    const userNumber =
-      activeGamePlayersWithoutGM.findIndex((id) => id === userId) + 1;
+
+    const userNumber = useMemo(
+      () => activeGamePlayersWithoutGM.findIndex((id) => id === userId) + 1,
+      [activeGamePlayersWithoutGM],
+    );
 
     return (
       <div className={styles.userInfo}>
-        {isUserGM(myId) && <RoleIcon role={role} />}
+        {isIGM && <RoleIcon role={role} />}
 
         <div>
           {userName} {userNumber ? `#${userNumber}` : ""}

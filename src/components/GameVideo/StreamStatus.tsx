@@ -9,7 +9,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
-import { streamStore } from "@/store/streamsStore.ts";
+import { rootStore } from "@/store/rootStore.ts";
 
 type StreamStatusProps = {
   stream: MediaStream;
@@ -19,7 +19,8 @@ type StreamStatusProps = {
 
 export const StreamStatus = observer(
   ({ stream, isMyStream, isIGM }: StreamStatusProps) => {
-    const { getUserStreamInfo, userStreamsMap } = streamStore;
+    const { streamsStore } = rootStore;
+    const { getUserStreamInfo, userStreamsMap } = streamsStore;
     const { sendMessage } = useSocket();
 
     // TODO: re-work this to use stream by fact, not this data...

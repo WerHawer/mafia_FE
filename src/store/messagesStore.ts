@@ -8,7 +8,7 @@ import {
 
 const PUBLIC = "public";
 
-class Messages {
+export class MessagesStore {
   messages: Record<string, IMessageWithLocal[]> = {};
 
   constructor() {
@@ -57,4 +57,4 @@ class Messages {
   }
 }
 
-export const messagesStore = new Messages();
+export const messagesStore = new MessagesStore();

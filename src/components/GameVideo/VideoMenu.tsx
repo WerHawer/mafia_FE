@@ -5,9 +5,9 @@ import {
   useUpdateGameFlowMutation,
   useUpdateGameGMMutation,
 } from "@/api/game/queries.ts";
-import { gamesStore } from "@/store/gamesStore.ts";
 import { UserId } from "@/types/user.types.ts";
 import { MoreOutlined } from "@ant-design/icons";
+import { rootStore } from "@/store/rootStore.ts";
 
 type VideoMenuProps = {
   userId?: UserId;
@@ -17,6 +17,7 @@ type VideoMenuProps = {
 export const VideoMenu = memo(({ userId, isCurrentUserGM }: VideoMenuProps) => {
   const { mutate: updateGM } = useUpdateGameGMMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
+  const { gamesStore } = rootStore;
   const { activeGameId, gameFlow } = gamesStore;
 
   const handleUpdateGM = useCallback(() => {

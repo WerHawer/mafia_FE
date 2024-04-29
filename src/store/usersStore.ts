@@ -2,7 +2,7 @@ import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 import { IUser } from "../types/user.types.ts";
 
-class Users {
+export class UsersStore {
   _myUser: IUser | null = null;
   _users: Record<string, IUser> = {};
   _token: string = "";
@@ -93,4 +93,4 @@ class Users {
   }
 }
 
-export const usersStore = new Users();
+export const usersStore = new UsersStore();

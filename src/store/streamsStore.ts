@@ -2,7 +2,7 @@ import { makeAutoObservable, toJS } from "mobx";
 import { StreamInfo, StreamsArr } from "@/types/socket.types.ts";
 import { UserId, UserStreamId } from "@/types/user.types.ts";
 
-class StreamStore {
+export class StreamStore {
   _streams: MediaStream[] = [];
   _userStreamsMap: Map<UserStreamId, StreamInfo> = new Map();
   _myStream?: MediaStream;

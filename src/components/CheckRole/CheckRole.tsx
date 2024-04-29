@@ -3,12 +3,11 @@ import styles from "./CheckRole.module.scss";
 import { useCallback, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { UserId } from "@/types/user.types.ts";
-import { gamesStore } from "@/store/gamesStore.ts";
-import { usersStore } from "@/store/usersStore.ts";
 import { Roles } from "@/types/game.types.ts";
 import Tippy from "@tippyjs/react";
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import classNames from "classnames";
+import { rootStore } from "@/store/rootStore.ts";
 
 type CheckRoleProps = {
   userId: UserId;
@@ -16,18 +15,16 @@ type CheckRoleProps = {
 };
 
 export const CheckRole = observer(({ userId, enabled }: CheckRoleProps) => {
+  const { gamesStore, myRole, isIGM } = rootStore;
   const { getUserRole, gameFlow, isUserGM } = gamesStore;
-  const { myId } = usersStore;
   const [checkResult, setCheckResult] = useState("");
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
-  const myRole = getUserRole(myId);
   const userRole = getUserRole(userId);
   const isISheriff = myRole === Roles.Sheriff;
   const isIDon = myRole === Roles.Don;
   const isUserSheriff = userRole === Roles.Sheriff;
   const isUserMafia = userRole === Roles.Mafia || userRole === Roles.Don;
-  const isIGM = isUserGM(myId);
   const userCheckedBySheriff = gameFlow.sheriffCheck === userId;
   const userCheckedByDon = gameFlow.donCheck === userId;
 

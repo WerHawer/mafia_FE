@@ -4,8 +4,6 @@ import Draggable from "react-draggable";
 import { observer } from "mobx-react-lite";
 import styles from "./GameVideo.module.scss";
 import { UserId } from "@/types/user.types.ts";
-import { usersStore } from "@/store/usersStore.ts";
-import { gamesStore } from "@/store/gamesStore.ts";
 import { PlayerVideo } from "../PlayerVideo";
 import { VideoMenu } from "./VideoMenu.tsx";
 import { VideoUserInfo } from "./VideoUserInfo.tsx";
@@ -13,6 +11,7 @@ import { StreamStatus } from "@/components/GameVideo/StreamStatus.tsx";
 import { VoteFlow } from "@/components/VoteFlow";
 import { rolesWhoCanCheck } from "@/types/game.types.ts";
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
+import { rootStore } from "@/store/rootStore.ts";
 
 type GameVideoProps = {
   stream?: MediaStream;
@@ -30,19 +29,16 @@ export const GameVideo = observer(
     isActive = false,
     userId = "",
   }: GameVideoProps) => {
+    const { usersStore, gamesStore, isIGM, isIDead, myRole, isIWakedUp } =
+      rootStore;
     const { myId, getUser, me } = usersStore;
-    const { isUserGM, gameFlow, activeGameKilledPlayers, getUserRole } =
-      gamesStore;
+    const { isUserGM, gameFlow, getUserRole } = gamesStore;
     const containerRef = useRef<HTMLDivElement>(null);
 
     // TODO: create a hook for this
     const currentUser = isMyStream ? me : getUser(userId);
     const isMyStreamActive = isMyStream && stream;
     const isCurrentUserGM = isUserGM(userId);
-    const isIGM = isUserGM(myId);
-    const isIDead = activeGameKilledPlayers.includes(myId);
-    const myRole = getUserRole(myId);
-    const isIWakedUp = gameFlow.wakeUp?.includes(myId) && !isIDead;
     const canICheck = rolesWhoCanCheck.includes(myRole) && isIWakedUp;
 
     return (

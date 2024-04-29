@@ -2,16 +2,16 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 import "./App.css";
 import { wsEvents } from "@/config/wsEvents.ts";
-import { usersStore } from "@/store/usersStore.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
-import { messagesStore } from "@/store/messagesStore.ts";
 import { IMessage, IMessageDTO, MessageTypes } from "@/types/message.types.ts";
 import { useGetMessagesQueryWithStore } from "@/api/messages/queries.ts";
+import { rootStore } from "@/store/rootStore.ts";
 
 const App = observer(() => {
   const { sendMessage } = useSocket();
   const [newMessage, setNewMessage] = useState("");
   const chatRef = useRef<HTMLDivElement>(null);
+  const { usersStore, messagesStore } = rootStore;
   const { me: user, socketConnected } = usersStore;
   const { publicMessages, setNewLocalMessage } = messagesStore;
   useGetMessagesQueryWithStore();

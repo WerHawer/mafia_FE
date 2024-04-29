@@ -1,21 +1,21 @@
 import { SoundOutlined } from "@ant-design/icons";
 import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
-import { usersStore } from "@/store/usersStore.ts";
-import { gamesStore } from "@/store/gamesStore.ts";
 import { useCallback } from "react";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { observer } from "mobx-react-lite";
+import { rootStore } from "@/store/rootStore.ts";
 
 export const SpeakerBlock = observer(() => {
+  const { gamesStore, usersStore } = rootStore;
   const { activeGameId, gameFlow, activeGameAlivePlayers } = gamesStore;
-  const { getUser } = usersStore;
+  const { getUserName } = usersStore;
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
   const { sendMessage } = useSocket();
 
   const day = gameFlow.day;
-  const speaker = getUser(gameFlow.speaker);
+  const speakerName = getUserName(gameFlow.speaker);
 
   const handleSpeaker = useCallback(() => {
     let speaker = "";
@@ -62,9 +62,9 @@ export const SpeakerBlock = observer(() => {
         style={{ cursor: "pointer", width: "15%", flexShrink: "0" }}
       />
 
-      {speaker && (
+      {speakerName && (
         <p>
-          Speaker: {speaker.name} - <Timer resetTrigger={gameFlow.speaker} />
+          Speaker: {speakerName} - <Timer resetTrigger={gameFlow.speaker} />
         </p>
       )}
     </>

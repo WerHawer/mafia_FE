@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import { observer } from "mobx-react-lite";
-import { gamesStore } from "@/store/gamesStore.ts";
 import {
   useRestartGameMutation,
   useUpdateGameFlowMutation,
@@ -11,8 +10,10 @@ import { useSocket } from "@/hooks/useSocket.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { NightPanel } from "@/components/GameInfoSection/GmPanel/NightPanel.tsx";
 import { DayPanel } from "./DayPanel";
+import { rootStore } from "@/store/rootStore.ts";
 
 export const GamePanel = observer(() => {
+  const { gamesStore } = rootStore;
   const { activeGameId, activeGameGm, gameFlow } = gamesStore;
   const { sendMessage } = useSocket();
 

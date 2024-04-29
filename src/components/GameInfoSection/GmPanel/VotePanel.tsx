@@ -1,11 +1,12 @@
 import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
-import { gamesStore } from "@/store/gamesStore.ts";
 import { observer } from "mobx-react-lite";
 import { UsergroupDeleteOutlined } from "@ant-design/icons";
 import { useCallback } from "react";
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import { rootStore } from "@/store/rootStore.ts";
 
 export const VotePanel = observer(() => {
+  const { gamesStore } = rootStore;
   const { gameFlow } = gamesStore;
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 

@@ -1,11 +1,11 @@
 import { observer } from "mobx-react-lite";
-import { gamesStore } from "@/store/gamesStore.ts";
-import { usersStore } from "@/store/usersStore.ts";
 import styles from "./GameVote.module.scss";
+import { rootStore } from "@/store/rootStore.ts";
 
 export const GameVote = observer(() => {
+  const { gamesStore, usersStore } = rootStore;
   const { gameFlow } = gamesStore;
-  const { getUser } = usersStore;
+  const { getUserName } = usersStore;
 
   return (
     <div className={styles.container}>
@@ -14,7 +14,7 @@ export const GameVote = observer(() => {
         <ul className={styles.list}>
           {gameFlow.proposed.map((userId) => (
             <div key={userId}>
-              <p>{getUser(userId)?.name}</p>
+              <p>{getUserName(userId)}</p>
             </div>
           ))}
         </ul>

@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import { gamesStore } from "@/store/gamesStore.ts";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 import {
@@ -9,8 +8,10 @@ import {
 import { rolesCreator } from "@/helpers/rolesCreator.ts";
 import styles from "./GmPanel.module.scss";
 import { observer } from "mobx-react-lite";
+import { rootStore } from "@/store/rootStore.ts";
 
 export const InitialPanel = observer(() => {
+  const { gamesStore } = rootStore;
   const { activeGameId, activeGamePlayersWithoutGM } = gamesStore;
   const { mutate: addRoles } = useAddRolesToGameMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();

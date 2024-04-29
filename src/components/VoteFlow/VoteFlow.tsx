@@ -2,12 +2,11 @@ import { useCallback, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { VoteIcon } from "@/UI/VoteIcon";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
-import { usersStore } from "@/store/usersStore.ts";
-import { gamesStore } from "@/store/gamesStore.ts";
 import { UserId } from "@/types/user.types.ts";
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import styles from "./VoteFlow.module.scss";
 import { useVoteResult } from "@/hooks/useVoteResult.ts";
+import { rootStore } from "@/store/rootStore.ts";
 
 type VoteFlowProps = {
   isMyStream: boolean;
@@ -15,14 +14,9 @@ type VoteFlowProps = {
 };
 
 export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
+  const { usersStore, gamesStore, isIGM, isIDead, isISpeaker } = rootStore;
   const { myId, getUser } = usersStore;
-  const {
-    isUserGM,
-    speaker,
-    gameFlow,
-    activeGameAlivePlayers,
-    activeGameKilledPlayers,
-  } = gamesStore;
+  const { isUserGM, speaker, gameFlow, activeGameAlivePlayers } = gamesStore;
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
   const isUserAddedToVoteList = useMemo(
@@ -30,10 +24,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     [gameFlow.proposed, userId],
   );
 
-  const isISpeaker = speaker === myId;
   const isCurrentUserGM = isUserGM(userId);
-  const isIGM = isUserGM(myId);
-  const isIDead = activeGameKilledPlayers.includes(myId);
 
   const shouldShowProposeIcon =
     !!speaker &&

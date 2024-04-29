@@ -4,7 +4,7 @@ import { GameId, IGame, IGameFlow, Roles } from "../types/game.types.ts";
 import { initialGameFlow } from "../helpers/createGameObj.ts";
 import { UserId } from "@/types/user.types.ts";
 
-class GamesStore {
+export class GamesStore {
   _games: IGame[] = [];
   _activeGameId: GameId = "";
 

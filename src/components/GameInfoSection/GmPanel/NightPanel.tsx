@@ -1,13 +1,14 @@
 import styles from "./GmPanel.module.scss";
 import { observer } from "mobx-react-lite";
-import { gamesStore } from "@/store/gamesStore.ts";
 import { ChangeEvent, useCallback, useState } from "react";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { Roles } from "@/types/game.types.ts";
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import { rootStore } from "@/store/rootStore.ts";
 
 export const NightPanel = observer(() => {
+  const { gamesStore } = rootStore;
   const { activeGameRoles, activeGameId, activeGameGm, gameFlow } = gamesStore;
   const { sendMessage } = useSocket();
   const [selectedRole, setSelectedRole] = useState<Roles | null>(null);

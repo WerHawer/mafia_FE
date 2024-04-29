@@ -6,19 +6,18 @@ import { GameVideoContainer } from "@/components/GameVideoContainer";
 import { GameChat } from "@/components/GameChat";
 import { useAddUserToGameMutation } from "@/api/game/queries.ts";
 import { GameInfoSection } from "@/components/GameInfoSection";
-import { usersStore } from "@/store/usersStore.ts";
-import { gamesStore } from "@/store/gamesStore.ts";
 import styles from "./GamePage.module.scss";
 import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import { GameVote } from "@/components/GameVote";
 import { useStreams } from "@/hooks/useStreams.ts";
-import { streamStore } from "@/store/streamsStore.ts";
+import { rootStore } from "@/store/rootStore.ts";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
+  const { usersStore, gamesStore, streamsStore } = rootStore;
   const { myId } = usersStore;
   const { setActiveGame, activeGamePlayers } = gamesStore;
-  const { myStream } = streamStore;
+  const { myStream } = streamsStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   useGetUsersWithAddToStore(activeGamePlayers);
   useStreams({ myStream, myId });

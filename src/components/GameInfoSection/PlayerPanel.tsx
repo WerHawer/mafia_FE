@@ -1,17 +1,14 @@
-import { gamesStore } from "@/store/gamesStore.ts";
-import { usersStore } from "@/store/usersStore.ts";
 import { observer } from "mobx-react-lite";
 import { Roles } from "@/types/game.types.ts";
+import { rootStore } from "@/store/rootStore.ts";
 
 export const PlayerPanel = observer(() => {
-  const { gameFlow, getUserRole } = gamesStore;
-  const { myId } = usersStore;
-
-  const role = getUserRole(myId);
+  const { gamesStore, myRole } = rootStore;
+  const { gameFlow } = gamesStore;
 
   return (
     <div>
-      {role !== Roles.Unknown && <p>Player is {role}</p>}
+      {myRole !== Roles.Unknown && <p>Player is {myRole}</p>}
       {gameFlow.isStarted && <p>Game is started</p>}
       {gameFlow.isNight ? <p>Night</p> : <p>Day</p>}
     </div>

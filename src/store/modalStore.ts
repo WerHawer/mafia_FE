@@ -1,7 +1,7 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { GModalData, ModalNames } from "@/components/Modals/Modal.types.ts";
 
-class ModalStore {
+export class ModalStore {
   _openedModal: ModalNames | null = null;
   _modalData: GModalData<ModalNames> | null = null;
 
