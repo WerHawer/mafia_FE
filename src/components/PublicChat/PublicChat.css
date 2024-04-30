@@ -4,7 +4,6 @@
 
 .main_container {
   max-width: 800px;
-  margin: 0 auto;
   text-align: center;
 }
 
@@ -21,6 +20,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  min-width: 500px;
 }
 
 .chatMessages {

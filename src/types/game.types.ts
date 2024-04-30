@@ -34,7 +34,7 @@ export interface IGameFlow {
   proposed: UserId[];
   voted: { [key: UserId]: UserId[] };
   wakeUp: UserId[] | UserId;
-  shoot: UserId[];
+  shoot: [UserId, UserId][];
   killed: UserId[];
   sheriffCheck?: UserId;
   doctorSave?: UserId;

@@ -1,13 +1,13 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
-import "./App.css";
+import "./PublicChat.css";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { IMessage, IMessageDTO, MessageTypes } from "@/types/message.types.ts";
 import { useGetMessagesQueryWithStore } from "@/api/messages/queries.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
-const App = observer(() => {
+export const PublicChat = observer(() => {
   const { sendMessage } = useSocket();
   const [newMessage, setNewMessage] = useState("");
   const chatRef = useRef<HTMLDivElement>(null);
@@ -45,8 +45,6 @@ const App = observer(() => {
 
   return (
     <div className="main_container">
-      {user && <h3>Hello {user.name}</h3>}
-
       <div className="chatContainer">
         <h4>{socketConnected} users connected to chat</h4>
 
@@ -94,4 +92,4 @@ const App = observer(() => {
   );
 });
 
-export default App;
+PublicChat.displayName = "PublicChat";

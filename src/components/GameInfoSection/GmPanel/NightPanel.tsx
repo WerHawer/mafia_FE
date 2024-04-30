@@ -31,21 +31,37 @@ export const NightPanel = observer(() => {
       updateGameFlow({
         wakeUp: roleIds,
       });
+
+      if (gameFlow.day > 1 && selectedRole === Roles.Mafia) {
+        sendMessage(wsEvents.wakeUp, {
+          gameId: activeGameId,
+          users: [],
+          gm: activeGameGm,
+        });
+
+        return;
+      }
+
       sendMessage(wsEvents.wakeUp, {
         gameId: activeGameId,
         users: roleIds,
         gm: activeGameGm,
       });
     },
-    [activeGameGm, activeGameId, activeGameRoles, sendMessage, updateGameFlow],
+    [
+      activeGameGm,
+      activeGameId,
+      activeGameRoles,
+      gameFlow.day,
+      sendMessage,
+      updateGameFlow,
+    ],
   );
 
   return (
     <div className={styles.nightContainer}>
       <span>Wake up:</span>
       {existingActiveRoles.map((role) => {
-        if (gameFlow.day !== 1 && role === Roles.Mafia) return null;
-
         return (
           <label className={styles.radioLabel} key={role}>
             <input

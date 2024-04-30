@@ -17,7 +17,7 @@ export const VideoUserInfo = observer(
 
     const userNumber = useMemo(
       () => activeGamePlayersWithoutGM.findIndex((id) => id === userId) + 1,
-      [activeGamePlayersWithoutGM],
+      [activeGamePlayersWithoutGM, userId],
     );
 
     return (

@@ -15,6 +15,8 @@ export const initialGameFlow: IGameFlow = {
   proposed: [],
   voted: {},
   killed: [],
+  shoot: [],
+  wakeUp: [],
 };
 
 type CreateGameProps = {

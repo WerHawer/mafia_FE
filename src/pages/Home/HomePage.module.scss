@@ -1,0 +1,7 @@
+@import "src/styles/mixins";
+
+.container {
+  @include flex(row, space-around, flex-start);
+  padding: 2rem;
+  width: 100%;
+}

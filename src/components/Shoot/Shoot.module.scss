@@ -1,0 +1,28 @@
+@import "src/styles/mixins";
+
+.container {
+  @include size(80px);
+  font-size: 80px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  translate: -50% -50%;
+  z-index: 10;
+}
+
+.icon {
+  cursor: pointer;
+}
+
+.img {
+  @include size(100%);
+}
+
+.img1 {
+  translate: 40% -80%;
+}
+
+.img2 {
+  translate: 0 -100%;
+}

@@ -14,7 +14,7 @@ import { usersStore } from "@/store/usersStore.ts";
 import { observer } from "mobx-react-lite";
 import { gamesStore } from "@/store/gamesStore.ts";
 
-const LobbyPage = observer(() => {
+export const GamesList = observer(() => {
   const { myId } = usersStore;
   const { games } = gamesStore;
   const navigate = useNavigate();
@@ -67,4 +67,4 @@ const LobbyPage = observer(() => {
   );
 });
 
-export default LobbyPage;
+GamesList.displayName = "GamesList";

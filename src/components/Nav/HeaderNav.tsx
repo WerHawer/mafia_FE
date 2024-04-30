@@ -1,11 +1,8 @@
-import { NavLink } from 'react-router-dom';
-import classNames from 'classnames';
-import styles from './Nav.module.scss';
+import { NavLink } from "react-router-dom";
+import classNames from "classnames";
+import styles from "./Nav.module.scss";
 
-const links = [
-  { to: '/', label: 'Home' },
-  { to: '/lobby', label: 'Lobby' },
-];
+const links = [{ to: "/", label: "Home" }];
 
 export const HeaderNav = () => {
   return (

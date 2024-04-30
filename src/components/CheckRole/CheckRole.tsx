@@ -68,6 +68,7 @@ export const CheckRole = observer(({ userId, enabled }: CheckRoleProps) => {
     isCheckDisabled,
     isIDon,
     isISheriff,
+    isUserGM,
     isUserMafia,
     isUserSheriff,
     updateGameFlow,

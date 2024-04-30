@@ -9,9 +9,10 @@ import { VideoMenu } from "./VideoMenu.tsx";
 import { VideoUserInfo } from "./VideoUserInfo.tsx";
 import { StreamStatus } from "@/components/GameVideo/StreamStatus.tsx";
 import { VoteFlow } from "@/components/VoteFlow";
-import { rolesWhoCanCheck } from "@/types/game.types.ts";
+import { Roles, rolesWhoCanCheck } from "@/types/game.types.ts";
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
 import { rootStore } from "@/store/rootStore.ts";
+import { Shoot } from "@/components/Shoot";
 
 type GameVideoProps = {
   stream?: MediaStream;
@@ -31,8 +32,8 @@ export const GameVideo = observer(
   }: GameVideoProps) => {
     const { usersStore, gamesStore, isIGM, isIDead, myRole, isIWakedUp } =
       rootStore;
-    const { myId, getUser, me } = usersStore;
-    const { isUserGM, gameFlow, getUserRole } = gamesStore;
+    const { getUser, me, myId } = usersStore;
+    const { isUserGM, gameFlow } = gamesStore;
     const containerRef = useRef<HTMLDivElement>(null);
 
     // TODO: create a hook for this
@@ -40,6 +41,8 @@ export const GameVideo = observer(
     const isMyStreamActive = isMyStream && stream;
     const isCurrentUserGM = isUserGM(userId);
     const canICheck = rolesWhoCanCheck.includes(myRole) && isIWakedUp;
+    const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
+    const isIDidShot = gameFlow.shoot.some(([shooterId]) => shooterId === myId);
 
     return (
       <Draggable
@@ -61,7 +64,25 @@ export const GameVideo = observer(
 
           <CheckRole
             userId={userId}
-            enabled={isIWakedUp && canICheck && !isMyStream && !isCurrentUserGM}
+            enabled={
+              isIWakedUp &&
+              canICheck &&
+              !isMyStream &&
+              !isCurrentUserGM &&
+              gameFlow.wakeUp.length === 1
+            }
+          />
+
+          <Shoot
+            userId={userId}
+            enabled={
+              isIGM ||
+              (isIMafia &&
+                isIWakedUp &&
+                !isCurrentUserGM &&
+                gameFlow.day > 1 &&
+                !isIDidShot)
+            }
           />
 
           {isIDead && isMyStream && (
@@ -84,6 +105,7 @@ export const GameVideo = observer(
               isCurrentUserGM={isCurrentUserGM}
             />
           )}
+
           {stream && (
             <PlayerVideo
               stream={stream}
@@ -92,6 +114,7 @@ export const GameVideo = observer(
               container={containerRef.current}
             />
           )}
+
           {currentUser && (
             <VideoUserInfo
               userName={currentUser.name}
