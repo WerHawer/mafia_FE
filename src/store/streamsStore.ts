@@ -30,6 +30,18 @@ export class StreamStore {
     this._myStream = undefined;
   }
 
+  setMockStreams() {
+    if (!this.myStream) return;
+
+    this._streams = new Array(8).fill(this.myStream);
+  }
+
+  multiplyStreamAndSet(stream: MediaStream, count: number) {
+    const streams = new Array(count).fill(stream);
+
+    this._streams = [...this._streams, ...streams];
+  }
+
   setStreams(streams: MediaStream[]) {
     this._streams = streams;
   }

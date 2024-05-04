@@ -15,12 +15,14 @@ import { rootStore } from "@/store/rootStore.ts";
 import { Shoot } from "@/components/Shoot";
 
 type GameVideoProps = {
-  stream?: MediaStream;
+  stream: MediaStream;
   muted?: boolean;
   isMyStream?: boolean;
   isActive?: boolean;
   userId?: UserId;
 };
+
+const DEFAULT_VIDEO_POSITION = { x: 0, y: 0 };
 
 export const GameVideo = observer(
   ({
@@ -38,7 +40,6 @@ export const GameVideo = observer(
 
     // TODO: create a hook for this
     const currentUser = isMyStream ? me : getUser(userId);
-    const isMyStreamActive = isMyStream && stream;
     const isCurrentUserGM = isUserGM(userId);
     const canICheck = rolesWhoCanCheck.includes(myRole) && isIWakedUp;
     const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
@@ -48,13 +49,13 @@ export const GameVideo = observer(
       <Draggable
         disabled={!(isMyStream && gameFlow.isStarted)}
         defaultClassNameDragging={styles.dragging}
-        position={!gameFlow.isStarted ? { x: 0, y: 0 } : undefined}
+        position={!gameFlow.isStarted ? DEFAULT_VIDEO_POSITION : undefined}
         nodeRef={containerRef}
       >
         <div
           className={classNames(styles.container, {
             [styles.myVideoContainer]: isMyStream && gameFlow.isStarted,
-            [styles.myVideoActive]: isMyStreamActive,
+            [styles.myVideoActive]: isMyStream,
             [styles.active]: isActive,
             [styles.gmOverlay]: isUserGM(userId),
           })}
@@ -89,13 +90,7 @@ export const GameVideo = observer(
             <div className={styles.deadOverlay}>Dead</div>
           )}
 
-          {stream && (
-            <StreamStatus
-              stream={stream}
-              isMyStream={isMyStream}
-              isIGM={isIGM}
-            />
-          )}
+          <StreamStatus stream={stream} isMyStream={isMyStream} isIGM={isIGM} />
 
           {isCurrentUserGM ? (
             <h3 className={styles.gmLabel}>GM</h3>
@@ -106,14 +101,12 @@ export const GameVideo = observer(
             />
           )}
 
-          {stream && (
-            <PlayerVideo
-              stream={stream}
-              muted={muted}
-              isActive={isActive}
-              container={containerRef.current}
-            />
-          )}
+          <PlayerVideo
+            stream={stream}
+            muted={muted}
+            isActive={isActive}
+            container={containerRef.current}
+          />
 
           {currentUser && (
             <VideoUserInfo
