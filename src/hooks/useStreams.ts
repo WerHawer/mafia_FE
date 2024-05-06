@@ -20,11 +20,6 @@ export const useStreams = ({ myStream, myId }: UseStreamsParams) => {
   const { subscribe, sendMessage } = useSocket();
   const { setStream, removeStream, resetStreams } = streamStore;
 
-  useUserMediaStream({
-    audio: true,
-    video: true,
-  });
-
   const { peer, peerId } = usePeer(myStream?.id);
 
   const connectToNewUser = useCallback(

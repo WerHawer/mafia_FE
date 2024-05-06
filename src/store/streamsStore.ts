@@ -6,6 +6,7 @@ export class StreamStore {
   _streams: MediaStream[] = [];
   _userStreamsMap: Map<UserStreamId, StreamInfo> = new Map();
   _myStream?: MediaStream;
+  _myOriginalStream?: MediaStream;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -19,15 +20,26 @@ export class StreamStore {
     this._myStream = stream;
   }
 
+  setMyOriginalStream(stream: MediaStream) {
+    this._myOriginalStream = stream;
+  }
+
   resetMyStream() {
-    if (!this._myStream) return;
+    if (!this._myStream || !this._myOriginalStream) return;
 
     this._myStream.getTracks().forEach((track) => {
       track.stop();
     });
 
+    this._myOriginalStream.getTracks().forEach((track) => {
+      track.stop();
+    });
+
     this.removeStream(this._myStream.id as UserStreamId);
+    this.removeStream(this._myOriginalStream.id as UserStreamId);
+
     this._myStream = undefined;
+    this._myOriginalStream = undefined;
   }
 
   setMockStreams() {
@@ -93,6 +105,10 @@ export class StreamStore {
 
   get myStream() {
     return toJS(this._myStream);
+  }
+
+  get myOriginalStream() {
+    return toJS(this._myOriginalStream);
   }
 
   get userStreamsMap() {

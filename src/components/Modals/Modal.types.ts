@@ -3,11 +3,13 @@ import { NightResultsModalProps } from "@/components/Modals/NightResultsModal/Ni
 export enum ModalNames {
   VoteResultModal = "VoteResultModal",
   NightResultsModal = "NightResultsModal",
+  VideoConfigModal = "VideoConfigModal",
 }
 
 export type ModalData = {
   [ModalNames.VoteResultModal]: {};
   [ModalNames.NightResultsModal]: NightResultsModalProps;
+  [ModalNames.VideoConfigModal]: {};
 };
 
 export type GModalData<T extends ModalNames> = ModalData[T];

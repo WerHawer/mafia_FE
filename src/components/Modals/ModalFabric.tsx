@@ -8,6 +8,7 @@ import {
   NightResultsModal,
   NightResultsModalProps,
 } from "@/components/Modals/NightResultsModal/NightResultsModal.tsx";
+import { VideoConfigModal } from "@/components/Modals/VideoConfigModal/VideoConfigModal.tsx";
 
 ReactModal.setAppElement("#root");
 
@@ -19,6 +20,7 @@ export const ModalFabric = observer(() => {
     [ModalNames.NightResultsModal]: (
       <NightResultsModal {...(modalData as NightResultsModalProps)} />
     ),
+    [ModalNames.VideoConfigModal]: <VideoConfigModal />,
   };
 
   return (
@@ -27,6 +29,7 @@ export const ModalFabric = observer(() => {
       onRequestClose={closeModal}
       className={styles.modal}
       overlayClassName={styles.overlay}
+      shouldCloseOnOverlayClick={false}
     >
       <div>{openedModal && modals[openedModal]}</div>
     </ReactModal>

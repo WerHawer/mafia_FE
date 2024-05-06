@@ -11,16 +11,23 @@ import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import { GameVote } from "@/components/GameVote";
 import { useStreams } from "@/hooks/useStreams.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { useMount } from "react-use";
+import { ModalNames } from "@/components/Modals/Modal.types.ts";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
-  const { usersStore, gamesStore, streamsStore } = rootStore;
+  const { usersStore, gamesStore, streamsStore, modalStore } = rootStore;
   const { myId } = usersStore;
   const { setActiveGame, activeGamePlayers } = gamesStore;
   const { myStream } = streamsStore;
+  const { openModal } = modalStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   useGetUsersWithAddToStore(activeGamePlayers);
   useStreams({ myStream, myId });
+
+  useMount(() => {
+    openModal(ModalNames.VideoConfigModal);
+  });
 
   useEffect(() => {
     if (!id) return;

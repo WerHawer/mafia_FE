@@ -4,7 +4,7 @@ import { streamStore } from "@/store/streamsStore.ts";
 
 export const useUserMediaStream = (options: MediaStreamConstraints) => {
   const isFirstRender = useRef(true);
-  const { setMyStream, resetMyStream } = streamStore;
+  const { setMyStream, resetMyStream, setMyOriginalStream } = streamStore;
 
   useMount(() => {
     if (!isFirstRender.current) return;
@@ -15,7 +15,7 @@ export const useUserMediaStream = (options: MediaStreamConstraints) => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia(options);
 
-        setMyStream(stream);
+        setMyOriginalStream(stream);
       } catch (err) {
         console.error("Error accessing media devices.", err);
       }
@@ -24,7 +24,7 @@ export const useUserMediaStream = (options: MediaStreamConstraints) => {
     enableStream();
   });
 
-  useUnmount(() => {
-    resetMyStream();
-  });
+  // useUnmount(() => {
+  //   resetMyStream();
+  // });
 };

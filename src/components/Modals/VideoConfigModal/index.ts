@@ -1,0 +1,1 @@
+export { VideoConfigModal } from "./VideoConfigModal";
