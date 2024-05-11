@@ -63,7 +63,7 @@ export const VideoConfigModal = observer(() => {
       ctx.save();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.filter = "blur(3px)";
+      ctx.filter = "blur(2px)";
       ctx.drawImage(
         results.segmentationMask,
         0,
