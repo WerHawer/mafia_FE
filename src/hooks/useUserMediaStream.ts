@@ -4,7 +4,7 @@ import { streamStore } from "@/store/streamsStore.ts";
 
 export const useUserMediaStream = (options: MediaStreamConstraints) => {
   const isFirstRender = useRef(true);
-  const { setMyStream, resetMyStream, setMyOriginalStream } = streamStore;
+  const { resetMyStream, setMyOriginalStream } = streamStore;
 
   useMount(() => {
     if (!isFirstRender.current) return;
@@ -24,7 +24,7 @@ export const useUserMediaStream = (options: MediaStreamConstraints) => {
     enableStream();
   });
 
-  // useUnmount(() => {
-  //   resetMyStream();
-  // });
+  useUnmount(() => {
+    resetMyStream();
+  });
 };

@@ -11,22 +11,21 @@ import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import { GameVote } from "@/components/GameVote";
 import { useStreams } from "@/hooks/useStreams.ts";
 import { rootStore } from "@/store/rootStore.ts";
-import { useMount } from "react-use";
-import { ModalNames } from "@/components/Modals/Modal.types.ts";
+import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
+import { VideoConfig } from "@/components/VideoConfig";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
-  const { usersStore, gamesStore, streamsStore, modalStore } = rootStore;
+  const { usersStore, gamesStore, streamsStore } = rootStore;
   const { myId } = usersStore;
   const { setActiveGame, activeGamePlayers } = gamesStore;
   const { myStream } = streamsStore;
-  const { openModal } = modalStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   useGetUsersWithAddToStore(activeGamePlayers);
   useStreams({ myStream, myId });
-
-  useMount(() => {
-    openModal(ModalNames.VideoConfigModal);
+  useUserMediaStream({
+    audio: true,
+    video: true,
   });
 
   useEffect(() => {
@@ -51,7 +50,10 @@ const GamePage = observer(() => {
 
   return (
     <div className={styles.pageContainer}>
+      <VideoConfig />
+
       <GameVideoContainer />
+
       <aside className={styles.rightContainer}>
         <section
           className={classNames(styles.asideSection, styles.personalInfo)}

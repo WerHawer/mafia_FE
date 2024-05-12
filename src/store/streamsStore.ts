@@ -1,15 +1,26 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { StreamInfo, StreamsArr } from "@/types/socket.types.ts";
-import { UserId, UserStreamId } from "@/types/user.types.ts";
+import { UserId, UserStreamId, UserVideoSettings } from "@/types/user.types.ts";
+import { makePersistable } from "mobx-persist-store";
 
 export class StreamStore {
   _streams: MediaStream[] = [];
   _userStreamsMap: Map<UserStreamId, StreamInfo> = new Map();
   _myStream?: MediaStream;
   _myOriginalStream?: MediaStream;
+  _settings: UserVideoSettings = {
+    withBlur: true,
+    imageURL: "",
+  };
+  _myBackgroundImages: string[] = [];
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
+    makePersistable(this, {
+      name: "Streams_mobx",
+      properties: ["_settings", "_myBackgroundImages"],
+      storage: sessionStorage,
+    });
   }
 
   setUserStreamsMap(streams: StreamsArr) {
@@ -25,18 +36,16 @@ export class StreamStore {
   }
 
   resetMyStream() {
-    if (!this._myStream || !this._myOriginalStream) return;
-
-    this._myStream.getTracks().forEach((track) => {
+    this._myStream?.getTracks().forEach((track) => {
       track.stop();
     });
 
-    this._myOriginalStream.getTracks().forEach((track) => {
+    this._myOriginalStream?.getTracks().forEach((track) => {
       track.stop();
     });
 
-    this.removeStream(this._myStream.id as UserStreamId);
-    this.removeStream(this._myOriginalStream.id as UserStreamId);
+    this.removeStream(this._myStream?.id as UserStreamId);
+    this.removeStream(this._myOriginalStream?.id as UserStreamId);
 
     this._myStream = undefined;
     this._myOriginalStream = undefined;
@@ -80,6 +89,15 @@ export class StreamStore {
     return toJS(this._streams);
   }
 
+  setVideoSettings(settings: UserVideoSettings) {
+    this._settings.imageURL = settings.imageURL;
+    this._settings.withBlur = settings.withBlur;
+  }
+
+  setImageToBackgrounds(image: string) {
+    this._myBackgroundImages = [...this._myBackgroundImages, image];
+  }
+
   getFilteredStreams({
     arrForFilter,
     variant = "direct",
@@ -121,6 +139,14 @@ export class StreamStore {
 
   get streamsLength() {
     return this.streams.length;
+  }
+
+  get videoSettings() {
+    return toJS(this._settings);
+  }
+
+  get myBackgroundImages() {
+    return toJS(this._myBackgroundImages);
   }
 
   manageStreamTracks(streams: MediaStream[], myId: UserId, isIGm: boolean) {

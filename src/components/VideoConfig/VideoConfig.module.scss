@@ -1,0 +1,134 @@
+@import "src/styles/mixins";
+@import "src/styles/theme";
+
+.container {
+  @include flexCenter;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: $overlay-color;
+
+  &.hide {
+    display: none;
+    height: 0;
+    width: 0;
+    right: 100%;
+    bottom: 100%;
+  }
+}
+
+.content {
+  position: relative;
+  @include flex;
+  max-width: 70%;
+  background: $color-dark-tertiary;
+  border-radius: $border-radius;
+
+  overflow: hidden;
+}
+
+.videoContainer {
+  @include flexCenter(column);
+  min-width: 700px;
+  height: 100%;
+}
+
+.canvas {
+  @include size(100%);
+}
+
+.img {
+  @include size(100%);
+  object-fit: contain;
+
+  scale: -1 1;
+}
+
+.icon {
+  @include size(6rem);
+  @include rounded;
+  cursor: pointer;
+
+  object-fit: contain;
+  background: $color-light-secondary;
+  padding: 10px 5px;
+}
+
+.imagePreview {
+  @include size(8rem);
+  cursor: pointer;
+  border-radius: $border-radius;
+
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.displayNone {
+  display: none;
+}
+
+.controllers {
+  @include flex(column, space-around);
+  padding: 1rem;
+  width: 400px;
+}
+
+.imageContainer {
+  @include flex(row, flex-start);
+  column-gap: 2rem;
+  row-gap: 1rem;
+  flex-wrap: wrap;
+
+  margin: 2rem 0;
+}
+
+.baseEffectButton {
+  @include flex(row, flex-start);
+  width: 100%;
+  gap: 3rem;
+}
+
+.inputDownload {
+  display: none;
+}
+
+.labelDownload {
+  padding: 10px;
+  background-color: $color-accent-secondary;
+  color: $color-text-primary;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+  border-radius: $border-radius;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    transform 0.2s;
+  border: none;
+  outline: none;
+  text-transform: uppercase;
+  box-shadow: $shadow;
+
+  margin-bottom: 2rem;
+
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  &:hover {
+    background-color: darken($color-accent-secondary, 10%);
+    transform: scale(1.02);
+    box-shadow: $shadow-hover;
+  }
+}
+
+.buttonContainer {
+  @include flex(row, space-between);
+  width: 100%;
+  gap: 1rem;
+
+  margin-top: 4rem;
+}

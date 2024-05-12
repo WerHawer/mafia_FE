@@ -1,6 +1,11 @@
 export type UserId = string;
 export type UserStreamId = string;
 
+export type UserVideoSettings = {
+  withBlur: boolean;
+  imageURL: string;
+};
+
 export interface IUser {
   email: string;
   name: string;

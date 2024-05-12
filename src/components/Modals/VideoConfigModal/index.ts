@@ -1,1 +1,0 @@
-export { VideoConfigModal } from "./VideoConfigModal";
