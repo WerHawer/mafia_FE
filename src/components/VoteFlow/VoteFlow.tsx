@@ -128,7 +128,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
       {votesForThisUser.length > 0 && gameFlow.isVote && (
         <ul className={styles.voteList}>
           {votesForThisUser.map((id) => (
-            <li key={id}>{getUser(id)?.name || "Anonimus"}</li>
+            <li key={id}>{getUser(id)?.nickName || "Anonimus"}</li>
           ))}
         </ul>
       )}

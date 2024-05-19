@@ -110,7 +110,7 @@ export const GameVideo = observer(
 
           {currentUser && (
             <VideoUserInfo
-              userName={currentUser.name}
+              userName={currentUser.nickName}
               userId={currentUser.id}
             />
           )}

@@ -4,4 +4,5 @@ export const routes = {
   game: "/game",
   lobby: "/lobby",
   login: "/login",
+  singUp: "/sing-up",
 };

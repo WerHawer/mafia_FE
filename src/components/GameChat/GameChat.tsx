@@ -70,7 +70,7 @@ export const GameChat = observer(() => {
         {messages?.map(({ sender, text, id }, index) => {
           return (
             <div key={id ?? sender.id + index} className={styles.messageText}>
-              <p>{sender.name}:</p>
+              <p>{sender.nickName}:</p>
               <p>{text}</p>
             </div>
           );

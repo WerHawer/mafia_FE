@@ -1,8 +1,9 @@
 import { NavLink } from "react-router-dom";
 import classNames from "classnames";
 import styles from "./Nav.module.scss";
+import { routes } from "@/router/routs.ts";
 
-const links = [{ to: "/", label: "Home" }];
+const links = [{ to: routes.home, label: "Home" }];
 
 export const HeaderNav = () => {
   return (

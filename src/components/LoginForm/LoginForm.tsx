@@ -1,6 +1,6 @@
 import * as yup from "yup";
 import { SubmitHandler, Controller, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Input } from "@/UI/Input";
 import styles from "./LoginForm.module.scss";
@@ -18,13 +18,13 @@ import { useSocket } from "@/hooks/useSocket.ts";
 
 const MIN_PASSWORD_LENGTH = 8;
 export type LoginFormInputs = {
-  email: string;
+  login: string;
   password: string;
 };
 
 const schema = yup
   .object({
-    email: yup.string().required().email(),
+    login: yup.string().required().min(3),
     password: yup.string().required().min(MIN_PASSWORD_LENGTH),
   })
   .required();
@@ -43,7 +43,7 @@ export const LoginForm = observer(() => {
     formState: { errors },
   } = useForm<LoginFormInputs>({
     defaultValues: {
-      email: "",
+      login: "",
       password: "",
     },
     resolver: yupResolver(schema),
@@ -64,7 +64,7 @@ export const LoginForm = observer(() => {
         navigate(routes.home);
       },
       onError: (error) => {
-        addErrorFromBEToForm<{ email: ""; password: "" }>(error, setError);
+        addErrorFromBEToForm<LoginFormInputs>(error, setError);
       },
     });
   };
@@ -75,10 +75,10 @@ export const LoginForm = observer(() => {
         <h2>Login</h2>
         <Controller
           control={control}
-          name="email"
+          name="login"
           render={({ field, fieldState }) => (
             <>
-              <Input placeholder="e-mail" {...field} />
+              <Input placeholder="Login" {...field} />
               {fieldState.error && (
                 <InputError message={fieldState.error.message} />
               )}
@@ -100,6 +100,10 @@ export const LoginForm = observer(() => {
         />
 
         {errors.root && <InputError message={errors.root.message} />}
+
+        <p className={styles.singUpLink}>
+          don`t have account go to <Link to={routes.singUp}>Sing up</Link>
+        </p>
 
         <Button
           type={ButtonType.Submit}

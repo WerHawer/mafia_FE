@@ -3,7 +3,12 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RootLayout } from "../layouts/RootLayout.tsx";
 import { routes } from "./routs.ts";
 import { AuthGate } from "../components/AuthGate.tsx";
-import { LazyGamePage, LazyHomePage, LazyLoginPage } from "./lazyComponents.ts";
+import {
+  LazyGamePage,
+  LazyHomePage,
+  LazyLoginPage,
+  LazySingUpPage,
+} from "./lazyComponents.ts";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +46,15 @@ export const router = createBrowserRouter([
         element: (
           <Suspense>
             <LazyLoginPage />
+          </Suspense>
+        ),
+      },
+
+      {
+        path: routes.singUp,
+        element: (
+          <Suspense>
+            <LazySingUpPage />
           </Suspense>
         ),
       },

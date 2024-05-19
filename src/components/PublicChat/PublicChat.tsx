@@ -53,7 +53,7 @@ export const PublicChat = observer(() => {
             ({
               text,
               id,
-              sender: { id: userId, name: userName },
+              sender: { id: userId, nickName: userName },
               createdAt,
             }) => (
               <p

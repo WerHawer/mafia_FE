@@ -1,13 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { auth, userLogin } from "./api.ts";
+import { auth, userLogin, userSignUp } from "./api.ts";
 import { queryKeys } from "../apiConstants.ts";
+import { LoginFormInputs } from "@/components/LoginForm/LoginForm.tsx";
+import { SingUpFormInputs } from "@/components/SingUpForm/SingUpForm.tsx";
 
 export const useLoginMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (loginData: { email: string; password: string }) =>
-      userLogin(loginData),
+    mutationFn: (loginData: LoginFormInputs) => userLogin(loginData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.auth] });
+    },
+  });
+};
+
+export const useSignUpMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (signUpData: Omit<SingUpFormInputs, "passwordRepeat">) =>
+      userSignUp(signUpData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [queryKeys.auth] });
     },

@@ -8,8 +8,10 @@ import { usersStore } from "../store/usersStore.ts";
 import { removeTokenFromAxios } from "../helpers/removeTokenFromAxios.ts";
 import { useSocket } from "../hooks/useSocket.ts";
 
-const authFreeRoutes = [routes.login];
+const authFreeRoutes = [routes.login, routes.singUp];
 
+// TODO: remember initial path and fo to this path after login
+// TODO: redirect from login if already logged in
 export const AuthGate = observer(({ children }: PropsWithChildren) => {
   const { pathname } = useLocation();
   const { token, me, setMyUser, logout } = usersStore;
