@@ -1,14 +1,75 @@
 @import "src/styles/theme";
 
+.container {
+  width: 100%;
+}
+
+.inputContainer {
+  position: relative;
+  width: 100%;
+}
+
+.pseudoPlaceholder {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  color: $color-text-primary;
+  font-size: 1.6rem;
+  pointer-events: none;
+
+  transition: all 250ms;
+}
+
 .input {
   width: 100%;
-  max-width: 250px;
-  padding: 5px 15px;
-  background: none;
+  padding: 15px 10px 15px 20px;
+  background: transparent;
   outline: none;
   border: 1px solid $border-color;
-  border-radius: 3px;
+  border-radius: $border-radius-big;
 
-  color: $color-text-secondary;
+  color: $color-text-primary;
   font-size: 1.6rem;
+
+  &:focus,
+  &.withValue {
+    border-color: $color-accent-primary;
+
+    & + .pseudoPlaceholder {
+      padding: 2px 5px;
+      background: $color-dark-primary;
+      font-size: 1rem;
+      top: 0;
+    }
+  }
+
+  &.withError {
+    border-color: $color-error;
+    color: $color-error;
+
+    & + .pseudoPlaceholder {
+      color: $color-error;
+    }
+  }
+}
+
+.errorText {
+  display: block;
+  padding: 8px 0 0 20px;
+  color: $color-error;
+  font-size: 1.1rem;
+}
+
+.icon {
+  &.withError {
+    color: $color-error;
+  }
+}
+
+.iconRight {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }

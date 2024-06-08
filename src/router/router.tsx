@@ -9,6 +9,7 @@ import {
   LazyLoginPage,
   LazySingUpPage,
 } from "./lazyComponents.ts";
+import { AuthLayout } from "@/layouts/AuthLayout.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -29,7 +30,7 @@ export const router = createBrowserRouter([
 
       {
         path: routes.game,
-        element: <Navigate to={routes.lobby} />,
+        element: <Navigate to={routes.home} />,
       },
 
       {
@@ -40,16 +41,15 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
-
-      {
-        path: routes.login,
-        element: (
-          <Suspense>
-            <LazyLoginPage />
-          </Suspense>
-        ),
-      },
-
+    ],
+  },
+  {
+    element: (
+      <AuthGate>
+        <AuthLayout />
+      </AuthGate>
+    ),
+    children: [
       {
         path: routes.singUp,
         element: (
@@ -58,10 +58,13 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
-
       {
-        path: "/:catchAll(.*)",
-        element: <h1>Not Found</h1>,
+        path: routes.login,
+        element: (
+          <Suspense>
+            <LazyLoginPage />
+          </Suspense>
+        ),
       },
     ],
   },

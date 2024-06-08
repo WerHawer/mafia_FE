@@ -23,9 +23,13 @@ const GamePage = observer(() => {
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   useGetUsersWithAddToStore(activeGamePlayers);
   useStreams({ myStream, myId });
+
   useUserMediaStream({
     audio: true,
-    video: true,
+    video: {
+      width: 1920,
+      height: 1080,
+    },
   });
 
   useEffect(() => {
@@ -35,7 +39,7 @@ const GamePage = observer(() => {
   }, [id, setActiveGame]);
 
   useEffect(() => {
-    if (!myId || !id) return;
+    if (!myId || !id || !myStream) return;
 
     // hack to prevent double request
     const requestTimer = setTimeout(() => {
@@ -46,7 +50,7 @@ const GamePage = observer(() => {
     }, 0);
 
     return () => clearTimeout(requestTimer);
-  }, [id, addUserToGame, myId]);
+  }, [id, addUserToGame, myId, myStream]);
 
   return (
     <div className={styles.pageContainer}>

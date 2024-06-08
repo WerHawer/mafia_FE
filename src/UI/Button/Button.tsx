@@ -1,7 +1,12 @@
 import { HTMLProps, PropsWithChildren } from "react";
 import styles from "./Button.module.scss";
 import classNames from "classnames";
-import { ButtonSize, ButtonType, ButtonVariant } from "./ButtonTypes.ts";
+import {
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+  ButtonWidth,
+} from "./ButtonTypes.ts";
 
 type ButtonProps = Omit<HTMLProps<HTMLButtonElement>, "size"> &
   PropsWithChildren<{
@@ -9,6 +14,7 @@ type ButtonProps = Omit<HTMLProps<HTMLButtonElement>, "size"> &
     disabled?: boolean;
     variant?: ButtonVariant;
     size?: ButtonSize;
+    width?: ButtonWidth;
     uppercase?: boolean;
     rounded?: boolean;
     className?: string;
@@ -22,6 +28,7 @@ export const Button = ({
   uppercase = false,
   disabled = false,
   size = ButtonSize.Medium,
+  width = "auto",
   variant = ButtonVariant.Primary,
   rounded = false,
   className,
@@ -35,6 +42,7 @@ export const Button = ({
         styles.button,
         styles[size],
         styles[variant],
+        styles[width],
         {
           [styles.disabled]: disabled,
           [styles.uppercase]: uppercase,

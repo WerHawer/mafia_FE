@@ -1,0 +1,30 @@
+.logo {
+  display: flex;
+  font-family: "Cinzel Decorative", serif;
+
+  &.small {
+    font-size: 1.2rem;
+  }
+
+  &.medium {
+    font-size: 3.2rem;
+  }
+
+  &.large {
+    font-size: 6.4rem;
+  }
+
+  &.left {
+    margin-right: 0.5rem;
+  }
+
+  &.right {
+    justify-content: flex-end;
+    margin-left: 0.5rem;
+  }
+
+  &.center {
+    justify-content: center;
+    margin: 0 0.5rem;
+  }
+}

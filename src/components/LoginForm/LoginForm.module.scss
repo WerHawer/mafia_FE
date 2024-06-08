@@ -1,19 +1,7 @@
-@import "src/styles/theme.scss";
-@import "src/styles/mixins.scss";
-
-.container {
-  @include flex(center, center);
-  width: 100%;
-}
+@import "src/styles/common";
 
 .form {
-  @include flex(column, center, center);
-  max-width: 500px;
-  row-gap: 1rem;
-  padding: 1.5rem;
-  border-radius: $border-radius;
-  background-color: $color-dark-secondary;
-  box-shadow: $shadow;
+  width: 450px;
 }
 
 .singUpLink {
@@ -26,4 +14,14 @@
     color: $color-accent-primary;
     text-decoration: underline;
   }
+}
+
+.formFooter {
+  @include flexCenter;
+  gap: 4rem;
+
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0 25px;
+  font-size: 1.8rem;
 }

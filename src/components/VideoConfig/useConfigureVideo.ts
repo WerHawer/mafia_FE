@@ -26,8 +26,6 @@ export const useConfigureVideo = (
   const bgEffectsRef = useRef<BackgroundEffects>(bgEffects.none);
   const isFirstRender = useRef(true);
 
-  console.log("=>(useConfigureVideo.ts:27) bgEffectsRef", bgEffectsRef.current);
-
   const withoutEffects = !imageURL && !withBlur;
 
   useEffect(() => {

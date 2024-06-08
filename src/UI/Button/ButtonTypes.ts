@@ -4,6 +4,8 @@ export enum ButtonSize {
   Large = "large",
 }
 
+export type ButtonWidth = "auto" | "fullWidth" | string;
+
 export enum ButtonVariant {
   Primary = "primary",
   Secondary = "secondary",

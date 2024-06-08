@@ -1,20 +1,17 @@
 import * as yup from "yup";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Input } from "@/UI/Input";
-import { Button } from "@/UI/Button";
-import { ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { routes } from "@/router/routs.ts";
-import { InputError } from "@/UI/InputError";
-import { addErrorFromBEToForm } from "@/helpers/addErrorFromBEToForm.ts";
 import { useSignUpMutation } from "@/api/auth/queries.ts";
 import { addTokenToAxios } from "@/helpers/addTokenToAxios.ts";
-import { InputPassword } from "@/UI/Input/InputPassword";
 import { usersStore } from "@/store/usersStore.ts";
 import { observer } from "mobx-react-lite";
 import { useSocket } from "@/hooks/useSocket.ts";
 import styles from "./SingUpForm.module.scss";
+import { SignUpFormFields } from "@/components/SingUpForm/SignUpFormFields.tsx";
+import { Form } from "@/components/Form";
+import { Typography } from "@/UI/Typography";
+import { Link } from "@/components/Link";
 
 const MIN_PASSWORD_LENGTH = 8;
 const MIN_NICKNAME_LENGTH = 3;
@@ -37,25 +34,18 @@ const schema = yup
   })
   .required();
 
+const defaultValues: SingUpFormInputs = {
+  nickName: "",
+  password: "",
+  passwordRepeat: "",
+};
+
 export const SingUpForm = observer(() => {
-  const { isPending, mutate } = useSignUpMutation();
+  const { isPending, mutate, error } = useSignUpMutation();
   const { isConnected, connect, socket } = useSocket();
   const { setToken, setMyUser } = usersStore;
 
   const navigate = useNavigate();
-
-  const {
-    control,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<SingUpFormInputs>({
-    defaultValues: {
-      nickName: "",
-      password: "",
-    },
-    resolver: yupResolver(schema),
-  });
 
   const onSubmit: SubmitHandler<SingUpFormInputs> = ({
     nickName,
@@ -76,82 +66,29 @@ export const SingUpForm = observer(() => {
 
           navigate(routes.home);
         },
-        onError: (error) => {
-          addErrorFromBEToForm<SingUpFormInputs>(error, setError);
-        },
       },
     );
   };
 
   return (
-    <div className={styles.container}>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className={styles.form}
-        autoComplete="off"
-      >
-        <h2>Sing Up</h2>
-        <Controller
-          control={control}
-          name="nickName"
-          render={({ field, fieldState }) => (
-            <>
-              <Input placeholder="Login" autoComplete="off" {...field} />
-              {fieldState.error && (
-                <InputError message={fieldState.error.message} />
-              )}
-            </>
-          )}
-        />
+    <Form<SingUpFormInputs>
+      onSubmit={onSubmit}
+      validation={schema}
+      className={styles.form}
+      defaultValues={defaultValues}
+    >
+      <Typography variant="title">Register</Typography>
 
-        <Controller
-          control={control}
-          name="password"
-          render={({ field, fieldState }) => (
-            <>
-              <InputPassword
-                placeholder="Password"
-                autoComplete="password"
-                {...field}
-              />
-              {fieldState.error && (
-                <InputError message={fieldState.error.message} />
-              )}
-            </>
-          )}
-        />
+      <Typography variant="subtitle">
+        Please fill in the fields below:
+      </Typography>
 
-        <Controller
-          control={control}
-          name="passwordRepeat"
-          render={({ field, fieldState }) => (
-            <>
-              <InputPassword
-                placeholder="Repeat your password"
-                autoComplete="new-password"
-                {...field}
-              />
-              {fieldState.error && (
-                <InputError message={fieldState.error.message} />
-              )}
-            </>
-          )}
-        />
+      <SignUpFormFields error={error} isPending={isPending} />
 
-        {errors.root && <InputError message={errors.root.message} />}
-
-        <p className={styles.singUpLink}>
-          already have account? Go to <Link to={routes.login}>Login</Link>
-        </p>
-
-        <Button
-          type={ButtonType.Submit}
-          variant={ButtonVariant.Secondary}
-          disabled={isPending}
-        >
-          Sing Up
-        </Button>
-      </form>
-    </div>
+      <div className={styles.formFooter}>
+        <Typography variant="subtitle">Already have an account?</Typography>
+        <Link to={routes.login}>Login</Link>
+      </div>
+    </Form>
   );
 });

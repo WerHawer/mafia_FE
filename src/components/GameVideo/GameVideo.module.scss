@@ -42,7 +42,7 @@
   }
 
   &.myVideoActive {
-    display: block;
+    @include flexCenter;
     animation: videoSlide 0.3s forwards;
   }
 }

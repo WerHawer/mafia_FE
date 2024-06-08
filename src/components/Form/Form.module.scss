@@ -1,0 +1,7 @@
+@import "src/styles/common";
+
+.form {
+  @include flex(column, center, center);
+  row-gap: 2.8rem;
+  padding: 1.5rem;
+}

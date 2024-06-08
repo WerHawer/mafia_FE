@@ -2,26 +2,31 @@
 
 .button {
   display: block;
-  font-weight: bold;
   text-align: center;
-  border-radius: $border-radius;
-  transition:
-    background-color 0.3s,
-    opacity 0.3s;
+  border-radius: $border-radius-big;
+  transition: background-color, opacity;
+  transition-duration: 250ms;
+
+  &.fullWidth {
+    width: 100%;
+  }
 
   &.small {
-    padding: 0.4rem 0.8rem;
-    font-size: 1.2rem;
+    padding: 0.8rem 0.8rem;
+    font-size: 1.4rem;
+    min-width: 100px;
   }
 
   &.medium {
-    padding: 0.8rem 1.6rem;
-    font-size: 1.4rem;
+    padding: 1.4rem 1.6rem;
+    font-size: 1.9rem;
+    min-width: 250px;
   }
 
   &.large {
-    padding: 1.2rem 2.4rem;
-    font-size: 1.6rem;
+    padding: 2rem 2.4rem;
+    font-size: 2.2rem;
+    min-width: 300px;
   }
 
   &.uppercase {
@@ -46,10 +51,11 @@
 
   &.primary {
     background-color: $color-accent-primary;
-    color: $color-text-tertiary;
+    color: $color-dark-primary;
 
-    &:hover {
-      background-color: lighten($color-accent-primary, 10%);
+    &:hover,
+    &:focus {
+      background-color: lighten($color-accent-primary, 15%);
     }
 
     &:disabled {
@@ -60,11 +66,23 @@
   }
 
   &.secondary {
-    background-color: $color-accent-secondary;
-    color: $color-text-tertiary;
+    background:
+      linear-gradient($color-dark-primary, $color-dark-primary) padding-box,
+      linear-gradient(to right, $color-accent-primary, $color-light-primary)
+        border-box;
+    color: $color-accent-primary;
+    border: 1px solid transparent;
 
-    &:hover {
-      background-color: lighten($color-accent-secondary, 10%);
+    &:hover,
+    &:focus {
+      background:
+        linear-gradient(
+            lighten($color-dark-primary, 10%),
+            lighten($color-dark-primary, 10%)
+          )
+          padding-box,
+        linear-gradient(to right, $color-accent-primary, $color-light-primary)
+          border-box;
     }
 
     &:disabled {
@@ -82,6 +100,12 @@
       background-color: $color-accent-tertiary;
       opacity: 0.5;
       cursor: not-allowed;
+    }
+
+    &.small,
+    &.medium,
+    &.large {
+      min-width: 0;
     }
   }
 

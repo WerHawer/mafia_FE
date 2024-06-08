@@ -1,7 +1,12 @@
 import { SingUpForm } from "@/components/SingUpForm";
+import { CenteredContainer } from "@/UI";
 
 const SingUpPage = () => {
-  return <SingUpForm />;
+  return (
+    <CenteredContainer position="top">
+      <SingUpForm />
+    </CenteredContainer>
+  );
 };
 
 export default SingUpPage;

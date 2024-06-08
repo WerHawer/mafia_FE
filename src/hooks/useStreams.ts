@@ -1,12 +1,11 @@
-import { useParams } from "react-router-dom";
 import { useCallback, useEffect } from "react";
-import { useUserMediaStream } from "./useUserMediaStream.ts";
+import { useParams } from "react-router-dom";
+import { useUnmount } from "react-use";
 import { usePeer } from "./usePeer.ts";
 import Peer from "peerjs";
 import { wsEvents } from "../config/wsEvents.ts";
 import { useSocket } from "./useSocket.ts";
 import { streamStore } from "@/store/streamsStore.ts";
-import { useUnmount } from "react-use";
 
 const MAX_STREAMS = 11;
 

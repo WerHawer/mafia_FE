@@ -1,22 +1,21 @@
 import * as yup from "yup";
-import { SubmitHandler, Controller, useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Input } from "@/UI/Input";
+import { useNavigate } from "react-router-dom";
 import styles from "./LoginForm.module.scss";
-import { Button } from "@/UI/Button";
-import { ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 import { routes } from "@/router/routs.ts";
-import { InputError } from "@/UI/InputError";
-import { addErrorFromBEToForm } from "@/helpers/addErrorFromBEToForm.ts";
 import { useLoginMutation } from "@/api/auth/queries.ts";
 import { addTokenToAxios } from "@/helpers/addTokenToAxios.ts";
-import { InputPassword } from "@/UI/Input/InputPassword";
 import { usersStore } from "@/store/usersStore.ts";
 import { observer } from "mobx-react-lite";
 import { useSocket } from "@/hooks/useSocket.ts";
+import { Form } from "@/components/Form/Form.tsx";
+import { LoginFormFields } from "@/components/LoginForm/LoginFormFields.tsx";
+import { Typography } from "@/UI/Typography/Typography.tsx";
+import { Link } from "@/components/Link";
+import { SubmitHandler } from "react-hook-form";
 
 const MIN_PASSWORD_LENGTH = 8;
+const MIN_LOGIN_LENGTH = 3;
+
 export type LoginFormInputs = {
   login: string;
   password: string;
@@ -24,30 +23,22 @@ export type LoginFormInputs = {
 
 const schema = yup
   .object({
-    login: yup.string().required().min(3),
+    login: yup.string().required().min(MIN_LOGIN_LENGTH),
     password: yup.string().required().min(MIN_PASSWORD_LENGTH),
   })
   .required();
 
+const defaultValues: LoginFormInputs = {
+  login: "",
+  password: "",
+};
+
 export const LoginForm = observer(() => {
-  const { isPending, mutate } = useLoginMutation();
+  const { isPending, mutate, error } = useLoginMutation();
   const { isConnected, connect, socket } = useSocket();
   const { setToken, setMyUser } = usersStore;
 
   const navigate = useNavigate();
-
-  const {
-    control,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<LoginFormInputs>({
-    defaultValues: {
-      login: "",
-      password: "",
-    },
-    resolver: yupResolver(schema),
-  });
 
   const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
     mutate(data, {
@@ -63,56 +54,30 @@ export const LoginForm = observer(() => {
 
         navigate(routes.home);
       },
-      onError: (error) => {
-        addErrorFromBEToForm<LoginFormInputs>(error, setError);
-      },
     });
   };
 
   return (
-    <div className={styles.container}>
-      <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        <h2>Login</h2>
-        <Controller
-          control={control}
-          name="login"
-          render={({ field, fieldState }) => (
-            <>
-              <Input placeholder="Login" {...field} />
-              {fieldState.error && (
-                <InputError message={fieldState.error.message} />
-              )}
-            </>
-          )}
-        />
+    <Form<LoginFormInputs>
+      onSubmit={onSubmit}
+      className={styles.form}
+      validation={schema}
+      defaultValues={defaultValues}
+    >
+      <Typography variant="title">Login</Typography>
 
-        <Controller
-          control={control}
-          name="password"
-          render={({ field, fieldState }) => (
-            <>
-              <InputPassword placeholder="password" {...field} />
-              {fieldState.error && (
-                <InputError message={fieldState.error.message} />
-              )}
-            </>
-          )}
-        />
+      <Typography variant="subtitle">
+        Please enter your login and password:
+      </Typography>
 
-        {errors.root && <InputError message={errors.root.message} />}
+      <LoginFormFields isPending={isPending} error={error} />
 
-        <p className={styles.singUpLink}>
-          don`t have account go to <Link to={routes.singUp}>Sing up</Link>
-        </p>
-
-        <Button
-          type={ButtonType.Submit}
-          variant={ButtonVariant.Secondary}
-          disabled={isPending}
-        >
-          Login
-        </Button>
-      </form>
-    </div>
+      <div className={styles.formFooter}>
+        <Typography variant="subtitle">New player?</Typography>
+        <Link to={routes.singUp}>Create an account</Link>
+      </div>
+    </Form>
   );
 });
+
+LoginForm.displayName = "LoginForm";

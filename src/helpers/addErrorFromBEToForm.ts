@@ -4,7 +4,7 @@ import { UseFormSetError } from "react-hook-form/dist/types/form";
 
 export const addErrorFromBEToForm = <V extends Record<string, any>>(
   error: unknown,
-  formErrorSet: UseFormSetError<V>,
+  setError: UseFormSetError<V>,
 ) => {
   const errorResponse = (error as AxiosError)?.response?.data as IFormBEError;
 
@@ -13,5 +13,5 @@ export const addErrorFromBEToForm = <V extends Record<string, any>>(
   const { message, field } = errorResponse;
 
   // @ts-ignore
-  formErrorSet(field ?? "root", { message });
+  setError(field ?? "root", { message });
 };
