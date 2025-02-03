@@ -1,8 +1,8 @@
-@import "src/styles/theme.scss";
-@import "src/styles/mixins.scss";
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
 
 .container {
-  @include flex(center, center);
+  @include mixins.flex(center, center);
   width: 100%;
 }
 
@@ -11,19 +11,19 @@
 }
 
 .singUpLink {
-  color: $color-accent-secondary;
+  color: theme.$color-accent-secondary;
   text-decoration: none;
   transition: color 0.2s;
   width: 100%;
 
   &:hover a {
-    color: $color-accent-primary;
+    color: theme.$color-accent-primary;
     text-decoration: underline;
   }
 }
 
 .formFooter {
-  @include flexCenter;
+  @include mixins.flexCenter;
   gap: 4rem;
 
   width: 100%;

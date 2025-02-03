@@ -1,8 +1,8 @@
-@import "src/styles/theme";
-@import "src/styles/mixins";
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
 
 .overlay {
-  @include flexCenter;
+  @include mixins.flexCenter;
   position: fixed;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
   height: 100%;
 
   z-index: 99;
-  background-color: rgba($color-dark-primary, 0.6);
+  background-color: rgba(theme.$color-dark-primary, 0.6);
 }
 
 .modal {
@@ -19,9 +19,9 @@
   max-width: 45dvw;
   max-height: 80dvh;
 
-  background-color: $color-dark-tertiary;
-  border-radius: $border-radius;
-  box-shadow: $shadow;
+  background-color: theme.$color-dark-tertiary;
+  border-radius: theme.$border-radius;
+  box-shadow: theme.$shadow;
 
   padding: 1.5rem;
 

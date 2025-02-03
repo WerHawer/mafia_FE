@@ -1,24 +1,24 @@
-@import 'src/styles/theme.scss';
-@import 'src/styles/mixins';
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
 
 .LinksList {
-  @include flex;
+  @include mixins.flex;
   column-gap: 2rem;
 }
 
 .Link {
   font-size: 3rem;
-  color: $color-text-secondary;
+  color: theme.$color-text-secondary;
   padding: 5px;
 
   &:hover,
   &:focus {
-    color: $color-accent-primary;
+    color: theme.$color-accent-primary;
   }
 
   transition: color 0.25s;
 }
 
 .LinkActive {
-  color: $color-accent-primary;
+  color: theme.$color-accent-primary;
 }

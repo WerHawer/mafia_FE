@@ -1,7 +1,7 @@
-@import "src/styles/common";
+@use "../styles/mixins.scss";
 
 .container {
-  @include flexCenter(column);
+  @include mixins.flexCenter(column);
   width: 100%;
 
   &.top {

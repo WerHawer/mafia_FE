@@ -1,7 +1,7 @@
-@import "src/styles/common";
+@use "../../styles/mixins";
 
 .form {
-  @include flex(column, center, center);
+  @include mixins.flex(column, center, center);
   row-gap: 2.8rem;
   padding: 1.5rem;
 }

@@ -1,8 +1,7 @@
-@import "src/styles/theme";
-@import "src/styles/mixins";
+@use "../../styles/mixins.scss";
 
 .container {
-  @include flexCenter;
+  @include mixins.flexCenter;
   height: 100%;
   padding: 10px 20px;
 }

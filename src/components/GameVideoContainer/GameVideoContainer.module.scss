@@ -1,4 +1,4 @@
-@import "src/styles/theme";
+@use "../../styles/theme.scss";
 
 .container {
   display: grid;
@@ -7,7 +7,7 @@
   gap: 1rem;
   padding: 0 1rem;
 
-  border-right: $border-color 1px solid;
+  border-right: theme.$border-color 1px solid;
 
   &.twoGrid {
     grid-template-columns: repeat(auto-fit, minmax(49%, 1fr));

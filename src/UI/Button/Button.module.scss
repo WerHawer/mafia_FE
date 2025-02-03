@@ -1,9 +1,10 @@
-@import "src/styles/theme";
+@use "sass:color";
+@use "../../styles/theme.scss";
 
 .button {
   display: block;
   text-align: center;
-  border-radius: $border-radius-big;
+  border-radius: theme.$border-radius-big;
   transition: background-color, opacity;
   transition-duration: 250ms;
 
@@ -50,16 +51,16 @@
   }
 
   &.primary {
-    background-color: $color-accent-primary;
-    color: $color-dark-primary;
+    background-color: theme.$color-accent-primary;
+    color: theme.$color-dark-primary;
 
     &:hover,
     &:focus {
-      background-color: lighten($color-accent-primary, 15%);
+      background-color: color.adjust(theme.$color-accent-primary, $lightness: 15%);
     }
 
     &:disabled {
-      background-color: $color-accent-primary;
+      background-color: theme.$color-accent-primary;
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -67,26 +68,26 @@
 
   &.secondary {
     background:
-      linear-gradient($color-dark-primary, $color-dark-primary) padding-box,
-      linear-gradient(to right, $color-accent-primary, $color-light-primary)
+      linear-gradient(theme.$color-dark-primary, theme.$color-dark-primary) padding-box,
+      linear-gradient(to right, theme.$color-accent-primary, theme.$color-light-primary)
         border-box;
-    color: $color-accent-primary;
+    color: theme.$color-accent-primary;
     border: 1px solid transparent;
 
     &:hover,
     &:focus {
       background:
         linear-gradient(
-            lighten($color-dark-primary, 10%),
-            lighten($color-dark-primary, 10%)
+            color.adjust(theme.$color-dark-primary, $lightness: 10%),
+            color.adjust(theme.$color-dark-primary, $lightness: 10%)
           )
           padding-box,
-        linear-gradient(to right, $color-accent-primary, $color-light-primary)
+        linear-gradient(to right, theme.$color-accent-primary, theme.$color-light-primary)
           border-box;
     }
 
     &:disabled {
-      background-color: $color-accent-secondary;
+      background-color: theme.$color-accent-secondary;
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -97,7 +98,7 @@
     color: inherit;
 
     &:disabled {
-      background-color: $color-accent-tertiary;
+      background-color: theme.$color-accent-tertiary;
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -110,15 +111,15 @@
   }
 
   &.success {
-    background-color: $color-success;
-    color: $color-text-tertiary;
+    background-color: theme.$color-success;
+    color: theme.$color-text-tertiary;
 
     &:hover {
-      background-color: lighten($color-success, 10%);
+      background-color: color.adjust(theme.$color-success, $lightness: 10%);
     }
 
     &:disabled {
-      background-color: $color-success;
+      background-color: theme.$color-success;
       opacity: 0.5;
       cursor: not-allowed;
     }

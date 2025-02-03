@@ -1,12 +1,12 @@
-@import 'src/styles/mixins';
-@import 'src/styles/theme';
+@use "../../styles/mixins.scss";
+@use "../../styles/theme.scss";
 
 .header {
-  @include flex;
+  @include mixins.flex;
   column-gap: 2rem;
   padding: 8px 40px 8px 26px;
-  background-color: $color-dark-secondary;
-  box-shadow: $color-dark-secondary 0 1px 10px 5px;
+  background-color: theme.$color-dark-secondary;
+  box-shadow: theme.$color-dark-secondary 0 1px 10px 5px;
 }
 
 .spacer {

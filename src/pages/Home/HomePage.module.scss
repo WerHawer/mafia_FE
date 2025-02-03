@@ -1,7 +1,7 @@
-@import "src/styles/mixins";
+@use "../../styles/mixins.scss";
 
 .container {
-  @include flex(row, space-around, flex-start);
+  @include mixins.flex(row, space-around, flex-start);
   padding: 2rem;
   width: 100%;
 }

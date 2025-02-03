@@ -17,7 +17,7 @@
     "@tanstack/react-query": "^5.22.2",
     "@tanstack/react-query-devtools": "^5.24.0",
     "@tippyjs/react": "^4.2.6",
-    "axios": "^1.6.7",
+    "axios": "^1.7.9",
     "classnames": "^2.5.1",
     "i18next": "^23.8.2",
     "i18next-browser-languagedetector": "^7.2.0",
@@ -66,9 +66,10 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "prettier": "3.2.5",
-    "sass": "^1.71.1",
+    "sass": "^1.83.4",
+    "sass-migrator": "^2.3.1",
     "typescript": "^5.3.3",
-    "vite": "^5.0.8",
-    "vite-tsconfig-paths": "^4.3.1"
+    "vite": "^6.0.11",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

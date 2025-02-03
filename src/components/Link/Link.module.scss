@@ -1,11 +1,11 @@
-@import "src/styles/common";
+@use "../../styles/theme";
 
 .link {
   font-size: inherit;
-  color: $color-light-secondary;
+  color: theme.$color-light-secondary;
   text-decoration: underline;
 
   &:hover {
-    color: $color-accent-primary;
+    color: theme.$color-accent-primary;
   }
 }

@@ -1,15 +1,16 @@
-@import "src/styles/mixins";
-@import "src/styles/theme";
+@use "sass:color";
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
 
 .container {
-  @include flexCenter;
+  @include mixins.flexCenter;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
 
-  background: $overlay-color;
+  background: theme.$overlay-color;
 
   &.hide {
     display: none;
@@ -22,45 +23,45 @@
 
 .content {
   position: relative;
-  @include flex;
+  @include mixins.flex;
   max-width: 70%;
-  background: $color-dark-tertiary;
-  border-radius: $border-radius;
+  background: theme.$color-dark-tertiary;
+  border-radius: theme.$border-radius;
 
   overflow: hidden;
 }
 
 .videoContainer {
-  @include flexCenter(column);
+  @include mixins.flexCenter(column);
   min-width: 700px;
   height: 100%;
 }
 
 .canvas {
-  @include size(100%);
+  @include mixins.size(100%);
 }
 
 .img {
-  @include size(100%);
+  @include mixins.size(100%);
   object-fit: contain;
 
   scale: -1 1;
 }
 
 .icon {
-  @include size(6rem);
-  @include rounded;
+  @include mixins.size(6rem);
+  @include mixins.rounded;
   cursor: pointer;
 
   object-fit: contain;
-  background: $color-light-secondary;
+  background: theme.$color-light-secondary;
   padding: 10px 5px;
 }
 
 .imagePreview {
-  @include size(8rem);
+  @include mixins.size(8rem);
   cursor: pointer;
-  border-radius: $border-radius;
+  border-radius: theme.$border-radius;
 
   object-fit: cover;
   overflow: hidden;
@@ -71,13 +72,13 @@
 }
 
 .controllers {
-  @include flex(column, space-around);
+  @include mixins.flex(column, space-around);
   padding: 1rem;
   width: 400px;
 }
 
 .imageContainer {
-  @include flex(row, flex-start);
+  @include mixins.flex(row, flex-start);
   column-gap: 2rem;
   row-gap: 1rem;
   flex-wrap: wrap;
@@ -86,7 +87,7 @@
 }
 
 .baseEffectButton {
-  @include flex(row, flex-start);
+  @include mixins.flex(row, flex-start);
   width: 100%;
   gap: 3rem;
 }
@@ -97,12 +98,12 @@
 
 .labelDownload {
   padding: 10px;
-  background-color: $color-accent-secondary;
-  color: $color-text-primary;
+  background-color: theme.$color-accent-secondary;
+  color: theme.$color-text-primary;
   text-align: center;
   font-size: 1.4rem;
   font-weight: bold;
-  border-radius: $border-radius;
+  border-radius: theme.$border-radius;
   cursor: pointer;
   transition:
     background-color 0.3s,
@@ -110,7 +111,7 @@
   border: none;
   outline: none;
   text-transform: uppercase;
-  box-shadow: $shadow;
+  box-shadow: theme.$shadow;
 
   margin-bottom: 2rem;
 
@@ -119,14 +120,14 @@
   right: 10px;
 
   &:hover {
-    background-color: darken($color-accent-secondary, 10%);
+    background-color: color.adjust(theme.$color-accent-secondary, $lightness: -10%);
     transform: scale(1.02);
-    box-shadow: $shadow-hover;
+    box-shadow: theme.$shadow-hover;
   }
 }
 
 .buttonContainer {
-  @include flex(row, space-between);
+  @include mixins.flex(row, space-between);
   width: 100%;
   gap: 1rem;
 

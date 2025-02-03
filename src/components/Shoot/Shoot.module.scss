@@ -1,7 +1,7 @@
-@import "src/styles/mixins";
+@use "../../styles/mixins.scss";
 
 .container {
-  @include size(80px);
+  @include mixins.size(80px);
   font-size: 80px;
   position: absolute;
   top: 50%;
@@ -16,7 +16,7 @@
 }
 
 .img {
-  @include size(100%);
+  @include mixins.size(100%);
 }
 
 .img1 {

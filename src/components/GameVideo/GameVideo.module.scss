@@ -1,5 +1,5 @@
-@import "src/styles/theme.scss";
-@import "src/styles/mixins.scss";
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
 
 @keyframes videoSlide {
   from {
@@ -13,9 +13,9 @@
 }
 
 .container {
-  @include flexCenter;
+  @include mixins.flexCenter;
   position: relative;
-  border-radius: $border-radius;
+  border-radius: theme.$border-radius;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -42,7 +42,7 @@
   }
 
   &.myVideoActive {
-    @include flexCenter;
+    @include mixins.flexCenter;
     animation: videoSlide 0.3s forwards;
   }
 }
@@ -66,7 +66,7 @@
 }
 
 .userInfo {
-  @include flex(row, flex-start, center);
+  @include mixins.flex(row, flex-start, center);
   width: max-content;
   column-gap: 1.5rem;
   position: absolute;
@@ -75,11 +75,11 @@
   bottom: 0;
   padding: 0.5rem;
 
-  color: $color-text-tertiary;
+  color: theme.$color-text-tertiary;
   margin-left: 1rem;
   margin-bottom: 1rem;
-  border-radius: $border-radius;
-  background-color: rgba($color-dark-primary, 50%);
+  border-radius: theme.$border-radius;
+  background-color: rgba(theme.$color-dark-primary, 50%);
 
   z-index: 10;
 }
@@ -89,7 +89,7 @@
   top: 0;
   right: 10px;
   font-size: 3rem;
-  color: $color-accent-primary;
+  color: theme.$color-accent-primary;
   rotate: 90deg;
 
   z-index: 10;
@@ -102,17 +102,17 @@
   right: 10px;
   z-index: 10;
 
-  color: $color-accent-secondary;
+  color: theme.$color-accent-secondary;
 }
 
 .statusIconsContainer {
-  @include flex(row, flex-start, center);
+  @include mixins.flex(row, flex-start, center);
   column-gap: 1.5rem;
   position: absolute;
   bottom: 10px;
   right: 10px;
   font-size: 2rem;
-  color: $color-dark-tertiary;
+  color: theme.$color-dark-tertiary;
 
   z-index: 10;
 }
@@ -122,14 +122,14 @@
 }
 
 .statusDisabled {
-  color: $color-error;
+  color: theme.$color-error;
 }
 
 .deadOverlay {
   position: absolute;
   top: 10px;
   left: 10px;
-  color: $color-error;
+  color: theme.$color-error;
 
   font-weight: 600;
   z-index: 10;

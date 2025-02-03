@@ -1,24 +1,24 @@
-@import "src/styles/mixins.scss";
-@import "src/styles/theme.scss";
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
 
 .container {
-  @include flex;
+  @include mixins.flex;
   column-gap: 0.4rem;
 }
 
 .button {
   font-size: 1.8rem;
   padding: 2px;
-  color: $color-text-secondary;
+  color: theme.$color-text-secondary;
 
   &:hover,
   &:focus {
-    color: $color-accent-primary;
+    color: theme.$color-accent-primary;
   }
 
   transition: color 0.25s;
 
   &.active {
-    color: $color-accent-primary;
+    color: theme.$color-accent-primary;
   }
 }

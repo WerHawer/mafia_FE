@@ -1,5 +1,5 @@
-@import "src/styles/mixins";
-@import "src/styles/theme";
+@use "../../../styles/theme.scss";
+@use "../../../styles/mixins.scss";
 
 .container {
   padding: 1.5rem 10rem;
@@ -18,7 +18,7 @@
 }
 
 .accentText {
-  color: $color-accent-secondary;
+  color: theme.$color-accent-secondary;
   font-weight: 500;
 }
 
@@ -37,7 +37,7 @@
 }
 
 .buttonContainer {
-  @include flexCenter;
+  @include mixins.flexCenter;
 
   margin-top: 5rem;
 }

@@ -1,4 +1,4 @@
-@import "src/styles/theme";
+@use "../../styles/theme.scss";
 
 .container {
   width: 100%;
@@ -14,7 +14,7 @@
   top: 50%;
   left: 20px;
   transform: translateY(-50%);
-  color: $color-text-primary;
+  color: theme.$color-text-primary;
   font-size: 1.6rem;
   pointer-events: none;
 
@@ -26,30 +26,30 @@
   padding: 15px 10px 15px 20px;
   background: transparent;
   outline: none;
-  border: 1px solid $border-color;
-  border-radius: $border-radius-big;
+  border: 1px solid theme.$border-color;
+  border-radius: theme.$border-radius-big;
 
-  color: $color-text-primary;
+  color: theme.$color-text-primary;
   font-size: 1.6rem;
 
   &:focus,
   &.withValue {
-    border-color: $color-accent-primary;
+    border-color: theme.$color-accent-primary;
 
     & + .pseudoPlaceholder {
       padding: 2px 5px;
-      background: $color-dark-primary;
+      background: theme.$color-dark-primary;
       font-size: 1rem;
       top: 0;
     }
   }
 
   &.withError {
-    border-color: $color-error;
-    color: $color-error;
+    border-color: theme.$color-error;
+    color: theme.$color-error;
 
     & + .pseudoPlaceholder {
-      color: $color-error;
+      color: theme.$color-error;
     }
   }
 }
@@ -57,13 +57,13 @@
 .errorText {
   display: block;
   padding: 8px 0 0 20px;
-  color: $color-error;
+  color: theme.$color-error;
   font-size: 1.1rem;
 }
 
 .icon {
   &.withError {
-    color: $color-error;
+    color: theme.$color-error;
   }
 }
 

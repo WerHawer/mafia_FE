@@ -1,5 +1,5 @@
-@import "src/styles/mixins.scss";
-@import "src/styles/theme.scss";
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
 
 .pageContainer {
   display: grid;
@@ -11,13 +11,13 @@
 }
 
 .rightContainer {
-  @include flex(column, flex-start, center);
+  @include mixins.flex(column, flex-start, center);
 }
 
 .asideSection {
   width: 100%;
   height: 20%;
-  border-bottom: $border-color 1px solid;
+  border-bottom: theme.$border-color 1px solid;
 }
 
 .personalInfo,

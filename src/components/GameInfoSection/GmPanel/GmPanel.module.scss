@@ -1,7 +1,7 @@
-@import "src/styles/mixins";
+@use "../../../styles/mixins.scss";
 
 .gmPanel {
-  @include flexCenter(column);
+  @include mixins.flexCenter(column);
   width: 100%;
   height: 100%;
   column-gap: 2rem;
@@ -10,14 +10,14 @@
 }
 
 .initialPanelContainer {
-  @include flexCenter;
+  @include mixins.flexCenter;
   min-width: 50%;
   width: 100%;
   height: 100%;
 }
 
 .dayNightPanelContainer {
-  @include flex;
+  @include mixins.flex;
   column-gap: 2rem;
   min-width: 50%;
   width: 100%;
@@ -36,7 +36,7 @@
 
 .nightContainer,
 .dayContainer {
-  @include flex(row, space-around, flex-start);
+  @include mixins.flex(row, space-around, flex-start);
   flex-wrap: wrap;
 
   width: 100%;
@@ -46,7 +46,7 @@
 }
 
 .radioLabel {
-  @include flexCenter;
+  @include mixins.flexCenter;
   column-gap: 0.5rem;
   cursor: pointer;
 }
