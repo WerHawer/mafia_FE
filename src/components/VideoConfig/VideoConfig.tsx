@@ -159,7 +159,8 @@ export const VideoConfig = observer(() => {
             <Button
               onClick={() => navigate(-1)}
               variant={ButtonVariant.Tertiary}
-              size={ButtonSize.Large}
+              size={ButtonSize.Medium}
+              width="max-content"
             >
               Go back
             </Button>
@@ -167,7 +168,7 @@ export const VideoConfig = observer(() => {
             <Button
               onClick={handleSave}
               variant={ButtonVariant.Success}
-              size={ButtonSize.Large}
+              size={ButtonSize.Medium}
             >
               Done
             </Button>

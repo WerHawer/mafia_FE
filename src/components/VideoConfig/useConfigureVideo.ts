@@ -2,9 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Results, SelfieSegmentation } from "@mediapipe/selfie_segmentation";
 import * as cam from "@mediapipe/camera_utils";
 import { UserVideoSettings } from "@/types/user.types.ts";
-
-const PRE_VIDEO_WIDTH = 1280;
-const PRE_VIDEO_HEIGHT = 720;
+import { PRE_VIDEO_HEIGHT, PRE_VIDEO_WIDTH } from "@/config/video.ts";
 
 const bgEffects = {
   blur: "blur",
@@ -23,7 +21,12 @@ export const useConfigureVideo = (
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
-  const bgEffectsRef = useRef<BackgroundEffects>(bgEffects.none);
+  const bgFirstEffect = videoSettings.withBlur
+    ? bgEffects.blur
+    : videoSettings.imageURL
+      ? bgEffects.img
+      : bgEffects.none;
+  const bgEffectsRef = useRef<BackgroundEffects>(bgFirstEffect);
   const isFirstRender = useRef(true);
 
   const withoutEffects = !imageURL && !withBlur;
@@ -61,8 +64,10 @@ export const useConfigureVideo = (
       const settings = videoTrack.getSettings();
 
       video.srcObject = myOriginalStream;
+
       const videoWidth = settings.width ?? PRE_VIDEO_WIDTH;
       const videoHeight = settings.height ?? PRE_VIDEO_HEIGHT;
+
       canvas.width = videoWidth;
       canvas.height = videoHeight;
 
@@ -169,6 +174,10 @@ export const useConfigureVideo = (
       });
 
       camera.start();
+
+      return () => {
+        camera.stop();
+      };
     }
   }, [myOriginalStream, onResults, withBlur, withoutEffects]);
 

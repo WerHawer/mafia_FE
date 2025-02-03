@@ -13,6 +13,7 @@ import { useStreams } from "@/hooks/useStreams.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
 import { VideoConfig } from "@/components/VideoConfig";
+import { videoOptions } from "@/config/video.ts";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
@@ -21,15 +22,13 @@ const GamePage = observer(() => {
   const { setActiveGame, activeGamePlayers } = gamesStore;
   const { myStream } = streamsStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
+
   useGetUsersWithAddToStore(activeGamePlayers);
   useStreams({ myStream, myId });
 
   useUserMediaStream({
     audio: true,
-    video: {
-      width: 1920,
-      height: 1080,
-    },
+    video: videoOptions,
   });
 
   useEffect(() => {
@@ -64,9 +63,11 @@ const GamePage = observer(() => {
         >
           <GameInfoSection />
         </section>
+
         <section className={classNames(styles.asideSection, styles.voteList)}>
           <GameVote />
         </section>
+
         <section className={styles.chatSection}>
           <GameChat />
         </section>

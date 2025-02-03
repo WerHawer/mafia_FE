@@ -7,6 +7,8 @@
   border-radius: theme.$border-radius-big;
   transition: background-color, opacity;
   transition-duration: 250ms;
+  cursor: pointer;
+  text-wrap: nowrap;
 
   &.fullWidth {
     width: 100%;
@@ -56,7 +58,10 @@
 
     &:hover,
     &:focus {
-      background-color: color.adjust(theme.$color-accent-primary, $lightness: 15%);
+      background-color: color.adjust(
+        theme.$color-accent-primary,
+        $lightness: 15%
+      );
     }
 
     &:disabled {
@@ -68,8 +73,13 @@
 
   &.secondary {
     background:
-      linear-gradient(theme.$color-dark-primary, theme.$color-dark-primary) padding-box,
-      linear-gradient(to right, theme.$color-accent-primary, theme.$color-light-primary)
+      linear-gradient(theme.$color-dark-primary, theme.$color-dark-primary)
+        padding-box,
+      linear-gradient(
+          to right,
+          theme.$color-accent-primary,
+          theme.$color-light-primary
+        )
         border-box;
     color: theme.$color-accent-primary;
     border: 1px solid transparent;
@@ -82,7 +92,11 @@
             color.adjust(theme.$color-dark-primary, $lightness: 10%)
           )
           padding-box,
-        linear-gradient(to right, theme.$color-accent-primary, theme.$color-light-primary)
+        linear-gradient(
+            to right,
+            theme.$color-accent-primary,
+            theme.$color-light-primary
+          )
           border-box;
     }
 

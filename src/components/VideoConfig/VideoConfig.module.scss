@@ -24,7 +24,7 @@
 .content {
   position: relative;
   @include mixins.flex;
-  max-width: 70%;
+  max-width: 80%;
   background: theme.$color-dark-tertiary;
   border-radius: theme.$border-radius;
 
@@ -113,16 +113,16 @@
   text-transform: uppercase;
   box-shadow: theme.$shadow;
 
-  margin-bottom: 2rem;
-
   position: absolute;
   top: 10px;
   right: 10px;
 
   &:hover {
-    background-color: color.adjust(theme.$color-accent-secondary, $lightness: -10%);
+    background-color: color.adjust(
+      theme.$color-accent-secondary,
+      $lightness: -10%
+    );
     transform: scale(1.02);
-    box-shadow: theme.$shadow-hover;
   }
 }
 
