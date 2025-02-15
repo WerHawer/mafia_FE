@@ -24,7 +24,6 @@ export const Input = memo(
       },
       ref
     ) => {
-      console.log("error input:", error);
       return (
         <div className={styles.container}>
           <div className={classNames(className, styles.inputContainer, {})}>

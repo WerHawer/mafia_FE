@@ -110,14 +110,14 @@ export const GameVideo = observer(
 
           {currentUser && (
             <VideoUserInfo
-              userName={currentUser.nickName}
+              userName={currentUser.nikName}
               userId={currentUser.id}
             />
           )}
         </div>
       </Draggable>
     );
-  },
+  }
 );
 
 GameVideo.displayName = "GameVideo";

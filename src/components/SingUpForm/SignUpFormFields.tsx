@@ -33,7 +33,7 @@ export const SignUpFormFields = ({
     <>
       <Controller
         control={control}
-        name="nickName"
+        name="login"
         render={({ field, fieldState }) => (
           <>
             <Input

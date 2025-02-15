@@ -23,7 +23,7 @@ export const UserHeaderInfo = observer(() => {
 
   if (!user) return null;
 
-  const { nickName, avatar } = user;
+  const { nikName, avatar } = user;
 
   return (
     <PopupMenu
@@ -32,10 +32,10 @@ export const UserHeaderInfo = observer(() => {
       }
     >
       <div className={styles.container}>
-        <span className={styles.name}>{nickName}</span>
+        <span className={styles.name}>{nikName}</span>
 
         <div className={styles.avatar}>
-          <img src={avatar ?? noAvatar} alt={nickName} width="46" height="46" />
+          <img src={avatar ?? noAvatar} alt={nikName} width="46" height="46" />
         </div>
       </div>
     </PopupMenu>

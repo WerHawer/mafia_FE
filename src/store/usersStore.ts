@@ -69,7 +69,7 @@ export class UsersStore {
   getUserName = (id?: string) => {
     if (!id) return;
 
-    return toJS(this._users[id]?.nickName);
+    return toJS(this._users[id]?.nikName);
   };
 
   get token() {

@@ -8,7 +8,7 @@ export type UserVideoSettings = {
 
 export interface IUser {
   email?: string;
-  nickName: string;
+  nikName: string;
   friendList: [];
   isOnline: true;
   avatar?: string;

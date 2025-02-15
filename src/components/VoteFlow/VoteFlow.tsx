@@ -21,7 +21,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
 
   const isUserAddedToVoteList = useMemo(
     () => (userId ? gameFlow.proposed.includes(userId) : false),
-    [gameFlow.proposed, userId],
+    [gameFlow.proposed, userId]
   );
 
   const isCurrentUserGM = isUserGM(userId);
@@ -39,7 +39,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
 
   const votesForThisUser = useMemo(
     () => gameFlow.voted?.[userId] ?? [],
-    [gameFlow.voted, userId],
+    [gameFlow.voted, userId]
   );
   const amIVoted = useMemo(() => {
     return Object.values(gameFlow.voted ?? {})
@@ -60,7 +60,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
 
         return acc;
       },
-      {} as Record<UserId, UserId[]>,
+      {} as Record<UserId, UserId[]>
     );
 
     updateGameFlow({ proposed: newList, voted: newVoted });
@@ -128,7 +128,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
       {votesForThisUser.length > 0 && gameFlow.isVote && (
         <ul className={styles.voteList}>
           {votesForThisUser.map((id) => (
-            <li key={id}>{getUser(id)?.nickName || "Anonimus"}</li>
+            <li key={id}>{getUser(id)?.nikName || "Anonimus"}</li>
           ))}
         </ul>
       )}

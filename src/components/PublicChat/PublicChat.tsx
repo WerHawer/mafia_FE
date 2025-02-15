@@ -14,6 +14,7 @@ export const PublicChat = observer(() => {
   const { usersStore, messagesStore } = rootStore;
   const { me: user, socketConnected } = usersStore;
   const { publicMessages, setNewLocalMessage } = messagesStore;
+  console.log("publicMessages :", publicMessages);
   useGetMessagesQueryWithStore();
 
   useEffect(() => {
@@ -53,7 +54,7 @@ export const PublicChat = observer(() => {
             ({
               text,
               id,
-              sender: { id: userId, nickName: userName },
+              sender: { id: userId, nikName: userName },
               createdAt,
             }) => (
               <p
@@ -65,7 +66,7 @@ export const PublicChat = observer(() => {
                 <span className="strong">{userName}: </span>
                 <span>{text}</span>
               </p>
-            ),
+            )
           )}
         </div>
 

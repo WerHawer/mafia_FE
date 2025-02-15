@@ -14,17 +14,17 @@ import { Typography } from "@/UI/Typography";
 import { Link } from "@/components/Link";
 
 const MIN_PASSWORD_LENGTH = 8;
-const MIN_NICKNAME_LENGTH = 3;
+const MIN_nikName_LENGTH = 3;
 
 export type SingUpFormInputs = {
-  nickName: string;
+  login: string;
   password: string;
   passwordRepeat: string;
 };
 
 const schema = yup
   .object({
-    nickName: yup.string().required().min(MIN_NICKNAME_LENGTH),
+    login: yup.string().required().min(MIN_nikName_LENGTH),
     password: yup.string().required().min(MIN_PASSWORD_LENGTH),
     passwordRepeat: yup
       .string()
@@ -35,7 +35,7 @@ const schema = yup
   .required();
 
 const defaultValues: SingUpFormInputs = {
-  nickName: "",
+  login: "",
   password: "",
   passwordRepeat: "",
 };
@@ -47,12 +47,9 @@ export const SingUpForm = observer(() => {
 
   const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<SingUpFormInputs> = ({
-    nickName,
-    password,
-  }) => {
+  const onSubmit: SubmitHandler<SingUpFormInputs> = ({ login, password }) => {
     mutate(
-      { nickName, password },
+      { login, password },
       {
         onSuccess: (res) => {
           const { token } = res.data;
@@ -66,7 +63,7 @@ export const SingUpForm = observer(() => {
 
           navigate(routes.home);
         },
-      },
+      }
     );
   };
 

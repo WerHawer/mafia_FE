@@ -17,13 +17,11 @@ export const LoginFormFields = ({
   isPending = false,
   error,
 }: LoginFormFieldsProps) => {
-  console.log("error login fields:", error);
   const {
     control,
     formState: { errors },
     setError,
   } = useFormContext<LoginFormInputs>();
-  console.log("errors form formic:", errors);
 
   useEffect(() => {
     if (!error) return;

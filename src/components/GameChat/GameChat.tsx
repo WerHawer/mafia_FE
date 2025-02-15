@@ -35,7 +35,7 @@ export const GameChat = observer(() => {
     (e: ChangeEvent<HTMLInputElement>) => {
       setMessage(e.target.value);
     },
-    [],
+    []
   );
 
   const handleSendMessage = useCallback(() => {
@@ -70,7 +70,7 @@ export const GameChat = observer(() => {
         {messages?.map(({ sender, text, id }, index) => {
           return (
             <div key={id ?? sender.id + index} className={styles.messageText}>
-              <p>{sender.nickName}:</p>
+              <p>{sender.nikName}:</p>
               <p>{text}</p>
             </div>
           );
