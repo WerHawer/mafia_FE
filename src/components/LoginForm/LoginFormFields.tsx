@@ -17,11 +17,13 @@ export const LoginFormFields = ({
   isPending = false,
   error,
 }: LoginFormFieldsProps) => {
+  console.log("error login fields:", error);
   const {
     control,
     formState: { errors },
     setError,
-  } = useFormContext();
+  } = useFormContext<LoginFormInputs>();
+  console.log("errors form formic:", errors);
 
   useEffect(() => {
     if (!error) return;
@@ -59,10 +61,6 @@ export const LoginFormFields = ({
       />
 
       {errors.root && <FormError error={errors.root.message} />}
-
-      {/*<p className={styles.singUpLink}>*/}
-      {/*  don`t have account go to <Link to={routes.singUp}>Sing up</Link>*/}
-      {/*</p>*/}
 
       <Button
         type={ButtonType.Submit}

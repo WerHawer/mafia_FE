@@ -11,7 +11,7 @@ import { Form } from "@/components/Form/Form.tsx";
 import { LoginFormFields } from "@/components/LoginForm/LoginFormFields.tsx";
 import { Typography } from "@/UI/Typography/Typography.tsx";
 import { Link } from "@/components/Link";
-import { SubmitHandler } from "react-hook-form";
+import { SubmitHandler, useFormContext } from "react-hook-form";
 
 const MIN_PASSWORD_LENGTH = 8;
 const MIN_LOGIN_LENGTH = 3;

@@ -11,13 +11,17 @@ import { useSocket } from "../hooks/useSocket.ts";
 const authFreeRoutes = [routes.login, routes.singUp];
 
 // TODO: remember initial path and fo to this path after login
-// TODO: redirect from login if already logged in
+
 export const AuthGate = observer(({ children }: PropsWithChildren) => {
   const { pathname } = useLocation();
   const { token, me, setMyUser, logout } = usersStore;
   const { disconnect } = useSocket();
 
   const { error, data } = useAuthQuery(token);
+
+  if (token && authFreeRoutes.includes(pathname)) {
+    return <Navigate to={routes.home} />;
+  }
 
   if (data && !me) {
     setMyUser(data.user);

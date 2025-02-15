@@ -12,6 +12,7 @@ export const RootLayout = observer(() => {
   return (
     <div className={styles.rootContainer}>
       {me && <Header />}
+
       <MainContainer>
         <Outlet />
       </MainContainer>

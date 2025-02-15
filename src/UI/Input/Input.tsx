@@ -22,8 +22,9 @@ export const Input = memo(
         onIconRightClick,
         ...restProps
       },
-      ref,
+      ref
     ) => {
+      console.log("error input:", error);
       return (
         <div className={styles.container}>
           <div className={classNames(className, styles.inputContainer, {})}>
@@ -55,9 +56,10 @@ export const Input = memo(
               </Button>
             )}
           </div>
+
           {error && <span className={styles.errorText}>{error}</span>}
         </div>
       );
-    },
-  ),
+    }
+  )
 );
