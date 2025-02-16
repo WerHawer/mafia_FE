@@ -22,6 +22,22 @@
   font-weight: 500;
   color: $color-text-primary;
   opacity: 0.8;
+
+  .gameInfo {
+    span {
+      color: $color-text-primary;
+      opacity: 0.8;
+      text-transform: capitalize;
+    }
+
+    .playerCount {
+      justify-self: center;
+    }
+
+    .createdAt {
+      justify-self: start;
+    }
+  }
 }
 
 .actionColumn {
@@ -46,7 +62,8 @@
 }
 
 .gameInfo {
-  display: flex;
+  display: grid;
+  grid-template-columns: 250px 100px 180px;
   gap: 32px;
   align-items: center;
   font-size: 16px;
@@ -62,6 +79,7 @@
 .playerCount {
   color: $color-text-primary;
   min-width: 80px;
+  justify-self: center;
 }
 
 .ownerName {
@@ -72,6 +90,7 @@
 .createdAt {
   color: $color-text-primary;
   min-width: 140px;
+  justify-self: start;
 }
 
 .joinButton {
@@ -90,7 +109,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 156px;
+  width: 100%;
 }
 
 .avatar {
