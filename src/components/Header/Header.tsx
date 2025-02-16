@@ -1,8 +1,8 @@
 import { HeaderNav } from "../Nav";
 import { UserHeaderInfo } from "../UserInfo/UserHeaderInfo.tsx";
-import styles from "./Header.module.scss";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 import { Logo } from "@/UI/Logo";
+import styles from "./Header.module.scss";
 
 export const Header = () => {
   return (
@@ -15,3 +15,5 @@ export const Header = () => {
     </header>
   );
 };
+
+Header.displayName = "Header";
