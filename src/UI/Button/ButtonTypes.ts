@@ -11,6 +11,7 @@ export enum ButtonVariant {
   Secondary = "secondary",
   Tertiary = "tertiary",
   Success = "success",
+  Outline = "outline",
 }
 
 export enum ButtonType {

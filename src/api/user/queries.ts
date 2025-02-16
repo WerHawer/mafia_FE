@@ -1,10 +1,7 @@
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { FIVE_MINUTES, ONE_DAY, queryKeys } from "../apiConstants.ts";
-import { getUserById, getUsers } from "./api.ts";
-import { getQueriesStatus } from "../../helpers/getQueriesStatus.ts";
-import { getDataFromQueries } from "../../helpers/getDataFromQueries.ts";
+import { getUserById, getUsers, getUsersByIds } from "./api.ts";
 import { usersStore } from "../../store/usersStore.ts";
-import { IUser } from "../../types/user.types.ts";
 
 export const useGetUsersQuery = () => {
   return useQuery({
@@ -24,26 +21,23 @@ export const useGetUserByIdQuery = (id: string) => {
   });
 };
 
-export const useGetUsersByIds = (ids: string[]) => {
-  const queries = useQueries({
-    queries: ids.map((id) => ({
-      queryKey: [queryKeys.user, id],
-      queryFn: () => getUserById(id),
-      staleTime: ONE_DAY,
-    })),
+export const useGetUsersByIds = (ids: string[], enabled = true) => {
+  return useQuery({
+    queryKey: [queryKeys.users, ids],
+    queryFn: () => getUsersByIds(ids),
+    staleTime: ONE_DAY,
+    select: ({ data }) => data,
+    enabled,
   });
-
-  const queryStatus = getQueriesStatus(queries);
-  const data = getDataFromQueries(queries);
-
-  return { data, ...queryStatus };
 };
 
-export const useGetUsersWithAddToStore = (ids: string[]) => {
-  const users = useGetUsersByIds(ids);
+export const useGetUsersWithAddToStore = (ids: string[], enabled = true) => {
+  const users = useGetUsersByIds(ids, enabled);
   const { setUsers } = usersStore;
 
-  setUsers(users.data);
+  if (users.data) {
+    setUsers(users.data);
+  }
 
   return users;
 };

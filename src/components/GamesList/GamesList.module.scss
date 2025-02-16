@@ -1,0 +1,101 @@
+@use "../../styles/theme.scss" as *;
+
+.container {
+  padding: 20px;
+  width: 100%;
+}
+
+.gamesTable {
+  background-color: $color-dark-secondary;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: $color-dark-secondary;
+  border-radius: 8px 8px 0 0;
+  font-weight: 500;
+  color: $color-text-primary;
+  opacity: 0.8;
+}
+
+.actionColumn {
+  width: 100px;
+  text-align: center;
+}
+
+.gameRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  width: 100%;
+
+  &:nth-child(even) {
+    background-color: $color-dark-tertiary;
+  }
+
+  &:last-child {
+    border-radius: 0 0 8px 8px;
+  }
+}
+
+.gameInfo {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  font-size: 16px;
+  flex: 1;
+}
+
+.gameNumber {
+  font-weight: 500;
+  color: $color-text-primary;
+  min-width: 80px;
+}
+
+.playerCount {
+  color: $color-text-primary;
+  min-width: 80px;
+}
+
+.ownerName {
+  color: $color-text-primary;
+  min-width: 156px;
+}
+
+.createdAt {
+  color: $color-text-primary;
+  min-width: 140px;
+}
+
+.joinButton {
+  &[disabled] {
+    background-color: $color-button-inactive;
+    cursor: not-allowed;
+  }
+}
+
+.createButton {
+  width: 100%;
+  max-width: 200px;
+}
+
+.ownerBlock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 156px;
+}
+
+.avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}

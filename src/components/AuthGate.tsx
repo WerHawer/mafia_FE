@@ -15,6 +15,7 @@ const authFreeRoutes = [routes.login, routes.singUp];
 export const AuthGate = observer(({ children }: PropsWithChildren) => {
   const { pathname } = useLocation();
   const { token, me, setMyUser, logout } = usersStore;
+  console.log("token :", token);
   const { disconnect } = useSocket();
 
   const { error, data } = useAuthQuery(token);

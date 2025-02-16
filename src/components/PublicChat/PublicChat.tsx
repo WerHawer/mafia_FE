@@ -1,11 +1,12 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
-import "./PublicChat.css";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { IMessage, IMessageDTO, MessageTypes } from "@/types/message.types.ts";
 import { useGetMessagesQueryWithStore } from "@/api/messages/queries.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import styles from "./PublicChat.module.scss";
+import noAvatar from "@/assets/images/noAvatar.jpg";
 
 export const PublicChat = observer(() => {
   const { sendMessage } = useSocket();
@@ -14,7 +15,7 @@ export const PublicChat = observer(() => {
   const { usersStore, messagesStore } = rootStore;
   const { me: user, socketConnected } = usersStore;
   const { publicMessages, setNewLocalMessage } = messagesStore;
-  console.log("publicMessages :", publicMessages);
+
   useGetMessagesQueryWithStore();
 
   useEffect(() => {
@@ -36,7 +37,6 @@ export const PublicChat = observer(() => {
 
     setNewMessage("");
     setNewLocalMessage(message);
-
     sendMessage(wsEvents.messageSend, messageDTO);
   }, [newMessage, sendMessage, setNewLocalMessage, user]);
 
@@ -45,49 +45,66 @@ export const PublicChat = observer(() => {
   }, []);
 
   return (
-    <div className="main_container">
-      <div className="chatContainer">
-        <h4>{socketConnected} users connected to chat</h4>
+    <div className={styles.chatContainer}>
+      <h4 className={styles.chatHeader}>
+        {socketConnected} users connected to chat
+      </h4>
 
-        <div className="chatMessages" ref={chatRef}>
-          {publicMessages?.map(
-            ({
-              text,
-              id,
-              sender: { id: userId, nikName: userName },
-              createdAt,
-            }) => (
-              <p
-                key={id ?? createdAt + userId}
-                className={
-                  userId === user?.id ? "messageText myMessage" : "messageText"
-                }
-              >
-                <span className="strong">{userName}: </span>
-                <span>{text}</span>
-              </p>
-            )
-          )}
-        </div>
-
-        <div className="chatInputContainer">
-          <form onSubmit={(e) => e.preventDefault()}>
-            <input
-              type="text"
-              className="chatInput"
-              value={newMessage}
-              onChange={handleChange}
-            />
-            <button
-              className="sendButton"
-              onClick={sendChatMessage}
-              disabled={!newMessage}
-              type="submit"
+      <div className={styles.chatMessages} ref={chatRef}>
+        {publicMessages?.map(
+          ({
+            text,
+            id,
+            sender: { id: userId, nikName: userName, avatar },
+            createdAt,
+          }) => (
+            <div
+              key={id ?? createdAt + userId}
+              className={`${styles.messageWrapper} ${
+                userId === user?.id ? styles.myMessage : ""
+              }`}
             >
-              Send
-            </button>
-          </form>
-        </div>
+              {userId !== user?.id && (
+                <img
+                  src={avatar || noAvatar}
+                  alt={userName}
+                  className={styles.avatar}
+                />
+              )}
+              <div className={styles.messageText}>
+                <span className={styles.strong}>{userName}</span>
+                <span>{text}</span>
+              </div>
+              {userId === user?.id && (
+                <img
+                  src={avatar || noAvatar}
+                  alt={userName}
+                  className={styles.avatar}
+                />
+              )}
+            </div>
+          )
+        )}
+      </div>
+
+      <div className={styles.chatInputContainer}>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <input
+            type="text"
+            className={styles.chatInput}
+            value={newMessage}
+            onChange={handleChange}
+            placeholder="Type a message..."
+          />
+          <button
+            className={styles.sendButton}
+            onClick={sendChatMessage}
+            disabled={!newMessage}
+            type="submit"
+          >
+            Send
+          </button>
+        </form>
       </div>
     </div>
   );

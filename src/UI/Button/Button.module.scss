@@ -138,4 +138,20 @@
       cursor: not-allowed;
     }
   }
+
+  &.outline {
+    background-color: transparent;
+    border: 2px solid theme.$color-accent-primary;
+    color: theme.$color-accent-primary;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(theme.$color-accent-primary, 0.1);
+    }
+
+    &:disabled {
+      border-color: theme.$color-button-inactive;
+      color: theme.$color-button-inactive;
+      background-color: transparent;
+    }
+  }
 }

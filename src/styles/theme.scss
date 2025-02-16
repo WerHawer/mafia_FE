@@ -1,39 +1,32 @@
-// Основные цвета
-$color-dark-primary: #212121; // Очень темный серо-синий, почти черный, для фона
-$color-dark-secondary: #373737; // Темно-серый для элементов фона и карточек
-$color-dark-tertiary: #434343; // Средне-темный серый для фона панелей и модальных окон
-$color-light-primary: #f5f5f5; // Светло-серый для текста и элементов интерфейса
-$color-light-secondary: #cfcfcf; // Светло-серый для текста и элементов интерфейса
-$color-light-tertiary: #8b949e; // Серый для текста и элементов интерфейса
+$color-dark-primary: #222222;
+$color-dark-secondary: #414141;
+$color-dark-tertiary: #545454;
+$color-dark-message: #747272;
+$color-input: #494949;
+$color-button-inactive: #565656;
+$color-light-primary: #f5f5f5;
+$color-light-secondary: #cfcfcf;
+$color-light-tertiary: #8b949e;
 
-// Акцентные цвета
-$color-accent-primary: #fff72f; // Темно-бордовый, для акцентных кнопок и ссылок
-$color-accent-secondary: #5865f2; // Ярко-синий, для подсветки важных элементов
-$color-accent-tertiary: #ffa657; // Оранжевый, для подсветки важных элементов
+$color-accent-primary: #ffff27;
+$color-accent-secondary: #5865f2;
+$color-accent-tertiary: #ffa657;
 
-// Цвета текста
-$color-text-primary: #f0f0f0; // Светло-серый для основного текста
-$color-text-secondary: #8b949e; // Темно-серый для второстепенного текста
-$color-text-tertiary: #ffffff; // Белый для заголовков и важного текста
+$color-text-primary: #ffffff;
+$color-text-secondary: #8b949e;
+$color-text-tertiary: #ffffff;
 
-// Дополнительные цвета
-$color-error: #ff0000; // Красный для ошибок и предупреждений
-$color-success: #2ea043; // Зеленый для успеха и подтверждений
-$color-info: #58a6ff; // Синий для информационных сообщений
+$color-error: #ff0000;
+$color-success: #2ea043;
+$color-info: #58a6ff;
 
-// Прозрачность и оверлеи
-$overlay-color: rgba(
-  $color-dark-primary,
-  0.85
-); // Темный оверлей для модальных окон
+$overlay-color: rgba($color-dark-primary, 0.85);
 
-// Границы и разделители
-$border-color: #f5f5f5; // Цвет границ и разделителей
-$border-radius: 0.5rem; // Радиус скругления углов
-$border-radius-big: 3rem; // Радиус скругления углов для круглых элементов
-$border-radius-large: 4rem; // Радиус скругления углов для круглых элементов
+$border-color: #f5f5f5;
+$border-radius: 0.5rem;
+$border-radius-big: 3rem;
+$border-radius-large: 4rem;
 
-// Тени
-$color-shadow: #c9d1d9; // Цвет теней
-$shadow: 0 0 4px 0 $color-shadow; // Тень для элементов
-$shadow-hover: 0 0 15px 0 $color-shadow; // Тень для элементов при наведении
+$color-shadow: #c9d1d9;
+$shadow: 0 0 4px 0 $color-shadow;
+$shadow-hover: 0 0 15px 0 $color-shadow;

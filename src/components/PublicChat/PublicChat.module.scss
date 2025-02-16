@@ -1,0 +1,121 @@
+@use "../../styles/theme.scss" as *;
+
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+  background-color: $color-dark-secondary;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.chatHeader {
+  color: $color-text-primary;
+  margin-bottom: 16px;
+  font-size: 16px;
+  text-align: left;
+}
+
+.chatMessages {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 400px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  padding: 0 8px;
+}
+
+.messageWrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 4px 0;
+  width: 100%;
+
+  &.myMessage {
+    justify-content: flex-end;
+  }
+}
+
+.messageText {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%;
+  padding: 8px 12px;
+  background-color: $color-dark-tertiary;
+  color: $color-text-primary;
+  font-size: 14px;
+  border-radius: 8px;
+  order: 2;
+
+  .myMessage & {
+    background-color: $color-dark-message;
+    text-align: right;
+    order: 1;
+  }
+}
+
+.strong {
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: rgba($color-text-primary, 0.7);
+  font-size: 12px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  order: 1;
+
+  .myMessage & {
+    order: 2;
+  }
+}
+
+.chatInputContainer {
+  margin-top: auto;
+  width: 100%;
+
+  form {
+    display: flex;
+    gap: 12px;
+  }
+}
+
+.chatInput {
+  flex: 1;
+  background-color: $color-input;
+  border: none;
+  border-radius: 20px;
+  padding: 12px 20px;
+  color: $color-text-primary;
+  font-size: 14px;
+  height: 44px;
+
+  &::placeholder {
+    color: rgba($color-text-primary, 0.5);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.sendButton {
+  background-color: $color-dark-tertiary;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  color: $color-text-primary;
+  cursor: pointer;
+  height: 44px;
+  min-width: 80px;
+
+  &:disabled {
+    background-color: $color-button-inactive;
+    cursor: not-allowed;
+  }
+}

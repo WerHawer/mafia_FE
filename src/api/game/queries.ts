@@ -1,3 +1,4 @@
+import { uniq } from "lodash/fp";
 import {
   addRolesToGame,
   addUserToGame,
@@ -14,6 +15,7 @@ import { useEffect } from "react";
 import { gamesStore } from "@/store/gamesStore.ts";
 import { GameId, IGameFlow, IGameRoles } from "@/types/game.types.ts";
 import { UserId } from "@/types/user.types.ts";
+import { useGetUsersWithAddToStore } from "../user/queries.ts";
 
 export const useFetchActiveGamesQuery = () => {
   return useQuery({
@@ -25,6 +27,12 @@ export const useFetchActiveGamesQuery = () => {
 
 export const useGetGamesWithStore = () => {
   const { data, ...rest } = useFetchActiveGamesQuery();
+  const allGamePlayers = uniq(data?.flatMap((game) => game.players) ?? []);
+  const allGameOwners = uniq(data?.map((game) => game.owner) ?? []);
+  const allPlayersIds = uniq([...allGamePlayers, ...allGameOwners]);
+
+  useGetUsersWithAddToStore(allPlayersIds, !!allPlayersIds.length);
+
   const { setGames } = gamesStore;
 
   useEffect(() => {
