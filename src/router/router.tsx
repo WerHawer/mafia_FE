@@ -10,6 +10,7 @@ import {
   LazySingUpPage,
 } from "./lazyComponents.ts";
 import { AuthLayout } from "@/layouts/AuthLayout.tsx";
+import { LazyNotFoundPage } from "./lazyComponents";
 
 export const router = createBrowserRouter([
   {
@@ -67,5 +68,13 @@ export const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "*",
+    element: (
+      <Suspense>
+        <LazyNotFoundPage />
+      </Suspense>
+    ),
   },
 ]);

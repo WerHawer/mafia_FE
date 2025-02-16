@@ -15,10 +15,15 @@ const authFreeRoutes = [routes.login, routes.singUp];
 export const AuthGate = observer(({ children }: PropsWithChildren) => {
   const { pathname } = useLocation();
   const { token, me, setMyUser, logout } = usersStore;
-  console.log("token :", token);
   const { disconnect } = useSocket();
 
   const { error, data } = useAuthQuery(token);
+
+  const isKnownRoute = Object.values(routes).includes(pathname);
+
+  if (!isKnownRoute) {
+    return <Navigate to={token ? routes.home : routes.login} />;
+  }
 
   if (token && authFreeRoutes.includes(pathname)) {
     return <Navigate to={routes.home} />;
