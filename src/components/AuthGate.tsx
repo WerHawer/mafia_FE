@@ -19,7 +19,8 @@ export const AuthGate = observer(({ children }: PropsWithChildren) => {
 
   const { error, data } = useAuthQuery(token);
 
-  const isKnownRoute = Object.values(routes).includes(pathname);
+  const corePath = pathname.split("/")[1];
+  const isKnownRoute = Object.values(routes).includes(`/${corePath}`);
 
   if (!isKnownRoute) {
     return <Navigate to={token ? routes.home : routes.login} />;
