@@ -1,16 +1,16 @@
+import { useGetMessagesQueryWithStore } from "@/api/messages/queries.ts";
+import { wsEvents } from "@/config/wsEvents.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
+import { rootStore } from "@/store/rootStore.ts";
+import { IMessage, IMessageDTO, MessageTypes } from "@/types/message.types.ts";
+import { Button } from "@/UI/Button";
+import { ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { Input } from "@/UI/Input";
+import { SendOutlined } from "@ant-design/icons";
+import { observer } from "mobx-react-lite";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { observer } from "mobx-react-lite";
-import { Input } from "@/UI/Input";
 import styles from "./GameChat.module.scss";
-import { Button } from "@/UI/Button";
-import { SendOutlined } from "@ant-design/icons";
-import { wsEvents } from "@/config/wsEvents.ts";
-import { ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
-import { useSocket } from "@/hooks/useSocket.ts";
-import { IMessage, IMessageDTO, MessageTypes } from "@/types/message.types.ts";
-import { useGetMessagesQueryWithStore } from "@/api/messages/queries.ts";
-import { rootStore } from "@/store/rootStore.ts";
 
 export const GameChat = observer(() => {
   const { id = "" } = useParams();
@@ -81,6 +81,7 @@ export const GameChat = observer(() => {
         onSubmit={(e) => e.preventDefault()}
       >
         <Input value={message} onChange={handleChangeMessage} />
+
         <Button
           variant={ButtonVariant.Secondary}
           onClick={handleSendMessage}

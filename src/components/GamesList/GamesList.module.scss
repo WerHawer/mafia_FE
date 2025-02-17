@@ -58,6 +58,15 @@
   &:last-child {
     border-radius: 0 0 8px 8px;
   }
+
+  & .joinButton {
+    min-width: 100px;
+
+    &[disabled] {
+      background-color: $color-button-inactive;
+      cursor: not-allowed;
+    }
+  }
 }
 
 .gameInfo {
@@ -90,13 +99,6 @@
   color: $color-text-primary;
   min-width: 140px;
   justify-self: start;
-}
-
-.joinButton {
-  &[disabled] {
-    background-color: $color-button-inactive;
-    cursor: not-allowed;
-  }
 }
 
 .createButton {

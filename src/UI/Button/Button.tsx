@@ -1,6 +1,6 @@
+import classNames from "classnames";
 import { HTMLProps, PropsWithChildren } from "react";
 import styles from "./Button.module.scss";
-import classNames from "classnames";
 import {
   ButtonSize,
   ButtonType,
@@ -48,7 +48,7 @@ export const Button = ({
           [styles.uppercase]: uppercase,
           [styles.rounded]: rounded,
         },
-        className,
+        className
       )}
       onClick={!disabled ? onClick : undefined}
       disabled={disabled}

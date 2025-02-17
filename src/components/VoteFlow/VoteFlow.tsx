@@ -1,12 +1,12 @@
-import { useCallback, useMemo } from "react";
-import { observer } from "mobx-react-lite";
-import { VoteIcon } from "@/UI/VoteIcon";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
-import { UserId } from "@/types/user.types.ts";
+import { VoteIcon } from "@/UI/VoteIcon";
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
-import styles from "./VoteFlow.module.scss";
 import { useVoteResult } from "@/hooks/useVoteResult.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { UserId } from "@/types/user.types.ts";
+import { observer } from "mobx-react-lite";
+import { useCallback, useMemo } from "react";
+import styles from "./VoteFlow.module.scss";
 
 type VoteFlowProps = {
   isMyStream: boolean;
@@ -109,7 +109,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
       {shouldShowProposeIcon && (
         <VoteIcon
           className={styles.voteIcon}
-          size={ButtonSize.Small}
+          size={ButtonSize.Sm}
           variant={ButtonVariant.Secondary}
           isVoted={isUserAddedToVoteList}
           onClick={handleVotePropose}

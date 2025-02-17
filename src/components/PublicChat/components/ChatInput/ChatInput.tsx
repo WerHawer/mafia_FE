@@ -1,3 +1,6 @@
+import { Button } from "@/UI/Button";
+import { ButtonSize, ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes";
+import { SendOutlined } from "@ant-design/icons";
 import { ChangeEvent, FormEvent, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "../../PublicChat.module.scss";
@@ -57,9 +60,18 @@ export const ChatInput = ({ value, onChange, onSubmit }: ChatInputProps) => {
           rows={1}
         />
 
-        <button className={styles.sendButton} disabled={!value} type="submit">
-          {t("send")}
-        </button>
+        <Button
+          size={ButtonSize.Small}
+          disabled={!value}
+          type={ButtonType.Submit}
+          variant={ButtonVariant.Outline}
+          title={t("send")}
+          width="min-content"
+          className={styles.sendButton}
+          rounded
+        >
+          <SendOutlined className={styles.icon} />
+        </Button>
       </form>
     </div>
   );

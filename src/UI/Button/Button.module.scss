@@ -7,8 +7,8 @@
   border-radius: theme.$border-radius-big;
   transition: background-color, opacity;
   transition-duration: 250ms;
-  cursor: pointer;
   text-wrap: nowrap;
+  cursor: pointer;
 
   &.fullWidth {
     width: 100%;
@@ -17,7 +17,7 @@
   &.small {
     padding: 0.8rem 0.8rem;
     font-size: 1.4rem;
-    min-width: 100px;
+    min-width: max-content;
   }
 
   &.medium {

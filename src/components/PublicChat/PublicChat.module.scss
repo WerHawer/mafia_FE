@@ -123,17 +123,28 @@
     @include flex;
     gap: 12px;
   }
+
+  & button.sendButton {
+    @include flex(row, center, center);
+    flex-shrink: 0;
+    height: 40px;
+    width: 40px;
+    cursor: pointer;
+    transform: rotate(-33deg);
+    border: 1px solid $color-accent-primary;
+  }
 }
 
 .chatInput {
   @include rounded(20px);
+  box-sizing: border-box;
   flex: 1;
-  min-height: 44px;
+  min-height: 46px;
   max-height: 120px;
   height: auto;
   padding: 12px 20px;
   background-color: $color-input;
-  border: none;
+  border: 1px solid $color-accent-primary;
   color: $color-text-primary;
   font-size: 14px;
   line-height: 1.5;
@@ -146,22 +157,6 @@
 
   &:focus {
     outline: none;
-  }
-}
-
-.sendButton {
-  @include rounded(20px);
-  height: 44px;
-  min-width: 80px;
-  padding: 12px 20px;
-  background-color: $color-dark-tertiary;
-  border: none;
-  color: $color-text-primary;
-  cursor: pointer;
-
-  &:disabled {
-    background-color: $color-button-inactive;
-    cursor: not-allowed;
   }
 }
 
