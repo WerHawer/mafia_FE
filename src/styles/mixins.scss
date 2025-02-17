@@ -31,7 +31,7 @@
   }
 }
 
-@mixin customScrollbar($width: 8px, $color: #30363d) {
+@mixin customScrollbar($width: 8px, $color: #747272) {
   scrollbar-width: thin;
   scrollbar-color: $color transparent;
 
@@ -43,5 +43,9 @@
   &::-webkit-scrollbar-thumb {
     background-color: $color;
     border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 3px;
   }
 }

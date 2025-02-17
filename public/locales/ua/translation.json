@@ -2,5 +2,21 @@
   "hello": "Привіт світ",
   "createGame": "Створити Гру",
   "waitingForPlayers": "Очікування гравців",
-  "loading": "Завантаження"
+  "loading": "Завантаження",
+  "usersConnected": "{{count}} користувачів приєдналися до чату",
+  "usersConnected_one": "{{count}} користувач приєднався до чату",
+  "usersConnected_few": "{{count}} користувача приєдналися до чату",
+  "usersConnected_many": "{{count}} користувачів приєдналися до чату",
+  "typeMessage": "Напишіть повідомлення...",
+  "send": "Надіслати",
+  "activeGames": "Активні ігри",
+  "owner": "Власник",
+  "players": "Гравці",
+  "created": "Створено",
+  "unknown": "Невідомий",
+  "join": "Приєднатися",
+  "playersCount_one": "{{count}} гравець",
+  "playersCount_few": "{{count}} гравця",
+  "playersCount_many": "{{count}} гравців",
+  "online": "онлайн"
 }

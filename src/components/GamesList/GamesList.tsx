@@ -16,6 +16,7 @@ import { observer } from "mobx-react-lite";
 import { gamesStore } from "@/store/gamesStore.ts";
 import styles from "./GamesList.module.scss";
 import noAvatar from "@/assets/images/noAvatar.jpg";
+import { Typography } from "@/UI/Typography";
 
 const MAX_PLAYERS = 11;
 
@@ -55,17 +56,21 @@ export const GamesList = observer(() => {
 
   return (
     <div className={styles.container}>
-      <h2>{t("activeGames")}</h2>
-
       {isActiveGamesLoading ? (
         <Loader />
       ) : (
         <div className={styles.gamesTable}>
           <div className={styles.tableHeader}>
             <div className={styles.gameInfo}>
-              <span className={styles.ownerName}>{t("owner")}</span>
-              <span className={styles.playerCount}>{t("players")}</span>
-              <span className={styles.createdAt}>{t("created")}</span>
+              <Typography variant="span" className={styles.ownerName}>
+                {t("owner")}
+              </Typography>
+              <Typography variant="span" className={styles.playerCount}>
+                {t("players")}
+              </Typography>
+              <Typography variant="span" className={styles.createdAt}>
+                {t("created")}
+              </Typography>
             </div>
           </div>
 
@@ -78,16 +83,18 @@ export const GamesList = observer(() => {
                     alt={getOwnerData(game.owner).nickName}
                     className={styles.avatar}
                   />
-                  <span className={styles.ownerName}>
-                    {getOwnerData(game.owner).nickName}
-                  </span>
+                  <Typography variant="span" className={styles.ownerName}>
+                    {getOwnerData(game.owner).nickName === "Unknown"
+                      ? t("unknown")
+                      : getOwnerData(game.owner).nickName}
+                  </Typography>
                 </div>
-                <span className={styles.playerCount}>
+                <Typography variant="span" className={styles.playerCount}>
                   {game.players.length}/{MAX_PLAYERS}
-                </span>
-                <span className={styles.createdAt}>
+                </Typography>
+                <Typography variant="span" className={styles.createdAt}>
                   {formatDate(game.creatingTime)}
-                </span>
+                </Typography>
               </div>
 
               <Button

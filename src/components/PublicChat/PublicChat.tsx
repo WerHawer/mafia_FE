@@ -7,8 +7,11 @@ import { useGetMessagesQueryWithStore } from "@/api/messages/queries.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import styles from "./PublicChat.module.scss";
 import noAvatar from "@/assets/images/noAvatar.jpg";
+import { useTranslation } from "react-i18next";
+import { Typography } from "@/UI/Typography";
 
 export const PublicChat = observer(() => {
+  const { t } = useTranslation();
   const { sendMessage } = useSocket();
   const [newMessage, setNewMessage] = useState("");
   const chatRef = useRef<HTMLDivElement>(null);
@@ -40,15 +43,32 @@ export const PublicChat = observer(() => {
     sendMessage(wsEvents.messageSend, messageDTO);
   }, [newMessage, sendMessage, setNewLocalMessage, user]);
 
-  const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Enter") {
+        if (e.shiftKey || e.ctrlKey) {
+          return;
+        }
+
+        e.preventDefault();
+        sendChatMessage();
+      }
+    },
+    [sendChatMessage]
+  );
+  const handleChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setNewMessage(e.target.value);
+
+    e.target.style.height = "auto";
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
   }, []);
 
   return (
     <div className={styles.chatContainer}>
-      <h4 className={styles.chatHeader}>
-        {socketConnected} users connected to chat
-      </h4>
+      <Typography variant="span" className={styles.chatHeader}>
+        <span className={styles.onlineIndicator} />
+        {socketConnected} {t("online")}
+      </Typography>
 
       <div className={styles.chatMessages} ref={chatRef}>
         {publicMessages?.map(
@@ -64,24 +84,17 @@ export const PublicChat = observer(() => {
                 userId === user?.id ? styles.myMessage : ""
               }`}
             >
-              {userId !== user?.id && (
-                <img
-                  src={avatar || noAvatar}
-                  alt={userName}
-                  className={styles.avatar}
-                />
-              )}
+              <img
+                src={avatar || noAvatar}
+                alt={userName}
+                className={styles.avatar}
+              />
               <div className={styles.messageText}>
-                <span className={styles.strong}>{userName}</span>
-                <span>{text}</span>
+                <Typography variant="span" className={styles.strong}>
+                  {userName}
+                </Typography>
+                <Typography variant="span">{text}</Typography>
               </div>
-              {userId === user?.id && (
-                <img
-                  src={avatar || noAvatar}
-                  alt={userName}
-                  className={styles.avatar}
-                />
-              )}
             </div>
           )
         )}
@@ -89,20 +102,23 @@ export const PublicChat = observer(() => {
 
       <div className={styles.chatInputContainer}>
         <form onSubmit={(e) => e.preventDefault()}>
-          <input
-            type="text"
+          <textarea
             className={styles.chatInput}
             value={newMessage}
             onChange={handleChange}
-            placeholder="Type a message..."
+            onKeyDown={handleKeyDown}
+            placeholder={t("typeMessage")}
+            rows={1}
+            style={{ height: "auto" }}
           />
+
           <button
             className={styles.sendButton}
             onClick={sendChatMessage}
             disabled={!newMessage}
             type="submit"
           >
-            Send
+            {t("send")}
           </button>
         </form>
       </div>

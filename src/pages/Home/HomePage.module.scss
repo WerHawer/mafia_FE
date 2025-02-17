@@ -2,6 +2,7 @@
 
 .container {
   @include mixins.flex(row, space-around, flex-start);
+  gap: 2rem;
   padding: 2rem 0;
   width: 100%;
 }

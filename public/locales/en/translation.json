@@ -2,5 +2,19 @@
   "hello": "Hello world",
   "createGame": "Create Game",
   "waitingForPlayers": "Waiting for players",
-  "loading": "Loading"
+  "loading": "Loading",
+  "usersConnected": "{{count}} users connected to chat",
+  "usersConnected_one": "{{count}} user connected to chat",
+  "usersConnected_other": "{{count}} users connected to chat",
+  "typeMessage": "Type a message...",
+  "send": "Send",
+  "activeGames": "Active Games",
+  "owner": "Owner",
+  "players": "Players",
+  "created": "Created",
+  "unknown": "Unknown",
+  "join": "Join",
+  "playersCount_one": "{{count}} player",
+  "playersCount_other": "{{count}} players",
+  "online": "online"
 }
