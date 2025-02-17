@@ -1,8 +1,11 @@
 @use "../../styles/mixins.scss";
+@use "../../styles/theme.scss" as *;
 
 .container {
-  @include mixins.flex(row, space-around, flex-start);
-  gap: 2rem;
-  padding: 2rem 0;
+  @include mixins.flex(row, flex-start, flex-start);
+  flex: 1;
+  gap: 24px;
   width: 100%;
+  padding: 24px 0;
+  overflow: hidden;
 }
