@@ -1,22 +1,22 @@
-import { Button } from "@/UI/Button";
-import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { routes } from "@/router/routs.ts";
-import { useTranslation } from "react-i18next";
 import {
   useCreateGameMutation,
   useGetGamesWithStore,
 } from "@/api/game/queries.ts";
-import { Loader } from "@/UI/Loader";
+import noAvatar from "@/assets/images/noAvatar.jpg";
 import { createGameObj } from "@/helpers/createGameObj.ts";
 import { formatDate } from "@/helpers/formatDate.ts";
-import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
-import { usersStore } from "@/store/usersStore.ts";
-import { observer } from "mobx-react-lite";
+import { routes } from "@/router/routs.ts";
 import { gamesStore } from "@/store/gamesStore.ts";
-import styles from "./GamesList.module.scss";
-import noAvatar from "@/assets/images/noAvatar.jpg";
+import { usersStore } from "@/store/usersStore.ts";
+import { Button } from "@/UI/Button";
+import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { Loader } from "@/UI/Loader";
 import { Typography } from "@/UI/Typography";
+import { observer } from "mobx-react-lite";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import styles from "./GamesList.module.scss";
 
 const MAX_PLAYERS = 11;
 
@@ -31,7 +31,9 @@ export const GamesList = observer(() => {
 
   const handleCreateGame = useCallback(() => {
     if (!myId) return;
+
     const game = createGameObj({ owner: myId });
+
     createGame(game, {
       onSuccess: (data) => {
         navigate(`${routes.game}/${data.data.id}`);
@@ -65,9 +67,11 @@ export const GamesList = observer(() => {
               <Typography variant="span" className={styles.ownerName}>
                 {t("owner")}
               </Typography>
+
               <Typography variant="span" className={styles.playerCount}>
                 {t("players")}
               </Typography>
+
               <Typography variant="span" className={styles.createdAt}>
                 {t("created")}
               </Typography>
@@ -89,9 +93,11 @@ export const GamesList = observer(() => {
                       : getOwnerData(game.owner).nickName}
                   </Typography>
                 </div>
+
                 <Typography variant="span" className={styles.playerCount}>
                   {game.players.length}/{MAX_PLAYERS}
                 </Typography>
+
                 <Typography variant="span" className={styles.createdAt}>
                   {formatDate(game.creatingTime)}
                 </Typography>

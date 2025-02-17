@@ -1,12 +1,12 @@
-import { PropsWithChildren } from "react";
-import { useAuthQuery } from "../api/auth/queries.ts";
-import { Navigate, useLocation } from "react-router-dom";
-import { routes } from "../router/routs.ts";
-import { addTokenToAxios } from "../helpers/addTokenToAxios.ts";
 import { observer } from "mobx-react-lite";
-import { usersStore } from "../store/usersStore.ts";
+import { PropsWithChildren } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuthQuery } from "../api/auth/queries.ts";
+import { addTokenToAxios } from "../helpers/addTokenToAxios.ts";
 import { removeTokenFromAxios } from "../helpers/removeTokenFromAxios.ts";
 import { useSocket } from "../hooks/useSocket.ts";
+import { routes } from "../router/routs.ts";
+import { usersStore } from "../store/usersStore.ts";
 
 const authFreeRoutes = [routes.login, routes.singUp];
 

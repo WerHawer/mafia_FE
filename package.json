@@ -68,6 +68,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "prettier": "3.2.5",
     "sass": "^1.83.4",
     "sass-migrator": "^2.3.1",
