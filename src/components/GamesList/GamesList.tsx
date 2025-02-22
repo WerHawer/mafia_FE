@@ -1,9 +1,5 @@
-import {
-  useCreateGameMutation,
-  useGetGamesWithStore,
-} from "@/api/game/queries.ts";
+import { useGetGamesWithStore } from "@/api/game/queries.ts";
 import noAvatar from "@/assets/images/noAvatar.jpg";
-import { createGameObj } from "@/helpers/createGameObj.ts";
 import { formatDate } from "@/helpers/formatDate.ts";
 import { routes } from "@/router/routs.ts";
 import { gamesStore } from "@/store/gamesStore.ts";
@@ -21,25 +17,11 @@ import styles from "./GamesList.module.scss";
 const MAX_PLAYERS = 11;
 
 export const GamesList = observer(() => {
-  const { myId, users } = usersStore;
+  const { users } = usersStore;
   const { games } = gamesStore;
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { isLoading: isActiveGamesLoading } = useGetGamesWithStore();
-
-  const { mutate: createGame } = useCreateGameMutation();
-
-  const handleCreateGame = useCallback(() => {
-    if (!myId) return;
-
-    const game = createGameObj({ owner: myId });
-
-    createGame(game, {
-      onSuccess: (data) => {
-        navigate(`${routes.game}/${data.data.id}`);
-      },
-    });
-  }, [createGame, navigate, myId]);
 
   const handleJoinGame = useCallback(
     (gameId: string) => {
@@ -78,54 +60,46 @@ export const GamesList = observer(() => {
             </div>
           </div>
 
-          {games.map((game) => (
-            <div key={game.id} className={styles.gameRow}>
-              <div className={styles.gameInfo}>
-                <div className={styles.ownerBlock}>
-                  <img
-                    src={getOwnerData(game.owner).avatar}
-                    alt={getOwnerData(game.owner).nickName}
-                    className={styles.avatar}
-                  />
-                  <Typography variant="span" className={styles.ownerName}>
-                    {getOwnerData(game.owner).nickName === "Unknown"
-                      ? t("unknown")
-                      : getOwnerData(game.owner).nickName}
+          <div className={styles.tableContent}>
+            {games.map((game) => (
+              <div key={game.id} className={styles.gameRow}>
+                <div className={styles.gameInfo}>
+                  <div className={styles.ownerBlock}>
+                    <img
+                      src={getOwnerData(game.owner).avatar}
+                      alt={getOwnerData(game.owner).nickName}
+                      className={styles.avatar}
+                    />
+                    <Typography variant="span" className={styles.ownerName}>
+                      {getOwnerData(game.owner).nickName === "Unknown"
+                        ? t("unknown")
+                        : getOwnerData(game.owner).nickName}
+                    </Typography>
+                  </div>
+
+                  <Typography variant="span" className={styles.playerCount}>
+                    {game.players.length}/{MAX_PLAYERS}
+                  </Typography>
+
+                  <Typography variant="span" className={styles.createdAt}>
+                    {formatDate(game.creatingTime)}
                   </Typography>
                 </div>
 
-                <Typography variant="span" className={styles.playerCount}>
-                  {game.players.length}/{MAX_PLAYERS}
-                </Typography>
-
-                <Typography variant="span" className={styles.createdAt}>
-                  {formatDate(game.creatingTime)}
-                </Typography>
+                <Button
+                  onClick={() => handleJoinGame(game.id)}
+                  variant={ButtonVariant.Outline}
+                  size={ButtonSize.Small}
+                  disabled={game.players.length >= MAX_PLAYERS}
+                  className={styles.joinButton}
+                >
+                  {t("join")}
+                </Button>
               </div>
-
-              <Button
-                onClick={() => handleJoinGame(game.id)}
-                variant={ButtonVariant.Outline}
-                size={ButtonSize.Small}
-                disabled={game.players.length >= MAX_PLAYERS}
-                className={styles.joinButton}
-              >
-                {t("join")}
-              </Button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
-
-      <Button
-        onClick={handleCreateGame}
-        variant={ButtonVariant.Secondary}
-        size={ButtonSize.Large}
-        uppercase
-        className={styles.createButton}
-      >
-        {t("createGame")}
-      </Button>
     </div>
   );
 });

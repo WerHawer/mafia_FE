@@ -10,7 +10,7 @@
 }
 
 .avatar {
-  @include mixins.size(4.6rem);
+  @include mixins.size(6rem);
   @include mixins.rounded(50%);
   overflow: hidden;
 

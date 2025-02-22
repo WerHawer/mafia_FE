@@ -16,5 +16,17 @@
   "join": "Join",
   "playersCount_one": "{{count}} player",
   "playersCount_other": "{{count}} players",
-  "online": "online"
+  "online": "online",
+  "logout": "Logout",
+
+  "settings": {
+    "title": "Settings",
+    "language": "Interface Language"
+  },
+
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Sorry, but the page you are looking for does not exist.",
+    "returnHome": "Return to Home"
+  }
 }

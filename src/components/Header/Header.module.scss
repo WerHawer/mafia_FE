@@ -3,12 +3,20 @@
 
 .header {
   @include mixins.flex;
+
   column-gap: 2rem;
   padding: 8px 40px 8px 26px;
   background-color: theme.$color-dark-secondary;
   border-radius: theme.$border-radius-large;
 }
 
-.spacer {
-  margin-left: auto;
+.logoutButton {
+  font-size: 2rem;
+  color: theme.$color-text-secondary;
+  cursor: pointer;
+  transition: color 0.25s;
+
+  &:hover {
+    color: theme.$color-accent-primary;
+  }
 }

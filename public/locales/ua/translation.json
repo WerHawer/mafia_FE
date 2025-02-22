@@ -18,5 +18,17 @@
   "playersCount_one": "{{count}} гравець",
   "playersCount_few": "{{count}} гравця",
   "playersCount_many": "{{count}} гравців",
-  "online": "онлайн"
+  "online": "онлайн",
+  "logout": "Вийти",
+
+  "settings": {
+    "title": "Налаштування",
+    "language": "Мова інтерфейсу"
+  },
+
+  "notFound": {
+    "title": "Сторінку не знайдено",
+    "description": "Вибачте, але сторінка, яку ви шукаєте, не існує.",
+    "returnHome": "Повернутися на головну"
+  }
 }

@@ -1,13 +1,17 @@
-import { NavLink } from "react-router-dom";
-import classNames from "classnames";
-import styles from "./Nav.module.scss";
 import { routes } from "@/router/routs.ts";
+import { HomeFilled, SettingFilled } from "@ant-design/icons";
+import classNames from "classnames";
+import { NavLink } from "react-router-dom";
+import styles from "./Nav.module.scss";
 
-const links = [{ to: routes.home, label: "Home" }];
+const links = [
+  { to: routes.home, label: "Home", icon: <HomeFilled /> },
+  { to: routes.settings, label: "Settings", icon: <SettingFilled /> },
+];
 
 export const HeaderNav = () => {
   return (
-    <nav>
+    <nav className={styles.navContainer}>
       <ul className={styles.LinksList}>
         {links.map((link) => (
           <li key={link.to}>
@@ -18,8 +22,9 @@ export const HeaderNav = () => {
                   : styles.Link
               }
               to={link.to}
+              title={link.label}
             >
-              {link.label}
+              {link.icon}
             </NavLink>
           </li>
         ))}

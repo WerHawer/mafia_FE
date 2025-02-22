@@ -1,6 +1,10 @@
 @use "../../styles/theme.scss";
 @use "../../styles/mixins.scss";
 
+.navContainer {
+  margin: 0 auto 0 2rem;
+}
+
 .LinksList {
   @include mixins.flex;
   column-gap: 2rem;

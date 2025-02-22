@@ -1,11 +1,9 @@
 @use "../styles/theme.scss" as *;
+@use "../styles/mixins.scss" as *;
 @use "sass:color";
 
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  @include flex(column, center, center);
   min-height: 100vh;
   background-color: $color-dark-primary;
 }
@@ -26,16 +24,4 @@
 .description {
   color: $color-text-secondary;
   margin-bottom: 2rem;
-}
-
-.button {
-  padding: 0.75rem 1.5rem;
-  background-color: $color-accent-primary;
-  color: $color-dark-primary;
-  border-radius: $border-radius;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: color.scale($color-accent-primary, $lightness: -10%);
-  }
 }

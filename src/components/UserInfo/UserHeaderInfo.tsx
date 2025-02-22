@@ -1,43 +1,30 @@
+import { routes } from "@/router/routs.ts";
+import { usersStore } from "@/store/usersStore.ts";
+import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { observer } from "mobx-react-lite";
-import { routes } from "@/router/routs.ts";
-import styles from "./UserInfo.module.scss";
 import noAvatar from "../../assets/images/noAvatar.jpg";
-import { PopupMenu, PopupMenuElement } from "../PopupMenu";
-import { removeTokenFromAxios } from "@/helpers/removeTokenFromAxios.ts";
-import { usersStore } from "@/store/usersStore.ts";
-import { useSocket } from "@/hooks/useSocket.ts";
+import styles from "./UserInfo.module.scss";
 
 export const UserHeaderInfo = observer(() => {
-  const { me: user, logout } = usersStore;
-  const { disconnect } = useSocket();
+  const { me: user } = usersStore;
   const navigate = useNavigate();
-
-  const handleLogout = useCallback(() => {
-    logout();
-    removeTokenFromAxios();
-    navigate(routes.login);
-    disconnect();
-  }, [disconnect, logout, navigate]);
 
   if (!user) return null;
 
   const { nikName, avatar } = user;
 
-  return (
-    <PopupMenu
-      content={
-        <PopupMenuElement onClick={handleLogout}>Logout</PopupMenuElement>
-      }
-    >
-      <div className={styles.container}>
-        <span className={styles.name}>{nikName}</span>
+  const navigateToSettings = useCallback(() => {
+    navigate(routes.settings);
+  }, [navigate]);
 
-        <div className={styles.avatar}>
-          <img src={avatar ?? noAvatar} alt={nikName} width="46" height="46" />
-        </div>
+  return (
+    <div className={styles.container} onClick={navigateToSettings}>
+      <div className={styles.avatar}>
+        <img src={avatar ?? noAvatar} alt={nikName} width="60" height="60" />
       </div>
-    </PopupMenu>
+
+      <span className={styles.name}>{nikName}</span>
+    </div>
   );
 });

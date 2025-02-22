@@ -1,16 +1,17 @@
+import { AuthLayout } from "@/layouts/AuthLayout.tsx";
 import { Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { RootLayout } from "../layouts/RootLayout.tsx";
-import { routes } from "./routs.ts";
 import { AuthGate } from "../components/AuthGate.tsx";
+import { RootLayout } from "../layouts/RootLayout.tsx";
+import { LazyNotFoundPage } from "./lazyComponents";
 import {
   LazyGamePage,
   LazyHomePage,
   LazyLoginPage,
+  LazySettingsPage,
   LazySingUpPage,
 } from "./lazyComponents.ts";
-import { AuthLayout } from "@/layouts/AuthLayout.tsx";
-import { LazyNotFoundPage } from "./lazyComponents";
+import { routes } from "./routs.ts";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,15 @@ export const router = createBrowserRouter([
         element: (
           <Suspense>
             <LazyGamePage />
+          </Suspense>
+        ),
+      },
+
+      {
+        path: routes.settings,
+        element: (
+          <Suspense>
+            <LazySettingsPage />
           </Suspense>
         ),
       },

@@ -5,4 +5,5 @@ export const routes = {
   lobby: "/lobby",
   login: "/login",
   singUp: "/sing-up",
+  settings: "/settings",
 };
