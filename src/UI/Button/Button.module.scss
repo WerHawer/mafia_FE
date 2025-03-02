@@ -20,6 +20,12 @@
     min-width: max-content;
   }
 
+  &.ms {
+    padding: 1rem 1.2rem;
+    font-size: 1.6rem;
+    min-width: max-content;
+  }
+
   &.medium {
     padding: 1.4rem 1.6rem;
     font-size: 1.9rem;
@@ -41,6 +47,10 @@
 
     &.small {
       padding: 0.4rem;
+    }
+
+    &.ms {
+      padding: 0.6rem;
     }
 
     &.medium {
@@ -119,7 +129,8 @@
 
     &.small,
     &.medium,
-    &.large {
+    &.large,
+    &.ms {
       min-width: 0;
     }
   }

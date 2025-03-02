@@ -1,19 +1,19 @@
-import { useEffect } from "react";
-import { observer } from "mobx-react-lite";
-import { useParams } from "react-router-dom";
-import classNames from "classnames";
-import { GameVideoContainer } from "@/components/GameVideoContainer";
-import { GameChat } from "@/components/GameChat";
 import { useAddUserToGameMutation } from "@/api/game/queries.ts";
-import { GameInfoSection } from "@/components/GameInfoSection";
-import styles from "./GamePage.module.scss";
 import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
+import { GameChat } from "@/components/GameChat";
+import { GameInfoSection } from "@/components/GameInfoSection";
+import { GameVideoContainer } from "@/components/GameVideoContainer";
 import { GameVote } from "@/components/GameVote";
-import { useStreams } from "@/hooks/useStreams.ts";
-import { rootStore } from "@/store/rootStore.ts";
-import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
 import { VideoConfig } from "@/components/VideoConfig";
 import { videoOptions } from "@/config/video.ts";
+import { useStreams } from "@/hooks/useStreams.ts";
+import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
+import { rootStore } from "@/store/rootStore.ts";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import styles from "./GamePage.module.scss";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();

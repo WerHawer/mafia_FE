@@ -1,6 +1,9 @@
+import { streamStore } from "@/store/streamsStore.ts";
+import { observer } from "mobx-react-lite";
 import {
   createContext,
   PropsWithChildren,
+  useContext,
   useEffect,
   useMemo,
   useState,
@@ -8,23 +11,20 @@ import {
 import { io, Socket } from "socket.io-client";
 import { SERVER } from "../api/apiConstants.ts";
 import { wsEvents } from "../config/wsEvents.ts";
-import { observer } from "mobx-react-lite";
-import { ListenFunction, MassSubscribeEvents } from "../types/socket.types.ts";
-import { messagesStore } from "../store/messagesStore.ts";
 import { gamesStore } from "../store/gamesStore.ts";
+import { messagesStore } from "../store/messagesStore.ts";
 import { usersStore } from "../store/usersStore.ts";
-import { streamStore } from "@/store/streamsStore.ts";
+import { ListenFunction, MassSubscribeEvents } from "../types/socket.types.ts";
 
 export const SocketContext = createContext<{
   socket: Socket | null;
-  isContext: boolean;
 }>({
   socket: null,
-  isContext: true,
 });
 
 export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   const [socket, setSocket] = useState<Socket | null>(null);
+
   const { setNewMessage } = messagesStore;
   const { updateGames } = gamesStore;
   const { setSocketConnectedCount } = usersStore;
@@ -102,8 +102,18 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   }, [socket, subscribers]);
 
   return (
-    <SocketContext.Provider value={{ socket, isContext: true }}>
-      <>{children}</>
+    <SocketContext.Provider value={{ socket }}>
+      {children}
     </SocketContext.Provider>
   );
 });
+
+export const useSocketContext = () => {
+  const context = useContext(SocketContext);
+
+  if (!context) {
+    throw new Error("useSocketContext must be used within a SocketProvider");
+  }
+
+  return context;
+};

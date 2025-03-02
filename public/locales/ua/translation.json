@@ -30,5 +30,19 @@
     "title": "Сторінку не знайдено",
     "description": "Вибачте, але сторінка, яку ви шукаєте, не існує.",
     "returnHome": "Повернутися на головну"
+  },
+
+  "common": {
+    "back": "Назад",
+    "done": "Готово"
+  },
+
+  "videoConfig": {
+    "background": "фон",
+    "removeEffect": "Прибрати ефект",
+    "blurEffect": "Ефект розмиття",
+    "download": "Завантажити зображення",
+    "effectsTitle": "Ефекти",
+    "backgroundsTitle": "Фони"
   }
 }

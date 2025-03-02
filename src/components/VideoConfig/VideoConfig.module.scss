@@ -4,92 +4,112 @@
 
 .container {
   @include mixins.flexCenter;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-
+  z-index: 100;
   background: theme.$overlay-color;
+  padding: 2rem;
 
   &.hide {
     display: none;
-    height: 0;
-    width: 0;
-    right: 100%;
-    bottom: 100%;
   }
 }
 
 .content {
-  position: relative;
-  @include mixins.flex;
-  max-width: 80%;
-  background: theme.$color-dark-tertiary;
+  @include mixins.flex(row, space-between);
+  max-width: 1200px;
+  width: 90%;
+  background: theme.$color-dark-secondary;
   border-radius: theme.$border-radius;
-
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
 
 .videoContainer {
-  @include mixins.flexCenter(column);
-  min-width: 700px;
-  height: 100%;
-}
-
-.canvas {
-  @include mixins.size(100%);
-}
-
-.img {
-  @include mixins.size(100%);
-  object-fit: contain;
-
-  scale: -1 1;
-}
-
-.icon {
-  @include mixins.size(6rem);
-  @include mixins.rounded;
-  cursor: pointer;
-
-  object-fit: contain;
-  background: theme.$color-light-secondary;
-  padding: 10px 5px;
-}
-
-.imagePreview {
-  @include mixins.size(8rem);
-  cursor: pointer;
-  border-radius: theme.$border-radius;
-
-  object-fit: cover;
+  @include mixins.flexCenter;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  background: theme.$color-dark-primary;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
 }
 
-.displayNone {
-  display: none;
+.canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.img,
+.video {
+  @include mixins.size(100%);
+  object-fit: cover;
 }
 
 .controllers {
-  @include mixins.flex(column, space-around);
-  padding: 1rem;
-  width: 400px;
-}
-
-.imageContainer {
-  @include mixins.flex(row, flex-start);
-  column-gap: 2rem;
-  row-gap: 1rem;
-  flex-wrap: wrap;
-
-  margin: 2rem 0;
+  @include mixins.flex(column, flex-start);
+  width: 350px;
+  padding: 2rem;
+  gap: 2rem;
+  background: theme.$color-dark-secondary;
 }
 
 .baseEffectButton {
   @include mixins.flex(row, flex-start);
-  width: 100%;
-  gap: 3rem;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.icon {
+  @include mixins.size(5.5rem);
+  @include mixins.rounded(theme.$border-radius);
+  cursor: pointer;
+  background: color.adjust(theme.$color-dark-tertiary, $lightness: 15%);
+  padding: 0.8rem;
+  transition: all 0.2s ease;
+  border: 1px solid theme.$color-light-tertiary;
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
+
+  &:hover {
+    background: color.adjust(theme.$color-dark-tertiary, $lightness: 25%);
+    box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.3);
+  }
+
+  &:active {
+    background: color.adjust(theme.$color-dark-tertiary, $lightness: 20%);
+  }
+}
+
+.imageContainer {
+  @include mixins.flex(row, flex-start);
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+  max-height: 300px;
+  overflow-y: auto;
+  @include mixins.customScrollbar(6px, theme.$color-accent-secondary);
+}
+
+.imagePreview {
+  @include mixins.size(6.5rem);
+  @include mixins.rounded(theme.$border-radius);
+  cursor: pointer;
+  object-fit: cover;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: theme.$color-accent-primary;
+    transform: scale(1.05);
+  }
+
+  &.active {
+    border-color: theme.$color-accent-secondary;
+  }
 }
 
 .inputDownload {
@@ -97,39 +117,64 @@
 }
 
 .labelDownload {
-  padding: 10px;
-  background-color: theme.$color-accent-secondary;
+  @include mixins.flex(row, center);
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem 1.2rem;
+  background-color: color.adjust(
+    theme.$color-accent-secondary,
+    $lightness: -10%
+  );
   color: theme.$color-text-primary;
-  text-align: center;
-  font-size: 1.4rem;
-  font-weight: bold;
+  font-size: 1.1rem;
+  font-weight: 600;
   border-radius: theme.$border-radius;
   cursor: pointer;
-  transition:
-    background-color 0.3s,
-    transform 0.2s;
-  border: none;
-  outline: none;
-  text-transform: uppercase;
-  box-shadow: theme.$shadow;
-
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
   &:hover {
+    background-color: theme.$color-accent-secondary;
+  }
+
+  &:active {
     background-color: color.adjust(
       theme.$color-accent-secondary,
-      $lightness: -10%
+      $lightness: -15%
     );
-    transform: scale(1.02);
+  }
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 1.4rem;
+    height: 1.4rem;
+    margin-right: 0.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
   }
 }
 
 .buttonContainer {
   @include mixins.flex(row, space-between);
   width: 100%;
-  gap: 1rem;
+  margin-top: auto;
+  gap: 1.5rem;
+}
 
-  margin-top: 4rem;
+.displayNone {
+  display: none;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: theme.$color-text-primary;
+  margin-bottom: 0.5rem;
+}
+
+.effectsSection {
+  @include mixins.flex(column, flex-start, flex-start);
+  width: 100%;
 }

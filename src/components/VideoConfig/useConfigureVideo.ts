@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Results, SelfieSegmentation } from "@mediapipe/selfie_segmentation";
-import * as cam from "@mediapipe/camera_utils";
-import { UserVideoSettings } from "@/types/user.types.ts";
 import { PRE_VIDEO_HEIGHT, PRE_VIDEO_WIDTH } from "@/config/video.ts";
+import { UserVideoSettings } from "@/types/user.types.ts";
+import * as cam from "@mediapipe/camera_utils";
+import { Results, SelfieSegmentation } from "@mediapipe/selfie_segmentation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const bgEffects = {
   blur: "blur",
@@ -14,7 +14,7 @@ type BackgroundEffects = keyof typeof bgEffects;
 
 export const useConfigureVideo = (
   videoSettings: UserVideoSettings,
-  myOriginalStream?: MediaStream,
+  myOriginalStream?: MediaStream
 ) => {
   const [imageURL, setImageURL] = useState(videoSettings.imageURL);
   const [withBlur, setWithBlur] = useState(videoSettings.withBlur);
@@ -49,13 +49,7 @@ export const useConfigureVideo = (
 
   const onResults = useCallback(
     (results: Results) => {
-      if (
-        !videoRef.current ||
-        !canvasRef.current ||
-        !imgRef.current ||
-        !myOriginalStream
-      )
-        return;
+      if (!videoRef.current || !canvasRef.current || !myOriginalStream) return;
 
       const img = imgRef.current;
       const video = videoRef.current;
@@ -71,7 +65,9 @@ export const useConfigureVideo = (
       canvas.width = videoWidth;
       canvas.height = videoHeight;
 
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", {
+        desynchronized: true,
+      });
 
       if (!ctx) return;
 
@@ -79,31 +75,29 @@ export const useConfigureVideo = (
       ctx.clearRect(0, 0, videoWidth, videoHeight);
       ctx.scale(-1, 1);
 
-      ctx.filter = "blur(2px)";
+      ctx.filter = "blur(1px)";
       ctx.drawImage(
         results.segmentationMask,
         -videoWidth,
         0,
         videoWidth,
-        videoHeight,
+        videoHeight
       );
 
       ctx.globalCompositeOperation = "source-in";
       ctx.filter = "none";
-
       ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
 
       if (bgEffectsRef.current === bgEffects.blur) {
         ctx.globalCompositeOperation = "destination-over";
-        ctx.filter = "blur(10px)";
-
+        ctx.filter = "blur(15px) brightness(0.95)";
         ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
         ctx.restore();
 
         return;
       }
 
-      if (bgEffectsRef.current === bgEffects.img) {
+      if (bgEffectsRef.current === bgEffects.img && img) {
         const imgWidth = img.width;
         const imgHeight = img.height;
 
@@ -124,7 +118,6 @@ export const useConfigureVideo = (
           offsetY = 0;
         }
 
-        ctx.clearRect(0, 0, videoWidth, videoHeight);
         ctx.globalCompositeOperation = "destination-over";
         ctx.filter = "none";
         ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -136,14 +129,14 @@ export const useConfigureVideo = (
 
       if (bgEffectsRef.current === bgEffects.none) {
         ctx.globalCompositeOperation = "destination-over";
-        ctx.filter = "blur(0px)";
+        ctx.filter = "none";
         ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
         ctx.restore();
 
         return;
       }
     },
-    [myOriginalStream],
+    [myOriginalStream]
   );
 
   useEffect(() => {
@@ -160,6 +153,7 @@ export const useConfigureVideo = (
 
     selfieSegmentation.setOptions({
       modelSelection: 1,
+      selfieMode: true,
     });
 
     selfieSegmentation.onResults(onResults);
@@ -167,7 +161,9 @@ export const useConfigureVideo = (
     if (videoRef.current) {
       const camera = new cam.Camera(videoRef.current, {
         onFrame: async () => {
-          await selfieSegmentation.send({ image: videoRef.current! });
+          if (videoRef.current) {
+            await selfieSegmentation.send({ image: videoRef.current });
+          }
         },
         width: settings.width ?? PRE_VIDEO_WIDTH,
         height: settings.height ?? PRE_VIDEO_HEIGHT,
@@ -177,6 +173,7 @@ export const useConfigureVideo = (
 
       return () => {
         camera.stop();
+        selfieSegmentation.close();
       };
     }
   }, [myOriginalStream, onResults, withBlur, withoutEffects]);

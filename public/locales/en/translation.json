@@ -28,5 +28,19 @@
     "title": "Page Not Found",
     "description": "Sorry, but the page you are looking for does not exist.",
     "returnHome": "Return to Home"
+  },
+
+  "common": {
+    "back": "Back",
+    "done": "Done"
+  },
+
+  "videoConfig": {
+    "background": "background",
+    "removeEffect": "Remove effect",
+    "blurEffect": "Blur effect",
+    "download": "Upload image",
+    "effectsTitle": "Effects",
+    "backgroundsTitle": "Backgrounds"
   }
 }

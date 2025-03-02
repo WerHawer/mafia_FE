@@ -1,5 +1,5 @@
-import { useCallback, useContext } from "react";
-import { SocketContext } from "../context/SocketProvider.tsx";
+import { useCallback } from "react";
+import { useSocketContext } from "../context/SocketProvider.tsx";
 import {
   MassSubscribeFunction,
   SendMessageFunction,
@@ -8,11 +8,7 @@ import {
 } from "../types/socket.types.ts";
 
 export const useSocket = () => {
-  const { socket, isContext } = useContext(SocketContext);
-
-  if (!isContext) {
-    throw new Error("useSocket must be used within a SocketProvider");
-  }
+  const { socket } = useSocketContext();
 
   const isConnected = socket?.connected;
 
@@ -30,7 +26,7 @@ export const useSocket = () => {
         socket.off(event, cb);
       };
     },
-    [socket],
+    [socket]
   );
 
   const massSubscribe: MassSubscribeFunction = useCallback(
@@ -47,7 +43,7 @@ export const useSocket = () => {
 
       return () => unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
     },
-    [subscribe],
+    [subscribe]
   );
 
   const sendMessage: SendMessageFunction = useCallback(
@@ -58,7 +54,7 @@ export const useSocket = () => {
 
       socket.emit(event, data);
     },
-    [socket],
+    [socket]
   );
 
   const connect = useCallback(() => {

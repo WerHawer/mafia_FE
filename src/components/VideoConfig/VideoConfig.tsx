@@ -1,18 +1,20 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
-import classNames from "classnames";
-import { useNavigate } from "react-router-dom";
-import styles from "./VideoConfig.module.scss";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
-import { rootStore } from "@/store/rootStore.ts";
-import { useConfigureVideo } from "@/components/VideoConfig/useConfigureVideo.ts";
 import blurIcon from "@/assets/icons/blur.png";
 import removeIcon from "@/assets/icons/remove.png";
 import { BackgroundImageList } from "@/components/VideoConfig/BackgroundImageList.tsx";
+import { useConfigureVideo } from "@/components/VideoConfig/useConfigureVideo.ts";
+import { rootStore } from "@/store/rootStore.ts";
 import Tippy from "@tippyjs/react";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import styles from "./VideoConfig.module.scss";
 
 export const VideoConfig = observer(() => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { streamsStore } = rootStore;
   const {
@@ -22,6 +24,7 @@ export const VideoConfig = observer(() => {
     setVideoSettings,
     setImageToBackgrounds,
   } = streamsStore;
+
   const [isSaved, setIsSaved] = useState<boolean>(false);
 
   const {
@@ -69,7 +72,7 @@ export const VideoConfig = observer(() => {
 
       reader.readAsDataURL(e.target.files![0]);
     },
-    [setImageToBackgrounds, setImageURL, setWithBlur],
+    [setImageToBackgrounds, setImageURL, setWithBlur]
   );
 
   const handleSave = useCallback(() => {
@@ -81,7 +84,7 @@ export const VideoConfig = observer(() => {
       setImageURL(url);
       setWithBlur(false);
     },
-    [setImageURL, setWithBlur],
+    [setImageURL, setWithBlur]
   );
 
   return (
@@ -91,7 +94,7 @@ export const VideoConfig = observer(() => {
           <img
             className={classNames(styles.img, styles.displayNone)}
             src={imageURL}
-            alt="background"
+            alt={t("videoConfig.background")}
             ref={imgRef}
           />
           <video
@@ -101,52 +104,62 @@ export const VideoConfig = observer(() => {
             ref={videoRef}
           />
 
-          {!myOriginalStream && <p>Loading...</p>}
+          {!myOriginalStream && <p>{t("loading")}</p>}
 
           <canvas
             ref={canvasRef}
             className={classNames(
               styles.canvas,
-              !myOriginalStream && styles.displayNone,
+              !myOriginalStream && styles.displayNone
             )}
           />
         </div>
 
         <div className={styles.controllers}>
-          <div className={styles.baseEffectButton}>
-            <Tippy content="Remove effect">
-              <img
-                className={styles.icon}
-                src={removeIcon}
-                alt="remove effect"
-                onClick={() => {
-                  setImageURL("");
-                  setWithBlur(false);
-                }}
-                width="40"
-                height="40"
-              />
-            </Tippy>
+          <div className={styles.effectsSection}>
+            <h3 className={styles.sectionTitle}>
+              {t("videoConfig.effectsTitle")}
+            </h3>
+            <div className={styles.baseEffectButton}>
+              <Tippy content={t("videoConfig.removeEffect")}>
+                <img
+                  className={styles.icon}
+                  src={removeIcon}
+                  alt={t("videoConfig.removeEffect")}
+                  onClick={() => {
+                    setImageURL("");
+                    setWithBlur(false);
+                  }}
+                  width="40"
+                  height="40"
+                />
+              </Tippy>
 
-            <Tippy content="Blur effect">
-              <img
-                className={styles.icon}
-                src={blurIcon}
-                alt="blur"
-                onClick={() => {
-                  setImageURL("");
-                  setWithBlur(true);
-                }}
-                width="40"
-                height="40"
-              />
-            </Tippy>
+              <Tippy content={t("videoConfig.blurEffect")}>
+                <img
+                  className={styles.icon}
+                  src={blurIcon}
+                  alt={t("videoConfig.blurEffect")}
+                  onClick={() => {
+                    setImageURL("");
+                    setWithBlur(true);
+                  }}
+                  width="40"
+                  height="40"
+                />
+              </Tippy>
+            </div>
           </div>
 
-          <BackgroundImageList onImageClick={handleImageClick} />
+          <div className={styles.effectsSection}>
+            <h3 className={styles.sectionTitle}>
+              {t("videoConfig.backgroundsTitle")}
+            </h3>
+            <BackgroundImageList onImageClick={handleImageClick} />
+          </div>
 
           <label className={styles.labelDownload}>
-            Download
+            {t("videoConfig.download")}
             <input
               type="file"
               accept="image/*"
@@ -159,18 +172,17 @@ export const VideoConfig = observer(() => {
             <Button
               onClick={() => navigate(-1)}
               variant={ButtonVariant.Tertiary}
-              size={ButtonSize.Medium}
-              width="max-content"
+              size={ButtonSize.MS}
             >
-              Go back
+              {t("common.back")}
             </Button>
 
             <Button
               onClick={handleSave}
-              variant={ButtonVariant.Success}
-              size={ButtonSize.Medium}
+              variant={ButtonVariant.Primary}
+              size={ButtonSize.MS}
             >
-              Done
+              {t("common.done")}
             </Button>
           </div>
         </div>
