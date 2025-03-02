@@ -1,10 +1,10 @@
-import { useEffect, useRef } from "react";
-import { observer } from "mobx-react-lite";
+import { rootStore } from "@/store/rootStore.ts";
+import { streamStore } from "@/store/streamsStore.ts";
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import { useEffect, useRef } from "react";
 import { GameVideo } from "../GameVideo";
 import styles from "./GameVideoContainer.module.scss";
-import { streamStore } from "@/store/streamsStore.ts";
-import { rootStore } from "@/store/rootStore.ts";
 
 export const GameVideoContainer = observer(() => {
   const { usersStore, gamesStore } = rootStore;
@@ -15,7 +15,13 @@ export const GameVideoContainer = observer(() => {
     userStreamsMap,
     manageStreamTracks,
     getFilteredStreams,
+    setMockStreams,
   } = streamStore;
+
+  useEffect(() => {
+    setMockStreams(11);
+  }, [setMockStreams, userMediaStream]);
+
   const ref = useRef<HTMLDivElement>(null);
 
   const filterVariant = gameFlow.isVote ? "opposite" : "direct";

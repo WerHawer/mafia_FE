@@ -1,6 +1,6 @@
-import { makeAutoObservable, toJS } from "mobx";
 import { StreamInfo, StreamsArr } from "@/types/socket.types.ts";
 import { UserId, UserStreamId, UserVideoSettings } from "@/types/user.types.ts";
+import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 
 export class StreamStore {
@@ -51,10 +51,10 @@ export class StreamStore {
     this._myOriginalStream = undefined;
   }
 
-  setMockStreams() {
+  setMockStreams(count: number = 8) {
     if (!this.myStream) return;
 
-    this._streams = new Array(8).fill(this.myStream);
+    this._streams = new Array(count).fill(this.myStream);
   }
 
   multiplyStreamAndSet(stream: MediaStream, count: number) {
