@@ -1,9 +1,10 @@
 @use "../../styles/theme.scss";
 @use "../../styles/mixins.scss";
 
-.container {
+.chatContainer {
   @include mixins.flex(column, flex-end, center);
   height: 100%;
+  width: 100%;
 }
 
 .messages {

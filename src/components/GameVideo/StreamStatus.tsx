@@ -1,5 +1,6 @@
-import styles from "./GameVideo.module.scss";
-import { useMemo } from "react";
+import { wsEvents } from "@/config/wsEvents.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
+import { rootStore } from "@/store/rootStore.ts";
 import {
   AudioMutedOutlined,
   AudioOutlined,
@@ -7,9 +8,8 @@ import {
 } from "@ant-design/icons";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useSocket } from "@/hooks/useSocket.ts";
-import { wsEvents } from "@/config/wsEvents.ts";
-import { rootStore } from "@/store/rootStore.ts";
+import { useMemo } from "react";
+import styles from "./GameVideo.module.scss";
 
 type StreamStatusProps = {
   stream: MediaStream;
@@ -31,7 +31,7 @@ export const StreamStatus = observer(
       const roomId = userStreamData?.roomId ?? "";
 
       return { audio, video, roomId };
-      // we need userStreamsMap to be updated in write way
+      // we need userStreamsMap to be updated in right way
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [getUserStreamInfo, stream, userStreamsMap]);
 
@@ -65,7 +65,8 @@ export const StreamStatus = observer(
             [styles.statusDisabled]: !video,
           })}
           onClick={handleVideoClick}
-        />{" "}
+        />
+
         <AudioIcon
           className={classNames(styles.statusIcon, {
             [styles.statusDisabled]: !audio,
@@ -74,7 +75,7 @@ export const StreamStatus = observer(
         />
       </div>
     );
-  },
+  }
 );
 
 StreamStatus.displayName = "StreamStatus";

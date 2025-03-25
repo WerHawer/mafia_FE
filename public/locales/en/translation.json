@@ -42,5 +42,10 @@
     "download": "Upload image",
     "effectsTitle": "Effects",
     "backgroundsTitle": "Backgrounds"
+  },
+
+  "videoMenu": {
+    "doGM": "Do GM",
+    "kill": "Kill"
   }
 }

@@ -1,11 +1,11 @@
+import { streamStore } from "@/store/streamsStore.ts";
+import Peer from "peerjs";
 import { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useUnmount } from "react-use";
-import { usePeer } from "./usePeer.ts";
-import Peer from "peerjs";
 import { wsEvents } from "../config/wsEvents.ts";
+import { usePeer } from "./usePeer.ts";
 import { useSocket } from "./useSocket.ts";
-import { streamStore } from "@/store/streamsStore.ts";
 
 const MAX_STREAMS = 11;
 
@@ -26,7 +26,7 @@ export const useStreams = ({ myStream, myId }: UseStreamsParams) => {
       otherUserId: string,
       stream: MediaStream,
       peer: Peer,
-      cb: (userMediaStream: MediaStream) => void,
+      cb: (userMediaStream: MediaStream) => void
     ) => {
       const call = peer.call(otherUserId, stream);
 
@@ -36,7 +36,7 @@ export const useStreams = ({ myStream, myId }: UseStreamsParams) => {
 
       return call;
     },
-    [],
+    []
   );
 
   useEffect(() => {

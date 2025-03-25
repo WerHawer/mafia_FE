@@ -44,5 +44,10 @@
     "download": "Завантажити зображення",
     "effectsTitle": "Ефекти",
     "backgroundsTitle": "Фони"
+  },
+
+  "videoMenu": {
+    "doGM": "Зробити ГМ",
+    "kill": "Вбити"
   }
 }

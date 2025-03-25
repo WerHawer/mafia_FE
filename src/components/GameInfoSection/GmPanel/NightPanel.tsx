@@ -1,11 +1,11 @@
-import styles from "./GmPanel.module.scss";
+import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import { wsEvents } from "@/config/wsEvents.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
+import { rootStore } from "@/store/rootStore.ts";
+import { Roles } from "@/types/game.types.ts";
 import { observer } from "mobx-react-lite";
 import { ChangeEvent, useCallback, useState } from "react";
-import { useSocket } from "@/hooks/useSocket.ts";
-import { wsEvents } from "@/config/wsEvents.ts";
-import { Roles } from "@/types/game.types.ts";
-import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
-import { rootStore } from "@/store/rootStore.ts";
+import styles from "./GmPanel.module.scss";
 
 export const NightPanel = observer(() => {
   const { gamesStore } = rootStore;
@@ -16,7 +16,7 @@ export const NightPanel = observer(() => {
 
   const existingActiveRoles = activeGameRoles
     ? Object.entries(activeGameRoles)
-        .filter(([key, value]) => Boolean(value) && key !== Roles.Citizens)
+        .filter(([key, value]) => Boolean(value) && key !== Roles.Citizen)
         .map(([key]) => key)
     : [];
 
@@ -55,7 +55,7 @@ export const NightPanel = observer(() => {
       gameFlow.day,
       sendMessage,
       updateGameFlow,
-    ],
+    ]
   );
 
   return (

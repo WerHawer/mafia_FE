@@ -9,7 +9,8 @@ import styles from "./GameVideoContainer.module.scss";
 export const GameVideoContainer = observer(() => {
   const { usersStore, gamesStore } = rootStore;
   const { myId } = usersStore;
-  const { isUserGM, speaker, gameFlow } = gamesStore;
+  const { isUserGM, speaker, gameFlow, activeGamePlayers } = gamesStore;
+  console.log("activeGamePlayers :", activeGamePlayers);
   const {
     myStream: userMediaStream,
     userStreamsMap,
@@ -17,10 +18,6 @@ export const GameVideoContainer = observer(() => {
     getFilteredStreams,
     setMockStreams,
   } = streamStore;
-
-  useEffect(() => {
-    setMockStreams(11);
-  }, [setMockStreams, userMediaStream]);
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -32,6 +29,7 @@ export const GameVideoContainer = observer(() => {
     variant: filterVariant,
     myId,
   });
+
   const streamsLength = filteredStreams.length;
 
   const VIDEO_COUNT = {

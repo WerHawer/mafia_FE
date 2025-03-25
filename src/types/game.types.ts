@@ -3,11 +3,12 @@ import { UserId } from "./user.types.ts";
 export enum Roles {
   Mafia = "mafia",
   Don = "don",
-  Citizens = "citizens",
+  Citizen = "citizen",
   Sheriff = "sheriff",
   Doctor = "doctor",
   Maniac = "maniac",
   Prostitute = "prostitute",
+  GM = "gm",
   Unknown = "unknown",
 }
 

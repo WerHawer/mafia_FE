@@ -1,4 +1,11 @@
+import { gamesStore } from "@/store/gamesStore.ts";
+import { GameId, IGameFlow, IGameRoles } from "@/types/game.types.ts";
+import { UserId } from "@/types/user.types.ts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { uniq } from "lodash/fp";
+import { useEffect } from "react";
+import { queryKeys } from "../apiConstants.ts";
+import { useGetUsersWithAddToStore } from "../user/queries.ts";
 import {
   addRolesToGame,
   addUserToGame,
@@ -9,13 +16,6 @@ import {
   updateGameFlow,
   updateGameGM,
 } from "./api.ts";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "../apiConstants.ts";
-import { useEffect } from "react";
-import { gamesStore } from "@/store/gamesStore.ts";
-import { GameId, IGameFlow, IGameRoles } from "@/types/game.types.ts";
-import { UserId } from "@/types/user.types.ts";
-import { useGetUsersWithAddToStore } from "../user/queries.ts";
 
 export const useFetchActiveGamesQuery = () => {
   return useQuery({

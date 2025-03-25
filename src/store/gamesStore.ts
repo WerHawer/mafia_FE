@@ -1,8 +1,8 @@
+import { UserId } from "@/types/user.types.ts";
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
-import { GameId, IGame, IGameFlow, Roles } from "../types/game.types.ts";
 import { initialGameFlow } from "../helpers/createGameObj.ts";
-import { UserId } from "@/types/user.types.ts";
+import { GameId, IGame, IGameFlow, Roles } from "../types/game.types.ts";
 
 export class GamesStore {
   _games: IGame[] = [];
@@ -35,7 +35,7 @@ export class GamesStore {
     }
 
     this._games = this._games.map((game) =>
-      game.id === newGame.id ? newGame : game,
+      game.id === newGame.id ? newGame : game
     );
   }
 
@@ -80,7 +80,7 @@ export class GamesStore {
 
   get activeGamePlayersWithoutGM() {
     return this.activeGamePlayers.filter(
-      (player) => player !== this.activeGameGm,
+      (player) => player !== this.activeGameGm
     );
   }
 
@@ -90,7 +90,7 @@ export class GamesStore {
 
   get activeGameAlivePlayers() {
     return this.activeGamePlayersWithoutGM.filter(
-      (player) => !this.activeGameKilledPlayers.includes(player),
+      (player) => !this.activeGameKilledPlayers.includes(player)
     );
   }
 
@@ -132,11 +132,12 @@ export class GamesStore {
     if (roles.mafia?.includes(id)) {
       return roles.mafia[0] === id ? Roles.Don : Roles.Mafia;
     }
-    if (roles.citizens?.includes(id)) return Roles.Citizens;
+    if (roles.citizens?.includes(id)) return Roles.Citizen;
     if (roles.sheriff === id) return Roles.Sheriff;
     if (roles.doctor === id) return Roles.Doctor;
     if (roles.maniac === id) return Roles.Maniac;
     if (roles.prostitute === id) return Roles.Prostitute;
+    if (this.isUserGM(id)) return Roles.GM;
 
     return Roles.Unknown;
   }

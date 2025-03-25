@@ -1,7 +1,7 @@
-import { memo, useCallback, useEffect, useState } from "react";
 import classNames from "classnames";
-import styles from "../GameVideo/GameVideo.module.scss";
 import { throttle } from "lodash";
+import { memo, useCallback, useEffect, useState } from "react";
+import styles from "../GameVideo/GameVideo.module.scss";
 
 type PlayerVideoProps = {
   stream: MediaStream;
@@ -10,7 +10,7 @@ type PlayerVideoProps = {
   container?: HTMLDivElement | null;
 };
 
-const INDEX_RATIO = 0.75;
+const INDEX_RATIO = 0.57;
 
 export const PlayerVideo = memo(
   ({ stream, muted, isActive, container }: PlayerVideoProps) => {
@@ -45,7 +45,7 @@ export const PlayerVideo = memo(
           {
             [styles.active]: isActive,
           },
-          isWidthProportion ? styles.widthProportion : styles.heightProportion,
+          isWidthProportion ? styles.widthProportion : styles.heightProportion
         )}
         playsInline
         autoPlay
@@ -57,7 +57,7 @@ export const PlayerVideo = memo(
         }}
       />
     );
-  },
+  }
 );
 
 PlayerVideo.displayName = "PlayerVideo";

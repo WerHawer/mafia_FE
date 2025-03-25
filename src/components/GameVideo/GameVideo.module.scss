@@ -53,6 +53,8 @@
 
 .video {
   object-fit: cover;
+  height: 100%;
+  width: auto;
 
   &.widthProportion {
     width: 100%;
@@ -87,13 +89,19 @@
 .menu {
   position: absolute;
   top: 0;
-  right: 10px;
+  right: 15px;
   font-size: 3rem;
-  color: theme.$color-accent-primary;
+  color: theme.$color-text-secondary;
   rotate: 90deg;
 
   z-index: 10;
   cursor: pointer;
+}
+
+.videoMenu {
+  & > div.tippy-content {
+    padding: 0;
+  }
 }
 
 .gmLabel {
@@ -112,7 +120,7 @@
   bottom: 10px;
   right: 10px;
   font-size: 2rem;
-  color: theme.$color-dark-tertiary;
+  color: theme.$color-text-primary;
 
   z-index: 10;
 }

@@ -18,7 +18,7 @@ export class StreamStore {
     makeAutoObservable(this, {}, { autoBind: true });
     makePersistable(this, {
       name: "Streams_mobx",
-      properties: ["_settings", "_myBackgroundImages"],
+      properties: ["_settings", "_myBackgroundImages", "_streams"],
       storage: sessionStorage,
     });
   }
@@ -54,7 +54,7 @@ export class StreamStore {
   setMockStreams(count: number = 8) {
     if (!this.myStream) return;
 
-    this._streams = new Array(count).fill(this.myStream);
+    this._streams = [...new Array(count).fill(this.myStream)];
   }
 
   multiplyStreamAndSet(stream: MediaStream, count: number) {

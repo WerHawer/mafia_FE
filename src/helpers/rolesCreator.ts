@@ -1,6 +1,8 @@
-import { UserId } from "../types/user.types.ts";
 import { shuffle } from "lodash/fp";
 import { IGameRoles } from "../types/game.types.ts";
+import { UserId } from "../types/user.types.ts";
+
+type AllRoles = keyof IGameRoles;
 
 type Options = {
   isStandard?: boolean;
@@ -8,6 +10,7 @@ type Options = {
   sheriffCount?: number;
 };
 
+// TODO: think about how to make it more flexible
 export const rolesCreator = (playersWithoutGM: UserId[], options?: Options) => {
   const { isStandard = true, mafiaCount = 3, sheriffCount = 1 } = options || {};
 
@@ -27,16 +30,6 @@ export const rolesCreator = (playersWithoutGM: UserId[], options?: Options) => {
     ? standardRoles
     : { ...standardRoles, ...customRoles };
 
-  // const allActiveRolesCount = Object.values(allActiveRoles).reduce(
-  //   (a, b) => a + b,
-  // );
-  //
-  // const citizens = {
-  //   citizens: shuffledPlayersWithoutGM.length - allActiveRolesCount,
-  // };
-
-  type AllRoles = keyof IGameRoles;
-
   const roles = Object.entries(allActiveRoles) as Array<[AllRoles, number]>;
 
   const userRoles = roles.reduce(
@@ -48,7 +41,7 @@ export const rolesCreator = (playersWithoutGM: UserId[], options?: Options) => {
 
       return acc;
     },
-    {} as { [Key in AllRoles]?: IGameRoles[Key] },
+    {} as { [Key in AllRoles]?: IGameRoles[Key] }
   );
 
   return { ...userRoles, citizens: shuffledPlayersWithoutGM };

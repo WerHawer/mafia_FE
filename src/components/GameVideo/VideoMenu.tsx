@@ -1,13 +1,14 @@
-import { PopupMenu, PopupMenuElement } from "../PopupMenu";
-import styles from "./GameVideo.module.scss";
-import { memo, useCallback } from "react";
 import {
   useUpdateGameFlowMutation,
   useUpdateGameGMMutation,
 } from "@/api/game/queries.ts";
+import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
 import { MoreOutlined } from "@ant-design/icons";
-import { rootStore } from "@/store/rootStore.ts";
+import { memo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { PopupMenu, PopupMenuElement } from "../PopupMenu";
+import styles from "./GameVideo.module.scss";
 
 type VideoMenuProps = {
   userId?: UserId;
@@ -15,6 +16,7 @@ type VideoMenuProps = {
 };
 
 export const VideoMenu = memo(({ userId, isCurrentUserGM }: VideoMenuProps) => {
+  const { t } = useTranslation();
   const { mutate: updateGM } = useUpdateGameGMMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
   const { gamesStore } = rootStore;
@@ -39,10 +41,15 @@ export const VideoMenu = memo(({ userId, isCurrentUserGM }: VideoMenuProps) => {
 
   return (
     <PopupMenu
+      className={styles.videoMenu}
       content={
         <>
-          <PopupMenuElement onClick={handleUpdateGM}>Do GM</PopupMenuElement>
-          <PopupMenuElement onClick={handleKill}>Kill</PopupMenuElement>
+          <PopupMenuElement onClick={handleUpdateGM}>
+            {t("videoMenu.doGM")}
+          </PopupMenuElement>
+          <PopupMenuElement onClick={handleKill}>
+            {t("videoMenu.kill")}
+          </PopupMenuElement>
         </>
       }
     >

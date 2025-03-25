@@ -1,18 +1,18 @@
-import React, { useEffect, useRef } from "react";
-import classNames from "classnames";
-import Draggable from "react-draggable";
-import { observer } from "mobx-react-lite";
-import styles from "./GameVideo.module.scss";
+import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
+import { StreamStatus } from "@/components/GameVideo/StreamStatus.tsx";
+import { Shoot } from "@/components/Shoot";
+import { VoteFlow } from "@/components/VoteFlow";
+import { rootStore } from "@/store/rootStore.ts";
+import { Roles, rolesWhoCanCheck } from "@/types/game.types.ts";
 import { UserId } from "@/types/user.types.ts";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import { useRef } from "react";
+import Draggable from "react-draggable";
 import { PlayerVideo } from "../PlayerVideo";
+import styles from "./GameVideo.module.scss";
 import { VideoMenu } from "./VideoMenu.tsx";
 import { VideoUserInfo } from "./VideoUserInfo.tsx";
-import { StreamStatus } from "@/components/GameVideo/StreamStatus.tsx";
-import { VoteFlow } from "@/components/VoteFlow";
-import { Roles, rolesWhoCanCheck } from "@/types/game.types.ts";
-import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
-import { rootStore } from "@/store/rootStore.ts";
-import { Shoot } from "@/components/Shoot";
 
 type GameVideoProps = {
   stream: MediaStream;
@@ -92,14 +92,12 @@ export const GameVideo = observer(
 
           <StreamStatus stream={stream} isMyStream={isMyStream} isIGM={isIGM} />
 
-          {isCurrentUserGM ? (
-            <h3 className={styles.gmLabel}>GM</h3>
-          ) : (
+          {isIGM && !isMyStream ? (
             <VideoMenu
               userId={currentUser?.id}
               isCurrentUserGM={isCurrentUserGM}
             />
-          )}
+          ) : null}
 
           <PlayerVideo
             stream={stream}
