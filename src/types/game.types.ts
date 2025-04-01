@@ -42,34 +42,28 @@ export interface IGameFlow {
   donCheck?: UserId;
 }
 
-export interface IGame {
+export interface IGameRoles {
+  [Roles.Mafia]?: UserId[];
+  [Roles.Citizen]?: UserId[];
+  [Roles.Sheriff]?: UserId;
+  [Roles.Doctor]?: UserId;
+  [Roles.Maniac]?: UserId;
+  [Roles.Prostitute]?: UserId;
+}
+
+export interface IGame extends IGameRoles {
   id: GameId;
   owner: UserId;
   players: UserId[];
   password?: string;
   isPrivate: boolean;
   isActive: boolean;
-  gm: UserId;
-  mafia?: UserId[];
-  citizens?: UserId[];
-  sheriff?: UserId;
-  doctor?: UserId;
-  maniac?: UserId;
-  prostitute?: UserId;
   startTime: number | null;
   finishTime: number | null;
   creatingTime: number;
   gameType: GameType;
   gameFlow: IGameFlow;
-}
-
-export interface IGameRoles {
-  mafia: IGame["mafia"];
-  citizens: IGame["citizens"];
-  sheriff: IGame["sheriff"];
-  doctor: IGame["doctor"];
-  maniac: IGame["maniac"];
-  prostitute: IGame["prostitute"];
+  [Roles.GM]: UserId;
 }
 
 export interface IGameDTO extends Omit<IGame, "id"> {}

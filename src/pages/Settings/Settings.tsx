@@ -1,5 +1,4 @@
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { RoleCard } from "@/components/RoleCard";
 import { Typography } from "@/UI/Typography";
 import { useTranslation } from "react-i18next";
 import styles from "./Settings.module.scss";
@@ -12,8 +11,6 @@ const Settings = () => {
       <Typography variant="title" className={styles.title}>
         {t("settings.title")}
       </Typography>
-
-      <RoleCard />
 
       <div className={styles.section}>
         <Typography variant="subtitle" className={styles.sectionTitle}>

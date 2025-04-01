@@ -109,7 +109,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
       {shouldShowProposeIcon && (
         <VoteIcon
           className={styles.voteIcon}
-          size={ButtonSize.Sm}
+          size={ButtonSize.Small}
           variant={ButtonVariant.Secondary}
           isVoted={isUserAddedToVoteList}
           onClick={handleVotePropose}

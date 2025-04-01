@@ -99,12 +99,12 @@ export class GamesStore {
 
     if (!activeGame) return null;
 
-    const { mafia, sheriff, citizens, doctor, maniac, prostitute } = activeGame;
+    const { mafia, sheriff, citizen, doctor, maniac, prostitute } = activeGame;
 
     return toJS({
       mafia,
       sheriff,
-      citizens,
+      citizen,
       doctor,
       maniac,
       prostitute,

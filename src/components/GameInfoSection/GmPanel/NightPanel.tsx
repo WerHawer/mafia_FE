@@ -22,9 +22,12 @@ export const NightPanel = observer(() => {
 
   const handleRoleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      const selectedRole = e.target.value as Exclude<Roles, Roles.Unknown>;
+      const selectedRole = e.target.value as Exclude<
+        Roles,
+        Roles.Unknown | Roles.GM
+      >;
 
-      const roleIds = activeGameRoles![selectedRole] ?? "";
+      const roleIds: string | string[] = activeGameRoles![selectedRole] ?? "";
 
       setSelectedRole(selectedRole);
 
