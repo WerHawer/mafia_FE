@@ -1,12 +1,14 @@
-import styles from "./Shoot.module.scss";
-import bangIcon from "@/assets/icons/bang.png";
-import { observer } from "mobx-react-lite";
-import { rootStore } from "@/store/rootStore.ts";
-import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
-import { UserId } from "@/types/user.types.ts";
-import { useCallback } from "react";
-import classNames from "classnames";
 import { AimOutlined } from "@ant-design/icons";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import { useCallback } from "react";
+
+import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import bangIcon from "@/assets/icons/bang.png";
+import { rootStore } from "@/store/rootStore.ts";
+import { UserId } from "@/types/user.types.ts";
+
+import styles from "./Shoot.module.scss";
 
 type ShootProps = {
   enabled: boolean;

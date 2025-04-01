@@ -1,8 +1,10 @@
 import { observer } from "mobx-react-lite";
-import { gamesStore } from "@/store/gamesStore.ts";
-import { InitialPanel } from "@/components/GameInfoSection/GmPanel/InitialPanel.tsx";
-import styles from "./GmPanel.module.scss";
+
 import { GamePanel } from "@/components/GameInfoSection/GmPanel/GamePanel.tsx";
+import { InitialPanel } from "@/components/GameInfoSection/GmPanel/InitialPanel.tsx";
+import { gamesStore } from "@/store/gamesStore.ts";
+
+import styles from "./GmPanel.module.scss";
 
 export const GmPanel = observer(() => {
   const { gameFlow } = gamesStore;

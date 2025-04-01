@@ -1,8 +1,10 @@
-import { rootStore } from "@/store/rootStore.ts";
-import { streamStore } from "@/store/streamsStore.ts";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef } from "react";
+
+import { rootStore } from "@/store/rootStore.ts";
+import { streamStore } from "@/store/streamsStore.ts";
+
 import { GameVideo } from "../GameVideo";
 import styles from "./GameVideoContainer.module.scss";
 
@@ -16,7 +18,6 @@ export const GameVideoContainer = observer(() => {
     userStreamsMap,
     manageStreamTracks,
     getFilteredStreams,
-    setMockStreams,
   } = streamStore;
 
   const ref = useRef<HTMLDivElement>(null);

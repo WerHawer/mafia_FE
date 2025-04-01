@@ -1,5 +1,6 @@
-import Tippy, { TippyProps } from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
+
+import Tippy, { TippyProps } from "@tippyjs/react";
 
 export const PopupMenu = ({
   children,

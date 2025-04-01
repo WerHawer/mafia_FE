@@ -1,13 +1,15 @@
-import ReactModal from "react-modal";
-import { modalStore } from "@/store/modalStore.ts";
-import styles from "./ModalBase.module.scss";
-import { VoteResultsModal } from "./VoteResultsModal";
-import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import { observer } from "mobx-react-lite";
+import ReactModal from "react-modal";
+
+import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import {
   NightResultsModal,
   NightResultsModalProps,
 } from "@/components/Modals/NightResultsModal/NightResultsModal.tsx";
+import { modalStore } from "@/store/modalStore.ts";
+
+import styles from "./ModalBase.module.scss";
+import { VoteResultsModal } from "./VoteResultsModal";
 
 ReactModal.setAppElement("#root");
 

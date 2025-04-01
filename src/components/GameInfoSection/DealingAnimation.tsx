@@ -1,8 +1,10 @@
-import { Roles } from "@/types/game.types";
 import { motion } from "framer-motion";
+
+import { Roles } from "@/types/game.types";
+
 import { RoleCard } from "../RoleCard/RoleCard";
-import styles from "./GameInfoSection.module.scss";
 import { CARDS_COUNT, getFakeCardAnimation } from "./config";
+import styles from "./GameInfoSection.module.scss";
 
 export const DealingAnimation = () => {
   return (

@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+
 import { MainContainer } from "@/components/MainContainer";
 import styles from "@/layouts/layout.module.scss";
 import { Logo } from "@/UI/Logo";

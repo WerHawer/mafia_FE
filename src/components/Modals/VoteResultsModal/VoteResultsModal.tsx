@@ -1,8 +1,9 @@
-import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { gamesStore } from "@/store/gamesStore.ts";
+import { useMemo } from "react";
+
 import { Draw } from "@/components/Modals/VoteResultsModal/Draw.tsx";
 import { OneSelected } from "@/components/Modals/VoteResultsModal/OneSelected.tsx";
+import { gamesStore } from "@/store/gamesStore.ts";
 
 export type Result = [string, string[]];
 

@@ -1,3 +1,8 @@
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+
 import { useAddUserToGameMutation } from "@/api/game/queries.ts";
 import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import { GameChat } from "@/components/GameChat";
@@ -9,10 +14,7 @@ import { videoOptions } from "@/config/video.ts";
 import { useStreams } from "@/hooks/useStreams.ts";
 import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
 import { rootStore } from "@/store/rootStore.ts";
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+
 import styles from "./GamePage.module.scss";
 
 const GamePage = observer(() => {

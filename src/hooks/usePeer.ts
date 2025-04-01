@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
 import Peer from "peerjs";
+import { useEffect, useState } from "react";
+
 import { IS_PROD, PEER_PORT, PEER_SERVER } from "../api/apiConstants.ts";
 
 export const usePeer = (userId?: string) => {

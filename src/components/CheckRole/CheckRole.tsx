@@ -1,13 +1,15 @@
 import { EyeOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import styles from "./CheckRole.module.scss";
-import { useCallback, useMemo, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { UserId } from "@/types/user.types.ts";
-import { Roles } from "@/types/game.types.ts";
 import Tippy from "@tippyjs/react";
-import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import { useCallback, useMemo, useState } from "react";
+
+import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { Roles } from "@/types/game.types.ts";
+import { UserId } from "@/types/user.types.ts";
+
+import styles from "./CheckRole.module.scss";
 
 type CheckRoleProps = {
   userId: UserId;

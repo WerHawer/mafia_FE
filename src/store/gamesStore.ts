@@ -1,6 +1,8 @@
-import { UserId } from "@/types/user.types.ts";
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
+
+import { UserId } from "@/types/user.types.ts";
+
 import { initialGameFlow } from "../helpers/createGameObj.ts";
 import { GameId, IGame, IGameFlow, Roles } from "../types/game.types.ts";
 
@@ -132,7 +134,7 @@ export class GamesStore {
     if (roles.mafia?.includes(id)) {
       return roles.mafia[0] === id ? Roles.Don : Roles.Mafia;
     }
-    if (roles.citizens?.includes(id)) return Roles.Citizen;
+    if (roles.citizen?.includes(id)) return Roles.Citizen;
     if (roles.sheriff === id) return Roles.Sheriff;
     if (roles.doctor === id) return Roles.Doctor;
     if (roles.maniac === id) return Roles.Maniac;

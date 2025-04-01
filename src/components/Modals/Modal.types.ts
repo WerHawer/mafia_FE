@@ -6,7 +6,7 @@ export enum ModalNames {
 }
 
 export type ModalData = {
-  [ModalNames.VoteResultModal]: {};
+  [ModalNames.VoteResultModal]: object;
   [ModalNames.NightResultsModal]: NightResultsModalProps;
 };
 

@@ -1,6 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Typography } from "@/UI/Typography";
-import { useTranslation } from "react-i18next";
+
 import styles from "./Settings.module.scss";
 
 const Settings = () => {

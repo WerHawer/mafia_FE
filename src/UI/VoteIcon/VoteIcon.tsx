@@ -1,5 +1,6 @@
-import { useCallback } from "react";
 import { DislikeFilled, DislikeOutlined } from "@ant-design/icons";
+import { useCallback } from "react";
+
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 

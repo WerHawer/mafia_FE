@@ -1,7 +1,8 @@
-import styles from "./LanguageSwitcher.module.scss";
-import { useTranslation } from "react-i18next";
-import { Fragment, memo, useCallback } from "react";
 import classNames from "classnames";
+import { Fragment, memo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+
+import styles from "./LanguageSwitcher.module.scss";
 
 const languages = [
   { label: "En", code: "en" },

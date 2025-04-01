@@ -1,7 +1,8 @@
 import axios from "axios";
-import { IUser } from "@/types/user.types.ts";
+
 import { LoginFormInputs } from "@/components/LoginForm/LoginForm.tsx";
 import { SingUpFormInputs } from "@/components/SingUpForm/SingUpForm.tsx";
+import { IUser } from "@/types/user.types.ts";
 
 export const userLogin = async (loginData: LoginFormInputs) =>
   axios.post(`/login`, loginData);

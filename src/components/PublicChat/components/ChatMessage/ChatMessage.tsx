@@ -1,8 +1,10 @@
-import { Typography } from "@/UI/Typography";
-import { IMessage } from "@/types/message.types";
-import noAvatar from "@/assets/images/noAvatar.jpg";
-import styles from "../../PublicChat.module.scss";
 import classNames from "classnames";
+
+import noAvatar from "@/assets/images/noAvatar.jpg";
+import { IMessage } from "@/types/message.types";
+import { Typography } from "@/UI/Typography";
+
+import styles from "../../PublicChat.module.scss";
 
 interface ChatMessageProps {
   message: IMessage;

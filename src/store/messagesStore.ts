@@ -1,5 +1,6 @@
-import { makeAutoObservable, toJS } from "mobx";
 import { flow, sortBy, sortedUniqBy } from "lodash/fp";
+import { makeAutoObservable, toJS } from "mobx";
+
 import {
   IMessage,
   IMessageWithLocal,

@@ -1,6 +1,3 @@
-import { wsEvents } from "@/config/wsEvents.ts";
-import { useSocket } from "@/hooks/useSocket.ts";
-import { rootStore } from "@/store/rootStore.ts";
 import {
   AudioMutedOutlined,
   AudioOutlined,
@@ -9,6 +6,11 @@ import {
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
+
+import { wsEvents } from "@/config/wsEvents.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
+import { rootStore } from "@/store/rootStore.ts";
+
 import styles from "./GameVideo.module.scss";
 
 type StreamStatusProps = {

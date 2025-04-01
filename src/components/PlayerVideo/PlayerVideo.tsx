@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { throttle } from "lodash";
 import { memo, useCallback, useEffect, useState } from "react";
+
 import styles from "../GameVideo/GameVideo.module.scss";
 
 type PlayerVideoProps = {

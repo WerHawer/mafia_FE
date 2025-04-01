@@ -1,12 +1,13 @@
-import { IGame, IGameFlow } from "@/types/game.types.ts";
-import { useCallback, useEffect, useMemo } from "react";
-import { modalStore } from "@/store/modalStore.ts";
-import { UserId } from "@/types/user.types.ts";
-import { random } from "lodash/fp";
 import { UseMutateFunction } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
+import { random } from "lodash/fp";
+import { useCallback, useEffect, useMemo } from "react";
+
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import { gamesStore } from "@/store/gamesStore.ts";
+import { modalStore } from "@/store/modalStore.ts";
+import { IGame, IGameFlow } from "@/types/game.types.ts";
+import { UserId } from "@/types/user.types.ts";
 
 type VoteResult = {
   alivePlayers: UserId[];

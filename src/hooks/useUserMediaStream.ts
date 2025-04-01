@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useMount, useUnmount } from "react-use";
+
 import { streamStore } from "@/store/streamsStore.ts";
 
 export const useUserMediaStream = (options: MediaStreamConstraints) => {

@@ -1,6 +1,7 @@
-import { memo, PropsWithChildren } from "react";
-import styles from "./CenteredContainer.module.scss";
 import classNames from "classnames";
+import { memo, PropsWithChildren } from "react";
+
+import styles from "./CenteredContainer.module.scss";
 
 type CenteredContainerProps = {
   position?: "top" | "center" | "bottom";

@@ -1,4 +1,5 @@
 import { memo } from "react";
+
 import styles from "./FormError.module.scss";
 
 export const FormError = memo(({ error }: { error?: string }) => {

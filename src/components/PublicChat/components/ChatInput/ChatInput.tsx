@@ -1,8 +1,10 @@
-import { Button } from "@/UI/Button";
-import { ButtonSize, ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes";
 import { SendOutlined } from "@ant-design/icons";
 import { ChangeEvent, FormEvent, useRef } from "react";
 import { useTranslation } from "react-i18next";
+
+import { Button } from "@/UI/Button";
+import { ButtonSize, ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes";
+
 import styles from "../../PublicChat.module.scss";
 
 interface ChatInputProps {

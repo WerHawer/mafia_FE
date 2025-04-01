@@ -1,7 +1,8 @@
-import { StreamInfo, StreamsArr } from "@/types/socket.types.ts";
-import { UserId, UserStreamId, UserVideoSettings } from "@/types/user.types.ts";
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
+
+import { StreamInfo, StreamsArr } from "@/types/socket.types.ts";
+import { UserId, UserStreamId, UserVideoSettings } from "@/types/user.types.ts";
 
 export class StreamStore {
   _streams: MediaStream[] = [];

@@ -1,13 +1,15 @@
-import { useCallback, useMemo } from "react";
-import { Result } from "@/components/Modals/VoteResultsModal/VoteResultsModal.tsx";
-import styles from "./VoteResultsModal.module.scss";
-import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
-import { gamesStore } from "@/store/gamesStore.ts";
 import { observer } from "mobx-react-lite";
+import { useCallback, useMemo } from "react";
+
+import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import { Result } from "@/components/Modals/VoteResultsModal/VoteResultsModal.tsx";
+import { gamesStore } from "@/store/gamesStore.ts";
+import { modalStore } from "@/store/modalStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
-import { modalStore } from "@/store/modalStore.ts";
+
+import styles from "./VoteResultsModal.module.scss";
 
 export const Draw = observer(({ result }: { result: Result[] }) => {
   const { getUserName } = usersStore;

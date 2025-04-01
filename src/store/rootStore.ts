@@ -1,9 +1,10 @@
 import { makeAutoObservable, toJS } from "mobx";
+
+import { GamesStore,gamesStore } from "@/store/gamesStore.ts";
 import { MessagesStore, messagesStore } from "@/store/messagesStore.ts";
 import { ModalStore, modalStore } from "@/store/modalStore.ts";
-import { gamesStore, GamesStore } from "@/store/gamesStore.ts";
+import { StreamStore,streamStore } from "@/store/streamsStore.ts";
 import { UsersStore, usersStore } from "@/store/usersStore.ts";
-import { streamStore, StreamStore } from "@/store/streamsStore.ts";
 
 class RootStore {
   _usersStore: UsersStore;

@@ -1,3 +1,8 @@
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import { useRef } from "react";
+import Draggable from "react-draggable";
+
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
 import { StreamStatus } from "@/components/GameVideo/StreamStatus.tsx";
 import { Shoot } from "@/components/Shoot";
@@ -5,10 +10,7 @@ import { VoteFlow } from "@/components/VoteFlow";
 import { rootStore } from "@/store/rootStore.ts";
 import { Roles, rolesWhoCanCheck } from "@/types/game.types.ts";
 import { UserId } from "@/types/user.types.ts";
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import { useRef } from "react";
-import Draggable from "react-draggable";
+
 import { PlayerVideo } from "../PlayerVideo";
 import styles from "./GameVideo.module.scss";
 import { VideoMenu } from "./VideoMenu.tsx";

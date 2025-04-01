@@ -1,9 +1,9 @@
-import { memo, ReactNode } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import classNames from "classnames";
+import { ReactNode } from "react";
 import { DefaultValues, FormProvider, useForm } from "react-hook-form";
 import { AnyObject, Maybe, ObjectSchema } from "yup";
-import classNames from "classnames";
 
-import { yupResolver } from "@hookform/resolvers/yup";
 import styles from "./Form.module.scss";
 
 interface FormProps<T extends Maybe<AnyObject>> {
@@ -14,7 +14,7 @@ interface FormProps<T extends Maybe<AnyObject>> {
   children: ReactNode;
 }
 
-export const Form = <T extends Record<string, any>>({
+export const Form = <T extends Record<string, string>>({
   children,
   validation,
   onSubmit,

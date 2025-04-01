@@ -1,7 +1,9 @@
-import { routes } from "@/router/routs";
-import { Button } from "@/UI/Button/Button";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+
+import { routes } from "@/router/routs";
+import { Button } from "@/UI/Button/Button";
+
 import styles from "./NotFoundPage.module.scss";
 
 const NotFoundPage = () => {

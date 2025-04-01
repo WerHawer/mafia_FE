@@ -1,3 +1,7 @@
+import classNames from "classnames";
+import { capitalize } from "lodash";
+import { useState } from "react";
+
 import anna from "@/assets/images/cards/anna.webp";
 import cardBack from "@/assets/images/cards/card_back.webp";
 import doctor from "@/assets/images/cards/doctor.webp";
@@ -10,12 +14,9 @@ import don from "@/assets/images/cards/mafia_don.webp";
 import sheriff from "@/assets/images/cards/sheriff.webp";
 import taras from "@/assets/images/cards/taras.webp";
 import vasyl from "@/assets/images/cards/vasyl.webp";
-
 import { Roles } from "@/types/game.types";
 import { Typography } from "@/UI/Typography";
-import classNames from "classnames";
-import { capitalize } from "lodash";
-import { useState } from "react";
+
 import styles from "./RoleCard.module.scss";
 
 type RoleCardProps = {

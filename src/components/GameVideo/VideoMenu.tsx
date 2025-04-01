@@ -1,12 +1,14 @@
+import { MoreOutlined } from "@ant-design/icons";
+import { memo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+
 import {
   useUpdateGameFlowMutation,
   useUpdateGameGMMutation,
 } from "@/api/game/queries.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
-import { MoreOutlined } from "@ant-design/icons";
-import { memo, useCallback } from "react";
-import { useTranslation } from "react-i18next";
+
 import { PopupMenu, PopupMenuElement } from "../PopupMenu";
 import styles from "./GameVideo.module.scss";
 

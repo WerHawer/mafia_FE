@@ -1,7 +1,9 @@
-import { routes } from "@/router/routs.ts";
 import { HomeFilled, SettingFilled } from "@ant-design/icons";
 import classNames from "classnames";
 import { NavLink } from "react-router-dom";
+
+import { routes } from "@/router/routs.ts";
+
 import styles from "./Nav.module.scss";
 
 const links = [

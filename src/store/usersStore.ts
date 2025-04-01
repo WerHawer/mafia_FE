@@ -1,5 +1,6 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
+
 import { IUser } from "../types/user.types.ts";
 
 export class UsersStore {

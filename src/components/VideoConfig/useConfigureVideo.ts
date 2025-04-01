@@ -1,8 +1,9 @@
-import { PRE_VIDEO_HEIGHT, PRE_VIDEO_WIDTH } from "@/config/video.ts";
-import { UserVideoSettings } from "@/types/user.types.ts";
 import * as cam from "@mediapipe/camera_utils";
 import { Results, SelfieSegmentation } from "@mediapipe/selfie_segmentation";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+import { PRE_VIDEO_HEIGHT, PRE_VIDEO_WIDTH } from "@/config/video.ts";
+import { UserVideoSettings } from "@/types/user.types.ts";
 
 const bgEffects = {
   blur: "blur",

@@ -1,5 +1,7 @@
 import { RefObject } from "react";
+
 import { IMessage } from "@/types/message.types";
+
 import styles from "../../PublicChat.module.scss";
 import { ChatMessage } from "../ChatMessage";
 

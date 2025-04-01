@@ -1,4 +1,3 @@
-import { streamStore } from "@/store/streamsStore.ts";
 import { observer } from "mobx-react-lite";
 import {
   createContext,
@@ -9,6 +8,9 @@ import {
   useState,
 } from "react";
 import { io, Socket } from "socket.io-client";
+
+import { streamStore } from "@/store/streamsStore.ts";
+
 import { SERVER } from "../api/apiConstants.ts";
 import { wsEvents } from "../config/wsEvents.ts";
 import { gamesStore } from "../store/gamesStore.ts";

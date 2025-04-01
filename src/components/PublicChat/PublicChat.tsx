@@ -1,11 +1,13 @@
+import { observer } from "mobx-react-lite";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+
 import { useGetMessagesQueryWithStore } from "@/api/messages/queries";
 import { wsEvents } from "@/config/wsEvents";
 import { useSocket } from "@/hooks/useSocket";
 import { messagesStore } from "@/store/messagesStore";
 import { usersStore } from "@/store/usersStore";
 import { IMessage, IMessageDTO, MessageTypes } from "@/types/message.types";
-import { observer } from "mobx-react-lite";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+
 import { ChatHeader } from "./components/ChatHeader";
 import { ChatInput } from "./components/ChatInput";
 import { ChatMessages } from "./components/ChatMessages";

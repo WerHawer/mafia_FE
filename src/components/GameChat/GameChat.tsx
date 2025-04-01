@@ -1,11 +1,13 @@
+import { observer } from "mobx-react-lite";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+
 import { useGetMessagesQueryWithStore } from "@/api/messages/queries.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { IMessage, IMessageDTO, MessageTypes } from "@/types/message.types.ts";
-import { observer } from "mobx-react-lite";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+
 import { ChatInput } from "../PublicChat/components/ChatInput";
 import { ChatMessages } from "../PublicChat/components/ChatMessages";
 import styles from "./GameChat.module.scss";
@@ -18,7 +20,6 @@ export const GameChat = observer(() => {
   const messages = getMessages(id);
   const { sendMessage } = useSocket();
   const [message, setMessage] = useState("");
-  const { socketConnected } = usersStore;
   useGetMessagesQueryWithStore(id);
 
   const chatRef = useRef<HTMLDivElement>(null);

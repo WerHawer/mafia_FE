@@ -1,5 +1,6 @@
-import { projectEnv } from "../config/projectEnv";
 import axios from "axios";
+
+import { projectEnv } from "../config/projectEnv";
 
 export const SERVER = projectEnv.apiUrl;
 export const PEER_SERVER = projectEnv.peerUrl;

@@ -1,8 +1,10 @@
 import { observer } from "mobx-react-lite";
-import styles from "./GameVideo.module.scss";
-import { RoleIcon } from "@/UI/RoleIcon";
-import { rootStore } from "@/store/rootStore.ts";
 import { useMemo } from "react";
+
+import { rootStore } from "@/store/rootStore.ts";
+import { RoleIcon } from "@/UI/RoleIcon";
+
+import styles from "./GameVideo.module.scss";
 
 type VideoUserInfoProps = {
   userName: string;

@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { PropsWithChildren } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+
 import { useAuthQuery } from "../api/auth/queries.ts";
 import { addTokenToAxios } from "../helpers/addTokenToAxios.ts";
 import { removeTokenFromAxios } from "../helpers/removeTokenFromAxios.ts";

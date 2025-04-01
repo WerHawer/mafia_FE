@@ -1,5 +1,6 @@
-import { PropsWithChildren } from "react";
 import classNames from "classnames";
+import { PropsWithChildren } from "react";
+
 import styles from "./Typography.module.scss";
 
 type TypographyProps = PropsWithChildren<{

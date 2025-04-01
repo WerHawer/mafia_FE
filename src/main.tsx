@@ -1,12 +1,15 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./styles/index.scss";
 import "./i18n";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import { router } from "./router/router.tsx";
-import { SocketProvider } from "./context/SocketProvider.tsx";
+
 import { ModalFabric } from "@/components/Modals";
+
+import { SocketProvider } from "./context/SocketProvider.tsx";
+import { router } from "./router/router.tsx";
 
 const queryClient = new QueryClient();
 

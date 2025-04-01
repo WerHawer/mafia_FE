@@ -1,12 +1,13 @@
+import { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { Input } from "@/UI/Input";
-import { InputPassword } from "@/UI/Input/InputPassword";
-import { FormError } from "@/UI/FormError";
+
+import { LoginFormInputs } from "@/components/LoginForm/LoginForm.tsx";
+import { addErrorFromBEToForm } from "@/helpers/addErrorFromBEToForm.ts";
 import { Button } from "@/UI/Button";
 import { ButtonType } from "@/UI/Button/ButtonTypes.ts";
-import { useEffect } from "react";
-import { addErrorFromBEToForm } from "@/helpers/addErrorFromBEToForm.ts";
-import { LoginFormInputs } from "@/components/LoginForm/LoginForm.tsx";
+import { FormError } from "@/UI/FormError";
+import { Input } from "@/UI/Input";
+import { InputPassword } from "@/UI/Input/InputPassword";
 
 type SignUpFormFieldsProps = {
   isPending?: boolean;

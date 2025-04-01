@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+
+import { usersStore } from "../../store/usersStore.ts";
 import { FIVE_MINUTES, ONE_DAY, queryKeys } from "../apiConstants.ts";
 import { getUserById, getUsers, getUsersByIds } from "./api.ts";
-import { usersStore } from "../../store/usersStore.ts";
 
 export const useGetUsersQuery = () => {
   return useQuery({

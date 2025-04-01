@@ -1,18 +1,20 @@
-import { useCallback, useMemo } from "react";
 import { observer } from "mobx-react-lite";
+import { useCallback, useMemo } from "react";
+
 import {
   useRestartGameMutation,
   useUpdateGameFlowMutation,
 } from "@/api/game/queries.ts";
-import { Switcher } from "@/UI/Switcher";
-import styles from "./GmPanel.module.scss";
-import { useSocket } from "@/hooks/useSocket.ts";
-import { wsEvents } from "@/config/wsEvents.ts";
 import { NightPanel } from "@/components/GameInfoSection/GmPanel/NightPanel.tsx";
-import { DayPanel } from "./DayPanel";
-import { rootStore } from "@/store/rootStore.ts";
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
+import { wsEvents } from "@/config/wsEvents.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
+import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
+import { Switcher } from "@/UI/Switcher";
+
+import { DayPanel } from "./DayPanel";
+import styles from "./GmPanel.module.scss";
 
 export const GamePanel = observer(() => {
   const { gamesStore, modalStore, isIGM } = rootStore;

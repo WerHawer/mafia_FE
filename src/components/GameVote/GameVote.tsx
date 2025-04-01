@@ -1,6 +1,8 @@
 import { observer } from "mobx-react-lite";
-import styles from "./GameVote.module.scss";
+
 import { rootStore } from "@/store/rootStore.ts";
+
+import styles from "./GameVote.module.scss";
 
 export const GameVote = observer(() => {
   const { gamesStore, usersStore } = rootStore;

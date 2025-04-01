@@ -1,6 +1,7 @@
 import { AxiosError } from "axios";
-import { IFormBEError } from "../api/apiTypes.ts";
 import { UseFormSetError } from "react-hook-form/dist/types/form";
+
+import { IFormBEError } from "../api/apiTypes.ts";
 
 export const addErrorFromBEToForm = <V extends Record<string, any>>(
   error: unknown,

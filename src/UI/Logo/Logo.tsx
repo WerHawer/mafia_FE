@@ -1,5 +1,6 @@
-import styles from "./Logo.module.scss";
 import classNames from "classnames";
+
+import styles from "./Logo.module.scss";
 
 type LogoProps = {
   size?: "small" | "medium" | "large";

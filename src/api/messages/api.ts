@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { IMessage } from "../../types/message.types.ts";
 
 const MESSAGES_URL = "/messages";

@@ -1,5 +1,7 @@
-import { Typography } from "@/UI/Typography";
 import { useTranslation } from "react-i18next";
+
+import { Typography } from "@/UI/Typography";
+
 import styles from "../../PublicChat.module.scss";
 
 interface ChatHeaderProps {

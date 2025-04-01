@@ -1,8 +1,10 @@
-import { forwardRef, HTMLProps, memo, ReactNode } from "react";
-import styles from "./Input.module.scss";
 import classNames from "classnames";
+import { forwardRef, HTMLProps, memo, ReactNode } from "react";
+
 import { Button } from "@/UI/Button";
 import { ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+
+import styles from "./Input.module.scss";
 
 export type InputProps = HTMLProps<HTMLInputElement> & {
   width?: number | string;
@@ -13,17 +15,7 @@ export type InputProps = HTMLProps<HTMLInputElement> & {
 
 export const Input = memo(
   forwardRef<HTMLInputElement, InputProps>(
-    (
-      {
-        width = "100%",
-        error,
-        className,
-        iconRight,
-        onIconRightClick,
-        ...restProps
-      },
-      ref
-    ) => {
+    ({ error, className, iconRight, onIconRightClick, ...restProps }, ref) => {
       return (
         <div className={styles.container}>
           <div className={classNames(className, styles.inputContainer, {})}>

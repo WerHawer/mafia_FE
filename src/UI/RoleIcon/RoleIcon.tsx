@@ -1,3 +1,5 @@
+import Tippy from "@tippyjs/react";
+
 import citizenIcon from "@/assets/icons/citizen.png";
 import doctorIcon from "@/assets/icons/doctor.webp";
 import gmIcon from "@/assets/icons/gm.png";
@@ -7,7 +9,7 @@ import maniacIcon from "@/assets/icons/maniac.webp";
 import prostituteIcon from "@/assets/icons/prostitute.webp";
 import sheriffIcon from "@/assets/icons/sheriff.png";
 import { Roles } from "@/types/game.types.ts";
-import Tippy from "@tippyjs/react";
+
 import styles from "./RoleIcon.module.scss";
 
 export const RoleIcon = ({ role }: { role: Roles }) => {

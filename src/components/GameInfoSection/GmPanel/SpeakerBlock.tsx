@@ -1,10 +1,11 @@
 import { SoundOutlined } from "@ant-design/icons";
-import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
-import { useCallback } from "react";
-import { wsEvents } from "@/config/wsEvents.ts";
-import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
-import { useSocket } from "@/hooks/useSocket.ts";
 import { observer } from "mobx-react-lite";
+import { useCallback } from "react";
+
+import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
+import { wsEvents } from "@/config/wsEvents.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
 export const SpeakerBlock = observer(() => {

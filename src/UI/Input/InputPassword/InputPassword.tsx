@@ -1,6 +1,7 @@
-import { Input, InputProps } from "../Input.tsx";
-import { forwardRef, memo, useCallback, useState } from "react";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
+import { forwardRef, memo, useCallback, useState } from "react";
+
+import { Input, InputProps } from "../Input.tsx";
 
 export const InputPassword = memo(
   forwardRef<HTMLInputElement, InputProps>((props, ref) => {

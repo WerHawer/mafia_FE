@@ -1,8 +1,10 @@
-import { streamStore } from "@/store/streamsStore.ts";
 import Peer from "peerjs";
 import { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useUnmount } from "react-use";
+
+import { streamStore } from "@/store/streamsStore.ts";
+
 import { wsEvents } from "../config/wsEvents.ts";
 import { usePeer } from "./usePeer.ts";
 import { useSocket } from "./useSocket.ts";

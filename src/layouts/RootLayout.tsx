@@ -1,8 +1,10 @@
+import { observer } from "mobx-react-lite";
+import { Outlet, useLocation } from "react-router-dom";
+
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { MainContainer } from "@/components/MainContainer";
-import { observer } from "mobx-react-lite";
-import { Outlet, useLocation } from "react-router-dom";
+
 import { usersStore } from "../store/usersStore.ts";
 import styles from "./layout.module.scss";
 

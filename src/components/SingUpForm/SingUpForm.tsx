@@ -1,17 +1,19 @@
-import * as yup from "yup";
+import { observer } from "mobx-react-lite";
 import { SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { routes } from "@/router/routs.ts";
+import * as yup from "yup";
+
 import { useSignUpMutation } from "@/api/auth/queries.ts";
-import { addTokenToAxios } from "@/helpers/addTokenToAxios.ts";
-import { usersStore } from "@/store/usersStore.ts";
-import { observer } from "mobx-react-lite";
-import { useSocket } from "@/hooks/useSocket.ts";
-import styles from "./SingUpForm.module.scss";
-import { SignUpFormFields } from "@/components/SingUpForm/SignUpFormFields.tsx";
 import { Form } from "@/components/Form";
-import { Typography } from "@/UI/Typography";
 import { Link } from "@/components/Link";
+import { SignUpFormFields } from "@/components/SingUpForm/SignUpFormFields.tsx";
+import { addTokenToAxios } from "@/helpers/addTokenToAxios.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
+import { routes } from "@/router/routs.ts";
+import { usersStore } from "@/store/usersStore.ts";
+import { Typography } from "@/UI/Typography";
+
+import styles from "./SingUpForm.module.scss";
 
 const MIN_PASSWORD_LENGTH = 8;
 const MIN_nikName_LENGTH = 3;

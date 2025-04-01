@@ -1,12 +1,14 @@
-import { rootStore } from "@/store/rootStore.ts";
-import { Roles } from "@/types/game.types";
 import { motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
+
+import { rootStore } from "@/store/rootStore.ts";
+import { Roles } from "@/types/game.types";
+
 import { RoleCard } from "../RoleCard/RoleCard";
+import { playerCardAnimation } from "./config";
 import { DealingAnimation } from "./DealingAnimation";
 import styles from "./GameInfoSection.module.scss";
-import { playerCardAnimation } from "./config";
 
 export const PlayerPanel = observer(() => {
   const { gamesStore, usersStore, myRole } = rootStore;
@@ -15,11 +17,13 @@ export const PlayerPanel = observer(() => {
 
   const roleIndex = useMemo(() => {
     if (myRole === Roles.Citizen) {
-      return activeGameRoles?.citizens?.findIndex((role) => role === myId);
+      return activeGameRoles?.[Roles.Citizen]?.findIndex(
+        (role) => role === myId
+      );
     }
 
     if (myRole === Roles.Mafia) {
-      return activeGameRoles?.mafia?.findIndex((role) => role === myId);
+      return activeGameRoles?.[Roles.Mafia]?.findIndex((role) => role === myId);
     }
   }, [activeGameRoles, myId, myRole]);
 

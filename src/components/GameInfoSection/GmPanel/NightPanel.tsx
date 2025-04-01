@@ -1,10 +1,12 @@
+import { observer } from "mobx-react-lite";
+import { ChangeEvent, useCallback, useState } from "react";
+
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { Roles } from "@/types/game.types.ts";
-import { observer } from "mobx-react-lite";
-import { ChangeEvent, useCallback, useState } from "react";
+
 import styles from "./GmPanel.module.scss";
 
 export const NightPanel = observer(() => {

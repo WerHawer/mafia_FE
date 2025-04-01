@@ -1,17 +1,18 @@
+import classNames from "classnames";
+import { useTranslation } from "react-i18next";
 import {
-  PuffLoader,
   BarLoader,
   BeatLoader,
   BounceLoader,
   FadeLoader,
   PropagateLoader,
+  PuffLoader,
   PulseLoader,
   ScaleLoader,
   SyncLoader,
 } from "react-spinners";
+
 import styles from "./Loader.module.scss";
-import { useTranslation } from "react-i18next";
-import classNames from "classnames";
 import {
   LoaderColor,
   LoaderDirection,

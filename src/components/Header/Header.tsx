@@ -1,3 +1,9 @@
+import { LogoutOutlined } from "@ant-design/icons";
+import Tippy from "@tippyjs/react";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
 import { useCreateGameMutation } from "@/api/game/queries.ts";
 import { createGameObj } from "@/helpers/createGameObj.ts";
 import { removeTokenFromAxios } from "@/helpers/removeTokenFromAxios.ts";
@@ -7,11 +13,7 @@ import { usersStore } from "@/store/usersStore.ts";
 import { Button } from "@/UI/Button/Button.tsx";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 import { Logo } from "@/UI/Logo";
-import { LogoutOutlined } from "@ant-design/icons";
-import Tippy from "@tippyjs/react";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+
 import { HeaderNav } from "../Nav";
 import { UserHeaderInfo } from "../UserInfo/UserHeaderInfo.tsx";
 import styles from "./Header.module.scss";

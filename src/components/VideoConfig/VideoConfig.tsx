@@ -1,16 +1,18 @@
-import { Button } from "@/UI/Button";
-import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
-import blurIcon from "@/assets/icons/blur.png";
-import removeIcon from "@/assets/icons/remove.png";
-import { BackgroundImageList } from "@/components/VideoConfig/BackgroundImageList.tsx";
-import { useConfigureVideo } from "@/components/VideoConfig/useConfigureVideo.ts";
-import { rootStore } from "@/store/rootStore.ts";
 import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+
+import blurIcon from "@/assets/icons/blur.png";
+import removeIcon from "@/assets/icons/remove.png";
+import { BackgroundImageList } from "@/components/VideoConfig/BackgroundImageList.tsx";
+import { useConfigureVideo } from "@/components/VideoConfig/useConfigureVideo.ts";
+import { rootStore } from "@/store/rootStore.ts";
+import { Button } from "@/UI/Button";
+import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+
 import styles from "./VideoConfig.module.scss";
 
 export const VideoConfig = observer(() => {

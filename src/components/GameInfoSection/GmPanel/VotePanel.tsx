@@ -1,8 +1,9 @@
-import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
-import { observer } from "mobx-react-lite";
 import { UsergroupDeleteOutlined } from "@ant-design/icons";
+import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
+
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
 import { rootStore } from "@/store/rootStore.ts";
 
 export const VotePanel = observer(() => {

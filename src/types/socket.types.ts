@@ -1,6 +1,6 @@
 import { wsEvents } from "../config/wsEvents.ts";
-import { IMessage, IMessageDTO } from "./message.types.ts";
 import { GameId, IGame } from "./game.types.ts";
+import { IMessage, IMessageDTO } from "./message.types.ts";
 import { UserId, UserStreamId } from "./user.types.ts";
 
 export type OffParams = "self" | "other";

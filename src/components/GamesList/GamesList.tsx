@@ -1,3 +1,8 @@
+import { observer } from "mobx-react-lite";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
 import { useGetGamesWithStore } from "@/api/game/queries.ts";
 import noAvatar from "@/assets/images/noAvatar.jpg";
 import { formatDate } from "@/helpers/formatDate.ts";
@@ -8,10 +13,7 @@ import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 import { Loader } from "@/UI/Loader";
 import { Typography } from "@/UI/Typography";
-import { observer } from "mobx-react-lite";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+
 import styles from "./GamesList.module.scss";
 
 const MAX_PLAYERS = 11;

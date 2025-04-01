@@ -1,4 +1,5 @@
 import { makeAutoObservable, toJS } from "mobx";
+
 import { GModalData, ModalNames } from "@/components/Modals/Modal.types.ts";
 
 export class ModalStore {

@@ -1,11 +1,13 @@
-import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
-import { VoteIcon } from "@/UI/VoteIcon";
+import { observer } from "mobx-react-lite";
+import { useCallback, useMemo } from "react";
+
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import { useVoteResult } from "@/hooks/useVoteResult.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
-import { observer } from "mobx-react-lite";
-import { useCallback, useMemo } from "react";
+import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { VoteIcon } from "@/UI/VoteIcon";
+
 import styles from "./VoteFlow.module.scss";
 
 type VoteFlowProps = {

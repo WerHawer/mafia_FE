@@ -1,17 +1,19 @@
-import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
-import styles from "./LoginForm.module.scss";
-import { routes } from "@/router/routs.ts";
-import { useLoginMutation } from "@/api/auth/queries.ts";
-import { addTokenToAxios } from "@/helpers/addTokenToAxios.ts";
-import { usersStore } from "@/store/usersStore.ts";
 import { observer } from "mobx-react-lite";
-import { useSocket } from "@/hooks/useSocket.ts";
+import { SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import * as yup from "yup";
+
+import { useLoginMutation } from "@/api/auth/queries.ts";
 import { Form } from "@/components/Form/Form.tsx";
-import { LoginFormFields } from "@/components/LoginForm/LoginFormFields.tsx";
-import { Typography } from "@/UI/Typography/Typography.tsx";
 import { Link } from "@/components/Link";
-import { SubmitHandler, useFormContext } from "react-hook-form";
+import { LoginFormFields } from "@/components/LoginForm/LoginFormFields.tsx";
+import { addTokenToAxios } from "@/helpers/addTokenToAxios.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
+import { routes } from "@/router/routs.ts";
+import { usersStore } from "@/store/usersStore.ts";
+import { Typography } from "@/UI/Typography/Typography.tsx";
+
+import styles from "./LoginForm.module.scss";
 
 const MIN_PASSWORD_LENGTH = 8;
 const MIN_LOGIN_LENGTH = 3;

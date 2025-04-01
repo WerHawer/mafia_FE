@@ -1,12 +1,13 @@
 import { observer } from "mobx-react-lite";
-import { rootStore } from "@/store/rootStore.ts";
 import { useCallback } from "react";
+
+import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import { wsEvents } from "@/config/wsEvents.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
+import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
-import { wsEvents } from "@/config/wsEvents.ts";
-import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
-import { useSocket } from "@/hooks/useSocket.ts";
 
 export type NightResultsModalProps = {
   killedPlayer: UserId[];

@@ -1,14 +1,15 @@
-import { useCallback } from "react";
 import { observer } from "mobx-react-lite";
+import { useCallback } from "react";
+
+import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import styles from "@/components/Modals/VoteResultsModal/VoteResultsModal.module.scss";
-import { Button } from "@/UI/Button";
-import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { Result } from "@/components/Modals/VoteResultsModal/VoteResultsModal.tsx";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
-import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
-import { usersStore } from "@/store/usersStore.ts";
-import { Result } from "@/components/Modals/VoteResultsModal/VoteResultsModal.tsx";
 import { gamesStore } from "@/store/gamesStore.ts";
+import { usersStore } from "@/store/usersStore.ts";
+import { Button } from "@/UI/Button";
+import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
 export const OneSelected = observer(({ result }: { result: Result[] }) => {
   const { sendMessage } = useSocket();
