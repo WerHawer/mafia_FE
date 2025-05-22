@@ -46,17 +46,18 @@ export const GameVideo = observer(
     const canICheck = rolesWhoCanCheck.includes(myRole) && isIWakedUp;
     const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
     const isIDidShot = gameFlow.shoot.some(([shooterId]) => shooterId === myId);
+    const isMyAfterStart = isMyStream && gameFlow.isStarted;
 
     return (
       <Draggable
-        disabled={!(isMyStream && gameFlow.isStarted)}
+        disabled={!isMyAfterStart}
         defaultClassNameDragging={styles.dragging}
         position={!gameFlow.isStarted ? DEFAULT_VIDEO_POSITION : undefined}
         nodeRef={containerRef}
       >
         <div
-          className={classNames(styles.container, {
-            [styles.myVideoContainer]: isMyStream && gameFlow.isStarted,
+          className={classNames("videoContainer", styles.container, {
+            [styles.myVideoContainer]: isMyAfterStart,
             [styles.myVideoActive]: isMyStream,
             [styles.active]: isActive,
             [styles.gmOverlay]: isUserGM(userId),

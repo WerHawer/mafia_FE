@@ -29,7 +29,7 @@ export const ModalFabric = observer(() => {
       onRequestClose={closeModal}
       className={styles.modal}
       overlayClassName={styles.overlay}
-      shouldCloseOnOverlayClick={false}
+      shouldCloseOnOverlayClick
     >
       <div>{openedModal && modals[openedModal]}</div>
     </ReactModal>
