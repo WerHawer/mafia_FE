@@ -12,7 +12,7 @@ export const GameVideoContainer = observer(() => {
   const { usersStore, gamesStore } = rootStore;
   const { myId } = usersStore;
   const { isUserGM, speaker, gameFlow, activeGamePlayers } = gamesStore;
-  console.log("activeGamePlayers :", activeGamePlayers);
+
   const {
     myStream: userMediaStream,
     userStreamsMap,

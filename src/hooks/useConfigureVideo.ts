@@ -2,8 +2,11 @@ import * as cam from "@mediapipe/camera_utils";
 import { Results, SelfieSegmentation } from "@mediapipe/selfie_segmentation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { PRE_VIDEO_HEIGHT, PRE_VIDEO_WIDTH } from "@/config/video.ts";
+import { PRE_VIDEO_HEIGHT, PRE_VIDEO_WIDTH, videoOptions } from "@/config/video.ts";
 import { UserVideoSettings } from "@/types/user.types.ts";
+
+const HIGH_VIDEO_WIDTH = videoOptions.width;
+const HIGH_VIDEO_HEIGHT = videoOptions.height;
 
 const bgEffects = {
   blur: "blur",
@@ -60,14 +63,15 @@ export const useConfigureVideo = (
 
       video.srcObject = myOriginalStream;
 
-      const videoWidth = settings.width ?? PRE_VIDEO_WIDTH;
-      const videoHeight = settings.height ?? PRE_VIDEO_HEIGHT;
+      const videoWidth = settings.width ?? HIGH_VIDEO_WIDTH;
+      const videoHeight = settings.height ?? HIGH_VIDEO_HEIGHT;
 
       canvas.width = videoWidth;
       canvas.height = videoHeight;
 
       const ctx = canvas.getContext("2d", {
         desynchronized: true,
+        alpha: true,
       });
 
       if (!ctx) return;
@@ -76,7 +80,7 @@ export const useConfigureVideo = (
       ctx.clearRect(0, 0, videoWidth, videoHeight);
       ctx.scale(-1, 1);
 
-      ctx.filter = "blur(1px)";
+      ctx.filter = "blur(2px)";
       ctx.drawImage(
         results.segmentationMask,
         -videoWidth,
@@ -91,10 +95,21 @@ export const useConfigureVideo = (
 
       if (bgEffectsRef.current === bgEffects.blur) {
         ctx.globalCompositeOperation = "destination-over";
-        ctx.filter = "blur(15px) brightness(0.95)";
+        ctx.filter = "blur(20px) brightness(0.97) saturate(1.1)";
         ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
-        ctx.restore();
 
+        ctx.globalCompositeOperation = "source-over";
+        ctx.filter = "none";
+        const gradient = ctx.createRadialGradient(
+          -videoWidth / 2, videoHeight / 2, videoHeight * 0.3,
+          -videoWidth / 2, videoHeight / 2, videoHeight * 0.8
+        );
+        gradient.addColorStop(0, "rgba(0,0,0,0)");
+        gradient.addColorStop(1, "rgba(0,0,0,0.3)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(-videoWidth, 0, videoWidth, videoHeight);
+
+        ctx.restore();
         return;
       }
 
@@ -119,12 +134,31 @@ export const useConfigureVideo = (
           offsetY = 0;
         }
 
+        ctx.filter = "blur(2px)";
+        ctx.drawImage(
+          results.segmentationMask,
+          -videoWidth,
+          0,
+          videoWidth,
+          videoHeight
+        );
+
+        ctx.globalCompositeOperation = "source-in";
+        ctx.filter = "none";
+        ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
+
         ctx.globalCompositeOperation = "destination-over";
         ctx.filter = "none";
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-        ctx.restore();
 
+        ctx.globalCompositeOperation = "source-over";
+        ctx.shadowColor = "rgba(0,0,0,0.5)";
+        ctx.shadowBlur = 15;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        ctx.restore();
         return;
       }
 
@@ -132,8 +166,14 @@ export const useConfigureVideo = (
         ctx.globalCompositeOperation = "destination-over";
         ctx.filter = "none";
         ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
-        ctx.restore();
 
+        ctx.globalCompositeOperation = "source-over";
+        ctx.filter = "contrast(1.05) brightness(1.02)";
+        ctx.globalAlpha = 0.2;
+        ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
+        ctx.globalAlpha = 1.0;
+
+        ctx.restore();
         return;
       }
     },
@@ -166,11 +206,13 @@ export const useConfigureVideo = (
             await selfieSegmentation.send({ image: videoRef.current });
           }
         },
-        width: settings.width ?? PRE_VIDEO_WIDTH,
-        height: settings.height ?? PRE_VIDEO_HEIGHT,
+        width: settings.width ?? HIGH_VIDEO_WIDTH,
+        height: settings.height ?? HIGH_VIDEO_HEIGHT,
       });
 
-      camera.start();
+      setTimeout(() => {
+        camera.start();
+      }, 100);
 
       return () => {
         camera.stop();

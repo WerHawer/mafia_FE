@@ -33,7 +33,7 @@ export const StreamStatus = observer(
       const roomId = userStreamData?.roomId ?? "";
 
       return { audio, video, roomId };
-      // we need userStreamsMap to be updated in right way
+      // we need userStreamsMap to be updated in the right way
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [getUserStreamInfo, stream, userStreamsMap]);
 

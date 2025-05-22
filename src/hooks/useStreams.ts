@@ -63,7 +63,7 @@ export const useStreams = ({ myStream, myId }: UseStreamsParams) => {
     setStream(myStream, MAX_STREAMS);
   }, [myStream, setStream]);
 
-  // add user who already in room to me when I connect.
+  // add user who already in rooms to me when I connect.
   useEffect(() => {
     if (!peer || !myStream) return;
 
@@ -80,7 +80,7 @@ export const useStreams = ({ myStream, myId }: UseStreamsParams) => {
     };
   }, [connectToNewUser, peer, peerId, setStream, myStream]);
 
-  // add new user when he connects to room
+  // add a new user when he connects to the room
   useEffect(() => {
     if (!myStream || !peer) return;
 
