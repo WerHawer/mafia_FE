@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from "react";
 
 import { rootStore } from "@/store/rootStore.ts";
 import { streamStore } from "@/store/streamsStore.ts";
+import { updateGameGM } from "@/api/game/api.ts";
 
 import { GameVideo } from "../GameVideo";
 import styles from "./GameVideoContainer.module.scss";
@@ -11,8 +12,8 @@ import styles from "./GameVideoContainer.module.scss";
 export const GameVideoContainer = observer(() => {
   const { usersStore, gamesStore } = rootStore;
   const { myId } = usersStore;
-  const { isUserGM, speaker, gameFlow, activeGamePlayers } = gamesStore;
-  // TODO: find a way to clone my video to all users, but with other users credentials
+  const { isUserGM, speaker, gameFlow, activeGamePlayers, activeGameId } =
+    gamesStore;
 
   const {
     myStream: userMediaStream,
@@ -57,6 +58,20 @@ export const GameVideoContainer = observer(() => {
     createMockStreamsForPlayers();
   }, [createMockStreamsForPlayers]);
 
+  const handleMakeMeGM = useCallback(async () => {
+    if (!activeGameId || !myId) return;
+
+    try {
+      await updateGameGM({
+        gameId: activeGameId,
+        userId: myId,
+      });
+      console.log("You are now the GM!");
+    } catch (error) {
+      console.error("Failed to set you as GM:", error);
+    }
+  }, [activeGameId, myId]);
+
   return (
     <>
       <button
@@ -76,6 +91,25 @@ export const GameVideoContainer = observer(() => {
         }}
       >
         Create Test Streams
+      </button>
+
+      <button
+        onClick={handleMakeMeGM}
+        style={{
+          position: "fixed",
+          top: "60px",
+          right: "10px",
+          zIndex: 1000,
+          padding: "8px 12px",
+          backgroundColor: "#2196F3",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontSize: "14px",
+        }}
+      >
+        Make Me GM
       </button>
 
       <div

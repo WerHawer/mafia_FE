@@ -1,4 +1,8 @@
-import { SoundOutlined } from "@ant-design/icons";
+import {
+  SoundOutlined,
+  StepBackwardOutlined,
+  StepForwardOutlined,
+} from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 
@@ -7,6 +11,8 @@ import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
+
+import styles from "./SpeakerBlock.module.scss";
 
 export const SpeakerBlock = observer(() => {
   const { gamesStore, usersStore } = rootStore;
@@ -19,22 +25,41 @@ export const SpeakerBlock = observer(() => {
   const speakerName = getUserName(gameFlow.speaker);
 
   const handleSpeaker = useCallback(() => {
-    let speaker = "";
-
     if (!gameFlow.speaker) {
       const maxCount = activeGameAlivePlayers.length;
       const index = day - 1 >= maxCount ? 0 : day - 1;
-      speaker = activeGameAlivePlayers[index];
-    } else {
-      const currentSpeakerIndex = activeGameAlivePlayers.findIndex(
-        (player) => player === gameFlow.speaker,
-      );
+      const speaker = activeGameAlivePlayers[index];
 
-      speaker =
-        currentSpeakerIndex === activeGameAlivePlayers.length - 1
-          ? activeGameAlivePlayers[0]
-          : activeGameAlivePlayers[currentSpeakerIndex + 1];
+      updateGameFlow({
+        speaker,
+        isExtraSpeech: false,
+      });
+
+      sendMessage(wsEvents.updateSpeaker, {
+        gameId: activeGameId,
+        userId: speaker,
+      });
     }
+  }, [
+    activeGameAlivePlayers,
+    activeGameId,
+    day,
+    gameFlow.speaker,
+    sendMessage,
+    updateGameFlow,
+  ]);
+
+  const handleForwardSpeaker = useCallback(() => {
+    if (!gameFlow.speaker || activeGameAlivePlayers.length === 0) return;
+
+    const currentSpeakerIndex = activeGameAlivePlayers.findIndex(
+      (player) => player === gameFlow.speaker
+    );
+
+    const speaker =
+      currentSpeakerIndex === activeGameAlivePlayers.length - 1
+        ? activeGameAlivePlayers[0]
+        : activeGameAlivePlayers[currentSpeakerIndex + 1];
 
     updateGameFlow({
       speaker,
@@ -48,7 +73,35 @@ export const SpeakerBlock = observer(() => {
   }, [
     activeGameAlivePlayers,
     activeGameId,
-    day,
+    gameFlow.speaker,
+    sendMessage,
+    updateGameFlow,
+  ]);
+
+  const handleBackwardSpeaker = useCallback(() => {
+    if (!gameFlow.speaker || activeGameAlivePlayers.length === 0) return;
+
+    const currentSpeakerIndex = activeGameAlivePlayers.findIndex(
+      (player) => player === gameFlow.speaker
+    );
+
+    const speaker =
+      currentSpeakerIndex === 0
+        ? activeGameAlivePlayers[activeGameAlivePlayers.length - 1]
+        : activeGameAlivePlayers[currentSpeakerIndex - 1];
+
+    updateGameFlow({
+      speaker,
+      isExtraSpeech: false,
+    });
+
+    sendMessage(wsEvents.updateSpeaker, {
+      gameId: activeGameId,
+      userId: speaker,
+    });
+  }, [
+    activeGameAlivePlayers,
+    activeGameId,
     gameFlow.speaker,
     sendMessage,
     updateGameFlow,
@@ -57,17 +110,24 @@ export const SpeakerBlock = observer(() => {
   if (gameFlow.isVote) return null;
 
   return (
-    <>
-      <SoundOutlined
-        onClick={handleSpeaker}
-        style={{ cursor: "pointer", width: "15%", flexShrink: "0" }}
-      />
+    <div className={styles.speakerBlockContainer}>
+      <div className={styles.controlsContainer}>
+        <StepBackwardOutlined
+          onClick={handleBackwardSpeaker}
+          className={styles.controlIcon}
+        />
+        <SoundOutlined onClick={handleSpeaker} className={styles.controlIcon} />
+        <StepForwardOutlined
+          onClick={handleForwardSpeaker}
+          className={styles.controlIcon}
+        />
+      </div>
 
       {speakerName && (
-        <p>
+        <p className={styles.speakerInfo}>
           Speaker: {speakerName} - <Timer resetTrigger={gameFlow.speaker} />
         </p>
       )}
-    </>
+    </div>
   );
 });
