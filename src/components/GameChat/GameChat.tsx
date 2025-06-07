@@ -62,11 +62,13 @@ export const GameChat = observer(() => {
         userId={user?.id}
       />
 
-      <ChatInput
-        value={message}
-        onChange={handleChangeMessage}
-        onSubmit={handleSendMessage}
-      />
+      <div className={styles.inputContainer}>
+        <ChatInput
+          value={message}
+          onChange={handleChangeMessage}
+          onSubmit={handleSendMessage}
+        />
+      </div>
     </div>
   );
 });

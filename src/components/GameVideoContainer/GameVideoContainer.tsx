@@ -2,9 +2,9 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useRef } from "react";
 
+import { updateGameGM } from "@/api/game/api.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { streamStore } from "@/store/streamsStore.ts";
-import { updateGameGM } from "@/api/game/api.ts";
 
 import { GameVideo } from "../GameVideo";
 import styles from "./GameVideoContainer.module.scss";

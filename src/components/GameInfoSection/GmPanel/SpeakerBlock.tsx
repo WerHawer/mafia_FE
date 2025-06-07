@@ -116,7 +116,9 @@ export const SpeakerBlock = observer(() => {
           onClick={handleBackwardSpeaker}
           className={styles.controlIcon}
         />
+
         <SoundOutlined onClick={handleSpeaker} className={styles.controlIcon} />
+
         <StepForwardOutlined
           onClick={handleForwardSpeaker}
           className={styles.controlIcon}
