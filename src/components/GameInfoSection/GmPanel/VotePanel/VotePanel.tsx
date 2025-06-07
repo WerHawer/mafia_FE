@@ -1,10 +1,13 @@
 import { UsergroupDeleteOutlined } from "@ant-design/icons";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
 import { rootStore } from "@/store/rootStore.ts";
+
+import styles from "./VotePanel.module.scss";
 
 export const VotePanel = observer(() => {
   const { gamesStore } = rootStore;
@@ -18,18 +21,26 @@ export const VotePanel = observer(() => {
     });
   }, [gameFlow, updateGameFlow]);
 
+  const needVote = gameFlow.proposed.length > 1 && gameFlow.isVote;
+  const text = needVote ? "Voting" : "Start Voting";
+
   return (
-    <>
+    <div
+      className={classNames(styles.container, {
+        [styles.startPosition]: needVote,
+      })}
+      onClick={handleVoteClick}
+    >
       {!!gameFlow.proposed.length && (
-        <UsergroupDeleteOutlined
-          onClick={handleVoteClick}
-          style={{ cursor: "pointer" }}
-        />
+        <>
+          <UsergroupDeleteOutlined />
+          <span>{text}</span>
+        </>
       )}
 
-      {gameFlow.isVote && gameFlow.proposed.length > 1 && (
+      {needVote && (
         <Timer timer={gameFlow.votesTime} resetTrigger={gameFlow.isReVote} />
       )}
-    </>
+    </div>
   );
 });

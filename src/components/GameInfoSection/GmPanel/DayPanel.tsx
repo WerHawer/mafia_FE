@@ -1,5 +1,5 @@
-import { SpeakerBlock } from "@/components/GameInfoSection/GmPanel/SpeakerBlock.tsx";
-import { VotePanel } from "@/components/GameInfoSection/GmPanel/VotePanel.tsx";
+import { SpeakerBlock } from "@/components/GameInfoSection/GmPanel/SpeakerBlock/SpeakerBlock.tsx";
+import { VotePanel } from "@/components/GameInfoSection/GmPanel/VotePanel/VotePanel.tsx";
 
 import styles from "./GmPanel.module.scss";
 

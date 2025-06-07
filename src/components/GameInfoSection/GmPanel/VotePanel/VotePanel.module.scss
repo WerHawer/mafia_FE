@@ -1,0 +1,13 @@
+@use "../../../../styles/mixins.scss" as *;
+
+.container {
+  @include flex(row, end);
+  gap: 1rem;
+  flex-wrap: nowrap;
+  width: 100%;
+  cursor: pointer;
+}
+
+.startPosition {
+  @include flex(row, start);
+}

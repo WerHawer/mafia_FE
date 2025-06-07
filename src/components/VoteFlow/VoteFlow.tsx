@@ -21,10 +21,25 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   const { isUserGM, speaker, gameFlow, activeGameAlivePlayers } = gamesStore;
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
+  const votesForThisUser = useMemo(
+    () => gameFlow.voted?.[userId] ?? [],
+    [gameFlow.voted, userId]
+  );
+
+  const amIVoted = useMemo(() => {
+    return Object.values(gameFlow.voted ?? {})
+      .flat()
+      .includes(myId);
+  }, [gameFlow.voted, myId]);
+
   const isUserAddedToVoteList = useMemo(
     () => (userId ? gameFlow.proposed.includes(userId) : false),
     [gameFlow.proposed, userId]
   );
+
+  const isVotedByThisUser = useMemo(() => {
+    return amIVoted && votesForThisUser.includes(myId);
+  }, [amIVoted, votesForThisUser, myId]);
 
   const isCurrentUserGM = isUserGM(userId);
 
@@ -38,16 +53,6 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
 
   const shouldShowVoteIcon =
     gameFlow.isVote && gameFlow.proposed.includes(userId) && !isIDead;
-
-  const votesForThisUser = useMemo(
-    () => gameFlow.voted?.[userId] ?? [],
-    [gameFlow.voted, userId]
-  );
-  const amIVoted = useMemo(() => {
-    return Object.values(gameFlow.voted ?? {})
-      .flat()
-      .includes(myId);
-  }, [gameFlow.voted, myId]);
 
   const handleVotePropose = useCallback(() => {
     if ((myId !== speaker && !isUserGM(myId)) || !userId) return;
@@ -120,7 +125,14 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
 
       {shouldShowVoteIcon && (
         <div className={styles.iconContainer}>
-          <VoteIcon size={ButtonSize.Large} onClick={handleVote} />
+          <VoteIcon
+            className={styles.voteIcon}
+            size={ButtonSize.Small}
+            variant={ButtonVariant.Secondary}
+            onClick={handleVote}
+            isVoted={isVotedByThisUser}
+          />
+
           {votesForThisUser.length > 0 && (
             <p className={styles.voteCounter}>{votesForThisUser.length}</p>
           )}

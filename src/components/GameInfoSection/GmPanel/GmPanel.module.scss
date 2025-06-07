@@ -37,7 +37,6 @@
 .nightContainer,
 .dayContainer {
   @include mixins.flex(row, space-around, flex-start);
-  flex-wrap: wrap;
 
   width: 100%;
   font-size: 1.5rem;

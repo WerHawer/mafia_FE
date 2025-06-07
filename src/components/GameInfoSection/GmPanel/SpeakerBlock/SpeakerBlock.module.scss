@@ -1,5 +1,5 @@
-@import "../../../styles/mixins.scss";
-@import "../../../styles/theme.scss";
+@use "../../../../styles/mixins" as *;
+@use "../../../../styles/theme" as *;
 
 .speakerBlockContainer {
   @include flex(column, start, start);

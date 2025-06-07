@@ -25,14 +25,18 @@
 }
 
 .iconContainer {
+  @include mixins.flex(row, flex-start, center);
+
   position: absolute;
   top: 5px;
   left: 5px;
 
+  width: 30px;
+  height: 30px;
+
   z-index: 10;
 
-  @include mixins.flex(row, flex-start, center);
-  column-gap: 0.5rem;
+  gap: 0.5rem;
 }
 
 .voteCounter {
