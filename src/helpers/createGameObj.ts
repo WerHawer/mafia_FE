@@ -1,4 +1,4 @@
-import { GameType, IGameDTO, IGameFlow } from "../types/game.types.ts";
+import { GameType, IGameDTO, IGameFlow, Roles } from "../types/game.types.ts";
 import { UserId } from "../types/user.types.ts";
 
 export const initialGameFlow: IGameFlow = {
@@ -36,9 +36,9 @@ export const createGameObj = ({
     password,
     isPrivate: !!password,
     isActive: true,
-    gm: owner,
-    mafia: [],
-    citizen: [],
+    [Roles.GM]: owner,
+    [Roles.Mafia]: [],
+    [Roles.Citizen]: [],
     startTime: null,
     finishTime: null,
     creatingTime: Date.now(),
