@@ -63,6 +63,7 @@ export interface IGame extends IGameRoles {
   creatingTime: number;
   gameType: GameType;
   gameFlow: IGameFlow;
+  citizens?: UserId[];
   [Roles.GM]: UserId;
 }
 

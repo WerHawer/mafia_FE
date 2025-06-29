@@ -101,12 +101,12 @@ export class GamesStore {
 
     if (!activeGame) return null;
 
-    const { mafia, sheriff, citizen, doctor, maniac, prostitute } = activeGame;
+    const { mafia, sheriff, citizens, doctor, maniac, prostitute } = activeGame;
 
     return toJS({
       mafia,
       sheriff,
-      citizen,
+      citizens,
       doctor,
       maniac,
       prostitute,
@@ -134,7 +134,7 @@ export class GamesStore {
     if (roles.mafia?.includes(id)) {
       return roles.mafia[0] === id ? Roles.Don : Roles.Mafia;
     }
-    if (roles.citizen?.includes(id)) return Roles.Citizen;
+    if (roles.citizens?.includes(id)) return Roles.Citizen;
     if (roles.sheriff === id) return Roles.Sheriff;
     if (roles.doctor === id) return Roles.Doctor;
     if (roles.maniac === id) return Roles.Maniac;

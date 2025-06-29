@@ -16,10 +16,11 @@ export const VideoUserInfo = observer(
     const { gamesStore, isIGM } = rootStore;
     const { getUserRole, activeGamePlayersWithoutGM } = gamesStore;
     const role = getUserRole(userId);
+    console.log("VideoUserInfo.tsx:18 | role : ", role);
 
     const userNumber = useMemo(
       () => activeGamePlayersWithoutGM.findIndex((id) => id === userId) + 1,
-      [activeGamePlayersWithoutGM, userId],
+      [activeGamePlayersWithoutGM, userId]
     );
 
     return (
@@ -31,7 +32,7 @@ export const VideoUserInfo = observer(
         </div>
       </div>
     );
-  },
+  }
 );
 
 VideoUserInfo.displayName = "VideoUserInfo";
