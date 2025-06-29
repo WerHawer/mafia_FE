@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
-import { LoginFormInputs } from "@/components/LoginForm/LoginForm.tsx";
+import { LoginFormInputs } from "@/components/LoginForm/config.ts";
 import { addErrorFromBEToForm } from "@/helpers/addErrorFromBEToForm.ts";
 import { Button } from "@/UI/Button";
 import { ButtonType } from "@/UI/Button/ButtonTypes.ts";
@@ -23,6 +24,7 @@ export const SignUpFormFields = ({
     formState: { errors },
     setError,
   } = useFormContext();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!error) return;
@@ -38,7 +40,7 @@ export const SignUpFormFields = ({
         render={({ field, fieldState }) => (
           <>
             <Input
-              placeholder="Login"
+              placeholder={t("auth.nickname")}
               autoFocus
               {...field}
               error={fieldState.error?.message}
@@ -53,7 +55,7 @@ export const SignUpFormFields = ({
         render={({ field, fieldState }) => (
           <>
             <InputPassword
-              placeholder="Password"
+              placeholder={t("auth.password")}
               autoComplete="password"
               error={fieldState.error?.message}
               {...field}
@@ -68,7 +70,7 @@ export const SignUpFormFields = ({
         render={({ field, fieldState }) => (
           <>
             <InputPassword
-              placeholder="Repeat your password"
+              placeholder={t("auth.repeatPassword")}
               autoComplete="new-password"
               error={fieldState.error?.message}
               {...field}
@@ -80,7 +82,7 @@ export const SignUpFormFields = ({
       {errors.root && <FormError error={errors.root.message} />}
 
       <Button type={ButtonType.Submit} disabled={isPending} width="fullWidth">
-        Sing Up
+        {t("auth.signUp")}
       </Button>
     </>
   );

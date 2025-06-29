@@ -19,6 +19,19 @@
   "online": "online",
   "logout": "Logout",
 
+  "auth": {
+    "login": "Login",
+    "nickname": "Nickname",
+    "signUp": "Sign Up",
+    "enterCredentials": "Please enter your login and password:",
+    "fillFields": "Please fill in the fields below:",
+    "existingAccount": "Already have an account?",
+    "newPlayer": "New player?",
+    "createAccount": "Create an account",
+    "password": "Password",
+    "repeatPassword": "Repeat your password"
+  },
+
   "settings": {
     "title": "Settings",
     "language": "Interface Language"

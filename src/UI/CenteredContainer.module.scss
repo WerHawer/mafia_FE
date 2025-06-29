@@ -3,6 +3,7 @@
 .container {
   @include mixins.flexCenter(column);
   width: 100%;
+  overflow: auto;
 
   &.top {
     justify-content: flex-start;

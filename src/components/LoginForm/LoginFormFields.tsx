@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
-import { LoginFormInputs } from "@/components/LoginForm/LoginForm.tsx";
+import { LoginFormInputs } from "@/components/LoginForm/config.ts";
 import { addErrorFromBEToForm } from "@/helpers/addErrorFromBEToForm.ts";
 import { Button } from "@/UI/Button";
 import { ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
@@ -23,6 +24,7 @@ export const LoginFormFields = ({
     formState: { errors },
     setError,
   } = useFormContext<LoginFormInputs>();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!error) return;
@@ -37,7 +39,7 @@ export const LoginFormFields = ({
         name="login"
         render={({ field, fieldState }) => (
           <Input
-            placeholder="Login"
+            placeholder={t("auth.nickname")}
             {...field}
             autoFocus
             error={fieldState.error?.message}
@@ -51,7 +53,7 @@ export const LoginFormFields = ({
         render={({ field, fieldState }) => (
           <>
             <InputPassword
-              placeholder="Password"
+              placeholder={t("auth.password")}
               {...field}
               error={fieldState.error?.message}
             />
@@ -67,7 +69,7 @@ export const LoginFormFields = ({
         disabled={isPending}
         width="fullWidth"
       >
-        Login
+        {t("auth.login")}
       </Button>
     </>
   );
