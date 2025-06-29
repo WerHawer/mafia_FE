@@ -3,7 +3,7 @@ import { UserId } from "./user.types.ts";
 export enum Roles {
   Mafia = "mafia",
   Don = "don",
-  Citizen = "citizen",
+  Citizen = "citizens",
   Sheriff = "sheriff",
   Doctor = "doctor",
   Maniac = "maniac",
@@ -63,7 +63,6 @@ export interface IGame extends IGameRoles {
   creatingTime: number;
   gameType: GameType;
   gameFlow: IGameFlow;
-  citizens?: UserId[];
   [Roles.GM]: UserId;
 }
 

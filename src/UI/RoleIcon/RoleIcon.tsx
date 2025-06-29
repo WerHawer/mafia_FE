@@ -1,4 +1,5 @@
 import Tippy from "@tippyjs/react";
+import { capitalize } from "lodash";
 
 import citizenIcon from "@/assets/icons/citizen.png";
 import doctorIcon from "@/assets/icons/doctor.webp";
@@ -29,7 +30,7 @@ export const RoleIcon = ({ role }: { role: Roles }) => {
   if (!icon) return null;
 
   return (
-    <Tippy content={role}>
+    <Tippy content={capitalize(role)}>
       <img
         className={styles.img}
         src={icons[role]}
