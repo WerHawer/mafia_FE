@@ -47,5 +47,26 @@
   "videoMenu": {
     "doGM": "Do GM",
     "kill": "Kill"
+  },
+
+  "nightResults": {
+    "mafiaKilled": "Mafia killed <strong>{{playerName}}</strong>",
+    "mafiaMissed": "Mafia missed and all citizens still alive after night",
+    "lastSpeech": "Last speech for <strong>{{playerName}}</strong>"
+  },
+
+  "voteResults": {
+    "unexpectedResult": "Unexpected result",
+    "playerChosen": "<span>{{playerName}}</span> was chosen on the vote",
+    "playersVotedAgainst_one": "<span>{{count}}</span> player voted against this player:",
+    "playersVotedAgainst_other": "<span>{{count}}</span> players voted against this player:",
+    "singleUserProposed": "This player was the only one proposed",
+    "lastSpeechFor": "Last speech for {{playerName}}",
+    "draw": "Draw",
+    "secondDraw": "Second Draw",
+    "noDecision": "Players couldn't decide who to kick out",
+    "usersToRevote": "Users to re-vote:",
+    "finishVoting": "Finish voting",
+    "restartVote": "Restart vote"
   }
 }

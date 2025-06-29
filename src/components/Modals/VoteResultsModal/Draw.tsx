@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import { Result } from "@/components/Modals/VoteResultsModal/VoteResultsModal.tsx";
@@ -12,6 +13,7 @@ import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 import styles from "./VoteResultsModal.module.scss";
 
 export const Draw = observer(({ result }: { result: Result[] }) => {
+  const { t } = useTranslation();
   const { getUserName } = usersStore;
   const { gameFlow } = gamesStore;
   const { closeModal } = modalStore;
@@ -34,7 +36,7 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
     }
 
     const newProposed = gameFlow.proposed.filter((id) =>
-      candidates.includes(id),
+      candidates.includes(id)
     );
 
     updateGameFlow({
@@ -55,16 +57,18 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
   return (
     <div className={styles.container}>
       <h4 className={styles.header}>
-        {gameFlow.isReVote ? "Second Draw" : "Draw"}
+        {gameFlow.isReVote
+          ? t("voteResults.secondDraw")
+          : t("voteResults.draw")}
       </h4>
 
       {gameFlow.isReVote ? (
-        <p className={styles.secondaryHeader}>
-          Players couldn't decide who to kick out
-        </p>
+        <p className={styles.secondaryHeader}>{t("voteResults.noDecision")}</p>
       ) : (
         <>
-          <p className={styles.secondaryHeader}>Users to re-vote:</p>
+          <p className={styles.secondaryHeader}>
+            {t("voteResults.usersToRevote")}
+          </p>
 
           <ul className={styles.list}>
             {candidates.map((candidate) => (
@@ -80,10 +84,12 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
         <Button
           onClick={onButtonClick}
           variant={ButtonVariant.Secondary}
-          size={ButtonSize.Large}
+          size={ButtonSize.Medium}
           uppercase
         >
-          {gameFlow.isReVote ? "Finish voting" : "Restart vote"}
+          {gameFlow.isReVote
+            ? t("voteResults.finishVoting")
+            : t("voteResults.restartVote")}
         </Button>
       </div>
     </div>

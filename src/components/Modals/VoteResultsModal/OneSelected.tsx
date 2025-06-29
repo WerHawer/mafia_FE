@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import styles from "@/components/Modals/VoteResultsModal/VoteResultsModal.module.scss";
@@ -16,9 +17,21 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
   const { getUserName } = usersStore;
   const { activeGameId } = gamesStore;
+  const { t, i18n } = useTranslation();
 
   const [player, voted] = result[0];
   const playerName = getUserName(player);
+
+  // Helper function to get the correct plural form translation key for Ukrainian
+  const getUkrainianPluralKey = (count: number) => {
+    const currentLang = i18n.language;
+    if (currentLang !== "ua") return "voteResults.playersVotedAgainst";
+
+    if (count === 1) return "voteResults.playersVotedAgainst_one";
+    if (count >= 2 && count <= 4) return "voteResults.playersVotedAgainst_few";
+
+    return "voteResults.playersVotedAgainst_many";
+  };
 
   const giveLastSpeech = useCallback(() => {
     updateGameFlow({
@@ -39,15 +52,21 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
   return (
     <div className={styles.container}>
       <h4 className={styles.header}>
-        <span className={styles.accentText}>{playerName}</span> was chosen on
-        the vote
+        <Trans
+          i18nKey="voteResults.playerChosen"
+          values={{ playerName }}
+          components={{ span: <span className={styles.accentText} /> }}
+        />
       </h4>
 
       {voted.length > 0 ? (
         <>
           <p className={styles.secondaryHeader}>
-            <span className={styles.accentText}>{voted.length}</span> players
-            voted against this player:
+            <Trans
+              i18nKey={getUkrainianPluralKey(voted.length)}
+              values={{ count: voted.length }}
+              components={{ span: <span className={styles.accentText} /> }}
+            />
           </p>
 
           <ul className={styles.list}>
@@ -59,17 +78,19 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
           </ul>
         </>
       ) : (
-        <h4 className={styles.secondaryHeader}>Single user was proposed</h4>
+        <h4 className={styles.secondaryHeader}>
+          {t("voteResults.singleUserProposed")}
+        </h4>
       )}
 
       <div className={styles.buttonContainer}>
         <Button
           onClick={giveLastSpeech}
           variant={ButtonVariant.Secondary}
-          size={ButtonSize.Large}
+          size={ButtonSize.Medium}
           uppercase
         >
-          Last speech for {playerName}
+          {t("voteResults.lastSpeechFor", { playerName })}
         </Button>
       </div>
     </div>

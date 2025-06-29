@@ -20,7 +20,7 @@ export class ModalStore {
     this._modalData = null;
   }
 
-  get isModalOpening() {
+  get isModalOpen() {
     return toJS(this._openedModal !== null);
   }
 
@@ -30,10 +30,6 @@ export class ModalStore {
 
   get modalData() {
     return toJS(this._modalData);
-  }
-
-  isModalOpen(modal: ModalNames) {
-    return this._openedModal === modal;
   }
 }
 

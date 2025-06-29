@@ -1,0 +1,15 @@
+@use "../../../styles/theme.scss";
+
+.container {
+  text-align: center;
+}
+
+.messageText {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.playerName {
+  font-weight: bold;
+  color: theme.$color-accent-primary;
+}

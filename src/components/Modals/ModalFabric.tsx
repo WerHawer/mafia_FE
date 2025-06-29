@@ -14,7 +14,7 @@ import { VoteResultsModal } from "./VoteResultsModal";
 ReactModal.setAppElement("#root");
 
 export const ModalFabric = observer(() => {
-  const { isModalOpening, closeModal, openedModal, modalData } = modalStore;
+  const { isModalOpen, closeModal, openedModal, modalData } = modalStore;
 
   const modals = {
     [ModalNames.VoteResultModal]: <VoteResultsModal />,
@@ -25,7 +25,7 @@ export const ModalFabric = observer(() => {
 
   return (
     <ReactModal
-      isOpen={isModalOpening}
+      isOpen={isModalOpen}
       onRequestClose={closeModal}
       className={styles.modal}
       overlayClassName={styles.overlay}

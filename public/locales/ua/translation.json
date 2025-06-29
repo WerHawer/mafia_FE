@@ -49,5 +49,28 @@
   "videoMenu": {
     "doGM": "Зробити ГМ",
     "kill": "Вбити"
+  },
+
+  "nightResults": {
+    "mafiaKilled": "Мафія вбила <strong>{{playerName}}</strong>",
+    "mafiaMissed": "Мафія промахнулася, і всі мирні жителі залишилися живі",
+    "lastSpeech": "Останнє слово для <strong>{{playerName}}</strong>"
+  },
+
+  "voteResults": {
+    "unexpectedResult": "Неочікуваний результат",
+    "playerChosen": "<span>{{playerName}}</span> був обраний на голосуванні",
+    "playersVotedAgainst_one": "<span>{{count}}</span> гравець проголосував проти:",
+    "playersVotedAgainst_few": "<span>{{count}}</span> гравці проголосували проти:",
+    "playersVotedAgainst_many": "<span>{{count}}</span> гравці проголосували проти:",
+    "singleUserProposed": "Цей гравець був єдиним запропонованим",
+    "lastSpeechFor": "Останнє слово для {{playerName}}",
+    "draw": "Нічия",
+    "secondDraw": "Повторна нічия",
+    "noDecision": "Гравці не змогли визначитися, кого виключити",
+    "usersToRevote": "Гравці для повторного голосування:",
+    "finishVoting": "Завершити голосування",
+    "restartVote": "Перезапустити голосування"
   }
 }
+
