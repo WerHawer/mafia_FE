@@ -50,12 +50,25 @@ export const VideoConfig = observer(() => {
     const videoStream = canvas.captureStream();
 
     const combinedStream = new MediaStream();
+    // Add video tracks from canvas stream
     videoStream
       .getVideoTracks()
       .forEach((track) => combinedStream.addTrack(track));
-    myOriginalStream
-      .getAudioTracks()
-      .forEach((track) => combinedStream.addTrack(track));
+
+    // Check if original stream has audio tracks and ensure they are enabled
+    const audioTracks = myOriginalStream.getAudioTracks();
+
+    if (audioTracks.length > 0) {
+      audioTracks.forEach((track) => {
+        track.enabled = true;
+        combinedStream.addTrack(track);
+      });
+      console.log(
+        `Added ${audioTracks.length} audio tracks to combined stream`
+      );
+    } else {
+      console.warn("No audio tracks found in original stream");
+    }
 
     setMyStream(combinedStream);
   }, [canvasRef, isSaved, myOriginalStream, setMyStream]);

@@ -1,7 +1,12 @@
 import Peer from "peerjs";
 import { useEffect, useState } from "react";
 
-import { IS_PROD, PEER_PORT, PEER_SERVER } from "../api/apiConstants.ts";
+import {
+  IS_PROD,
+  PEER_PORT,
+  PEER_PROD_PORT,
+  PEER_SERVER,
+} from "../api/apiConstants.ts";
 
 export const usePeer = (userId?: string) => {
   const [peerId, setPeerId] = useState("");
@@ -13,7 +18,7 @@ export const usePeer = (userId?: string) => {
 
     const peer = new Peer(userId, {
       host: PEER_SERVER,
-      port: IS_PROD ? 443 : PEER_PORT,
+      port: IS_PROD ? PEER_PROD_PORT : PEER_PORT,
       path: "/peerjs/mafia",
       secure: IS_PROD,
     });

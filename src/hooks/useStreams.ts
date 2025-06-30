@@ -192,14 +192,10 @@ export const useStreams = ({
 
       // If we're missing streams compared to players
       if (currentConnectedCount < expectedPlayerCount) {
-        console.log(
-          `Stream count mismatch: ${currentConnectedCount}/${expectedPlayerCount}. Attempting to reconnect...`
-        );
-
         // Reuse the room connection event to trigger reconnections
         sendMessage(wsEvents.roomConnection, [id, myId, myStream.id]);
       }
-    }, 5000); // Check every 5 seconds
+    }, 2000);
 
     return () => {
       clearInterval(intervalId);
