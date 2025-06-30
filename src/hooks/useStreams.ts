@@ -1,4 +1,4 @@
-import Peer from "peerjs";
+import Peer, { MediaConnection } from "peerjs";
 import { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useUnmount } from "react-use";
@@ -14,14 +14,20 @@ const MAX_STREAMS = 11;
 type UseStreamsParams = {
   myStream?: MediaStream;
   myId: string;
+  activeGamePlayers: string[];
 };
 
-export const useStreams = ({ myStream, myId }: UseStreamsParams) => {
+export const useStreams = ({
+  myStream,
+  myId,
+  activeGamePlayers,
+}: UseStreamsParams) => {
   const { id = "" } = useParams();
   const { subscribe, sendMessage } = useSocket();
-  const { setStream, removeStream, resetStreams } = streamStore;
+  const { setStream, removeStream, resetStreams, streams, userStreamsMap } =
+    streamStore;
 
-  const { peer, peerId } = usePeer(myStream?.id);
+  const { peer } = usePeer(myStream?.id);
 
   const connectToNewUser = useCallback(
     (
@@ -30,13 +36,22 @@ export const useStreams = ({ myStream, myId }: UseStreamsParams) => {
       peer: Peer,
       cb: (userMediaStream: MediaStream) => void
     ) => {
-      const call = peer.call(otherUserId, stream);
+      try {
+        const call = peer.call(otherUserId, stream);
 
-      call.on(wsEvents.stream, (userMediaStream) => {
-        cb(userMediaStream);
-      });
+        call.on(wsEvents.stream, (userMediaStream) => {
+          cb(userMediaStream);
+        });
 
-      return call;
+        call.on("error", (err) => {
+          console.error(`Error in call to ${otherUserId}:`, err);
+        });
+
+        return call;
+      } catch (error) {
+        console.error(`Failed to connect to user ${otherUserId}:`, error);
+        return null;
+      }
     },
     []
   );
@@ -67,35 +82,140 @@ export const useStreams = ({ myStream, myId }: UseStreamsParams) => {
   useEffect(() => {
     if (!peer || !myStream) return;
 
-    peer.on(wsEvents.call, (call) => {
-      call.answer(myStream);
+    // Keep track of connected calls
+    const activeCalls = new Map();
 
-      call.on(wsEvents.stream, (userVideoStream) => {
-        setStream(userVideoStream, MAX_STREAMS);
-      });
+    peer.on(wsEvents.call, (call) => {
+      try {
+        call.answer(myStream);
+
+        // Store the call reference with its stream ID when it becomes available
+        call.on(wsEvents.stream, (userVideoStream) => {
+          activeCalls.set(userVideoStream.id, call);
+          setStream(userVideoStream, MAX_STREAMS);
+        });
+
+        call.on("error", (err) => {
+          console.error("Error in incoming call:", err);
+        });
+      } catch (error) {
+        console.error("Failed to answer call:", error);
+      }
+    });
+
+    peer.on("error", (err) => {
+      console.error("Peer connection error:", err);
     });
 
     return () => {
+      // Clean up all active calls
+      activeCalls.forEach((call) => {
+        call.off(wsEvents.stream);
+        call.off("error");
+        call.close();
+      });
       peer.off(wsEvents.call);
+      peer.off("error");
     };
-  }, [connectToNewUser, peer, peerId, setStream, myStream]);
+  }, [peer, setStream, myStream]);
 
   // add a new user when he connects to the room
   useEffect(() => {
     if (!myStream || !peer) return;
+
+    const calls: MediaConnection[] = [];
 
     const unsubscribe = subscribe(wsEvents.roomConnection, ({ streamId }) => {
       const connectCb = (userVideoStream: MediaStream) => {
         setStream(userVideoStream, MAX_STREAMS);
       };
 
-      connectToNewUser(streamId, myStream, peer, connectCb);
+      const call = connectToNewUser(streamId, myStream, peer, connectCb);
+      if (call) calls.push(call);
     });
 
     return () => {
       unsubscribe();
+      // Clean up all call listeners to prevent memory leaks
+      calls.forEach((call) => {
+        call.off(wsEvents.stream);
+        call.close();
+      });
     };
   }, [connectToNewUser, peer, setStream, subscribe, myStream]);
+
+  // Synchronize streams with active game players
+  useEffect(() => {
+    if (!myStream || !peer || !activeGamePlayers.length) return;
+
+    // Get current player IDs from the streams
+    const connectedPlayers = new Set();
+    streams.forEach((stream) => {
+      const streamInfo = userStreamsMap.get(stream.id);
+      if (streamInfo?.user?.id) {
+        connectedPlayers.add(streamInfo.user.id);
+      }
+    });
+
+    // Find players that should be connected but aren't
+    const missingPlayers = activeGamePlayers.filter(
+      (playerId) => playerId !== myId && !connectedPlayers.has(playerId)
+    );
+
+    if (missingPlayers.length > 0) {
+      console.log(
+        `Found ${missingPlayers.length} missing player connections. Attempting to connect...`
+      );
+
+      // Try to directly connect to these players
+      missingPlayers.forEach((playerId) => {
+        if (peer && myStream) {
+          try {
+            // Re-use the existing mechanism to connect to a user
+            const connectCb = (userVideoStream: MediaStream) => {
+              setStream(userVideoStream, MAX_STREAMS);
+            };
+
+            // Try to connect to the player by ID
+            connectToNewUser(playerId, myStream, peer, connectCb);
+          } catch (error) {
+            console.error(`Failed to connect to player ${playerId}:`, error);
+          }
+        }
+      });
+    }
+
+    // Set up periodic check for stream-player synchronization
+    const intervalId = setInterval(() => {
+      const currentConnectedCount = streams.length;
+      const expectedPlayerCount = activeGamePlayers.length;
+
+      // If we're missing streams compared to players
+      if (currentConnectedCount < expectedPlayerCount) {
+        console.log(
+          `Stream count mismatch: ${currentConnectedCount}/${expectedPlayerCount}. Attempting to reconnect...`
+        );
+
+        // Reuse the room connection event to trigger reconnections
+        sendMessage(wsEvents.roomConnection, [id, myId, myStream.id]);
+      }
+    }, 5000); // Check every 5 seconds
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [
+    activeGamePlayers,
+    myId,
+    peer,
+    myStream,
+    streams,
+    userStreamsMap,
+    id,
+    sendMessage,
+    connectToNewUser,
+    setStream,
+  ]);
 
   useUnmount(() => {
     resetStreams();

@@ -26,7 +26,7 @@ const GamePage = observer(() => {
   const { mutate: addUserToGame } = useAddUserToGameMutation();
 
   useGetUsersWithAddToStore(activeGamePlayers);
-  useStreams({ myStream, myId });
+  useStreams({ myStream, myId, activeGamePlayers });
 
   useUserMediaStream({
     audio: true,

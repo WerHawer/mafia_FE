@@ -12,8 +12,7 @@ import styles from "./GameVideoContainer.module.scss";
 export const GameVideoContainer = observer(() => {
   const { usersStore, gamesStore } = rootStore;
   const { myId } = usersStore;
-  const { isUserGM, speaker, gameFlow, activeGamePlayers, activeGameId } =
-    gamesStore;
+  const { isUserGM, speaker, gameFlow, activeGameId } = gamesStore;
 
   const {
     myStream: userMediaStream,

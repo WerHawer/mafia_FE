@@ -1,6 +1,5 @@
 import { MoreOutlined } from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
-import { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -36,7 +35,6 @@ export const VideoMenu = observer(
     const onKill = (killed: string[]) => {
       if (!userId) return;
 
-      console.log("onKill: ", killed);
       updateGameFlow({
         speaker: "",
         isExtraSpeech: false,
