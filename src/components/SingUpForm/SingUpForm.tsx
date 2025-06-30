@@ -57,8 +57,6 @@ export const SingUpForm = observer(() => {
     >
       <Typography variant="title">{t("auth.signUp")}</Typography>
 
-      <Typography variant="subtitle">{t("auth.fillFields")}</Typography>
-
       <SignUpFormFields error={error} isPending={isPending} />
 
       <div className={styles.formFooter}>

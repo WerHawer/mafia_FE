@@ -54,8 +54,6 @@ export const LoginForm = observer(() => {
     >
       <Typography variant="title">{t("auth.login")}</Typography>
 
-      <Typography variant="subtitle">{t("auth.enterCredentials")}</Typography>
-
       <LoginFormFields isPending={isPending} error={error} />
 
       <div className={styles.formFooter}>

@@ -23,8 +23,6 @@
     "login": "Login",
     "nickname": "Nickname",
     "signUp": "Sign Up",
-    "enterCredentials": "Please enter your login and password:",
-    "fillFields": "Please fill in the fields below:",
     "existingAccount": "Already have an account?",
     "newPlayer": "New player?",
     "createAccount": "Create an account",
