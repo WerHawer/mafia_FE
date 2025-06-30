@@ -18,7 +18,7 @@ export const InitialPanel = observer(() => {
   const { mutate: addRoles } = useAddRolesToGameMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
-  const handleStartGame = useCallback(() => {
+  const onStartGame = useCallback(() => {
     if (!activeGameId) return;
 
     const userRoles = rolesCreator(activeGamePlayersWithoutGM);
@@ -35,7 +35,7 @@ export const InitialPanel = observer(() => {
             day: 1,
           });
         },
-      },
+      }
     );
   }, [activeGameId, activeGamePlayersWithoutGM, addRoles, updateGameFlow]);
 
@@ -44,7 +44,7 @@ export const InitialPanel = observer(() => {
       <Button
         size={ButtonSize.Large}
         variant={ButtonVariant.Success}
-        onClick={handleStartGame}
+        onClick={onStartGame}
       >
         Start game
       </Button>

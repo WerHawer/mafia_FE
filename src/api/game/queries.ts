@@ -93,15 +93,9 @@ export const useUpdateGameGMMutation = () => {
 };
 
 export const useUpdateGameFlowMutation = () => {
-  const {
-    updateGameFlow: updateLocalGameFlow,
-    gameFlow,
-    activeGameId,
-  } = gamesStore;
-
   return useMutation({
     mutationFn: (newFlow: Partial<IGameFlow>) => {
-      updateLocalGameFlow(newFlow);
+      const { gameFlow, activeGameId } = gamesStore;
 
       return updateGameFlow({
         gameId: activeGameId,

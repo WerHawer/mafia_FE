@@ -1,4 +1,5 @@
 import { MoreOutlined } from "@ant-design/icons";
+import { observer } from "mobx-react-lite";
 import { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -17,47 +18,51 @@ type VideoMenuProps = {
   isCurrentUserGM: boolean;
 };
 
-export const VideoMenu = memo(({ userId, isCurrentUserGM }: VideoMenuProps) => {
-  const { t } = useTranslation();
-  const { mutate: updateGM } = useUpdateGameGMMutation();
-  const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
-  const { gamesStore } = rootStore;
-  const { activeGameId, gameFlow } = gamesStore;
+export const VideoMenu = observer(
+  ({ userId, isCurrentUserGM }: VideoMenuProps) => {
+    const { t } = useTranslation();
+    const { mutate: updateGM } = useUpdateGameGMMutation();
+    const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
+    const { gamesStore } = rootStore;
+    const { activeGameId, gameFlow } = gamesStore;
 
-  const handleUpdateGM = useCallback(() => {
-    if (!userId || !activeGameId) return;
-    if (isCurrentUserGM) return;
+    const onUpdateGM = () => {
+      if (!userId || !activeGameId) return;
+      if (isCurrentUserGM) return;
 
-    updateGM({ gameId: activeGameId, userId });
-  }, [activeGameId, isCurrentUserGM, updateGM, userId]);
+      updateGM({ gameId: activeGameId, userId });
+    };
 
-  const handleKill = useCallback(() => {
-    if (!userId) return;
+    const onKill = (killed: string[]) => {
+      if (!userId) return;
 
-    updateGameFlow({
-      speaker: "",
-      isExtraSpeech: false,
-      killed: [...gameFlow.killed, userId],
-    });
-  }, [gameFlow.killed, updateGameFlow, userId]);
+      console.log("onKill: ", killed);
+      updateGameFlow({
+        speaker: "",
+        isExtraSpeech: false,
+        killed: [...killed, userId],
+      });
+    };
 
-  return (
-    <PopupMenu
-      className={styles.videoMenu}
-      content={
-        <>
-          <PopupMenuElement onClick={handleUpdateGM}>
-            {t("videoMenu.doGM")}
-          </PopupMenuElement>
-          <PopupMenuElement onClick={handleKill}>
-            {t("videoMenu.kill")}
-          </PopupMenuElement>
-        </>
-      }
-    >
-      <MoreOutlined className={styles.menu} />
-    </PopupMenu>
-  );
-});
+    return (
+      <PopupMenu
+        className={styles.videoMenu}
+        content={
+          <>
+            <PopupMenuElement onClick={onUpdateGM}>
+              {t("videoMenu.doGM")}
+            </PopupMenuElement>
+
+            <PopupMenuElement onClick={() => onKill(gameFlow.killed)}>
+              {t("videoMenu.kill")}
+            </PopupMenuElement>
+          </>
+        }
+      >
+        <MoreOutlined className={styles.menu} />
+      </PopupMenu>
+    );
+  }
+);
 
 VideoMenu.displayName = "VideoMenu";
