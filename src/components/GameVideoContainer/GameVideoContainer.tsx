@@ -54,63 +54,63 @@ export const GameVideoContainer = observer(() => {
     manageStreamTracks(filteredStreams, myId, isUserGM(myId));
   }, [isUserGM, manageStreamTracks, myId, userStreamsMap, filteredStreams]);
 
-  const handleCreateMockStreams = useCallback(() => {
-    createMockStreamsForPlayers();
-  }, [createMockStreamsForPlayers]);
-
-  const handleMakeMeGM = useCallback(async () => {
-    if (!activeGameId || !myId) return;
-
-    try {
-      await updateGameGM({
-        gameId: activeGameId,
-        userId: myId,
-      });
-      console.log("You are now the GM!");
-    } catch (error) {
-      console.error("Failed to set you as GM:", error);
-    }
-  }, [activeGameId, myId]);
+  // const handleCreateMockStreams = useCallback(() => {
+  //   createMockStreamsForPlayers();
+  // }, [createMockStreamsForPlayers]);
+  //
+  // const handleMakeMeGM = useCallback(async () => {
+  //   if (!activeGameId || !myId) return;
+  //
+  //   try {
+  //     await updateGameGM({
+  //       gameId: activeGameId,
+  //       userId: myId,
+  //     });
+  //     console.log("You are now the GM!");
+  //   } catch (error) {
+  //     console.error("Failed to set you as GM:", error);
+  //   }
+  // }, [activeGameId, myId]);
 
   return (
     <>
-      <button
-        onClick={handleCreateMockStreams}
-        style={{
-          position: "fixed",
-          top: "10px",
-          right: "10px",
-          zIndex: 1000,
-          padding: "8px 12px",
-          backgroundColor: "#4CAF50",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "14px",
-        }}
-      >
-        Create Test Streams
-      </button>
+      {/*<button*/}
+      {/*  onClick={handleCreateMockStreams}*/}
+      {/*  style={{*/}
+      {/*    position: "fixed",*/}
+      {/*    top: "10px",*/}
+      {/*    right: "10px",*/}
+      {/*    zIndex: 1000,*/}
+      {/*    padding: "8px 12px",*/}
+      {/*    backgroundColor: "#4CAF50",*/}
+      {/*    color: "white",*/}
+      {/*    border: "none",*/}
+      {/*    borderRadius: "4px",*/}
+      {/*    cursor: "pointer",*/}
+      {/*    fontSize: "14px",*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  Create Test Streams*/}
+      {/*</button>*/}
 
-      <button
-        onClick={handleMakeMeGM}
-        style={{
-          position: "fixed",
-          top: "60px",
-          right: "10px",
-          zIndex: 1000,
-          padding: "8px 12px",
-          backgroundColor: "#2196F3",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "14px",
-        }}
-      >
-        Make Me GM
-      </button>
+      {/*<button*/}
+      {/*  onClick={handleMakeMeGM}*/}
+      {/*  style={{*/}
+      {/*    position: "fixed",*/}
+      {/*    top: "60px",*/}
+      {/*    right: "10px",*/}
+      {/*    zIndex: 1000,*/}
+      {/*    padding: "8px 12px",*/}
+      {/*    backgroundColor: "#2196F3",*/}
+      {/*    color: "white",*/}
+      {/*    border: "none",*/}
+      {/*    borderRadius: "4px",*/}
+      {/*    cursor: "pointer",*/}
+      {/*    fontSize: "14px",*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  Make Me GM*/}
+      {/*</button>*/}
 
       <div
         className={classNames(styles.container, {

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { LoginFormInputs } from "@/components/LoginForm/LoginForm.tsx";
-import { SingUpFormInputs } from "@/components/SingUpForm/SingUpForm.tsx";
+import { LoginFormInputs } from "@/components/LoginForm/config.ts";
+import { SingUpFormInputs } from "@/components/SingUpForm/config.ts";
 
 import { queryKeys } from "../apiConstants.ts";
 import { auth, userLogin, userSignUp } from "./api.ts";
