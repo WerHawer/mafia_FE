@@ -31,13 +31,9 @@ const GamePage = observer(() => {
   const { mutateAsync: getToken } = useGetLiveKitTokenMutation();
 
   const [LKToken, setLKToken] = useState("");
-  const [connectionStatus, setConnectionStatus] = useState("Disconnected");
-  const [videoVersion, setVideoVersion] = useState<"custom" | "ultra">(
-    "custom"
-  );
 
   useUserMediaStream({
-    audio: true,
+    audio: false,
     video: videoOptions,
   });
 
@@ -78,67 +74,14 @@ const GamePage = observer(() => {
     return () => clearTimeout(requestTimer);
   }, [id, addUserToGame, myId, myStream]);
 
-  const cycleVideoVersion = () => {
-    setVideoVersion((prev) => (prev === "custom" ? "ultra" : "custom"));
-  };
-
   return (
     <div className={styles.pageContainer}>
-      <VideoConfig />
-
-      {/* Version cycle button */}
-      <button
-        onClick={cycleVideoVersion}
-        style={{
-          position: "fixed",
-          top: "160px",
-          right: "10px",
-          zIndex: 1000,
-          padding: "8px 12px",
-          backgroundColor: videoVersion === "custom" ? "#4CAF50" : "#E91E63",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "14px",
-        }}
-      >
-        {videoVersion === "custom" ? "Custom" : "Ultra"} Version
-      </button>
-
-      {/* Debug info panel */}
-      <div
-        style={{
-          position: "fixed",
-          top: "110px",
-          right: "10px",
-          zIndex: 1000,
-          backgroundColor: "rgba(0,0,0,0.8)",
-          color: "white",
-          padding: "10px",
-          borderRadius: "4px",
-          fontSize: "12px",
-          maxWidth: "300px",
-        }}
-      >
-        <div>
-          <strong>Debug Info:</strong>
-        </div>
-        <div>Status: {connectionStatus}</div>
-        <div>Token: {LKToken ? "Ready" : "Missing"}</div>
-        <div>MyId: {myId || "Not set"}</div>
-        <div>Room: {id || "Not set"}</div>
-        <div>Stream: {myStream ? "Ready" : "Missing"}</div>
-        <div>Server: {LIVEKIT_SERVER}</div>
-        <div>Version: {videoVersion.toUpperCase()}</div>
-      </div>
-
       {LKToken ? (
         <LiveKitRoom
           token={LKToken}
           serverUrl={LIVEKIT_SERVER}
           connect
-          video
+          video={false}
           audio={{
             echoCancellation: true,
             noiseSuppression: true,
@@ -148,17 +91,16 @@ const GamePage = observer(() => {
           }}
           onConnected={() => {
             console.log("GamePage: Successfully connected to LiveKit room");
-            setConnectionStatus("Connected");
           }}
           onDisconnected={() => {
             console.log("GamePage: Disconnected from LiveKit room");
-            setConnectionStatus("Disconnected");
           }}
           onError={(error) => {
             console.error("GamePage: LiveKit room error:", error);
-            setConnectionStatus(`Error: ${error.message}`);
           }}
         >
+          <VideoConfig />
+
           <GameVideoContainer />
         </LiveKitRoom>
       ) : (
