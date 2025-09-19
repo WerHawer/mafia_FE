@@ -1,10 +1,10 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 
-import { StreamInfo, StreamsArr } from "@/types/socket.types.ts";
-import { UserId, UserStreamId, UserVideoSettings } from "@/types/user.types.ts";
 import { gamesStore } from "@/store/gamesStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
+import { StreamInfo, StreamsArr } from "@/types/socket.types.ts";
+import { UserId, UserStreamId, UserVideoSettings } from "@/types/user.types.ts";
 
 export class StreamStore {
   _streams: MediaStream[] = [];
@@ -27,7 +27,14 @@ export class StreamStore {
   }
 
   setUserStreamsMap(streams: StreamsArr) {
-    this._userStreamsMap = new Map(streams);
+    // Don't replace entire map, merge new entries
+    streams.forEach(([streamId, streamInfo]) => {
+      this._userStreamsMap.set(streamId, streamInfo);
+    });
+  }
+
+  addStreamInfo(streamId: string, streamInfo: any) {
+    this._userStreamsMap.set(streamId, streamInfo);
   }
 
   setMyStream(stream: MediaStream) {
@@ -185,13 +192,34 @@ export class StreamStore {
   }
 
   setStream(stream: MediaStream, maxStreams: number) {
-    if (this._streams.length >= maxStreams) return;
+    console.log("🔍 setStream called with:", {
+      streamId: stream.id,
+      maxStreams,
+      currentStreamsCount: this._streams.length,
+      streamExists: this._streams.some((str) => str.id === stream.id),
+    });
+
+    if (this._streams.length >= maxStreams) {
+      console.log("❌ Stream not added - max streams reached:", {
+        current: this._streams.length,
+        max: maxStreams,
+      });
+      return;
+    }
 
     const isStreamExist = this._streams.some((str) => str.id === stream.id);
 
-    if (isStreamExist) return;
+    if (isStreamExist) {
+      console.log("❌ Stream not added - already exists:", stream.id);
+      return;
+    }
 
     this._streams.push(stream);
+    console.log("✅ Stream added successfully:", {
+      streamId: stream.id,
+      totalStreams: this._streams.length,
+      allStreamIds: this._streams.map((s) => s.id),
+    });
   }
 
   removeStream(streamId: UserStreamId) {
@@ -227,7 +255,7 @@ export class StreamStore {
     if (!arrForFilter) return this.streams;
 
     return this.streams.filter((stream) => {
-      const userId = this.getUserStreamInfo(stream.id)?.user.id;
+      const userId = stream.id;
 
       if (!userId) return true;
       if (myId === userId) return true;

@@ -3,9 +3,9 @@ import axios from "axios";
 import { projectEnv } from "../config/projectEnv";
 
 export const SERVER = projectEnv.apiUrl;
-export const PEER_SERVER = projectEnv.peerUrl;
-export const PEER_PORT = projectEnv.peerPort;
-export const PEER_PROD_PORT = 443;
+export const LIVEKIT_SERVER =
+  projectEnv.liveKitUrl ||
+  (projectEnv.isProd ? "wss://your-livekit-server.com" : "ws://localhost:7880");
 export const IS_PROD = projectEnv.isProd;
 export const WS_SERVER = projectEnv.wsUrl;
 
@@ -18,6 +18,7 @@ export const queryKeys = {
   game: "game",
   auth: "auth",
   messages: "messages",
+  liveKit: "liveKit",
 };
 
 export const THIRTY_SECONDS = 1000 * 30;

@@ -1,10 +1,14 @@
+import {
+  TrackReferenceOrPlaceholder,
+  useTracks,
+} from "@livekit/components-react";
 import classNames from "classnames";
+import { Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback } from "react";
 
 import { updateGameGM } from "@/api/game/api.ts";
 import { rootStore } from "@/store/rootStore.ts";
-import { streamStore } from "@/store/streamsStore.ts";
 
 import { GameVideo } from "../GameVideo";
 import styles from "./GameVideoContainer.module.scss";
@@ -12,28 +16,21 @@ import styles from "./GameVideoContainer.module.scss";
 export const GameVideoContainer = observer(() => {
   const { usersStore, gamesStore } = rootStore;
   const { myId } = usersStore;
-  const { isUserGM, speaker, gameFlow, activeGameId } = gamesStore;
+  const { speaker, gameFlow, activeGameId } = gamesStore;
+  const tracks = useTracks([Track.Source.Camera], { onlySubscribed: false });
+  console.log("GameVideoContainer.tsx:19 | tracks : ", tracks);
 
-  const {
-    myStream: userMediaStream,
-    userStreamsMap,
-    manageStreamTracks,
-    getFilteredStreams,
-    createMockStreamsForPlayers,
-  } = streamStore;
+  const streamsLength = tracks.length;
 
-  const ref = useRef<HTMLDivElement>(null);
-
-  const filterVariant = gameFlow.isVote ? "opposite" : "direct";
-  const arrForFilter = gameFlow.isVote ? gameFlow.proposed : gameFlow.killed;
-
-  const filteredStreams = getFilteredStreams({
-    arrForFilter,
-    variant: filterVariant,
-    myId,
+  console.log("GameVideoContainer tracks:", {
+    length: streamsLength,
+    tracks: tracks.map((t) => ({
+      participant: t.participant.identity,
+      isLocal: t.participant.isLocal,
+      isSubscribed: t.publication?.isSubscribed,
+      trackExists: !!t.publication?.track,
+    })),
   });
-
-  const streamsLength = filteredStreams.length;
 
   const usersMinMax = {
     four: gameFlow.isStarted ? 5 : 4,
@@ -49,13 +46,9 @@ export const GameVideoContainer = observer(() => {
     five: streamsLength > usersMinMax.twelve || (!!speaker && speaker !== myId),
   };
 
-  useEffect(() => {
-    manageStreamTracks(filteredStreams, myId, isUserGM(myId));
-  }, [isUserGM, manageStreamTracks, myId, userStreamsMap, filteredStreams]);
-
   const handleCreateMockStreams = useCallback(() => {
-    createMockStreamsForPlayers();
-  }, [createMockStreamsForPlayers]);
+    console.log("Mock streams button clicked - not implemented for LiveKit");
+  }, []);
 
   const handleMakeMeGM = useCallback(async () => {
     if (!activeGameId || !myId) return;
@@ -89,7 +82,7 @@ export const GameVideoContainer = observer(() => {
           fontSize: "14px",
         }}
       >
-        Create Test Streams
+        Debug Tracks ({streamsLength})
       </button>
 
       <button
@@ -118,24 +111,47 @@ export const GameVideoContainer = observer(() => {
           [styles.fourGrid]: useFixedGrids.four,
           [styles.fiveGrid]: useFixedGrids.five,
         })}
-        ref={ref}
       >
-        {filteredStreams.map((stream) => {
-          const isMy = stream.id === userMediaStream?.id;
-          const userId = userStreamsMap.get(stream.id)?.user.id;
-          const isActive = speaker === userId;
+        {/* Замінюємо TrackLoop на прямий рендеринг */}
+        {tracks.length > 0 ? (
+          tracks.map((trackRef) => {
+            const isMy = trackRef.participant?.isLocal ?? false;
+            const isActive = speaker === trackRef.participant?.identity;
 
-          return (
-            <GameVideo
-              key={stream.id}
-              stream={stream}
-              isMyStream={isMy}
-              isActive={isActive}
-              muted
-              userId={userId}
-            />
-          );
-        })}
+            // Get the actual track from the publication
+            const actualTrack = trackRef.publication?.track;
+
+            return (
+              <GameVideo
+                key={trackRef.participant?.identity || "unknown"}
+                participant={trackRef.participant!}
+                track={actualTrack}
+                isMyStream={isMy}
+                isActive={isActive}
+              />
+            );
+          })
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "400px",
+              fontSize: "18px",
+              color: "white",
+              backgroundColor: "#333",
+              borderRadius: "8px",
+            }}
+          >
+            <div>
+              <p>Немає відеотреків</p>
+              <p style={{ fontSize: "14px", marginTop: "10px" }}>
+                Треків знайдено: {tracks.length}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

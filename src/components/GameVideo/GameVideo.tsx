@@ -1,15 +1,15 @@
+import { VideoTrack } from "@livekit/components-react";
 import classNames from "classnames";
+import { Participant, Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Draggable from "react-draggable";
 
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
-import { StreamStatus } from "@/components/GameVideo/StreamStatus.tsx";
 import { Shoot } from "@/components/Shoot";
 import { VoteFlow } from "@/components/VoteFlow";
 import { rootStore } from "@/store/rootStore.ts";
 import { Roles, rolesWhoCanCheck } from "@/types/game.types.ts";
-import { UserId } from "@/types/user.types.ts";
 
 import { PlayerVideo } from "../PlayerVideo";
 import styles from "./GameVideo.module.scss";
@@ -17,22 +17,20 @@ import { VideoMenu } from "./VideoMenu.tsx";
 import { VideoUserInfo } from "./VideoUserInfo.tsx";
 
 type GameVideoProps = {
-  stream: MediaStream;
-  muted?: boolean;
-  isMyStream?: boolean;
+  participant: Participant;
+  track?: Track;
+  isMyStream: boolean;
   isActive?: boolean;
-  userId?: UserId;
 };
 
 const DEFAULT_VIDEO_POSITION = { x: 0, y: 0 };
 
 export const GameVideo = observer(
   ({
-    stream,
-    muted = false,
+    participant,
+    track,
     isMyStream = false,
     isActive = false,
-    userId = "",
   }: GameVideoProps) => {
     const { usersStore, gamesStore, isIGM, isIDead, myRole, isIWakedUp } =
       rootStore;
@@ -40,13 +38,21 @@ export const GameVideo = observer(
     const { isUserGM, gameFlow } = gamesStore;
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // TODO: create a hook for this
+    const userId = participant.identity;
     const currentUser = isMyStream ? me : getUser(userId);
     const isCurrentUserGM = isUserGM(userId);
     const canICheck = rolesWhoCanCheck.includes(myRole) && isIWakedUp;
     const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
     const isIDidShot = gameFlow.shoot.some(([shooterId]) => shooterId === myId);
     const isMyAfterStart = isMyStream && gameFlow.isStarted;
+
+    // Debug logging
+    console.log("GameVideo render:", {
+      userId,
+      isMyStream,
+      hasTrack: !!track,
+      participantTracks: participant.getTrackPublications().length,
+    });
 
     return (
       <Draggable
@@ -93,18 +99,17 @@ export const GameVideo = observer(
             <div className={styles.deadOverlay}>Dead</div>
           )}
 
-          <StreamStatus stream={stream} isMyStream={isMyStream} isIGM={isIGM} />
-
-          {isIGM && !isMyStream ? (
+          {isIGM && !isMyStream && currentUser && (
             <VideoMenu
-              userId={currentUser?.id}
+              userId={currentUser.id}
               isCurrentUserGM={isCurrentUserGM}
             />
-          ) : null}
+          )}
 
           <PlayerVideo
-            stream={stream}
-            muted={muted}
+            participant={participant}
+            track={track}
+            muted
             isActive={isActive}
             container={containerRef.current}
           />

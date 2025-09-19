@@ -2,7 +2,7 @@ import * as cam from "@mediapipe/camera_utils";
 import { Results, SelfieSegmentation } from "@mediapipe/selfie_segmentation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { PRE_VIDEO_HEIGHT, PRE_VIDEO_WIDTH, videoOptions } from "@/config/video.ts";
+import { videoOptions } from "@/config/video.ts";
 import { UserVideoSettings } from "@/types/user.types.ts";
 
 const HIGH_VIDEO_WIDTH = videoOptions.width;
@@ -51,9 +51,22 @@ export const useConfigureVideo = (
     bgEffectsRef.current = withBlur ? bgEffects.blur : bgEffects.img;
   }, [withBlur, imageURL, withoutEffects]);
 
+  // Додаємо refs для кешування попередніх розмірів
+  const prevWidthRef = useRef<number>(0);
+  const prevHeightRef = useRef<number>(0);
+  const lastFrameTimeRef = useRef<number>(0);
+
   const onResults = useCallback(
     (results: Results) => {
       if (!videoRef.current || !canvasRef.current || !myOriginalStream) return;
+
+      // Обмежуємо частоту кадрів для зменшення навантаження
+      const now = performance.now();
+      if (now - lastFrameTimeRef.current < 33) {
+        // приблизно 30 fps
+        return;
+      }
+      lastFrameTimeRef.current = now;
 
       const img = imgRef.current;
       const video = videoRef.current;
@@ -61,17 +74,29 @@ export const useConfigureVideo = (
       const videoTrack = myOriginalStream.getVideoTracks()[0];
       const settings = videoTrack.getSettings();
 
-      video.srcObject = myOriginalStream;
+      // Уникаємо повторного встановлення srcObject, якщо воно не змінилося
+      if (video.srcObject !== myOriginalStream) {
+        video.srcObject = myOriginalStream;
+      }
 
       const videoWidth = settings.width ?? HIGH_VIDEO_WIDTH;
       const videoHeight = settings.height ?? HIGH_VIDEO_HEIGHT;
 
-      canvas.width = videoWidth;
-      canvas.height = videoHeight;
+      // Змінюємо розміри canvas тільки якщо вони змінилися
+      if (
+        prevWidthRef.current !== videoWidth ||
+        prevHeightRef.current !== videoHeight
+      ) {
+        canvas.width = videoWidth;
+        canvas.height = videoHeight;
+        prevWidthRef.current = videoWidth;
+        prevHeightRef.current = videoHeight;
+      }
 
       const ctx = canvas.getContext("2d", {
         desynchronized: true,
         alpha: true,
+        willReadFrequently: false, // Підказка для оптимізації
       });
 
       if (!ctx) return;
@@ -101,8 +126,12 @@ export const useConfigureVideo = (
         ctx.globalCompositeOperation = "source-over";
         ctx.filter = "none";
         const gradient = ctx.createRadialGradient(
-          -videoWidth / 2, videoHeight / 2, videoHeight * 0.3,
-          -videoWidth / 2, videoHeight / 2, videoHeight * 0.8
+          -videoWidth / 2,
+          videoHeight / 2,
+          videoHeight * 0.3,
+          -videoWidth / 2,
+          videoHeight / 2,
+          videoHeight * 0.8
         );
         gradient.addColorStop(0, "rgba(0,0,0,0)");
         gradient.addColorStop(1, "rgba(0,0,0,0.3)");

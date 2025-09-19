@@ -28,7 +28,7 @@ export const useGetUsersByIds = (ids: string[], enabled = true) => {
     queryFn: () => getUsersByIds(ids),
     staleTime: ONE_DAY,
     select: ({ data }) => data,
-    enabled,
+    enabled: enabled && !!ids.length,
   });
 };
 

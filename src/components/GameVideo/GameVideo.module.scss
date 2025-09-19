@@ -66,6 +66,14 @@
   }
 }
 
+.noVideo {
+  @include mixins.flexCenter;
+  background-color: rgba(theme.$color-dark-primary, 80%);
+  color: theme.$color-text-secondary;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
 .userInfo {
   @include mixins.flex(row, flex-start, center);
   width: max-content;

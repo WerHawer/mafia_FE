@@ -7,4 +7,7 @@ export const projectEnv = {
   peerPort: import.meta.env.VITE_PEER_PORT,
   isProd: import.meta.env.PROD,
   isDev: import.meta.env.DEV,
+  liveKitUrl: import.meta.env.VITE_LIVEKIT_URL,
+  liveKitKey: import.meta.env.VITE_LIVEKIT_KEY,
+  liveKitSecret: import.meta.env.VITE_LIVEKIT_SECRET,
 };
