@@ -12,6 +12,7 @@ import { GameChat } from "@/components/GameChat";
 import { GameInfoSection } from "@/components/GameInfoSection";
 import { GameVideoContainer } from "@/components/GameVideoContainer";
 import { GameVote } from "@/components/GameVote";
+import { LiveKitMafiaRoom } from "@/components/LiveKitMafiaRoom/LiveKitMafiaRoom.tsx";
 import { VideoConfig } from "@/components/VideoConfig";
 import { videoOptions } from "@/config/video.ts";
 import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
@@ -28,32 +29,6 @@ const GamePage = observer(() => {
   const { mutate: addUserToGame } = useAddUserToGameMutation();
 
   useGetUsersWithAddToStore(activeGamePlayers);
-  const { mutateAsync: getToken } = useGetLiveKitTokenMutation();
-
-  const [LKToken, setLKToken] = useState("");
-
-  useUserMediaStream({
-    audio: false,
-    video: videoOptions,
-  });
-
-  useEffect(() => {
-    console.log("GamePage: Starting token request for:", { myId, roomId: id });
-    if (!myId || !id) return;
-
-    void getToken(
-      { roomName: id, participantName: myId },
-      {
-        onSuccess: (data) => {
-          console.log("GamePage: Token received successfully");
-          setLKToken(data.data.token);
-        },
-        onError: (error) => {
-          console.error("GamePage: Failed to get token:", error);
-        },
-      }
-    );
-  }, [myId, id, getToken]);
 
   useEffect(() => {
     if (!id) return;
@@ -76,52 +51,11 @@ const GamePage = observer(() => {
 
   return (
     <div className={styles.pageContainer}>
-      {LKToken ? (
-        <LiveKitRoom
-          token={LKToken}
-          serverUrl={LIVEKIT_SERVER}
-          connect
-          video={false}
-          audio={{
-            echoCancellation: true,
-            noiseSuppression: true,
-          }}
-          connectOptions={{
-            autoSubscribe: true,
-          }}
-          onConnected={() => {
-            console.log("GamePage: Successfully connected to LiveKit room");
-          }}
-          onDisconnected={() => {
-            console.log("GamePage: Disconnected from LiveKit room");
-          }}
-          onError={(error) => {
-            console.error("GamePage: LiveKit room error:", error);
-          }}
-        >
-          <VideoConfig />
+      <LiveKitMafiaRoom>
+        <VideoConfig />
 
-          <GameVideoContainer />
-        </LiveKitRoom>
-      ) : (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "400px",
-            fontSize: "18px",
-          }}
-        >
-          <div>
-            {!myId || !id ? (
-              <p>Missing user ID or room ID...</p>
-            ) : (
-              <p>Loading LiveKit connection...</p>
-            )}
-          </div>
-        </div>
-      )}
+        <GameVideoContainer />
+      </LiveKitMafiaRoom>
 
       <aside className={styles.rightContainer}>
         <section

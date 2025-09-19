@@ -30,7 +30,6 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   const { setNewMessage } = messagesStore;
   const { updateGames } = gamesStore;
   const { setSocketConnectedCount } = usersStore;
-  const { setUserStreamsMap } = streamStore;
 
   const subscribers: MassSubscribeEvents = useMemo(() => {
     if (!socket) return {};
@@ -57,23 +56,8 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       [wsEvents.socketDisconnect]: (connectedUsers) => {
         setSocketConnectedCount(connectedUsers);
       },
-      [wsEvents.roomConnection]: ({ streams }) => {
-        setUserStreamsMap(streams);
-      },
-      [wsEvents.peerDisconnect]: ({ streams }) => {
-        setUserStreamsMap(streams);
-      },
-      [wsEvents.userStreamStatus]: (streams) => {
-        setUserStreamsMap(streams);
-      },
     };
-  }, [
-    setNewMessage,
-    setSocketConnectedCount,
-    setUserStreamsMap,
-    socket,
-    updateGames,
-  ]);
+  }, [setNewMessage, setSocketConnectedCount, socket, updateGames]);
 
   useEffect(() => {
     const existingSocket = io(SERVER);

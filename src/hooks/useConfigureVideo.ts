@@ -18,7 +18,7 @@ type BackgroundEffects = keyof typeof bgEffects;
 
 export const useConfigureVideo = (
   videoSettings: UserVideoSettings,
-  myOriginalStream?: MediaStream
+  myOriginalStream: MediaStream | null
 ) => {
   const [imageURL, setImageURL] = useState(videoSettings.imageURL);
   const [withBlur, setWithBlur] = useState(videoSettings.withBlur);
