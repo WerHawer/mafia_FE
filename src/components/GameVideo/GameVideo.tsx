@@ -1,8 +1,7 @@
-import { VideoTrack } from "@livekit/components-react";
 import classNames from "classnames";
 import { Participant, Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import Draggable from "react-draggable";
 
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
@@ -45,14 +44,6 @@ export const GameVideo = observer(
     const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
     const isIDidShot = gameFlow.shoot.some(([shooterId]) => shooterId === myId);
     const isMyAfterStart = isMyStream && gameFlow.isStarted;
-
-    // Debug logging
-    console.log("GameVideo render:", {
-      userId,
-      isMyStream,
-      hasTrack: !!track,
-      participantTracks: participant.getTrackPublications().length,
-    });
 
     return (
       <Draggable

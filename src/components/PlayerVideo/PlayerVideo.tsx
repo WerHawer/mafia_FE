@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { Participant, Track } from "livekit-client";
 import { throttle } from "lodash";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import styles from "../GameVideo/GameVideo.module.scss";
 
@@ -29,12 +29,6 @@ export const PlayerVideo = ({
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    console.log(
-      "PlayerVideo: Setting up tracks for participant:",
-      participant.identity,
-      { hasTrackProp: !!track }
-    );
-
     // Use the passed track directly if available, otherwise fallback to participant publications
     const videoTrack =
       track || participant.getTrackPublication(Track.Source.Camera)?.track;
@@ -105,10 +99,6 @@ export const PlayerVideo = ({
       !muted
     ) {
       try {
-        console.log(
-          "PlayerVideo: Attempting to attach audio track...",
-          participant.identity
-        );
         audioTrack.attach(audioElement);
         console.log("PlayerVideo: Audio track attached successfully");
       } catch (error) {
