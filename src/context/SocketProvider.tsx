@@ -9,8 +9,6 @@ import {
 } from "react";
 import { io, Socket } from "socket.io-client";
 
-import { streamStore } from "@/store/streamsStore.ts";
-
 import { SERVER } from "../api/apiConstants.ts";
 import { wsEvents } from "../config/wsEvents.ts";
 import { gamesStore } from "../store/gamesStore.ts";
@@ -49,6 +47,12 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       },
       [wsEvents.messageSend]: (message) => {
         setNewMessage(message);
+      },
+      [wsEvents.roomConnection]: (data) => {
+        console.log("RoomConnection data:", data);
+      },
+      [wsEvents.roomLeave]: (data) => {
+        console.log("RoomLeave data:", data);
       },
       [wsEvents.gameUpdate]: (newGame) => {
         updateGames(newGame);

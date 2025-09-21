@@ -11,8 +11,9 @@ import { UserId } from "@/types/user.types.ts";
 
 const GAMES_URL = "/games";
 
+// TODO: return ?active=true after testing
 export const fetchActiveGames = async () => {
-  return axios.get<IGame[]>(`${GAMES_URL}?active=true`);
+  return axios.get<IGame[]>(`${GAMES_URL}`);
 };
 
 export const fetchGames = async () => {
@@ -49,7 +50,7 @@ export const removeUserFromGame = async ({
 
 export const addRolesToGame = async (
   gameId: GameId,
-  roles: Partial<IGameRoles>,
+  roles: Partial<IGameRoles>
 ) => {
   return axios.patch<IGame>(`${GAMES_URL}/${gameId}/addRoles`, roles);
 };

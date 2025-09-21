@@ -1,13 +1,14 @@
+import { uniq } from "lodash/fp";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-import { useGetGamesWithStore } from "@/api/game/queries.ts";
+import { useFetchActiveGamesQuery } from "@/api/game/queries.ts";
+import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import noAvatar from "@/assets/images/noAvatar.jpg";
 import { formatDate } from "@/helpers/formatDate.ts";
 import { routes } from "@/router/routs.ts";
-import { gamesStore } from "@/store/gamesStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
@@ -20,10 +21,13 @@ const MAX_PLAYERS = 11;
 
 export const GamesList = observer(() => {
   const { users } = usersStore;
-  const { games } = gamesStore;
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { isLoading: isActiveGamesLoading } = useGetGamesWithStore();
+  const { data: games, isLoading: isActiveGamesLoading } =
+    useFetchActiveGamesQuery();
+  const allGameOwners = uniq(games?.map(({ owner }) => owner) ?? []);
+
+  useGetUsersWithAddToStore(allGameOwners, !!allGameOwners.length);
 
   const handleJoinGame = useCallback(
     (gameId: string) => {
@@ -63,7 +67,7 @@ export const GamesList = observer(() => {
           </div>
 
           <div className={styles.tableContent}>
-            {games.map((game) => (
+            {games?.map((game) => (
               <div key={game.id} className={styles.gameRow}>
                 <div className={styles.gameInfo}>
                   <div className={styles.ownerBlock}>

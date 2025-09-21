@@ -3,7 +3,10 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { useAddUserToGameMutation } from "@/api/game/queries.ts";
+import {
+  useAddUserToGameMutation,
+  useRemoveUserFromGameMutation,
+} from "@/api/game/queries.ts";
 import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import { GameChat } from "@/components/GameChat";
 import { GameInfoSection } from "@/components/GameInfoSection";
@@ -21,6 +24,7 @@ const GamePage = observer(() => {
   const { myId } = usersStore;
   const { setActiveGame, activeGamePlayers } = gamesStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
+  const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
 
   useGetUsersWithAddToStore(activeGamePlayers);
 
@@ -30,6 +34,7 @@ const GamePage = observer(() => {
     setActiveGame(id);
   }, [id, setActiveGame]);
 
+  // TODO: fix double requests
   useEffect(() => {
     if (!myId || !id) return;
 
@@ -40,8 +45,14 @@ const GamePage = observer(() => {
       });
     }, 0);
 
-    return () => clearTimeout(requestTimer);
-  }, [id, addUserToGame, myId]);
+    return () => {
+      removeUserFromGame({
+        userId: myId,
+        gameId: id,
+      });
+      clearTimeout(requestTimer);
+    };
+  }, [id, myId, addUserToGame, removeUserFromGame]);
 
   return (
     <div className={styles.pageContainer}>

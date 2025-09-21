@@ -8,7 +8,7 @@ export type OffParams = "self" | "other";
 export interface WSSentEventData {
   [wsEvents.messageSend]: IMessageDTO;
   [wsEvents.roomLeave]: [GameId, UserId];
-  [wsEvents.roomConnection]: [GameId, UserId, UserStreamId];
+  [wsEvents.roomConnection]: [GameId, UserId];
   [wsEvents.userAudioStatus]: {
     streamId: UserStreamId;
     roomId: GameId;
@@ -29,7 +29,7 @@ export interface WSSentEventData {
 
 export type SendMessageFunction = <T extends keyof WSSentEventData>(
   event: T,
-  data?: WSSentEventData[T],
+  data?: WSSentEventData[T]
 ) => void;
 
 export type StreamInfo = {
@@ -47,9 +47,10 @@ export type StreamsArr = Array<[UserStreamId, StreamInfo]>;
 
 export interface WSSubscribedEventData {
   [wsEvents.roomConnection]: {
-    streamId: UserStreamId;
-    streams: StreamsArr;
+    roomId: GameId;
+    userId: UserId;
   };
+  [wsEvents.roomLeave]: { roomId: GameId; userId: UserId };
   [wsEvents.messageSend]: IMessage;
   [wsEvents.gameUpdate]: IGame;
   [wsEvents.peerDisconnect]: {
@@ -65,17 +66,17 @@ export interface WSSubscribedEventData {
 
 export type SubscribeEvent = keyof WSSubscribedEventData;
 export type SubscribeCallback<T extends SubscribeEvent> = (
-  data: WSSubscribedEventData[T],
+  data: WSSubscribedEventData[T]
 ) => void;
 
 export type ListenFunction = <T extends SubscribeEvent>(
   event: T,
-  data: WSSubscribedEventData[T],
+  data: WSSubscribedEventData[T]
 ) => void;
 
 export type SubscribeFunction = <T extends SubscribeEvent>(
   event: T,
-  cb: SubscribeCallback<T>,
+  cb: SubscribeCallback<T>
 ) => () => void;
 
 export type MassSubscribeEvents = {

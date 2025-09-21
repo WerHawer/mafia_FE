@@ -1,19 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { uniq } from "lodash/fp";
-import { useEffect } from "react";
 
+import { wsEvents } from "@/config/wsEvents.ts";
+import { useSocketContext } from "@/context/SocketProvider.tsx";
 import { gamesStore } from "@/store/gamesStore.ts";
 import { GameId, IGameFlow, IGameRoles } from "@/types/game.types.ts";
 import { UserId } from "@/types/user.types.ts";
 
 import { queryKeys } from "../apiConstants.ts";
-import { useGetUsersWithAddToStore } from "../user/queries.ts";
 import {
   addRolesToGame,
   addUserToGame,
   createGame,
   fetchActiveGames,
   fetchGame,
+  removeUserFromGame,
   restartGame,
   updateGameFlow,
   updateGameGM,
@@ -21,29 +21,10 @@ import {
 
 export const useFetchActiveGamesQuery = () => {
   return useQuery({
-    queryKey: [queryKeys.games, "active"],
+    queryKey: [queryKeys.games],
     queryFn: fetchActiveGames,
     select: ({ data }) => data,
   });
-};
-
-export const useGetGamesWithStore = () => {
-  const { data, ...rest } = useFetchActiveGamesQuery();
-  const allGamePlayers = uniq(data?.flatMap((game) => game.players) ?? []);
-  const allGameOwners = uniq(data?.map((game) => game.owner) ?? []);
-  const allPlayersIds = uniq([...allGamePlayers, ...allGameOwners]);
-
-  useGetUsersWithAddToStore(allPlayersIds, !!allPlayersIds.length);
-
-  const { setGames } = gamesStore;
-
-  useEffect(() => {
-    if (!data) return;
-
-    setGames(data);
-  }, [data, setGames]);
-
-  return { data, ...rest };
 };
 
 export const useCreateGameMutation = () => {
@@ -62,12 +43,28 @@ export const useGameQuery = (id: GameId) => {
 
 export const useAddUserToGameMutation = () => {
   const queryClient = useQueryClient();
+  const { socket } = useSocketContext();
 
   return useMutation({
     mutationFn: (args: { gameId: GameId; userId: UserId }) =>
       addUserToGame(args),
-    onSuccess: (data, variables) => {
-      queryClient.setQueryData([queryKeys.game, variables.gameId], data);
+    onSuccess: (data, { gameId, userId }) => {
+      queryClient.setQueryData([queryKeys.game, gameId], data);
+      socket?.emit(wsEvents.roomConnection, [gameId, userId]);
+    },
+  });
+};
+
+export const useRemoveUserFromGameMutation = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocketContext();
+
+  return useMutation({
+    mutationFn: (args: { gameId: GameId; userId: UserId }) =>
+      removeUserFromGame(args),
+    onSuccess: (data, { gameId, userId }) => {
+      queryClient.setQueryData([queryKeys.game, gameId], data);
+      socket?.emit(wsEvents.roomLeave, [gameId, userId]);
     },
   });
 };
