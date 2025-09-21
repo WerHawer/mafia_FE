@@ -8,7 +8,7 @@ import styles from "../GameVideo/GameVideo.module.scss";
 type PlayerVideoProps = {
   participant: Participant;
   track?: Track;
-  muted: boolean;
+  muted?: boolean;
   isActive: boolean;
   container?: HTMLDivElement | null;
 };
@@ -18,7 +18,7 @@ const INDEX_RATIO = 0.57;
 export const PlayerVideo = ({
   participant,
   track,
-  muted,
+  muted = false,
   isActive,
   container,
 }: PlayerVideoProps) => {
@@ -97,8 +97,13 @@ export const PlayerVideo = ({
       setHasVideoTrack(false);
     }
 
-    // Attach audio track (unchanged logic)
-    if (audioElement && audioTrackPublication?.isSubscribed && audioTrack) {
+    // Attach audio track - skip if muted is true
+    if (
+      audioElement &&
+      audioTrackPublication?.isSubscribed &&
+      audioTrack &&
+      !muted
+    ) {
       try {
         console.log(
           "PlayerVideo: Attempting to attach audio track...",
@@ -109,6 +114,8 @@ export const PlayerVideo = ({
       } catch (error) {
         console.error("PlayerVideo: Error attaching audio track:", error);
       }
+    } else if (muted) {
+      console.log("PlayerVideo: Skipping audio attachment - muted is true");
     }
 
     // Cleanup on unmount or participant change
@@ -126,7 +133,7 @@ export const PlayerVideo = ({
         console.error("PlayerVideo: Error during cleanup:", error);
       }
     };
-  }, [participant, track]);
+  }, [participant, track, muted]);
 
   const getSizeDirection = useCallback(() => {
     if (!container) return;

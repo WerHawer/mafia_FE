@@ -109,9 +109,9 @@ export const GameVideo = observer(
           <PlayerVideo
             participant={participant}
             track={track}
-            muted
             isActive={isActive}
             container={containerRef.current}
+            muted={participant.isLocal}
           />
 
           {currentUser && (
