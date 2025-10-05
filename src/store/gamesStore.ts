@@ -4,30 +4,37 @@ import { makePersistable } from "mobx-persist-store";
 import { UserId } from "@/types/user.types.ts";
 
 import { initialGameFlow } from "../helpers/createGameObj.ts";
-import { GameId, IGame, IGameFlow, Roles } from "../types/game.types.ts";
+import {
+  GameId,
+  IGame,
+  IGameFlow,
+  IGameShort,
+  Roles,
+} from "../types/game.types.ts";
 
 export class GamesStore {
-  _games: IGame[] = [];
+  _games: IGameShort[] = [];
+  _activeGame: IGame | null = null;
   _activeGameId: GameId = "";
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
-    makePersistable(this, {
+    void makePersistable(this, {
       name: "Users_mobx_gameFlow",
-      properties: ["_activeGameId"],
+      properties: ["_activeGameId", "_games", "_activeGame"],
       storage: sessionStorage,
     });
   }
 
-  setGames(games: IGame[]) {
+  setGames(games: IGameShort[]) {
     this._games = games;
   }
 
-  setActiveGame(gameId: GameId) {
+  setActiveGameId(gameId: GameId) {
     this._activeGameId = gameId;
   }
 
-  updateGames(newGame: IGame) {
+  updateGames(newGame: IGameShort) {
     const isGameExist = this._games.some((game) => game.id === newGame.id);
 
     if (!isGameExist) {
@@ -41,15 +48,19 @@ export class GamesStore {
     );
   }
 
+  updateGame(game: IGame) {
+    this._activeGame = game;
+  }
+
   updateGameFlow(newFlow: Partial<IGameFlow>) {
-    const flow = this.activeGame?.gameFlow;
+    const flow = this._activeGame?.gameFlow;
 
     if (!flow) return;
 
-    this.updateGames({
-      ...this.activeGame,
+    this.updateGame({
+      ...this._activeGame,
       gameFlow: { ...flow, ...newFlow },
-    });
+    } as IGame);
   }
 
   isUserGM(userId?: string) {
@@ -59,9 +70,7 @@ export class GamesStore {
   }
 
   get activeGame() {
-    const active = this._games.find((game) => game.id === this._activeGameId);
-
-    return toJS(active);
+    return toJS(this._activeGame);
   }
 
   get activeGameId() {

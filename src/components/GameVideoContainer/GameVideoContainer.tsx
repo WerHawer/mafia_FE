@@ -1,7 +1,4 @@
-import {
-  TrackReferenceOrPlaceholder,
-  useTracks,
-} from "@livekit/components-react";
+import { useTracks } from "@livekit/components-react";
 import classNames from "classnames";
 import { Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
@@ -18,7 +15,6 @@ export const GameVideoContainer = observer(() => {
   const { myId } = usersStore;
   const { speaker, gameFlow, activeGameId } = gamesStore;
   const tracks = useTracks([Track.Source.Camera], { onlySubscribed: false });
-  console.log("GameVideoContainer.tsx:19 | tracks : ", tracks);
 
   const streamsLength = tracks.length;
 

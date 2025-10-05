@@ -66,4 +66,21 @@ export interface IGame extends IGameRoles {
   [Roles.GM]: UserId;
 }
 
+export interface IGameShort {
+  id: GameId;
+  owner: UserId;
+  playersCount: number;
+  isPrivate: boolean;
+  isActive: boolean;
+  gm: UserId;
+  gameType: GameType;
+  creatingTime: number;
+}
+
+export interface IRoomConnectInfo {
+  gameId: GameId;
+  userId: UserId;
+  game: IGameShort;
+}
+
 export interface IGameDTO extends Omit<IGame, "id"> {}

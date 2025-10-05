@@ -22,7 +22,7 @@ const GamePage = observer(() => {
   const { id = "" } = useParams();
   const { usersStore, gamesStore } = rootStore;
   const { myId } = usersStore;
-  const { setActiveGame, activeGamePlayers } = gamesStore;
+  const { setActiveGameId, activeGamePlayers } = gamesStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
 
@@ -31,8 +31,8 @@ const GamePage = observer(() => {
   useEffect(() => {
     if (!id) return;
 
-    setActiveGame(id);
-  }, [id, setActiveGame]);
+    setActiveGameId(id);
+  }, [id, setActiveGameId]);
 
   // TODO: fix double requests
   useEffect(() => {

@@ -4,11 +4,11 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-import { useFetchActiveGamesQuery } from "@/api/game/queries.ts";
 import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import noAvatar from "@/assets/images/noAvatar.jpg";
 import { formatDate } from "@/helpers/formatDate.ts";
 import { routes } from "@/router/routs.ts";
+import { gamesStore } from "@/store/gamesStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
@@ -21,10 +21,10 @@ const MAX_PLAYERS = 11;
 
 export const GamesList = observer(() => {
   const { users } = usersStore;
+  const { games } = gamesStore;
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { data: games, isLoading: isActiveGamesLoading } =
-    useFetchActiveGamesQuery();
+
   const allGameOwners = uniq(games?.map(({ owner }) => owner) ?? []);
 
   useGetUsersWithAddToStore(allGameOwners, !!allGameOwners.length);
@@ -46,7 +46,7 @@ export const GamesList = observer(() => {
 
   return (
     <div className={styles.container}>
-      {isActiveGamesLoading ? (
+      {!games ? (
         <Loader />
       ) : (
         <div className={styles.gamesTable}>
@@ -84,7 +84,7 @@ export const GamesList = observer(() => {
                   </div>
 
                   <Typography variant="span" className={styles.playerCount}>
-                    {game.players.length}/{MAX_PLAYERS}
+                    {game.playersCount}/{MAX_PLAYERS}
                   </Typography>
 
                   <Typography variant="span" className={styles.createdAt}>
@@ -96,7 +96,7 @@ export const GamesList = observer(() => {
                   onClick={() => handleJoinGame(game.id)}
                   variant={ButtonVariant.Outline}
                   size={ButtonSize.Small}
-                  disabled={game.players.length >= MAX_PLAYERS}
+                  disabled={game.playersCount >= MAX_PLAYERS}
                   className={styles.joinButton}
                 >
                   {t("join")}

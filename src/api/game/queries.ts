@@ -24,7 +24,25 @@ export const useFetchActiveGamesQuery = () => {
     queryKey: [queryKeys.games],
     queryFn: fetchActiveGames,
     select: ({ data }) => data,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
+};
+
+export const useFetchActiveGamesWithStore = () => {
+  const {
+    data: games,
+    isLoading,
+    refetch,
+    ...rest
+  } = useFetchActiveGamesQuery();
+  const { setGames } = gamesStore;
+
+  if (games) {
+    setGames(games);
+  }
+
+  return { games, isLoading, refetch, ...rest };
 };
 
 export const useCreateGameMutation = () => {

@@ -1,5 +1,5 @@
 import { wsEvents } from "../config/wsEvents.ts";
-import { GameId, IGame } from "./game.types.ts";
+import { GameId, IGame, IGameShort, IRoomConnectInfo } from "./game.types.ts";
 import { IMessage, IMessageDTO } from "./message.types.ts";
 import { UserId, UserStreamId } from "./user.types.ts";
 
@@ -46,11 +46,8 @@ export type StreamInfo = {
 export type StreamsArr = Array<[UserStreamId, StreamInfo]>;
 
 export interface WSSubscribedEventData {
-  [wsEvents.roomConnection]: {
-    roomId: GameId;
-    userId: UserId;
-  };
-  [wsEvents.roomLeave]: { roomId: GameId; userId: UserId };
+  [wsEvents.roomConnection]: IRoomConnectInfo;
+  [wsEvents.roomLeave]: IRoomConnectInfo;
   [wsEvents.messageSend]: IMessage;
   [wsEvents.gameUpdate]: IGame;
   [wsEvents.peerDisconnect]: {
@@ -62,6 +59,7 @@ export interface WSSubscribedEventData {
   [wsEvents.socketDisconnect]: number;
   [wsEvents.connectionError]: Error;
   [wsEvents.userStreamStatus]: StreamsArr;
+  [wsEvents.gamesUpdate]: IGameShort;
 }
 
 export type SubscribeEvent = keyof WSSubscribedEventData;

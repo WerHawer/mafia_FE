@@ -6,6 +6,7 @@ import {
   IGameDTO,
   IGameFlow,
   IGameRoles,
+  IGameShort,
 } from "@/types/game.types.ts";
 import { UserId } from "@/types/user.types.ts";
 
@@ -13,11 +14,11 @@ const GAMES_URL = "/games";
 
 // TODO: return ?active=true after testing
 export const fetchActiveGames = async () => {
-  return axios.get<IGame[]>(`${GAMES_URL}`);
+  return axios.get<IGameShort[]>(`${GAMES_URL}`);
 };
 
 export const fetchGames = async () => {
-  return axios.get<IGame[]>(GAMES_URL);
+  return axios.get<IGameShort[]>(GAMES_URL);
 };
 
 export const createGame = async (game: IGameDTO) => {
