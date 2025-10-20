@@ -79,7 +79,7 @@
     "sass": "^1.83.4",
     "sass-migrator": "^2.3.1",
     "typescript": "^5.3.3",
-    "vite": "6.3.4",
+    "vite": "7.1.5",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }

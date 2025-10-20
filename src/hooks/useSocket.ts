@@ -3,15 +3,19 @@ import { useCallback } from "react";
 import { useSocketContext } from "../context/SocketProvider.tsx";
 import {
   MassSubscribeFunction,
-  SendMessageFunction,
   SubscribeEvent,
   SubscribeFunction,
 } from "../types/socket.types.ts";
+import { useSocketQueue } from "./useSocketQueue.ts";
 
 export const useSocket = () => {
-  const { socket } = useSocketContext();
+  const { socket, connectionAttempts, lastConnectionTime } = useSocketContext();
 
   const isConnected = socket?.connected;
+
+  // Use the queue system for reliable message delivery
+  const { sendMessage, queueSize, isProcessing, clearQueue, getQueueStats } =
+    useSocketQueue(socket);
 
   const subscribe: SubscribeFunction = useCallback(
     (event, cb) => {
@@ -47,17 +51,6 @@ export const useSocket = () => {
     [subscribe]
   );
 
-  const sendMessage: SendMessageFunction = useCallback(
-    (event, data) => {
-      if (!socket) {
-        throw new Error("Socket instance is not available.");
-      }
-
-      socket.emit(event, data);
-    },
-    [socket]
-  );
-
   const connect = useCallback(() => {
     socket?.connect();
   }, [socket]);
@@ -74,5 +67,13 @@ export const useSocket = () => {
     disconnect,
     connect,
     massSubscribe,
+    // New queue-related exports
+    queueSize,
+    isProcessing,
+    clearQueue,
+    getQueueStats,
+    // Connection state information
+    connectionAttempts,
+    lastConnectionTime,
   };
 };

@@ -38,7 +38,7 @@ export class GamesStore {
     const isGameExist = this._games.some((game) => game.id === newGame.id);
 
     if (!isGameExist) {
-      this._games = [newGame, ...this._games];
+      this._games = [...this._games, newGame];
 
       return;
     }
