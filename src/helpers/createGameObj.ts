@@ -15,7 +15,7 @@ export const initialGameFlow: IGameFlow = {
   proposed: [],
   voted: {},
   killed: [],
-  shoot: [],
+  shoot: {},
   wakeUp: [],
 };
 

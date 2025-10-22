@@ -18,4 +18,7 @@ export enum wsEvents {
   startDay = "startDay",
   updateSpeaker = "updateSpeaker",
   wakeUp = "wakeUp",
+  addToProposed = "addToProposed",
+  vote = "vote",
+  shoot = "shoot",
 }

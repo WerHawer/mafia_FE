@@ -1,7 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { useCallback, useMemo } from "react";
 
-import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import {
+  useAddUserToProposedMutation,
+  useVoteForUserMutation,
+} from "@/api/game/queries.ts";
 import { useVoteResult } from "@/hooks/useVoteResult.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
@@ -18,8 +21,10 @@ type VoteFlowProps = {
 export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   const { usersStore, gamesStore, isIGM, isIDead, isISpeaker } = rootStore;
   const { myId, getUser } = usersStore;
-  const { isUserGM, speaker, gameFlow, activeGameAlivePlayers } = gamesStore;
-  const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
+  const { isUserGM, speaker, gameFlow, activeGameAlivePlayers, activeGameId } =
+    gamesStore;
+  const { mutate: voteForUser } = useVoteForUserMutation();
+  const { mutate: addUserToProposed } = useAddUserToProposedMutation();
 
   const votesForThisUser = useMemo(
     () => gameFlow.voted?.[userId] ?? [],
@@ -54,61 +59,27 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   const shouldShowVoteIcon =
     gameFlow.isVote && gameFlow.proposed.includes(userId) && !isIDead;
 
-  const handleVotePropose = useCallback(() => {
-    if ((myId !== speaker && !isUserGM(myId)) || !userId) return;
+  const onPropose = useCallback(() => {
+    if ((myId !== speaker && !isUserGM(myId)) || !userId || !activeGameId)
+      return;
 
-    const newList = isUserAddedToVoteList
-      ? gameFlow.proposed.filter((id) => id !== userId)
-      : [...gameFlow.proposed, userId];
+    addUserToProposed({ gameId: activeGameId, userId });
+  }, [activeGameId, addUserToProposed, isUserGM, myId, speaker, userId]);
 
-    const newVoted = newList.reduce(
-      (acc, id) => {
-        acc[id] = [];
-
-        return acc;
-      },
-      {} as Record<UserId, UserId[]>
-    );
-
-    updateGameFlow({ proposed: newList, voted: newVoted });
-  }, [
-    gameFlow,
-    isUserAddedToVoteList,
-    isUserGM,
-    myId,
-    speaker,
-    updateGameFlow,
-    userId,
-  ]);
-
-  const handleVote = useCallback(() => {
-    if (!userId || !myId) return;
+  const onVote = useCallback(() => {
+    if (!userId || !myId || !activeGameId) return;
     if (amIVoted || isIGM) return;
 
-    updateGameFlow({
-      voted: {
-        ...(gameFlow.voted ?? {}),
-        [userId]: [...votesForThisUser, myId],
-      },
+    voteForUser({
+      gameId: activeGameId,
+      targetUserId: userId,
+      voterId: myId,
     });
-  }, [
-    userId,
-    myId,
-    amIVoted,
-    isIGM,
-    updateGameFlow,
-    gameFlow.voted,
-    votesForThisUser,
-  ]);
+  }, [userId, myId, activeGameId, amIVoted, isIGM, voteForUser]);
 
   useVoteResult({
-    voted: gameFlow.voted,
     alivePlayers: activeGameAlivePlayers,
-    time: gameFlow.votesTime,
-    enabled: gameFlow.isVote,
-    proposed: gameFlow.proposed,
     isIGM,
-    updateGameFlow,
   });
 
   return (
@@ -119,7 +90,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
           size={ButtonSize.Small}
           variant={ButtonVariant.Secondary}
           isVoted={isUserAddedToVoteList}
-          onClick={handleVotePropose}
+          onClick={onPropose}
         />
       )}
 
@@ -129,7 +100,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
             className={styles.voteIcon}
             size={ButtonSize.Small}
             variant={ButtonVariant.Secondary}
-            onClick={handleVote}
+            onClick={onVote}
             isVoted={isVotedByThisUser}
           />
 

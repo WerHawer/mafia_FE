@@ -3,6 +3,7 @@ import { Participant, Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
 import { useRef } from "react";
 import Draggable from "react-draggable";
+import { useTranslation } from "react-i18next";
 
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
 import { Shoot } from "@/components/Shoot";
@@ -31,19 +32,28 @@ export const GameVideo = observer(
     isMyStream = false,
     isActive = false,
   }: GameVideoProps) => {
-    const { usersStore, gamesStore, isIGM, isIDead, myRole, isIWakedUp } =
+    const { t } = useTranslation();
+    const { usersStore, gamesStore, isIGM, myRole, isIWakedUp, isICanCheck } =
       rootStore;
     const { getUser, me, myId } = usersStore;
     const { isUserGM, gameFlow } = gamesStore;
+    const { shoot = {}, killed = [], day, isStarted } = gameFlow;
     const containerRef = useRef<HTMLDivElement>(null);
 
     const userId = participant.identity;
     const currentUser = isMyStream ? me : getUser(userId);
-    const isCurrentUserGM = isUserGM(userId);
-    const canICheck = rolesWhoCanCheck.includes(myRole) && isIWakedUp;
+    const isGM = isUserGM(userId);
     const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
-    const isIDidShot = gameFlow.shoot.some(([shooterId]) => shooterId === myId);
-    const isMyAfterStart = isMyStream && gameFlow.isStarted;
+    const isIDidShot = Object.values(shoot).some((shooters) =>
+      shooters.includes(myId)
+    );
+    const isUserDead = killed.includes(userId);
+    const isMyAfterStart = isMyStream && isStarted;
+    const isShootEnabled =
+      isIGM || (isIMafia && isIWakedUp && !isGM && day > 1 && !isIDidShot);
+
+    const isCheckRoleEnabled =
+      isIGM || (isICanCheck && !isMyStream && !isGM && !isUserDead);
 
     return (
       <Draggable
@@ -63,38 +73,16 @@ export const GameVideo = observer(
         >
           <VoteFlow isMyStream={isMyStream} userId={userId} />
 
-          <CheckRole
-            userId={userId}
-            enabled={
-              isIWakedUp &&
-              canICheck &&
-              !isMyStream &&
-              !isCurrentUserGM &&
-              gameFlow.wakeUp.length === 1
-            }
-          />
+          <CheckRole userId={userId} enabled={isCheckRoleEnabled} />
 
-          <Shoot
-            userId={userId}
-            enabled={
-              isIGM ||
-              (isIMafia &&
-                isIWakedUp &&
-                !isCurrentUserGM &&
-                gameFlow.day > 1 &&
-                !isIDidShot)
-            }
-          />
+          {isShootEnabled && <Shoot userId={userId} />}
 
-          {isIDead && isMyStream && (
-            <div className={styles.deadOverlay}>Dead</div>
+          {isUserDead && !isMyStream && (
+            <div className={styles.deadOverlay}>{t("gameVideo.dead")}</div>
           )}
 
           {isIGM && !isMyStream && currentUser && (
-            <VideoMenu
-              userId={currentUser.id}
-              isCurrentUserGM={isCurrentUserGM}
-            />
+            <VideoMenu userId={currentUser.id} isCurrentUserGM={isGM} />
           )}
 
           <PlayerVideo

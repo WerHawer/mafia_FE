@@ -48,4 +48,8 @@
   @include mixins.flexCenter;
   column-gap: 0.5rem;
   cursor: pointer;
+
+  & input {
+    cursor: pointer;
+  }
 }

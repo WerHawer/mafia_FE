@@ -10,13 +10,19 @@ import { queryKeys } from "../apiConstants.ts";
 import {
   addRolesToGame,
   addUserToGame,
+  addUserToProposed,
   createGame,
   fetchActiveGames,
   fetchGame,
   removeUserFromGame,
   restartGame,
+  shootUser,
+  startDay,
+  startGame,
+  startNight,
   updateGameFlow,
   updateGameGM,
+  voteForUser,
 } from "./api.ts";
 
 export const useFetchActiveGamesQuery = () => {
@@ -60,28 +66,24 @@ export const useGameQuery = (id: GameId) => {
 };
 
 export const useAddUserToGameMutation = () => {
-  const queryClient = useQueryClient();
   const { socket } = useSocketContext();
 
   return useMutation({
     mutationFn: (args: { gameId: GameId; userId: UserId }) =>
       addUserToGame(args),
-    onSuccess: (data, { gameId, userId }) => {
-      queryClient.setQueryData([queryKeys.game, gameId], data);
+    onSuccess: (_, { gameId, userId }) => {
       socket?.emit(wsEvents.roomConnection, [gameId, userId]);
     },
   });
 };
 
 export const useRemoveUserFromGameMutation = () => {
-  const queryClient = useQueryClient();
   const { socket } = useSocketContext();
 
   return useMutation({
     mutationFn: (args: { gameId: GameId; userId: UserId }) =>
       removeUserFromGame(args),
-    onSuccess: (data, { gameId, userId }) => {
-      queryClient.setQueryData([queryKeys.game, gameId], data);
+    onSuccess: (_, { gameId, userId }) => {
       socket?.emit(wsEvents.roomLeave, [gameId, userId]);
     },
   });
@@ -107,6 +109,14 @@ export const useUpdateGameGMMutation = () => {
   });
 };
 
+export const useStartGameMutation = () => {
+  return useMutation({
+    mutationFn: (gameId: GameId) => {
+      return startGame(gameId);
+    },
+  });
+};
+
 export const useUpdateGameFlowMutation = () => {
   return useMutation({
     mutationFn: (newFlow: Partial<IGameFlow>) => {
@@ -124,6 +134,61 @@ export const useRestartGameMutation = () => {
   return useMutation({
     mutationFn: (gameId: GameId) => {
       return restartGame(gameId);
+    },
+  });
+};
+
+export const useStartDayMutation = () => {
+  return useMutation({
+    mutationFn: (gameId: GameId) => {
+      return startDay(gameId);
+    },
+  });
+};
+
+export const useStartNightMutation = () => {
+  return useMutation({
+    mutationFn: (gameId: GameId) => {
+      return startNight(gameId);
+    },
+  });
+};
+
+export const useAddUserToProposedMutation = () => {
+  return useMutation({
+    mutationFn: ({ gameId, userId }: { gameId: GameId; userId: UserId }) => {
+      return addUserToProposed({ gameId, userId });
+    },
+  });
+};
+
+export const useVoteForUserMutation = () => {
+  return useMutation({
+    mutationFn: ({
+      gameId,
+      targetUserId,
+      voterId,
+    }: {
+      gameId: GameId;
+      targetUserId: UserId;
+      voterId: UserId;
+    }) => {
+      return voteForUser({ gameId, targetUserId, voterId });
+    },
+  });
+};
+export const useShootUserMutation = () => {
+  return useMutation({
+    mutationFn: ({
+      gameId,
+      targetUserId,
+      shooterId,
+    }: {
+      gameId: GameId;
+      targetUserId: UserId;
+      shooterId: UserId;
+    }) => {
+      return shootUser({ gameId, targetUserId, shooterId });
     },
   });
 };

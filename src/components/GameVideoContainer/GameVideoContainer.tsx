@@ -1,10 +1,9 @@
-import { useTracks } from "@livekit/components-react";
 import classNames from "classnames";
-import { Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 
 import { updateGameGM } from "@/api/game/api.ts";
+import { useMockStreams } from "@/hooks/useMockStreams";
 import { rootStore } from "@/store/rootStore.ts";
 
 import { GameVideo } from "../GameVideo";
@@ -14,19 +13,14 @@ export const GameVideoContainer = observer(() => {
   const { usersStore, gamesStore } = rootStore;
   const { myId } = usersStore;
   const { speaker, gameFlow, activeGameId } = gamesStore;
-  const tracks = useTracks([Track.Source.Camera], { onlySubscribed: false });
 
-  const streamsLength = tracks.length;
-
-  console.log("GameVideoContainer tracks:", {
-    length: streamsLength,
-    tracks: tracks.map((t) => ({
-      participant: t.participant.identity,
-      isLocal: t.participant.isLocal,
-      isSubscribed: t.publication?.isSubscribed,
-      trackExists: !!t.publication?.track,
-    })),
-  });
+  // Use the mock streams hook
+  const {
+    mockStreamsEnabled,
+    allTracks,
+    streamsLength,
+    handleToggleMockStreams,
+  } = useMockStreams();
 
   const usersMinMax = {
     four: gameFlow.isStarted ? 5 : 4,
@@ -41,10 +35,6 @@ export const GameVideoContainer = observer(() => {
       streamsLength > usersMinMax.six && streamsLength <= usersMinMax.twelve,
     five: streamsLength > usersMinMax.twelve || (!!speaker && speaker !== myId),
   };
-
-  const handleCreateMockStreams = useCallback(() => {
-    console.log("Mock streams button clicked - not implemented for LiveKit");
-  }, []);
 
   const handleMakeMeGM = useCallback(async () => {
     if (!activeGameId || !myId) return;
@@ -63,14 +53,14 @@ export const GameVideoContainer = observer(() => {
   return (
     <>
       <button
-        onClick={handleCreateMockStreams}
+        onClick={handleToggleMockStreams}
         style={{
           position: "fixed",
           top: "10px",
           right: "10px",
           zIndex: 1000,
           padding: "8px 12px",
-          backgroundColor: "#4CAF50",
+          backgroundColor: mockStreamsEnabled ? "#f44336" : "#4CAF50",
           color: "white",
           border: "none",
           borderRadius: "4px",
@@ -78,7 +68,8 @@ export const GameVideoContainer = observer(() => {
           fontSize: "14px",
         }}
       >
-        Debug Tracks ({streamsLength})
+        {mockStreamsEnabled ? "Disable" : "Enable"} Mock Streams (
+        {streamsLength})
       </button>
 
       <button
@@ -108,9 +99,8 @@ export const GameVideoContainer = observer(() => {
           [styles.fiveGrid]: useFixedGrids.five,
         })}
       >
-        {/* Замінюємо TrackLoop на прямий рендеринг */}
-        {tracks.length > 0 ? (
-          tracks.map((trackRef) => {
+        {allTracks?.length > 0 ? (
+          allTracks.map((trackRef) => {
             const isMy = trackRef.participant?.isLocal ?? false;
             const isActive = speaker === trackRef.participant?.identity;
 
@@ -143,7 +133,7 @@ export const GameVideoContainer = observer(() => {
             <div>
               <p>Немає відеотреків</p>
               <p style={{ fontSize: "14px", marginTop: "10px" }}>
-                Треків знайдено: {tracks.length}
+                Треків знайдено: {allTracks.length}
               </p>
             </div>
           </div>

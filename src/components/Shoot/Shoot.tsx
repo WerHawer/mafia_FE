@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 
-import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import { useShootUserMutation } from "@/api/game/queries.ts";
 import bangIcon from "@/assets/icons/bang.png";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
@@ -11,46 +11,47 @@ import { UserId } from "@/types/user.types.ts";
 import styles from "./Shoot.module.scss";
 
 type ShootProps = {
-  enabled: boolean;
   userId: UserId;
 };
 
-export const Shoot = observer(({ enabled, userId }: ShootProps) => {
+export const Shoot = observer(({ userId }: ShootProps) => {
   const { gamesStore, usersStore, isIGM } = rootStore;
-  const { gameFlow } = gamesStore;
+  const { gameFlow, activeGameId } = gamesStore;
+  const { shoot = {} } = gameFlow;
   const { myId } = usersStore;
-  const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
+  const { mutate: shootUser } = useShootUserMutation();
+  const isUserSooted = !!shoot[userId];
 
-  // TODO: we can create animation and add sound for shooting
-  const handleShoot = useCallback(() => {
-    const isIHaveShoot = gameFlow.shoot?.some(
-      ([shooterId]) => shooterId === myId,
-    );
+  // Nice to have: we can create animation and add sound for shooting
+  const onShoot = useCallback(() => {
+    if (!activeGameId) return;
 
-    if (isIHaveShoot) return;
+    const isIShoot = Object.values(shoot).flat().includes(myId);
 
-    updateGameFlow({
-      shoot: [...(gameFlow.shoot ?? []), [myId, userId]],
+    if (isIShoot) return;
+
+    shootUser({
+      gameId: activeGameId,
+      targetUserId: userId,
+      shooterId: myId,
     });
-  }, [gameFlow.shoot, myId, updateGameFlow, userId]);
+  }, [activeGameId, myId, shoot, shootUser, userId]);
 
-  if (!enabled) return null;
-
+  // Mafia should see who shot whom
   return (
     <div className={styles.container}>
-      {!isIGM && <AimOutlined className={styles.icon} onClick={handleShoot} />}
+      {!isIGM && <AimOutlined className={styles.icon} onClick={onShoot} />}
 
-      {isIGM &&
-        gameFlow.shoot.map(([shooterId, targetId], index) =>
-          targetId === userId ? (
+      {isIGM && isUserSooted
+        ? shoot[userId].map((shooterId, index) => (
             <img
               key={shooterId}
               src={bangIcon}
               alt="bang"
               className={classNames(styles.img, styles[`img${index}`])}
             />
-          ) : null,
-        )}
+          ))
+        : null}
     </div>
   );
 });

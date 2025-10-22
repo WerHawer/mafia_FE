@@ -46,6 +46,26 @@
     "done": "Done"
   },
 
+  "game": {
+    "startGame": "Start Game",
+    "restart": "Restart",
+    "night": "Night",
+    "day": "Day",
+    "wakeUp": "Wake up:"
+  },
+
+  "speaker": {
+    "speaker": "Speaker",
+    "startSpeeches": "Start speeches",
+    "previousSpeaker": "Previous speaker",
+    "nextSpeaker": "Next speaker"
+  },
+
+  "vote": {
+    "voting": "Voting",
+    "startVoting": "Start Voting"
+  },
+
   "videoConfig": {
     "background": "background",
     "removeEffect": "Remove effect",
@@ -56,8 +76,9 @@
   },
 
   "videoMenu": {
-    "doGM": "Do GM",
-    "kill": "Kill"
+    "doGM": "Make GM",
+    "kill": "Kill",
+    "giveSpeak": "Give Speech"
   },
 
   "nightResults": {
@@ -79,5 +100,18 @@
     "usersToRevote": "Users to re-vote:",
     "finishVoting": "Finish voting",
     "restartVote": "Restart vote"
+  },
+
+  "checkRole": {
+    "mafia": "Mafia",
+    "notMafia": "Not Mafia",
+    "sheriff": "Sheriff",
+    "notSheriff": "Not Sheriff",
+    "checkedBySheriff": "Checked by sheriff",
+    "checkedByDon": "Checked by don"
+  },
+
+  "gameVideo": {
+    "dead": "Dead"
   }
 }

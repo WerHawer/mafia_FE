@@ -1,10 +1,11 @@
 import { makeAutoObservable, toJS } from "mobx";
 
-import { GamesStore,gamesStore } from "@/store/gamesStore.ts";
+import { GamesStore, gamesStore } from "@/store/gamesStore.ts";
 import { MessagesStore, messagesStore } from "@/store/messagesStore.ts";
 import { ModalStore, modalStore } from "@/store/modalStore.ts";
-import { StreamStore,streamStore } from "@/store/streamsStore.ts";
+import { StreamStore, streamStore } from "@/store/streamsStore.ts";
 import { UsersStore, usersStore } from "@/store/usersStore.ts";
+import { Roles } from "@/types/game.types.ts";
 
 class RootStore {
   _usersStore: UsersStore;
@@ -49,7 +50,7 @@ class RootStore {
 
   get isIDead() {
     return toJS(
-      this.gamesStore.activeGameKilledPlayers.includes(this.usersStore.myId),
+      this.gamesStore.activeGameKilledPlayers.includes(this.usersStore.myId)
     );
   }
 
@@ -64,7 +65,19 @@ class RootStore {
   get isIWakedUp() {
     return toJS(
       this.gamesStore.gameFlow.wakeUp?.includes(this.usersStore.myId) &&
-        !this.isIDead,
+        !this.isIDead
+    );
+  }
+
+  get isICanCheck() {
+    const role = this.myRole;
+    const wakedUp = this.gamesStore.gameFlow.wakeUp;
+
+    return toJS(
+      (role === Roles.Don || role === Roles.Sheriff) &&
+        this.gamesStore.gameFlow.isNight &&
+        this.isIWakedUp &&
+        wakedUp.length === 1
     );
   }
 }

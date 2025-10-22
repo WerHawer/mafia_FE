@@ -34,7 +34,8 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   );
 
   const { setNewMessage } = messagesStore;
-  const { updateGame, updateGames } = gamesStore;
+  const { updateGame, updateGames, setToProposed, addVoted, addShoot } =
+    gamesStore;
   const { setSocketConnectedCount } = usersStore;
 
   const subscribers: MassSubscribeEvents = useMemo(() => {
@@ -75,11 +76,9 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
         setNewMessage(message);
       },
       [wsEvents.roomConnection]: (data) => {
-        console.log("RoomConnection data:", data);
         updateGames(data.game);
       },
       [wsEvents.roomLeave]: (data) => {
-        console.log("RoomLeave data:", data);
         updateGames(data.game);
       },
       [wsEvents.gameUpdate]: (newGame) => {
@@ -91,14 +90,26 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       [wsEvents.socketDisconnect]: (connectedUsers) => {
         setSocketConnectedCount(connectedUsers);
       },
+      [wsEvents.addToProposed]: (userId) => {
+        setToProposed(userId);
+      },
+      [wsEvents.vote]: (data) => {
+        addVoted(data);
+      },
+      [wsEvents.shoot]: (data) => {
+        addShoot(data);
+      },
     };
   }, [
-    setNewMessage,
-    setSocketConnectedCount,
     socket,
-    updateGame,
-    updateGames,
+    setSocketConnectedCount,
     connectionAttempts,
+    setNewMessage,
+    updateGames,
+    updateGame,
+    setToProposed,
+    addVoted,
+    addShoot,
   ]);
 
   useEffect(() => {

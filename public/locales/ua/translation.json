@@ -48,6 +48,26 @@
     "done": "Готово"
   },
 
+  "game": {
+    "startGame": "Почати гру",
+    "restart": "Перезапустити",
+    "night": "Ніч",
+    "day": "День",
+    "wakeUp": "Прокидайтеся:"
+  },
+
+  "speaker": {
+    "speaker": "Спікер",
+    "startSpeeches": "Почати промови",
+    "previousSpeaker": "Попередній спікер",
+    "nextSpeaker": "Наступний спікер"
+  },
+
+  "vote": {
+    "voting": "Голосування",
+    "startVoting": "Почати голосування"
+  },
+
   "videoConfig": {
     "background": "фон",
     "removeEffect": "Прибрати ефект",
@@ -59,7 +79,8 @@
 
   "videoMenu": {
     "doGM": "Зробити ГМом",
-    "kill": "Вбити"
+    "kill": "Вбити",
+    "giveSpeak": "Дати слово"
   },
 
   "nightResults": {
@@ -82,5 +103,18 @@
     "usersToRevote": "Гравці для повторного голосування:",
     "finishVoting": "Завершити голосування",
     "restartVote": "Перезапустити голосування"
+  },
+
+  "checkRole": {
+    "mafia": "Мафія",
+    "notMafia": "Не мафія",
+    "sheriff": "Шериф",
+    "notSheriff": "Не шериф",
+    "checkedBySheriff": "Перевірено шерифом",
+    "checkedByDon": "Перевірено доном"
+  },
+
+  "gameVideo": {
+    "dead": "Мертвий"
   }
 }

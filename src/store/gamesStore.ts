@@ -9,6 +9,7 @@ import {
   IGame,
   IGameFlow,
   IGameShort,
+  NightRoles,
   Roles,
 } from "../types/game.types.ts";
 
@@ -61,6 +62,52 @@ export class GamesStore {
       ...this._activeGame,
       gameFlow: { ...flow, ...newFlow },
     } as IGame);
+  }
+
+  setToProposed(playerId: UserId) {
+    const proposed = this._activeGame?.gameFlow?.proposed;
+
+    if (!proposed) return;
+
+    const newProposed = [...proposed, playerId];
+
+    this.updateGameFlow({ proposed: newProposed });
+  }
+
+  addVoted({
+    targetUserId,
+    voterId,
+  }: {
+    targetUserId: UserId;
+    voterId: UserId;
+  }) {
+    const voted = this._activeGame?.gameFlow?.voted;
+
+    if (!voted) return;
+
+    const newVoted = {
+      ...voted,
+      [targetUserId]: [...(voted[targetUserId] || []), voterId],
+    };
+
+    this.updateGameFlow({ voted: newVoted });
+  }
+
+  addShoot({
+    targetUserId,
+    shooterId,
+  }: {
+    targetUserId: UserId;
+    shooterId: UserId;
+  }) {
+    const shoot = this._activeGame?.gameFlow?.shoot ?? {};
+
+    const newShoot = {
+      ...shoot,
+      [targetUserId]: [...(shoot[targetUserId] || []), shooterId],
+    };
+
+    this.updateGameFlow({ shoot: newShoot });
   }
 
   isUserGM(userId?: string) {
@@ -121,6 +168,16 @@ export class GamesStore {
       prostitute,
       don: mafia?.[0],
     });
+  }
+
+  get nightRoles(): NightRoles[] {
+    const nightRoles = this.activeGameRoles
+      ? Object.entries(this.activeGameRoles)
+          .filter(([key, value]) => Boolean(value) && key !== Roles.Citizen)
+          .map(([key]) => key)
+      : [];
+
+    return nightRoles as NightRoles[];
   }
 
   get gameFlow() {

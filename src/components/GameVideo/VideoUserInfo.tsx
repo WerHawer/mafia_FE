@@ -14,8 +14,9 @@ type VideoUserInfoProps = {
 export const VideoUserInfo = observer(
   ({ userName, userId }: VideoUserInfoProps) => {
     const { gamesStore, isIGM } = rootStore;
-    const { getUserRole, activeGamePlayersWithoutGM } = gamesStore;
+    const { getUserRole, activeGamePlayersWithoutGM, isUserGM } = gamesStore;
     const role = getUserRole(userId);
+    const isGM = isUserGM(userId);
 
     const userNumber = useMemo(
       () => activeGamePlayersWithoutGM.findIndex((id) => id === userId) + 1,
@@ -24,7 +25,8 @@ export const VideoUserInfo = observer(
 
     return (
       <div className={styles.userInfo}>
-        {isIGM && <RoleIcon role={role} />}
+        {isIGM && !isGM && <RoleIcon role={role} />}
+        {isGM && <RoleIcon role={role} />}
 
         <div>
           {userName} {userNumber ? `#${userNumber}` : ""}

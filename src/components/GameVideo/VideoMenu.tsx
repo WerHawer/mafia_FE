@@ -1,5 +1,8 @@
 import { MoreOutlined } from "@ant-design/icons";
+// @ts-ignore
+import { Instance } from "@tippyjs/react";
 import { observer } from "mobx-react-lite";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -20,6 +23,7 @@ type VideoMenuProps = {
 export const VideoMenu = observer(
   ({ userId, isCurrentUserGM }: VideoMenuProps) => {
     const { t } = useTranslation();
+    const tippyInstanceRef = useRef<Instance | null>(null);
     const { mutate: updateGM } = useUpdateGameGMMutation();
     const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
     const { gamesStore } = rootStore;
@@ -30,6 +34,7 @@ export const VideoMenu = observer(
       if (isCurrentUserGM) return;
 
       updateGM({ gameId: activeGameId, userId });
+      tippyInstanceRef.current?.hide();
     };
 
     const onKill = (killed: string[]) => {
@@ -40,11 +45,23 @@ export const VideoMenu = observer(
         isExtraSpeech: false,
         killed: [...killed, userId],
       });
+      tippyInstanceRef.current?.hide();
+    };
+
+    const onGiveSpeak = () => {
+      if (!userId) return;
+
+      updateGameFlow({
+        speaker: userId,
+      });
+      tippyInstanceRef.current?.hide();
     };
 
     return (
       <PopupMenu
         className={styles.videoMenu}
+        hideOnClick
+        onCreate={(instance) => (tippyInstanceRef.current = instance)}
         content={
           <>
             <PopupMenuElement onClick={onUpdateGM}>
@@ -53,6 +70,10 @@ export const VideoMenu = observer(
 
             <PopupMenuElement onClick={() => onKill(gameFlow.killed)}>
               {t("videoMenu.kill")}
+            </PopupMenuElement>
+
+            <PopupMenuElement onClick={onGiveSpeak}>
+              {t("videoMenu.giveSpeak")}
             </PopupMenuElement>
           </>
         }

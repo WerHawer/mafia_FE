@@ -12,6 +12,11 @@ export enum Roles {
   Unknown = "unknown",
 }
 
+export type NightRoles = Exclude<
+  Roles,
+  Roles.Unknown | Roles.GM | Roles.Citizen
+>;
+
 export const rolesWhoCanCheck = [Roles.Don, Roles.Sheriff];
 
 export type GameId = string;
@@ -35,7 +40,7 @@ export interface IGameFlow {
   proposed: UserId[];
   voted: { [key: UserId]: UserId[] };
   wakeUp: UserId[] | UserId;
-  shoot: [UserId, UserId][];
+  shoot: { [key: UserId]: UserId[] };
   killed: UserId[];
   sheriffCheck?: UserId;
   doctorSave?: UserId;

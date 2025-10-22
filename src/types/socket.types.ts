@@ -133,6 +133,9 @@ export interface WSSubscribedEventData {
   [wsEvents.connectionError]: Error;
   [wsEvents.userStreamStatus]: StreamsArr;
   [wsEvents.gamesUpdate]: IGameShort;
+  [wsEvents.addToProposed]: UserId;
+  [wsEvents.vote]: { targetUserId: UserId; voterId: UserId };
+  [wsEvents.shoot]: { targetUserId: UserId; shooterId: UserId };
 }
 
 export type SubscribeEvent = keyof WSSubscribedEventData;

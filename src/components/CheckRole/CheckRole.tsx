@@ -3,6 +3,7 @@ import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import { rootStore } from "@/store/rootStore.ts";
@@ -13,12 +14,14 @@ import styles from "./CheckRole.module.scss";
 
 type CheckRoleProps = {
   userId: UserId;
-  enabled: boolean;
+  enabled?: boolean;
 };
 
 export const CheckRole = observer(({ userId, enabled }: CheckRoleProps) => {
+  const { t } = useTranslation();
   const { gamesStore, myRole, isIGM } = rootStore;
   const { getUserRole, gameFlow, isUserGM } = gamesStore;
+  const { sheriffCheck, donCheck } = gameFlow;
   const [checkResult, setCheckResult] = useState("");
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
@@ -27,37 +30,43 @@ export const CheckRole = observer(({ userId, enabled }: CheckRoleProps) => {
   const isIDon = myRole === Roles.Don;
   const isUserSheriff = userRole === Roles.Sheriff;
   const isUserMafia = userRole === Roles.Mafia || userRole === Roles.Don;
-  const userCheckedBySheriff = gameFlow.sheriffCheck === userId;
-  const userCheckedByDon = gameFlow.donCheck === userId;
+  const userCheckedBySheriff = sheriffCheck === userId;
+
+  const userCheckedByDon = donCheck === userId;
 
   const isCheckDisabled = useMemo(() => {
     if (isISheriff) {
-      return !!gameFlow.sheriffCheck;
+      return !!sheriffCheck;
     }
 
     if (isIDon) {
-      return !!gameFlow.donCheck;
+      return !!donCheck;
     }
 
     return false;
-  }, [gameFlow.donCheck, gameFlow.sheriffCheck, isIDon, isISheriff]);
+  }, [donCheck, isIDon, isISheriff, sheriffCheck]);
 
-  const handleCheckRole = useCallback(() => {
+  const onCheckRole = useCallback(() => {
     if (isCheckDisabled) return;
     if (isUserGM(userId)) return;
 
     if (isISheriff) {
-      const result = isUserMafia ? "Mafia" : "Not Mafia";
+      const result = isUserMafia
+        ? t("checkRole.mafia")
+        : t("checkRole.notMafia");
       setCheckResult(result);
 
       updateGameFlow({
         sheriffCheck: userId,
       });
+
       return;
     }
 
     if (isIDon) {
-      const result = isUserSheriff ? "Sheriff" : "Not Sheriff";
+      const result = isUserSheriff
+        ? t("checkRole.sheriff")
+        : t("checkRole.notSheriff");
       setCheckResult(result);
 
       updateGameFlow({
@@ -73,13 +82,18 @@ export const CheckRole = observer(({ userId, enabled }: CheckRoleProps) => {
     isUserGM,
     isUserMafia,
     isUserSheriff,
+    t,
     updateGameFlow,
     userId,
   ]);
 
+  if (!enabled) {
+    return null;
+  }
+
   return (
     <>
-      {enabled && (
+      {!isIGM && (
         <Tippy
           content={checkResult}
           trigger="click"
@@ -88,23 +102,23 @@ export const CheckRole = observer(({ userId, enabled }: CheckRoleProps) => {
         >
           <QuestionCircleOutlined
             className={styles.icon}
-            onClick={handleCheckRole}
+            onClick={onCheckRole}
           />
         </Tippy>
       )}
 
       {isIGM && userCheckedBySheriff && (
-        <Tippy content="checked by sheriff">
+        <Tippy content={t("checkRole.checkedBySheriff")}>
           <EyeOutlined className={styles.sheriffCheckIcon} />
         </Tippy>
       )}
 
       {isIGM && userCheckedByDon && (
-        <Tippy content="checked by don">
+        <Tippy content={t("checkRole.checkedByDon")}>
           <EyeOutlined
             className={classNames(
               styles.donCheckIcon,
-              userCheckedBySheriff && userCheckedByDon && styles.doubleCheck,
+              userCheckedBySheriff && userCheckedByDon && styles.doubleCheck
             )}
           />
         </Tippy>

@@ -66,6 +66,10 @@ export const updateGameGM = async ({
   return axios.patch<IGame>(`${GAMES_URL}/${gameId}/updateGM`, { gm: userId });
 };
 
+export const startGame = async (gameId: GameId) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/start`);
+};
+
 export const updateGameFlow = async ({
   gameId,
   flow,
@@ -80,4 +84,54 @@ export const updateGameFlow = async ({
 
 export const restartGame = async (gameId: GameId) => {
   return axios.patch<IGame>(`${GAMES_URL}/${gameId}/restart`);
+};
+
+export const startDay = async (gameId: GameId) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/startDay`);
+};
+
+export const startNight = async (gameId: GameId) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/startNight`);
+};
+
+export const addUserToProposed = async ({
+  gameId,
+  userId,
+}: {
+  gameId: GameId;
+  userId: UserId;
+}) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/addToProposed`, {
+    userId,
+  });
+};
+
+export const voteForUser = async ({
+  gameId,
+  targetUserId,
+  voterId,
+}: {
+  gameId: GameId;
+  targetUserId: UserId;
+  voterId: UserId;
+}) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/vote`, {
+    targetUserId,
+    voterId,
+  });
+};
+
+export const shootUser = async ({
+  gameId,
+  targetUserId,
+  shooterId,
+}: {
+  gameId: GameId;
+  targetUserId: UserId;
+  shooterId: UserId;
+}) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/shoot`, {
+    targetUserId,
+    shooterId,
+  });
 };
