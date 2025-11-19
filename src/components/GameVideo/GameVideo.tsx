@@ -6,10 +6,12 @@ import Draggable from "react-draggable";
 import { useTranslation } from "react-i18next";
 
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
+import { MediaControls } from "@/components/MediaControls";
 import { Shoot } from "@/components/Shoot";
 import { VoteFlow } from "@/components/VoteFlow";
+import { useMediaControls } from "@/hooks/useMediaControls.ts";
 import { rootStore } from "@/store/rootStore.ts";
-import { Roles, rolesWhoCanCheck } from "@/types/game.types.ts";
+import { Roles } from "@/types/game.types.ts";
 
 import { PlayerVideo } from "../PlayerVideo";
 import styles from "./GameVideo.module.scss";
@@ -55,6 +57,20 @@ export const GameVideo = observer(
     const isCheckRoleEnabled =
       isIGM || (isICanCheck && !isMyStream && !isGM && !isUserDead);
 
+    const {
+      isCameraEnabled,
+      isMicrophoneEnabled,
+      toggleCamera,
+      toggleMicrophone,
+      canControl,
+    } = useMediaControls({
+      participant,
+      isMyStream,
+      isIGM,
+      roomId: gamesStore.activeGameId || "",
+      requesterId: myId,
+    });
+
     return (
       <Draggable
         disabled={!isMyAfterStart}
@@ -91,6 +107,14 @@ export const GameVideo = observer(
             isActive={isActive}
             container={containerRef.current}
             muted={participant.isLocal}
+          />
+
+          <MediaControls
+            isCameraEnabled={isCameraEnabled}
+            isMicrophoneEnabled={isMicrophoneEnabled}
+            onToggleCamera={toggleCamera}
+            onToggleMicrophone={toggleMicrophone}
+            canControl={canControl}
           />
 
           {currentUser && (

@@ -98,6 +98,20 @@ export interface WSSentEventData {
   [wsEvents.startDay]: { gameId: GameId; gm: UserId | undefined };
   [wsEvents.updateSpeaker]: { userId: UserId; gameId: GameId };
   [wsEvents.wakeUp]: { gameId: GameId; users: UserId[] | UserId; gm?: UserId };
+  [wsEvents.toggleUserCamera]: {
+    roomId: string;
+    userId: UserId;
+    participantIdentity: string;
+    enabled: boolean;
+    requesterId: UserId;
+  };
+  [wsEvents.toggleUserMicrophone]: {
+    roomId: string;
+    userId: UserId;
+    participantIdentity: string;
+    enabled: boolean;
+    requesterId: UserId;
+  };
 }
 
 export type SendMessageFunction = <T extends keyof WSSentEventData>(
@@ -136,6 +150,8 @@ export interface WSSubscribedEventData {
   [wsEvents.addToProposed]: UserId;
   [wsEvents.vote]: { targetUserId: UserId; voterId: UserId };
   [wsEvents.shoot]: { targetUserId: UserId; shooterId: UserId };
+  [wsEvents.userCameraStatusChanged]: { userId: UserId; enabled: boolean };
+  [wsEvents.userMicrophoneStatusChanged]: { userId: UserId; enabled: boolean };
 }
 
 export type SubscribeEvent = keyof WSSubscribedEventData;

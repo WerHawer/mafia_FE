@@ -21,4 +21,8 @@ export enum wsEvents {
   addToProposed = "addToProposed",
   vote = "vote",
   shoot = "shoot",
+  toggleUserCamera = "toggleUserCamera",
+  toggleUserMicrophone = "toggleUserMicrophone",
+  userCameraStatusChanged = "userCameraStatusChanged",
+  userMicrophoneStatusChanged = "userMicrophoneStatusChanged",
 }

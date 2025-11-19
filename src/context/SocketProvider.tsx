@@ -99,6 +99,12 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       [wsEvents.shoot]: (data) => {
         addShoot(data);
       },
+      [wsEvents.userCameraStatusChanged]: (data) => {
+        console.log("Camera status changed:", data);
+      },
+      [wsEvents.userMicrophoneStatusChanged]: (data) => {
+        console.log("Microphone status changed:", data);
+      },
     };
   }, [
     socket,
