@@ -121,17 +121,6 @@ export const useMediaControls = ({
         enabled: !currentlyEnabled,
         requesterId,
       });
-
-      console.log("useMediaControls: Toggle camera request sent to server", {
-        roomId,
-        userId: targetUserId,
-        participantIdentity: participant.identity,
-        enabled: !currentlyEnabled,
-        requesterId,
-        isMyStream,
-        isIGM,
-        canControl,
-      });
     } catch (error) {
       console.error("useMediaControls: Error toggling camera:", error);
     }
@@ -163,20 +152,6 @@ export const useMediaControls = ({
         enabled: !currentlyEnabled,
         requesterId,
       });
-
-      console.log(
-        "useMediaControls: Toggle microphone request sent to server",
-        {
-          roomId,
-          userId: targetUserId,
-          participantIdentity: participant.identity,
-          enabled: !currentlyEnabled,
-          requesterId,
-          isMyStream,
-          isIGM,
-          canControl,
-        }
-      );
     } catch (error) {
       console.error("useMediaControls: Error toggling microphone:", error);
     }

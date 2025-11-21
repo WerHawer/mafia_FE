@@ -137,6 +137,10 @@ Examples of what to verify:
 - Use theme and mixins from the design system for consistent styling (`src/styles`)
 - Use descriptive variable and function/const names
 - Event functions should be named with an "on" prefix (e.g., onClick, onKeyDown)
+- **Event handlers should use "on" prefix, not "handle"**:
+    - ❌ Bad: `handleClick`, `handleSubmit`, `handleChange`
+    - ✅ Good: `onClick`, `onSubmit`, `onChange`
+    - Exception: When the handler is passed as a prop, both are acceptable
 - Implement accessibility features on elements:
     - Add tabindex="0" for interactive elements
     - Include aria-label for non-text elements

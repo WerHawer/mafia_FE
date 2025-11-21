@@ -129,7 +129,7 @@ export const useUpdateGameFlowMutation = () => {
       const { gameFlow, activeGameId } = gamesStore;
 
       return updateGameFlow({
-        gameId: activeGameId,
+        gameId: activeGameId ?? "",
         flow: { ...gameFlow, ...newFlow },
       });
     },

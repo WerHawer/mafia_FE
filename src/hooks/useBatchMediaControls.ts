@@ -48,10 +48,10 @@ export const useBatchMediaControls = ({
 
   // Ready-made helpers for specific game situations
   const muteAllForNight = useCallback(
-    (gmUserId: UserId) => {
+    (gmUserId?: UserId) => {
       setMicrophonesForAll({
         enabled: false,
-        excludedUserIds: [gmUserId],
+        excludedUserIds: gmUserId ? [gmUserId] : [],
         reason: "night",
       });
     },
@@ -59,10 +59,10 @@ export const useBatchMediaControls = ({
   );
 
   const muteAllExceptSpeaker = useCallback(
-    (speakerId: UserId, gmUserId: UserId) => {
+    (speakerId: UserId, gmUserId?: UserId) => {
       setMicrophonesForAll({
         enabled: false,
-        excludedUserIds: [speakerId, gmUserId],
+        excludedUserIds: [speakerId, gmUserId ?? ""],
         reason: "speaker",
       });
     },
@@ -106,16 +106,46 @@ export const useBatchMediaControls = ({
     });
   }, [setMicrophonesForAll]);
 
-  return {
-    // Універсальна функція
-    setMicrophonesForAll,
+  const toggleMicrophoneForUser = useCallback(
+    (userId: UserId, enabled: boolean) => {
+      if (!socket) return;
 
-    // Готові хелпери
+      sendMessage(wsEvents.batchToggleMicrophones, {
+        roomId,
+        enabled,
+        targetUserIds: [userId],
+        excludedUserIds: [],
+        requesterId,
+      });
+    },
+    [socket, sendMessage, roomId, requesterId]
+  );
+
+  const muteSpeaker = useCallback(
+    (userId: UserId) => {
+      toggleMicrophoneForUser(userId, false);
+    },
+    [toggleMicrophoneForUser]
+  );
+
+  const unmuteSpeaker = useCallback(
+    (userId: UserId) => {
+      toggleMicrophoneForUser(userId, true);
+    },
+    [toggleMicrophoneForUser]
+  );
+
+  return {
+    setMicrophonesForAll,
+    toggleMicrophoneForUser,
+
     muteAllForNight,
     muteAllExceptSpeaker,
     unmuteAllForDay,
     muteAll,
     unmuteAll,
     muteAllExceptGM,
+    muteSpeaker,
+    unmuteSpeaker,
   };
 };

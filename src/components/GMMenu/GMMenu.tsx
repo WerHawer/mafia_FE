@@ -8,76 +8,27 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 
-import { updateGameGM } from "@/api/game/api.ts";
-import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
-import { useMockStreams } from "@/hooks/useMockStreams.ts";
-import { routes } from "@/router/routs.ts";
-import { rootStore } from "@/store/rootStore.ts";
-import {
-  Dropdown,
-  IconButton,
-  Menu,
-  MenuItem,
-  MenuItemVariant,
-  MenuSeparator,
-} from "@/UI";
+import { useGMMenu } from "@/hooks/useGMMenu.ts";
+import { Dropdown, IconButton, Menu, MenuItem, MenuSeparator } from "@/UI";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
 import styles from "./GMMenu.module.scss";
 
 export const GMMenu = observer(() => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { gamesStore, usersStore, isIGM } = rootStore;
-  const { activeGameId, activeGamePlayers, activeGameGm } = gamesStore;
-  const { myId } = usersStore;
-
-  const { unmuteAll, muteAllExceptGM } = useBatchMediaControls({
-    roomId: activeGameId || "",
-    requesterId: myId,
-    allUserIds: activeGamePlayers,
-  });
-
-  const { mockStreamsEnabled, handleToggleMockStreams } = useMockStreams();
-
-  const handleMakeMeGM = useCallback(async () => {
-    if (!activeGameId || !myId) return;
-
-    try {
-      await updateGameGM({
-        gameId: activeGameId,
-        userId: myId,
-      });
-      setIsMenuOpen(false);
-    } catch (error) {
-      console.error("Failed to set you as GM:", error);
-    }
-  }, [activeGameId, myId]);
-
-  const handleToggleMockStreamsClick = useCallback(() => {
-    handleToggleMockStreams();
-    setIsMenuOpen(false);
-  }, [handleToggleMockStreams]);
-
-  const handleMuteAll = useCallback(() => {
-    muteAllExceptGM(activeGameGm);
-    setIsMenuOpen(false);
-  }, [activeGameGm, muteAllExceptGM]);
-
-  const handleUnmuteAll = useCallback(() => {
-    unmuteAll();
-    setIsMenuOpen(false);
-  }, [unmuteAll]);
-
-  const handleLeaveGame = useCallback(() => {
-    setIsMenuOpen(false);
-    navigate(routes.home);
-  }, [navigate]);
+  const {
+    isMenuOpen,
+    setIsMenuOpen,
+    isIGM,
+    mockStreamsEnabled,
+    onMakeMeGM,
+    onToggleMockStreams,
+    onMuteAll,
+    onUnmuteAll,
+    onLeaveGame,
+  } = useGMMenu();
 
   return (
     <div className={styles.gmMenuContainer}>
@@ -98,7 +49,7 @@ export const GMMenu = observer(() => {
               <MenuItem
                 icon={<CrownOutlined />}
                 label={t("gmMenu.makeMeGM")}
-                onClick={handleMakeMeGM}
+                onClick={onMakeMeGM}
               />
             )}
 
@@ -117,7 +68,7 @@ export const GMMenu = observer(() => {
                       ? t("gmMenu.disableMockStreams")
                       : t("gmMenu.enableMockStreams")
                   }
-                  onClick={handleToggleMockStreamsClick}
+                  onClick={onToggleMockStreams}
                 />
 
                 <MenuSeparator />
@@ -125,13 +76,13 @@ export const GMMenu = observer(() => {
                 <MenuItem
                   icon={<AudioMutedOutlined />}
                   label={t("gmMenu.muteAll")}
-                  onClick={handleMuteAll}
+                  onClick={onMuteAll}
                 />
 
                 <MenuItem
                   icon={<AudioOutlined />}
                   label={t("gmMenu.unmuteAll")}
-                  onClick={handleUnmuteAll}
+                  onClick={onUnmuteAll}
                 />
 
                 <MenuSeparator />
@@ -141,7 +92,7 @@ export const GMMenu = observer(() => {
             <MenuItem
               icon={<LogoutOutlined />}
               label={t("gmMenu.leaveGame")}
-              onClick={handleLeaveGame}
+              onClick={onLeaveGame}
             />
           </Menu>
         }
