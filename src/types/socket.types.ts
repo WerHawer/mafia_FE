@@ -112,6 +112,13 @@ export interface WSSentEventData {
     enabled: boolean;
     requesterId: UserId;
   };
+  [wsEvents.batchToggleMicrophones]: {
+    roomId: string;
+    enabled: boolean;
+    targetUserIds: UserId[];
+    excludedUserIds: UserId[];
+    requesterId: UserId;
+  };
 }
 
 export type SendMessageFunction = <T extends keyof WSSentEventData>(

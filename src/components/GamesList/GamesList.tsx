@@ -92,15 +92,16 @@ export const GamesList = observer(() => {
                   </Typography>
                 </div>
 
-                <Button
-                  onClick={() => handleJoinGame(game.id)}
-                  variant={ButtonVariant.Outline}
-                  size={ButtonSize.Small}
-                  disabled={game.playersCount >= MAX_PLAYERS}
-                  className={styles.joinButton}
-                >
-                  {t("join")}
-                </Button>
+                {game.playersCount < MAX_PLAYERS ? (
+                  <Button
+                    onClick={() => handleJoinGame(game.id)}
+                    variant={ButtonVariant.Outline}
+                    size={ButtonSize.Small}
+                    className={styles.joinButton}
+                  >
+                    {t("join")}
+                  </Button>
+                ) : null}
               </div>
             ))}
           </div>

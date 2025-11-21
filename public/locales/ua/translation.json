@@ -78,6 +78,7 @@
   },
 
   "videoMenu": {
+    "title": "Меню відео",
     "doGM": "Зробити ГМом",
     "kill": "Вбити",
     "giveSpeak": "Дати слово"
@@ -116,5 +117,15 @@
 
   "gameVideo": {
     "dead": "Мертвий"
+  },
+
+  "gmMenu": {
+    "title": "Меню ГМ",
+    "makeMeGM": "Зробити мене ГМ",
+    "enableMockStreams": "Увімкнути тестові потоки",
+    "disableMockStreams": "Вимкнути тестові потоки",
+    "muteAll": "Вимкнути звук всім",
+    "unmuteAll": "Увімкнути звук всім",
+    "leaveGame": "Вийти з гри"
   }
 }

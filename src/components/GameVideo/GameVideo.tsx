@@ -38,7 +38,7 @@ export const GameVideo = observer(
     const { usersStore, gamesStore, isIGM, myRole, isIWakedUp, isICanCheck } =
       rootStore;
     const { getUser, me, myId } = usersStore;
-    const { isUserGM, gameFlow } = gamesStore;
+    const { isUserGM, gameFlow, activeGameId } = gamesStore;
     const { shoot = {}, killed = [], day, isStarted } = gameFlow;
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -67,7 +67,7 @@ export const GameVideo = observer(
       participant,
       isMyStream,
       isIGM,
-      roomId: gamesStore.activeGameId || "",
+      roomId: activeGameId || "",
       requesterId: myId,
     });
 

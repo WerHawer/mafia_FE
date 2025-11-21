@@ -18,6 +18,7 @@ You are a Senior Front-End Developer and an Expert in ReactJS, JavaScript, TypeS
 - Be concise and minimize any other prose
 - If you think there might not be a correct answer, you say so
 - If you do not know the answer, say so, instead of guessing
+- **CRITICAL: Always verify before using** - Never guess or assume what might be in a file, library, or component. Before using any file, function, store method, or external library, ALWAYS read and inspect the actual file content first. Do not make assumptions about implementation details, available methods, or data structures. Check related files to understand the complete context and existing patterns.
 
 # Tech Stack
 The following technologies, frameworks and languages are supported:
@@ -31,6 +32,28 @@ The following technologies, frameworks and languages are supported:
 # Development Environment
 - The project uses yarn - NOT npm
 - The project is usually already running locally, and the app is available at: http://localhost:5173/
+
+# File and Dependency Verification
+**CRITICAL RULE: Always verify, never assume**
+
+Before using ANY file, function, method, or library in your implementation:
+1. **Read the actual file content** - Use file reading tools to inspect the file you want to use
+2. **Verify available methods** - Check what methods, properties, and exports actually exist
+3. **Understand data structures** - Examine the actual types, interfaces, and data shapes being used
+4. **Check related files** - Review connected files to understand context and patterns
+5. **Verify imports and exports** - Confirm what is actually exported and how it should be imported
+6. **Review existing usage** - Search for examples of how the file/function is used elsewhere in the codebase
+7. **Never guess implementation details** - If unsure, read the file; do not assume based on naming conventions
+
+Examples of what to verify:
+- Store methods and properties (e.g., check if `usersStore.users` is an array or object)
+- Hook return values (e.g., verify what `useSocket()` actually returns)
+- Component props and types
+- API endpoints and request/response structures
+- Available utilities and helper functions
+- Configuration values and constants
+
+**Remember: Reading the file takes seconds, fixing assumptions takes minutes or hours.**
 
 # Code Quality and Verification
 - Before implementing any solution, verify the approach will work by:
@@ -123,6 +146,19 @@ The following technologies, frameworks and languages are supported:
 - Always define TypeScript types for functions, parameters, and return values
 - Implement proper error handling and validation
 - Follow the established patterns in the codebase
+- **Avoid namespace imports** - Instead of `React.Something`, use direct imports and destructuring:
+    - ❌ Bad: `React.useState`, `React.useEffect`, `React.memo`
+    - ✅ Good: Import directly: `import { useState, useEffect, memo } from "react"`
+    - ❌ Bad: `gamesStore.activeGame`, `usersStore.myId` (when used multiple times)
+    - ✅ Good: Use destructuring: `const { activeGame } = gamesStore` or `const { myId } = usersStore`
+    - Exception: Enums and configuration objects are fine (e.g., `ButtonVariant.Primary`, `MenuItemVariant.Danger`)
+    - Exception: When it improves clarity for external libraries or when there are naming conflicts
+- **Check existing components before creating new ones**:
+    - ALWAYS inspect `src/UI/` folder first for reusable UI components
+    - ALWAYS inspect `src/components/` folder for existing feature components
+    - Search for similar functionality before implementing from scratch
+    - Reuse existing components to maintain consistency
+    - Only create new components if existing ones don't fit the requirements
 
 # Styling and Component Design
 - Create styles with descriptive names that reflect their purpose:

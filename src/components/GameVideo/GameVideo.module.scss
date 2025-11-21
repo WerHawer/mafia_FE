@@ -93,22 +93,18 @@
   z-index: 10;
 }
 
-.menu {
+.menuContainer {
   position: absolute;
-  top: 0;
-  right: 15px;
+  top: 5px;
+  right: 8px;
+  z-index: 10;
+}
+
+.menu {
   font-size: 3rem;
   color: theme.$color-text-secondary;
   rotate: 90deg;
-
-  z-index: 10;
   cursor: pointer;
-}
-
-.videoMenu {
-  & > div.tippy-content {
-    padding: 0;
-  }
 }
 
 .gmLabel {

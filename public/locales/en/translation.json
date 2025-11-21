@@ -76,6 +76,7 @@
   },
 
   "videoMenu": {
+    "title": "Video menu",
     "doGM": "Make GM",
     "kill": "Kill",
     "giveSpeak": "Give Speech"
@@ -113,5 +114,15 @@
 
   "gameVideo": {
     "dead": "Dead"
+  },
+
+  "gmMenu": {
+    "title": "GM Menu",
+    "makeMeGM": "Make me GM",
+    "enableMockStreams": "Enable Mock Streams",
+    "disableMockStreams": "Disable Mock Streams",
+    "muteAll": "Mute All",
+    "unmuteAll": "Unmute All",
+    "leaveGame": "Leave Game"
   }
 }

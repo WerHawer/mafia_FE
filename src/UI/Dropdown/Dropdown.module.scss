@@ -1,0 +1,13 @@
+@use "../../styles/theme.scss" as theme;
+
+.dropdown {
+  :global(.tippy-box) {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  :global(.tippy-content) {
+    padding: 0;
+  }
+}

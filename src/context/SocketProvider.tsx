@@ -36,7 +36,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   const { setNewMessage } = messagesStore;
   const { updateGame, updateGames, setToProposed, addVoted, addShoot } =
     gamesStore;
-  const { setSocketConnectedCount } = usersStore;
+  const { setSocketConnectedCount, myId } = usersStore;
 
   const subscribers: MassSubscribeEvents = useMemo(() => {
     if (!socket) return {};
@@ -119,6 +119,8 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   ]);
 
   useEffect(() => {
+    if (!myId) return;
+
     const existingSocket = io(SERVER, {
       // Enhanced connection options for better reliability
       transports: ["websocket", "polling"],
@@ -130,6 +132,10 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       reconnectionDelayMax: 30000,
       reconnectionAttempts: 10,
       randomizationFactor: 0.5,
+      // Pass user ID for custom socket identification
+      auth: {
+        userId: myId,
+      },
     });
 
     // Connection event handlers
@@ -172,7 +178,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
     return () => {
       existingSocket.disconnect();
     };
-  }, []);
+  }, [myId]);
 
   useEffect(() => {
     if (!socket) return;

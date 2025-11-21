@@ -1,8 +1,11 @@
-import { MoreOutlined } from "@ant-design/icons";
-// @ts-ignore
-import { Instance } from "@tippyjs/react";
+import {
+  CrownOutlined,
+  MoreOutlined,
+  SoundOutlined,
+  UserDeleteOutlined,
+} from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
-import { useRef } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -11,8 +14,16 @@ import {
 } from "@/api/game/queries.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
+import {
+  Dropdown,
+  IconButton,
+  Menu,
+  MenuItem,
+  MenuItemVariant,
+  MenuSeparator,
+} from "@/UI";
+import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
-import { PopupMenu, PopupMenuElement } from "../PopupMenu";
 import styles from "./GameVideo.module.scss";
 
 type VideoMenuProps = {
@@ -23,7 +34,7 @@ type VideoMenuProps = {
 export const VideoMenu = observer(
   ({ userId, isCurrentUserGM }: VideoMenuProps) => {
     const { t } = useTranslation();
-    const tippyInstanceRef = useRef<Instance | null>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { mutate: updateGM } = useUpdateGameGMMutation();
     const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
     const { gamesStore } = rootStore;
@@ -34,7 +45,7 @@ export const VideoMenu = observer(
       if (isCurrentUserGM) return;
 
       updateGM({ gameId: activeGameId, userId });
-      tippyInstanceRef.current?.hide();
+      setIsMenuOpen(false);
     };
 
     const onKill = (killed: string[]) => {
@@ -45,7 +56,7 @@ export const VideoMenu = observer(
         isExtraSpeech: false,
         killed: [...killed, userId],
       });
-      tippyInstanceRef.current?.hide();
+      setIsMenuOpen(false);
     };
 
     const onGiveSpeak = () => {
@@ -54,32 +65,51 @@ export const VideoMenu = observer(
       updateGameFlow({
         speaker: userId,
       });
-      tippyInstanceRef.current?.hide();
+      setIsMenuOpen(false);
     };
 
     return (
-      <PopupMenu
-        className={styles.videoMenu}
-        hideOnClick
-        onCreate={(instance) => (tippyInstanceRef.current = instance)}
-        content={
-          <>
-            <PopupMenuElement onClick={onUpdateGM}>
-              {t("videoMenu.doGM")}
-            </PopupMenuElement>
+      <div className={styles.menuContainer}>
+        <Dropdown
+          trigger={
+            <IconButton
+              icon={<MoreOutlined />}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              variant={ButtonVariant.Tertiary}
+              size={ButtonSize.Small}
+              active={isMenuOpen}
+              ariaLabel={t("videoMenu.title")}
+            />
+          }
+          content={
+            <Menu>
+              <MenuItem
+                icon={<CrownOutlined />}
+                label={t("videoMenu.doGM")}
+                onClick={onUpdateGM}
+                disabled={isCurrentUserGM}
+              />
 
-            <PopupMenuElement onClick={() => onKill(gameFlow.killed)}>
-              {t("videoMenu.kill")}
-            </PopupMenuElement>
+              <MenuItem
+                icon={<SoundOutlined />}
+                label={t("videoMenu.giveSpeak")}
+                onClick={onGiveSpeak}
+              />
 
-            <PopupMenuElement onClick={onGiveSpeak}>
-              {t("videoMenu.giveSpeak")}
-            </PopupMenuElement>
-          </>
-        }
-      >
-        <MoreOutlined className={styles.menu} />
-      </PopupMenu>
+              <MenuSeparator />
+
+              <MenuItem
+                icon={<UserDeleteOutlined />}
+                label={t("videoMenu.kill")}
+                onClick={() => onKill(gameFlow.killed)}
+              />
+            </Menu>
+          }
+          isOpen={isMenuOpen}
+          onToggle={setIsMenuOpen}
+          placement="bottom-end"
+        />
+      </div>
     );
   }
 );

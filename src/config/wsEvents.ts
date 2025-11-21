@@ -25,4 +25,5 @@ export enum wsEvents {
   toggleUserMicrophone = "toggleUserMicrophone",
   userCameraStatusChanged = "userCameraStatusChanged",
   userMicrophoneStatusChanged = "userMicrophoneStatusChanged",
+  batchToggleMicrophones = "batchToggleMicrophones",
 }

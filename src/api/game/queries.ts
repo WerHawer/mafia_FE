@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocketContext } from "@/context/SocketProvider.tsx";
@@ -36,19 +36,14 @@ export const useFetchActiveGamesQuery = () => {
 };
 
 export const useFetchActiveGamesWithStore = () => {
-  const {
-    data: games,
-    isLoading,
-    refetch,
-    ...rest
-  } = useFetchActiveGamesQuery();
+  const { data: games, ...rest } = useFetchActiveGamesQuery();
   const { setGames } = gamesStore;
 
   if (games) {
     setGames(games);
   }
 
-  return { games, isLoading, refetch, ...rest };
+  return { games, ...rest };
 };
 
 export const useCreateGameMutation = () => {
@@ -63,6 +58,17 @@ export const useGameQuery = (id: GameId) => {
     queryFn: () => fetchGame(id),
     select: ({ data }) => data,
   });
+};
+
+export const useFetchGameWithStore = (id: GameId) => {
+  const { data: game, ...rest } = useGameQuery(id);
+  const { updateGame } = gamesStore;
+
+  if (game) {
+    updateGame(game);
+  }
+
+  return { game, ...rest };
 };
 
 export const useAddUserToGameMutation = () => {

@@ -1,0 +1,107 @@
+@use "../../styles/theme.scss" as theme;
+@use "../../styles/mixins.scss" as mixins;
+
+.iconButton {
+  @include mixins.flexCenter;
+  min-width: 4rem;
+  height: 4rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: theme.$border-radius;
+  background-color: rgba(theme.$color-dark-secondary, 0.9);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: theme.$color-dark-secondary;
+    border-color: theme.$color-accent-primary;
+    transform: scale(1.05);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:focus-visible {
+    outline: 2px solid theme.$color-accent-primary;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &.active {
+    background-color: theme.$color-dark-secondary;
+    border-color: theme.$color-accent-primary;
+  }
+
+  &.small {
+    min-width: 3rem;
+    height: 3rem;
+
+    .icon {
+      font-size: 1.6rem;
+    }
+  }
+
+  &.medium {
+    min-width: 4rem;
+    height: 4rem;
+
+    .icon {
+      font-size: 2rem;
+    }
+  }
+
+  &.large {
+    min-width: 5rem;
+    height: 5rem;
+
+    .icon {
+      font-size: 2.4rem;
+    }
+  }
+
+  &.primary {
+    background-color: theme.$color-accent-primary;
+    border-color: theme.$color-accent-primary;
+
+    .icon {
+      color: theme.$color-dark-primary;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: darken(theme.$color-accent-primary, 10%);
+      border-color: darken(theme.$color-accent-primary, 10%);
+    }
+  }
+
+  &.secondary {
+    background-color: rgba(theme.$color-dark-secondary, 0.9);
+
+    .icon {
+      color: theme.$color-text-primary;
+    }
+  }
+
+  &.tertiary {
+    background-color: transparent;
+    border-color: transparent;
+
+    .icon {
+      color: theme.$color-text-primary;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: rgba(theme.$color-light-primary, 0.1);
+    }
+  }
+}
+
+.icon {
+  font-size: 2rem;
+  color: theme.$color-text-primary;
+  line-height: 1;
+}

@@ -5,7 +5,6 @@ import { UserId } from "@/types/user.types.ts";
 
 import { initialGameFlow } from "../helpers/createGameObj.ts";
 import {
-  GameId,
   IGame,
   IGameFlow,
   IGameShort,
@@ -16,23 +15,18 @@ import {
 export class GamesStore {
   _games: IGameShort[] = [];
   _activeGame: IGame | null = null;
-  _activeGameId: GameId = "";
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
     void makePersistable(this, {
       name: "Users_mobx_gameFlow",
-      properties: ["_activeGameId", "_games", "_activeGame"],
+      properties: ["_games", "_activeGame"],
       storage: sessionStorage,
     });
   }
 
   setGames(games: IGameShort[]) {
     this._games = games;
-  }
-
-  setActiveGameId(gameId: GameId) {
-    this._activeGameId = gameId;
   }
 
   updateGames(newGame: IGameShort) {
@@ -51,6 +45,10 @@ export class GamesStore {
 
   updateGame(game: IGame) {
     this._activeGame = game;
+  }
+
+  removeActiveGame() {
+    this._activeGame = null;
   }
 
   updateGameFlow(newFlow: Partial<IGameFlow>) {
@@ -120,8 +118,8 @@ export class GamesStore {
     return toJS(this._activeGame);
   }
 
-  get activeGameId() {
-    return toJS(this._activeGameId);
+  get activeGameId(): string | undefined {
+    return this.activeGame?.id;
   }
 
   get activeGameGm() {
