@@ -15,6 +15,7 @@ type MediaControlsProps = {
   onToggleCamera: () => void;
   onToggleMicrophone: () => void;
   canControl: boolean;
+  isMyAfterStart: boolean;
 };
 
 export const MediaControls = memo(
@@ -24,6 +25,7 @@ export const MediaControls = memo(
     onToggleCamera,
     onToggleMicrophone,
     canControl,
+    isMyAfterStart,
   }: MediaControlsProps) => {
     const handleCameraClick = () => {
       if (canControl) {
@@ -45,7 +47,11 @@ export const MediaControls = memo(
     };
 
     return (
-      <div className={styles.mediaControls}>
+      <div
+        className={classNames(styles.mediaControls, {
+          [styles.small]: isMyAfterStart,
+        })}
+      >
         <div
           className={classNames(styles.controlButton, {
             [styles.disabled]: !isMicrophoneEnabled,

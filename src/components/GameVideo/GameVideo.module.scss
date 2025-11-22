@@ -54,6 +54,7 @@
   object-fit: cover;
   height: 100%;
   width: auto;
+  transition: opacity 0.3s ease-out;
 
   &.widthProportion {
     width: 100%;

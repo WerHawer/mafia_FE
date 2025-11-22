@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import {
@@ -21,6 +21,8 @@ import { rootStore } from "@/store/rootStore.ts";
 
 import styles from "./GamePage.module.scss";
 
+const ANIMATION_DURATION = 400;
+
 const GamePage = observer(() => {
   const { id = "" } = useParams();
   const { usersStore, gamesStore } = rootStore;
@@ -30,7 +32,24 @@ const GamePage = observer(() => {
   const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
   const { shouldShowVideos } = useNightMode();
 
+  const [showNightMode, setShowNightMode] = useState(!shouldShowVideos);
+  const [isNightModeVisible, setIsNightModeVisible] =
+    useState(!shouldShowVideos);
+
   useGetUsersWithAddToStore(activeGamePlayers);
+
+  useEffect(() => {
+    if (!shouldShowVideos) {
+      setShowNightMode(true);
+      setIsNightModeVisible(true);
+    } else {
+      setIsNightModeVisible(false);
+      const timer = setTimeout(() => {
+        setShowNightMode(false);
+      }, ANIMATION_DURATION);
+      return () => clearTimeout(timer);
+    }
+  }, [shouldShowVideos]);
 
   useEffect(() => {
     if (!myId || !id) return;
@@ -59,10 +78,7 @@ const GamePage = observer(() => {
 
   return (
     <div
-      className={classNames(
-        styles.pageContainer,
-        !shouldShowVideos && styles.gap
-      )}
+      className={classNames(styles.pageContainer, showNightMode && styles.gap)}
     >
       <LiveKitMafiaRoom>
         <GMMenu />
@@ -73,7 +89,7 @@ const GamePage = observer(() => {
           <GameVideoContainer
             className={!shouldShowVideos ? styles.hidden : ""}
           />
-          {!shouldShowVideos && <NightMode />}
+          {showNightMode && <NightMode isVisible={isNightModeVisible} />}
         </div>
       </LiveKitMafiaRoom>
 

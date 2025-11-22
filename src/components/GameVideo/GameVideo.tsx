@@ -107,6 +107,9 @@ export const GameVideo = observer(
             isActive={isActive}
             container={containerRef.current}
             muted={participant.isLocal}
+            userName={currentUser?.nikName}
+            avatar={currentUser?.avatar}
+            isCameraEnabled={isCameraEnabled}
           />
 
           <MediaControls
@@ -115,6 +118,7 @@ export const GameVideo = observer(
             onToggleCamera={toggleCamera}
             onToggleMicrophone={toggleMicrophone}
             canControl={canControl}
+            isMyAfterStart={isMyAfterStart}
           />
 
           {currentUser && (

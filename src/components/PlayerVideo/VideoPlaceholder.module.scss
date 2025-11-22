@@ -1,0 +1,67 @@
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.placeholder {
+  @include mixins.flexCenter;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    theme.$color-dark-secondary 0%,
+    theme.$color-dark-tertiary 100%
+  );
+  border-radius: theme.$border-radius;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.avatar {
+  width: min(40vmin, 150px);
+  height: min(40vmin, 150px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: theme.$color-dark-tertiary;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  animation: scaleIn 0.25s ease-out 0.1s backwards;
+  flex-shrink: 0;
+}
+
+.initials {
+  @include mixins.flexCenter;
+  width: min(40vmin, 150px);
+  height: min(40vmin, 150px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  font-size: clamp(1.5rem, 4vmin, 4rem);
+  font-weight: 600;
+  color: theme.$color-text-primary;
+  user-select: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.25s ease-out 0.1s backwards;
+  flex-shrink: 0;
+}

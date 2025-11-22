@@ -3,6 +3,7 @@ import { Participant, Track } from "livekit-client";
 
 import { useCalculateProportions } from "@/components/PlayerVideo/useCalculateProportions.ts";
 import { useTrackConnection } from "@/components/PlayerVideo/useTrackConnetion.ts";
+import { VideoPlaceholder } from "@/components/PlayerVideo/VideoPlaceholder.tsx";
 
 import styles from "../GameVideo/GameVideo.module.scss";
 
@@ -12,6 +13,9 @@ type PlayerVideoProps = {
   muted?: boolean;
   isActive: boolean;
   container?: HTMLDivElement | null;
+  userName?: string;
+  avatar?: string;
+  isCameraEnabled?: boolean;
 };
 
 export const PlayerVideo = ({
@@ -20,6 +24,9 @@ export const PlayerVideo = ({
   muted = false,
   isActive,
   container,
+  userName,
+  avatar,
+  isCameraEnabled = true,
 }: PlayerVideoProps) => {
   const { videoRef, hasVideoTrack, audioRef } = useTrackConnection({
     track,
@@ -28,6 +35,8 @@ export const PlayerVideo = ({
   });
 
   const isWidthProportion = useCalculateProportions(container);
+  const shouldShowVideo = hasVideoTrack && isCameraEnabled;
+  const shouldShowPlaceholder = !shouldShowVideo && userName;
 
   return (
     <>
@@ -45,7 +54,8 @@ export const PlayerVideo = ({
         muted={muted}
         ref={videoRef}
         style={{
-          display: hasVideoTrack ? "block" : "none",
+          opacity: shouldShowVideo ? 1 : 0,
+          pointerEvents: shouldShowVideo ? "auto" : "none",
         }}
       />
 
@@ -57,12 +67,10 @@ export const PlayerVideo = ({
         style={{ display: "none" }}
       />
 
-      {/* Fallback when no video track */}
-      {!hasVideoTrack ? (
-        <div className={classNames(styles.video, styles.noVideo)}>
-          <div>No Video</div>
-        </div>
-      ) : null}
+      {/* Fallback when no video track or camera is disabled */}
+      {shouldShowPlaceholder && (
+        <VideoPlaceholder userName={userName} avatar={avatar} />
+      )}
     </>
   );
 };
