@@ -47,7 +47,7 @@ export const NightResultsModal = observer(
 
       sendMessage(wsEvents.updateSpeaker, {
         userId: killedPlayer[0],
-        gameId: activeGameId,
+        gameId: activeGameId!,
       });
 
       closeModal();

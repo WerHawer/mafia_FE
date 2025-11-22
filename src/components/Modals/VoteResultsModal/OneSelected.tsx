@@ -45,7 +45,7 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
 
     sendMessage(wsEvents.updateSpeaker, {
       userId: player,
-      gameId: activeGameId,
+      gameId: activeGameId!,
     });
   }, [activeGameId, player, sendMessage, updateGameFlow]);
 
