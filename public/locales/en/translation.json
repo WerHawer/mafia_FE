@@ -51,7 +51,14 @@
     "restart": "Restart",
     "night": "Night",
     "day": "Day",
-    "wakeUp": "Wake up:"
+    "wakeUp": "Wake up:",
+    "nightMode": {
+      "title": "Night Time",
+      "playerSubtitle": "The city sleeps, but evil is awake...",
+      "info1": "Videos are hidden during the night",
+      "info2": "Only GM can see and control the game",
+      "info3": "Wait for the morning to continue"
+    }
   },
 
   "speaker": {

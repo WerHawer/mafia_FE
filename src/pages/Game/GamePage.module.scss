@@ -10,6 +10,28 @@
   font-size: 1.8rem;
 }
 
+.gap {
+  gap: 50px;
+}
+
+.videoWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
 .rightContainer {
   @include mixins.flex(column, flex-start, center);
 }

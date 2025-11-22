@@ -14,7 +14,9 @@ import { GameVideoContainer } from "@/components/GameVideoContainer";
 import { GameVote } from "@/components/GameVote";
 import { GMMenu } from "@/components/GMMenu";
 import { LiveKitMafiaRoom } from "@/components/LiveKitMafiaRoom/LiveKitMafiaRoom.tsx";
+import { NightMode } from "@/components/NightMode";
 import { VideoConfig } from "@/components/VideoConfig";
+import { useNightMode } from "@/hooks/useNightMode.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
 import styles from "./GamePage.module.scss";
@@ -26,6 +28,7 @@ const GamePage = observer(() => {
   const { activeGamePlayers, removeActiveGame, updateGame } = gamesStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
+  const { shouldShowVideos } = useNightMode();
 
   useGetUsersWithAddToStore(activeGamePlayers);
 
@@ -55,13 +58,23 @@ const GamePage = observer(() => {
   }, [id, myId]);
 
   return (
-    <div className={styles.pageContainer}>
+    <div
+      className={classNames(
+        styles.pageContainer,
+        !shouldShowVideos && styles.gap
+      )}
+    >
       <LiveKitMafiaRoom>
         <GMMenu />
 
         <VideoConfig />
 
-        <GameVideoContainer />
+        <div className={styles.videoWrapper}>
+          <GameVideoContainer
+            className={!shouldShowVideos ? styles.hidden : ""}
+          />
+          {!shouldShowVideos && <NightMode />}
+        </div>
       </LiveKitMafiaRoom>
 
       <aside className={styles.rightContainer}>
