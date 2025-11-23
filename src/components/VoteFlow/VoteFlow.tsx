@@ -25,6 +25,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     gamesStore;
   const { mutate: voteForUser } = useVoteForUserMutation();
   const { mutate: addUserToProposed } = useAddUserToProposedMutation();
+  console.log("VoteFlow.tsx:24 | gameFlow : ", gameFlow);
 
   const votesForThisUser = useMemo(
     () => gameFlow.voted?.[userId] ?? [],
@@ -41,6 +42,10 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     () => (userId ? gameFlow.proposed.includes(userId) : false),
     [gameFlow.proposed, userId]
   );
+
+  const isThisUserProposed = useMemo(() => {
+    return gameFlow.proposed.includes(userId);
+  }, [gameFlow.proposed, userId]);
 
   const isVotedByThisUser = useMemo(() => {
     return amIVoted && votesForThisUser.includes(myId);
@@ -60,22 +65,43 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     gameFlow.isVote && gameFlow.proposed.includes(userId) && !isIDead;
 
   const onPropose = useCallback(() => {
-    if ((myId !== speaker && !isUserGM(myId)) || !userId || !activeGameId)
+    if (
+      (myId !== speaker && !isUserGM(myId)) ||
+      !userId ||
+      !activeGameId ||
+      isThisUserProposed
+    )
       return;
 
     addUserToProposed({ gameId: activeGameId, userId });
-  }, [activeGameId, addUserToProposed, isUserGM, myId, speaker, userId]);
+  }, [
+    activeGameId,
+    addUserToProposed,
+    isThisUserProposed,
+    isUserGM,
+    myId,
+    speaker,
+    userId,
+  ]);
 
   const onVote = useCallback(() => {
     if (!userId || !myId || !activeGameId) return;
-    if (amIVoted || isIGM) return;
+    if (amIVoted || isIGM || isVotedByThisUser) return;
 
     voteForUser({
       gameId: activeGameId,
       targetUserId: userId,
       voterId: myId,
     });
-  }, [userId, myId, activeGameId, amIVoted, isIGM, voteForUser]);
+  }, [
+    userId,
+    myId,
+    activeGameId,
+    amIVoted,
+    isIGM,
+    isVotedByThisUser,
+    voteForUser,
+  ]);
 
   useVoteResult({
     alivePlayers: activeGameAlivePlayers,
