@@ -26,7 +26,7 @@
     "@tanstack/react-query-devtools": "^5.24.0",
     "@tippyjs/react": "^4.2.6",
     "@types/crypto-js": "^4.2.2",
-    "axios": "1.8.2",
+    "axios": "1.12.0",
     "classnames": "^2.5.1",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
@@ -82,7 +82,7 @@
     "sass": "^1.83.4",
     "sass-migrator": "^2.3.1",
     "typescript": "^5.3.3",
-    "vite": "7.1.5",
+    "vite": "7.1.11",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }

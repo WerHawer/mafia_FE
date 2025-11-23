@@ -103,25 +103,19 @@ export const useConfigureVideo = (
 
       ctx.save();
       ctx.clearRect(0, 0, videoWidth, videoHeight);
-      ctx.scale(-1, 1);
+      ctx.scale(1, 1);
 
-      ctx.filter = "blur(2px)";
-      ctx.drawImage(
-        results.segmentationMask,
-        -videoWidth,
-        0,
-        videoWidth,
-        videoHeight
-      );
+      ctx.filter = "blur(2.5px)";
+      ctx.drawImage(results.segmentationMask, 0, 0, videoWidth, videoHeight);
 
       ctx.globalCompositeOperation = "source-in";
       ctx.filter = "none";
-      ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
+      ctx.drawImage(results.image, 0, 0, videoWidth, videoHeight);
 
       if (bgEffectsRef.current === bgEffects.blur) {
         ctx.globalCompositeOperation = "destination-over";
         ctx.filter = "blur(20px) brightness(0.97) saturate(1.1)";
-        ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
+        ctx.drawImage(results.image, 0, 0, videoWidth, videoHeight);
 
         ctx.globalCompositeOperation = "source-over";
         ctx.filter = "none";
@@ -163,18 +157,12 @@ export const useConfigureVideo = (
           offsetY = 0;
         }
 
-        ctx.filter = "blur(2px)";
-        ctx.drawImage(
-          results.segmentationMask,
-          -videoWidth,
-          0,
-          videoWidth,
-          videoHeight
-        );
+        ctx.filter = "blur(2.5px)";
+        ctx.drawImage(results.segmentationMask, 0, 0, videoWidth, videoHeight);
 
         ctx.globalCompositeOperation = "source-in";
         ctx.filter = "none";
-        ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
+        ctx.drawImage(results.image, 0, 0, videoWidth, videoHeight);
 
         ctx.globalCompositeOperation = "destination-over";
         ctx.filter = "none";
@@ -194,12 +182,12 @@ export const useConfigureVideo = (
       if (bgEffectsRef.current === bgEffects.none) {
         ctx.globalCompositeOperation = "destination-over";
         ctx.filter = "none";
-        ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
+        ctx.drawImage(results.image, 0, 0, videoWidth, videoHeight);
 
         ctx.globalCompositeOperation = "source-over";
         ctx.filter = "contrast(1.05) brightness(1.02)";
         ctx.globalAlpha = 0.2;
-        ctx.drawImage(results.image, -videoWidth, 0, videoWidth, videoHeight);
+        ctx.drawImage(results.image, 0, 0, videoWidth, videoHeight);
         ctx.globalAlpha = 1.0;
 
         ctx.restore();
