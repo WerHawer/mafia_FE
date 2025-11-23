@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import styles from "./NightMode.module.scss";
+import { StarryCanvas } from "./StarryCanvas.tsx";
 
 type NightModeProps = {
   isVisible?: boolean;
@@ -28,6 +29,8 @@ export const NightMode = observer(({ isVisible = true }: NightModeProps) => {
         [styles.hiding]: isHiding,
       })}
     >
+      <StarryCanvas isVisible={isVisible && !isHiding} />
+
       <MoonOutlined className={styles.nightIcon} />
 
       <h2 className={styles.nightTitle}>{t("game.nightMode.title")}</h2>

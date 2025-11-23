@@ -121,8 +121,19 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   useEffect(() => {
     if (!myId) return;
 
-    const existingSocket = io(SERVER, {
+    // Detect if using tunnel and use relative path for WebSocket
+    const isUsingTunnel =
+      window.location.hostname.includes("ngrok") ||
+      window.location.hostname.includes("loca.lt") ||
+      window.location.hostname.includes("cloudflare");
+
+    const socketUrl = isUsingTunnel ? window.location.origin : SERVER;
+
+    console.log("Connecting to WebSocket:", socketUrl);
+
+    const existingSocket = io(socketUrl, {
       // Enhanced connection options for better reliability
+      path: isUsingTunnel ? "/socket.io" : "/socket.io",
       transports: ["websocket", "polling"],
       upgrade: true,
       rememberUpgrade: true,

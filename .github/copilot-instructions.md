@@ -133,6 +133,7 @@ Examples of what to verify:
 
 # Code Implementation Guidelines
 - Use early returns whenever possible to make the code more readable
+- **Always add a blank line before return statements** for better code readability
 - Always use name.module.scss for styling HTML elements;
 - Use theme and mixins from the design system for consistent styling (`src/styles`)
 - Use descriptive variable and function/const names

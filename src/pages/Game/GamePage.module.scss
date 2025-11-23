@@ -6,12 +6,9 @@
   width: 100%;
   grid-template-columns: 1fr 23%;
   grid-template-rows: calc(100vh - 87px);
+  gap: 50px;
 
   font-size: 1.8rem;
-}
-
-.gap {
-  gap: 50px;
 }
 
 .videoWrapper {

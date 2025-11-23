@@ -1,73 +1,60 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useEffect, useState } from "react";
 
-import { useMockStreams } from "@/hooks/useMockStreams";
-import { rootStore } from "@/store/rootStore.ts";
+import { useGridLayout } from "@/hooks/useGridLayout.ts";
+import { useNightMode } from "@/hooks/useNightMode.ts";
 
-import { GameVideo } from "../GameVideo";
+import { NightMode } from "../NightMode";
 import styles from "./GameVideoContainer.module.scss";
+import { VideoGrid } from "./VideoGrid.tsx";
 
 type GameVideoContainerProps = {
   className?: string;
 };
 
+const ANIMATION_DURATION = 400;
+
 export const GameVideoContainer = observer(
   ({ className }: GameVideoContainerProps) => {
-    const { usersStore, gamesStore } = rootStore;
-    const { myId } = usersStore;
-    const { speaker, gameFlow } = gamesStore;
+    const { shouldShowVideos } = useNightMode();
+    const gridLayout = useGridLayout();
 
-    // Use the mock streams hook
-    const { allTracks, streamsLength } = useMockStreams();
+    const [showNightMode, setShowNightMode] = useState(!shouldShowVideos);
+    const [isNightModeVisible, setIsNightModeVisible] =
+      useState(!shouldShowVideos);
 
-    const usersMinMax = {
-      four: gameFlow.isStarted ? 5 : 4,
-      six: gameFlow.isStarted ? 7 : 6,
-      twelve: gameFlow.isStarted ? 13 : 12,
-    };
+    useEffect(() => {
+      if (!shouldShowVideos) {
+        setShowNightMode(true);
+        setIsNightModeVisible(true);
+      } else {
+        setIsNightModeVisible(false);
 
-    const useFixedGrids = {
-      two: streamsLength <= usersMinMax.four,
-      three:
-        streamsLength > usersMinMax.four && streamsLength <= usersMinMax.six,
-      four:
-        streamsLength > usersMinMax.six && streamsLength <= usersMinMax.twelve,
-      five:
-        streamsLength > usersMinMax.twelve || (!!speaker && speaker !== myId),
-    };
+        const timer = setTimeout(() => {
+          setShowNightMode(false);
+        }, ANIMATION_DURATION);
+
+        return () => clearTimeout(timer);
+      }
+    }, [shouldShowVideos]);
 
     return (
       <div
         className={classNames(
           styles.container,
           {
-            [styles.twoGrid]: useFixedGrids.two,
-            [styles.threeGrid]: useFixedGrids.three,
-            [styles.fourGrid]: useFixedGrids.four,
-            [styles.fiveGrid]: useFixedGrids.five,
+            [styles.twoGrid]: gridLayout.two,
+            [styles.threeGrid]: gridLayout.three,
+            [styles.fourGrid]: gridLayout.four,
+            [styles.fiveGrid]: gridLayout.five,
           },
           className
         )}
       >
-        {allTracks?.length > 0
-          ? allTracks.map((trackRef) => {
-              const isMy = trackRef.participant?.isLocal ?? false;
-              const isActive = speaker === trackRef.participant?.identity;
+        <VideoGrid />
 
-              // Get the actual track from the publication
-              const actualTrack = trackRef.publication?.track;
-
-              return (
-                <GameVideo
-                  key={trackRef.participant?.identity || "unknown"}
-                  participant={trackRef.participant!}
-                  track={actualTrack}
-                  isMyStream={isMy}
-                  isActive={isActive}
-                />
-              );
-            })
-          : null}
+        {showNightMode && <NightMode isVisible={isNightModeVisible} />}
       </div>
     );
   }

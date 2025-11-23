@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import {
@@ -14,14 +14,10 @@ import { GameVideoContainer } from "@/components/GameVideoContainer";
 import { GameVote } from "@/components/GameVote";
 import { GMMenu } from "@/components/GMMenu";
 import { LiveKitMafiaRoom } from "@/components/LiveKitMafiaRoom/LiveKitMafiaRoom.tsx";
-import { NightMode } from "@/components/NightMode";
 import { VideoConfig } from "@/components/VideoConfig";
-import { useNightMode } from "@/hooks/useNightMode.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
 import styles from "./GamePage.module.scss";
-
-const ANIMATION_DURATION = 400;
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
@@ -30,26 +26,8 @@ const GamePage = observer(() => {
   const { activeGamePlayers, removeActiveGame, updateGame } = gamesStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
-  const { shouldShowVideos } = useNightMode();
-
-  const [showNightMode, setShowNightMode] = useState(!shouldShowVideos);
-  const [isNightModeVisible, setIsNightModeVisible] =
-    useState(!shouldShowVideos);
 
   useGetUsersWithAddToStore(activeGamePlayers);
-
-  useEffect(() => {
-    if (!shouldShowVideos) {
-      setShowNightMode(true);
-      setIsNightModeVisible(true);
-    } else {
-      setIsNightModeVisible(false);
-      const timer = setTimeout(() => {
-        setShowNightMode(false);
-      }, ANIMATION_DURATION);
-      return () => clearTimeout(timer);
-    }
-  }, [shouldShowVideos]);
 
   useEffect(() => {
     if (!myId || !id) return;
@@ -77,19 +55,14 @@ const GamePage = observer(() => {
   }, [id, myId]);
 
   return (
-    <div
-      className={classNames(styles.pageContainer, showNightMode && styles.gap)}
-    >
+    <div className={styles.pageContainer}>
       <LiveKitMafiaRoom>
         <GMMenu />
 
         <VideoConfig />
 
         <div className={styles.videoWrapper}>
-          <GameVideoContainer
-            className={!shouldShowVideos ? styles.hidden : ""}
-          />
-          {showNightMode && <NightMode isVisible={isNightModeVisible} />}
+          <GameVideoContainer />
         </div>
       </LiveKitMafiaRoom>
 
