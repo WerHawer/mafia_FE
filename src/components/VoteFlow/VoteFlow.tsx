@@ -86,22 +86,14 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
 
   const onVote = useCallback(() => {
     if (!userId || !myId || !activeGameId) return;
-    if (amIVoted || isIGM || isVotedByThisUser) return;
+    if (amIVoted || isIGM) return;
 
     voteForUser({
       gameId: activeGameId,
       targetUserId: userId,
       voterId: myId,
     });
-  }, [
-    userId,
-    myId,
-    activeGameId,
-    amIVoted,
-    isIGM,
-    isVotedByThisUser,
-    voteForUser,
-  ]);
+  }, [userId, myId, activeGameId, amIVoted, isIGM, voteForUser]);
 
   useVoteResult({
     alivePlayers: activeGameAlivePlayers,
