@@ -14,10 +14,9 @@ import styles from "./CheckRole.module.scss";
 
 type CheckRoleProps = {
   userId: UserId;
-  enabled?: boolean;
 };
 
-export const CheckRole = observer(({ userId, enabled }: CheckRoleProps) => {
+export const CheckRole = observer(({ userId }: CheckRoleProps) => {
   const { t } = useTranslation();
   const { gamesStore, myRole, isIGM } = rootStore;
   const { getUserRole, gameFlow, isUserGM } = gamesStore;
@@ -35,6 +34,8 @@ export const CheckRole = observer(({ userId, enabled }: CheckRoleProps) => {
   const userCheckedByDon = donCheck === userId;
 
   const isCheckDisabled = useMemo(() => {
+    if (gameFlow.day < 2) return true;
+
     if (isISheriff) {
       return !!sheriffCheck;
     }
@@ -44,7 +45,7 @@ export const CheckRole = observer(({ userId, enabled }: CheckRoleProps) => {
     }
 
     return false;
-  }, [donCheck, isIDon, isISheriff, sheriffCheck]);
+  }, [donCheck, gameFlow.day, isIDon, isISheriff, sheriffCheck]);
 
   const onCheckRole = useCallback(() => {
     if (isCheckDisabled) return;
@@ -86,10 +87,6 @@ export const CheckRole = observer(({ userId, enabled }: CheckRoleProps) => {
     updateGameFlow,
     userId,
   ]);
-
-  if (!enabled) {
-    return null;
-  }
 
   return (
     <>

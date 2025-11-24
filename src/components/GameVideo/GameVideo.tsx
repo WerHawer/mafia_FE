@@ -9,9 +9,8 @@ import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
 import { MediaControls } from "@/components/MediaControls";
 import { Shoot } from "@/components/Shoot";
 import { VoteFlow } from "@/components/VoteFlow";
-import { useMediaControls } from "@/hooks/useMediaControls.ts";
+import { useGameVideo } from "@/hooks/useGameVideo.ts";
 import { rootStore } from "@/store/rootStore.ts";
-import { Roles } from "@/types/game.types.ts";
 
 import { PlayerVideo } from "../PlayerVideo";
 import styles from "./GameVideo.module.scss";
@@ -35,41 +34,25 @@ export const GameVideo = observer(
     isActive = false,
   }: GameVideoProps) => {
     const { t } = useTranslation();
-    const { usersStore, gamesStore, isIGM, myRole, isIWakedUp, isICanCheck } =
-      rootStore;
-    const { getUser, me, myId } = usersStore;
-    const { isUserGM, gameFlow, activeGameId } = gamesStore;
-    const { shoot = {}, killed = [], day, isStarted } = gameFlow;
+    const { gamesStore } = rootStore;
+    const { isUserGM } = gamesStore;
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const userId = participant.identity;
-    const currentUser = isMyStream ? me : getUser(userId);
-    const isGM = isUserGM(userId);
-    const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
-    const isIDidShot = Object.values(shoot).some((shooters) =>
-      shooters.includes(myId)
-    );
-    const isUserDead = killed.includes(userId);
-    const isMyAfterStart = isMyStream && isStarted;
-    const isShootEnabled =
-      isIGM || (isIMafia && isIWakedUp && !isGM && day > 1 && !isIDidShot);
-
-    const isCheckRoleEnabled =
-      isIGM || (isICanCheck && !isMyStream && !isGM && !isUserDead);
-
     const {
+      userId,
+      currentUser,
+      isGM,
+      isUserDead,
+      isMyAfterStart,
+      isShootEnabled,
+      isCheckRoleEnabled,
       isCameraEnabled,
       isMicrophoneEnabled,
       toggleCamera,
       toggleMicrophone,
       canControl,
-    } = useMediaControls({
-      participant,
-      isMyStream,
-      isIGM,
-      roomId: activeGameId || "",
-      requesterId: myId,
-    });
+      gameFlow,
+    } = useGameVideo({ participant, isMyStream });
 
     return (
       <Draggable
@@ -89,7 +72,7 @@ export const GameVideo = observer(
         >
           <VoteFlow isMyStream={isMyStream} userId={userId} />
 
-          <CheckRole userId={userId} enabled={isCheckRoleEnabled} />
+          {isCheckRoleEnabled ? <CheckRole userId={userId} /> : null}
 
           {isShootEnabled && <Shoot userId={userId} />}
 
@@ -97,7 +80,7 @@ export const GameVideo = observer(
             <div className={styles.deadOverlay}>{t("gameVideo.dead")}</div>
           )}
 
-          {isIGM && !isMyStream && currentUser && (
+          {rootStore.isIGM && !isMyStream && currentUser && (
             <VideoMenu userId={currentUser.id} isCurrentUserGM={isGM} />
           )}
 
