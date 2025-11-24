@@ -12,6 +12,8 @@ import { VoteFlow } from "@/components/VoteFlow";
 import { useGameVideo } from "@/hooks/useGameVideo.ts";
 import { useIsSpeaking } from "@/hooks/useIsSpeaking.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { Roles } from "@/types/game.types.ts";
+import { RoleIcon } from "@/UI/RoleIcon";
 
 import { PlayerVideo } from "../PlayerVideo";
 import styles from "./GameVideo.module.scss";
@@ -77,6 +79,10 @@ export const GameVideo = observer(
 
           {isShootEnabled && <Shoot userId={userId} />}
 
+          <div className={styles.gmIconContainer}>
+            {isGM && <RoleIcon role={Roles.GM} size="l" />}
+          </div>
+
           {isUserDead && !isMyStream && (
             <div className={styles.deadOverlay}>{t("gameVideo.dead")}</div>
           )}
@@ -103,6 +109,8 @@ export const GameVideo = observer(
             onToggleMicrophone={toggleMicrophone}
             canControl={canControl}
             isMyAfterStart={isMyAfterStart}
+            isIGM={rootStore.isIGM}
+            isMyStream={isMyStream}
           />
 
           {currentUser && (

@@ -26,7 +26,6 @@ export const VideoUserInfo = observer(
     return (
       <div className={styles.userInfo}>
         {isIGM && !isGM && <RoleIcon role={role} />}
-        {isGM && <RoleIcon role={role} />}
 
         <div>
           {userName} {userNumber ? `#${userNumber}` : ""}
