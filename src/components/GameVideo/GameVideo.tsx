@@ -10,6 +10,7 @@ import { MediaControls } from "@/components/MediaControls";
 import { Shoot } from "@/components/Shoot";
 import { VoteFlow } from "@/components/VoteFlow";
 import { useGameVideo } from "@/hooks/useGameVideo.ts";
+import { useIsSpeaking } from "@/hooks/useIsSpeaking.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
 import { PlayerVideo } from "../PlayerVideo";
@@ -34,8 +35,6 @@ export const GameVideo = observer(
     isActive = false,
   }: GameVideoProps) => {
     const { t } = useTranslation();
-    const { gamesStore } = rootStore;
-    const { isUserGM } = gamesStore;
     const containerRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -54,6 +53,8 @@ export const GameVideo = observer(
       gameFlow,
     } = useGameVideo({ participant, isMyStream });
 
+    const isSpeaking = useIsSpeaking(participant);
+
     return (
       <Draggable
         disabled={!isMyAfterStart}
@@ -66,7 +67,7 @@ export const GameVideo = observer(
             [styles.myVideoContainer]: isMyAfterStart,
             [styles.myVideoActive]: isMyStream,
             [styles.active]: isActive,
-            [styles.gmOverlay]: isUserGM(userId),
+            [styles.speaking]: isSpeaking,
           })}
           ref={containerRef}
         >

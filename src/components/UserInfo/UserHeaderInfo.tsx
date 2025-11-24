@@ -2,10 +2,10 @@ import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
+import noAvatar from "@/assets/images/noAvatar.jpg";
 import { routes } from "@/router/routs.ts";
 import { usersStore } from "@/store/usersStore.ts";
 
-import noAvatar from "../../assets/images/noAvatar.jpg";
 import styles from "./UserInfo.module.scss";
 
 export const UserHeaderInfo = observer(() => {
