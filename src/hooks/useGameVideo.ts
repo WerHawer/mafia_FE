@@ -54,6 +54,7 @@ export const useGameVideo = ({
     userId,
     currentUser,
     isGM,
+    isIGM,
     isUserDead,
     isMyAfterStart,
     isShootEnabled,

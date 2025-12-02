@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { memo } from "react";
 
 import noAvatar from "@/assets/images/noAvatar.jpg";
@@ -7,16 +8,19 @@ import styles from "./VideoPlaceholder.module.scss";
 type VideoPlaceholderProps = {
   userName: string;
   avatar?: string;
+  isSpeaking?: boolean;
 };
 
 export const VideoPlaceholder = memo(
-  ({ userName, avatar }: VideoPlaceholderProps) => {
+  ({ userName, avatar, isSpeaking = false }: VideoPlaceholderProps) => {
     return (
       <div className={styles.placeholder}>
         <img
           src={avatar ?? noAvatar}
           alt={userName}
-          className={styles.avatar}
+          className={classNames(styles.avatar, {
+            [styles.speaking]: isSpeaking,
+          })}
         />
       </div>
     );

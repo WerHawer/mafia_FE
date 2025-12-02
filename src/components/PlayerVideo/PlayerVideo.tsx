@@ -16,6 +16,7 @@ type PlayerVideoProps = {
   userName?: string;
   avatar?: string;
   isCameraEnabled?: boolean;
+  isSpeaking?: boolean;
 };
 
 export const PlayerVideo = ({
@@ -27,6 +28,7 @@ export const PlayerVideo = ({
   userName,
   avatar,
   isCameraEnabled = true,
+  isSpeaking = false,
 }: PlayerVideoProps) => {
   const { videoRef, hasVideoTrack, audioRef } = useTrackConnection({
     track,
@@ -69,7 +71,11 @@ export const PlayerVideo = ({
 
       {/* Fallback when no video track or camera is disabled */}
       {shouldShowPlaceholder && (
-        <VideoPlaceholder userName={userName} avatar={avatar} />
+        <VideoPlaceholder
+          userName={userName}
+          avatar={avatar}
+          isSpeaking={isSpeaking}
+        />
       )}
     </>
   );

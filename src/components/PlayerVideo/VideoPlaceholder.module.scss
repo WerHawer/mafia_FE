@@ -21,6 +21,19 @@
   }
 }
 
+@keyframes speakingPulse {
+  0% {
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.4),
+      0 0 0 0 rgba(theme.$color-info, 0.7);
+  }
+  100% {
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.4),
+      0 0 0 24px rgba(theme.$color-info, 0);
+  }
+}
+
 .placeholder {
   @include mixins.flexCenter;
   position: absolute;
@@ -48,6 +61,13 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   animation: scaleIn 0.25s ease-out 0.1s backwards;
   flex-shrink: 0;
+  transition: box-shadow 0.3s ease;
+
+  &.speaking {
+    animation:
+      scaleIn 0.25s ease-out 0.1s backwards,
+      speakingPulse 1.5s ease-in-out infinite;
+  }
 }
 
 .initials {
@@ -64,4 +84,11 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   animation: scaleIn 0.25s ease-out 0.1s backwards;
   flex-shrink: 0;
+  transition: box-shadow 0.3s ease;
+
+  &.speaking {
+    animation:
+      scaleIn 0.25s ease-out 0.1s backwards,
+      speakingPulse 1.5s ease-in-out infinite;
+  }
 }

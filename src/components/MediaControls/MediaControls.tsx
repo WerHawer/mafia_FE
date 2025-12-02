@@ -5,7 +5,9 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import classNames from "classnames";
-import { KeyboardEvent, memo } from "react";
+import { memo } from "react";
+
+import { SoundIndicator } from "@/components/SoundIndicator";
 
 import styles from "./MediaControls.module.scss";
 
@@ -18,6 +20,8 @@ type MediaControlsProps = {
   isMyAfterStart: boolean;
   isIGM?: boolean;
   isMyStream?: boolean;
+  isSpeaking?: boolean;
+  isUserGM?: boolean;
 };
 
 export const MediaControls = memo(
@@ -30,6 +34,7 @@ export const MediaControls = memo(
     isMyAfterStart,
     isIGM = false,
     isMyStream = false,
+    isSpeaking = false,
   }: MediaControlsProps) => {
     const handleCameraClick = () => {
       if (canControl) {
@@ -43,18 +48,26 @@ export const MediaControls = memo(
       }
     };
 
-    const handleKeyDown = (e: KeyboardEvent, callback: () => void) => {
+    const handleKeyDown = (e: React.KeyboardEvent, callback: () => void) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         callback();
       }
     };
+    // Показуємо індикатор звуку замість мікрофона якщо:
+    // - є відео (камера ввімкнена)
+    // - людина говорить
+    // - це не мій стрім (користувач не бачить свій індикатор)
+    // - мікрофон ввімкнений
+    const showSoundIndicator =
+      isCameraEnabled && isSpeaking && !isMyStream && !isIGM;
 
     // Логіка відображення контролів:
     // 1. GM бачить всі контроли для всіх
     // 2. Власні контроли бачать всі
     // 3. Інші гравці бачать тільки вимкнений мікрофон інших гравців
-    const shouldShowMicrophone = isIGM || isMyStream || !isMicrophoneEnabled;
+    const shouldShowMicrophone =
+      isIGM || isMyStream || !isMicrophoneEnabled || showSoundIndicator;
     const shouldShowCamera = isIGM || isMyStream;
 
     return (
@@ -63,7 +76,7 @@ export const MediaControls = memo(
           [styles.small]: isMyAfterStart,
         })}
       >
-        {shouldShowMicrophone && (
+        {shouldShowMicrophone ? (
           <div
             className={classNames(styles.controlButton, {
               [styles.disabled]: !isMicrophoneEnabled,
@@ -77,13 +90,15 @@ export const MediaControls = memo(
               isMicrophoneEnabled ? "Вимкнути мікрофон" : "Увімкнути мікрофон"
             }
           >
-            {isMicrophoneEnabled ? (
+            {showSoundIndicator ? (
+              <SoundIndicator />
+            ) : isMicrophoneEnabled ? (
               <AudioOutlined className={styles.icon} />
             ) : (
               <AudioMutedOutlined className={styles.icon} />
             )}
           </div>
-        )}
+        ) : null}
 
         {shouldShowCamera && (
           <div

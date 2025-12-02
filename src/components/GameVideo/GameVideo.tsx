@@ -43,6 +43,7 @@ export const GameVideo = observer(
       userId,
       currentUser,
       isGM,
+      isIGM,
       isUserDead,
       isMyAfterStart,
       isShootEnabled,
@@ -69,7 +70,7 @@ export const GameVideo = observer(
             [styles.myVideoContainer]: isMyAfterStart,
             [styles.myVideoActive]: isMyStream,
             [styles.active]: isActive,
-            [styles.speaking]: isSpeaking,
+            [styles.speaking]: isSpeaking && !isMyStream,
           })}
           ref={containerRef}
         >
@@ -87,7 +88,7 @@ export const GameVideo = observer(
             <div className={styles.deadOverlay}>{t("gameVideo.dead")}</div>
           )}
 
-          {rootStore.isIGM && !isMyStream && currentUser && (
+          {isIGM && !isMyStream && currentUser && (
             <VideoMenu userId={currentUser.id} isCurrentUserGM={isGM} />
           )}
 
@@ -100,6 +101,7 @@ export const GameVideo = observer(
             userName={currentUser?.nikName}
             avatar={currentUser?.avatar}
             isCameraEnabled={isCameraEnabled}
+            isSpeaking={isSpeaking && !isMyStream}
           />
 
           <MediaControls
@@ -109,8 +111,9 @@ export const GameVideo = observer(
             onToggleMicrophone={toggleMicrophone}
             canControl={canControl}
             isMyAfterStart={isMyAfterStart}
-            isIGM={rootStore.isIGM}
+            isIGM={isIGM}
             isMyStream={isMyStream}
+            isSpeaking={isSpeaking && !isMyStream}
           />
 
           {currentUser && (
