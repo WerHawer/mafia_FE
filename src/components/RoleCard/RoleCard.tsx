@@ -24,6 +24,7 @@ type RoleCardProps = {
   width?: number;
   height?: number;
   index?: number;
+  onClick?: () => void;
 };
 
 export const RoleCard = ({
@@ -31,6 +32,7 @@ export const RoleCard = ({
   index,
   width,
   height,
+  onClick,
 }: RoleCardProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -50,7 +52,8 @@ export const RoleCard = ({
   const handleClick = () => {
     if (isFlipped) return;
 
-    setIsFlipped(!isFlipped);
+    onClick?.();
+    setIsFlipped(true);
   };
 
   const style = {

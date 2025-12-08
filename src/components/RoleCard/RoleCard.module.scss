@@ -17,6 +17,7 @@
 
 .flipped {
   transform: rotateZ(-27deg) rotateY(-180deg) translate(117px);
+  cursor: default;
 }
 
 .front,

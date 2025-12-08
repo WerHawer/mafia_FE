@@ -5,17 +5,6 @@
   height: 100%;
 }
 
-.playerPanel {
-  @include mixins.flex(row, space-between, center);
-  height: 100%;
-  width: 100%;
-  gap: 10px;
-}
-
-.roleCardContainer {
-  position: fixed;
-}
-
 .fakeCard {
   position: fixed;
   top: 0;

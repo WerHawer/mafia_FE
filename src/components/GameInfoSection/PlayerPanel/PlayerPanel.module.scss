@@ -1,0 +1,80 @@
+@use "../../../styles/mixins.scss";
+
+.playerPanel {
+  @include mixins.flex(row, space-between, center);
+  height: 100%;
+  width: 100%;
+  gap: 10px;
+}
+
+.roleCardContainer {
+  position: fixed;
+}
+
+.infoContainer {
+  @include mixins.flex(column, center, start);
+  gap: 8px;
+  margin-left: 105px;
+
+  opacity: 0;
+  animation: fadeIn 0.4s ease-in-out 0.2s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dayNightSection {
+  @include mixins.flex(row, center, center);
+}
+
+.dayNightText {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow:
+    2px 2px 3px rgba(0, 0, 0, 0.65),
+    0 0 9px rgba(0, 0, 0, 0.45);
+}
+
+.roleSection {
+  @include mixins.flex(row, center, center);
+  gap: 12px;
+}
+
+.roleLabel {
+  font-weight: 600;
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.7),
+    0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.roleValue {
+  font-weight: 700;
+  text-transform: capitalize;
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.8),
+    0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+.timerSection {
+  @include mixins.flex(row, center, center);
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.timerPlaceholder {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  text-shadow:
+    1px 1px 1px rgba(0, 0, 0, 0.6),
+    0 0 4px rgba(0, 0, 0, 0.4);
+}
