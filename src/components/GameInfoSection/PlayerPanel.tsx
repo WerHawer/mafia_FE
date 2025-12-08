@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { rootStore } from "@/store/rootStore.ts";
 import { Roles } from "@/types/game.types";
@@ -13,6 +13,7 @@ import styles from "./GameInfoSection.module.scss";
 export const PlayerPanel = observer(() => {
   const { gamesStore, usersStore, myRole } = rootStore;
   const { gameFlow, activeGameRoles } = gamesStore;
+  const { isStarted, isNight } = gameFlow;
   const { myId } = usersStore;
 
   const roleIndex = useMemo(() => {
@@ -29,7 +30,7 @@ export const PlayerPanel = observer(() => {
 
   return (
     <div className={styles.playerPanel}>
-      {myRole && gameFlow.isStarted ? (
+      {myRole && isStarted ? (
         <motion.div
           className={styles.roleCardContainer}
           {...playerCardAnimation}
@@ -38,9 +39,9 @@ export const PlayerPanel = observer(() => {
         </motion.div>
       ) : null}
 
-      {gameFlow.isStarted ? <DealingAnimation /> : null}
+      {isStarted ? <DealingAnimation /> : null}
 
-      {gameFlow.isNight ? <p>Night</p> : <p>Day</p>}
+      {!isStarted ? <p>Waiting for start...</p> : null}
     </div>
   );
 });

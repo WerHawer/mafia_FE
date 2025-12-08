@@ -1,19 +1,141 @@
 @use "../../styles/theme.scss";
 @use "../../styles/mixins.scss";
 
-.container {
-  height: 100%;
-  padding: 1rem;
+.toggleButton {
+  @include mixins.rounded(theme.$border-radius-big);
+  @include mixins.flex(row, center, center);
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  padding: 12px 16px;
+  background-color: theme.$color-dark-secondary;
+  border: 1px solid rgba(theme.$color-accent-primary, 0.7);
+  color: theme.$color-text-primary;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 999;
+  gap: 8px;
+  transition: all 0.3s ease;
+  border-radius: theme.$border-radius-big 0 0 theme.$border-radius-big;
+
+  &:hover {
+    background-color: theme.$color-dark-tertiary;
+    border-color: theme.$color-accent-primary;
+  }
+}
+
+.badge {
+  @include mixins.flex(row, center, center);
+  @include mixins.rounded(50%);
+  @include mixins.size(24px);
+  background-color: theme.$color-accent-primary;
+  color: theme.$color-dark-primary;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+.panel {
+  @include mixins.flex(column);
+  @include mixins.rounded(
+    theme.$border-radius-big 0 0 theme.$border-radius-big
+  );
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100vh;
+  background-color: theme.$color-dark-secondary;
+  border-left: 1px solid rgba(theme.$color-accent-primary, 0.5);
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+}
+
+.panelHeader {
+  @include mixins.flex(row, space-between, center);
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(theme.$color-accent-primary, 0.5);
+
+  h3 {
+    color: theme.$color-text-primary;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+  }
+}
+
+.closeButton {
+  @include mixins.flex(row, center, center);
+  @include mixins.size(32px);
+  @include mixins.rounded(50%);
+  background-color: transparent;
+  border: 1px solid rgba(theme.$color-accent-primary, 0.5);
+  color: theme.$color-text-primary;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(theme.$color-accent-primary, 0.2);
+    border-color: theme.$color-accent-primary;
+  }
 }
 
 .listContainer {
-  height: 85%;
+  @include mixins.customScrollbar;
+  flex: 1;
+  padding: 16px 20px;
+  overflow-y: auto;
 }
 
 .list {
   @include mixins.flex(column, flex-start, flex-start);
-  flex-wrap: wrap;
-  max-height: 100%;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
-  font-size: 1.2rem;
+.listItem {
+  @include mixins.rounded(theme.$border-radius);
+  width: 100%;
+  padding: 12px 16px;
+  background-color: theme.$color-dark-tertiary;
+  color: theme.$color-text-primary;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(theme.$color-accent-primary, 0.1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

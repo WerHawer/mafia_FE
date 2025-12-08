@@ -13,8 +13,12 @@
   background: theme.$overlay-color;
   padding: 2rem;
 
+  transition: opacity 0.3s ease;
+
   &.hide {
-    display: none;
+    opacity: 0;
+    transform: translate(-200vw, -200vh);
+    pointer-events: none;
   }
 }
 
@@ -157,7 +161,7 @@
 }
 
 .buttonContainer {
-  @include mixins.flex(row, space-between);
+  @include mixins.flex(row, end);
   width: 100%;
   margin-top: auto;
   gap: 1.5rem;

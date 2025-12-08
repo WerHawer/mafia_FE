@@ -1,27 +1,22 @@
-import { useRoomContext } from "@livekit/components-react";
-import { LocalVideoTrack, Track } from "livekit-client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import { videoOptions } from "@/config/video.ts";
 import { useConfigureVideo } from "@/hooks/useConfigureVideo.ts";
-import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
+import { usePublishVideoTrack } from "@/hooks/usePublishVideoTrack.ts";
 import { UserVideoSettings } from "@/types/user.types.ts";
 
-const FPS = 30;
-
-export const useCustomVideo = () => {
+export const useCustomVideo = (
+  originalStream: MediaStream | null,
+  settings?: { withBlur: boolean; imageURL: string } | null
+) => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
-  const [videoSettings, setVideoSettings] = useState<UserVideoSettings>({
-    withBlur: true,
-    imageURL: "",
-  });
+  const [videoSettings, setVideoSettings] = useState<UserVideoSettings>(
+    settings ?? {
+      withBlur: true,
+      imageURL: "",
+    }
+  );
 
-  const room = useRoomContext();
-
-  const originalStream = useUserMediaStream({
-    audio: false,
-    video: videoOptions,
-  });
+  const { publishVideoTrack } = usePublishVideoTrack();
 
   const {
     setImageURL,
@@ -38,45 +33,21 @@ export const useCustomVideo = () => {
   }, [setVideoSettings, withBlur, imageURL]);
 
   useEffect(() => {
-    if (!isSaved || !canvasRef.current || !originalStream || !room) return;
+    if (!isSaved || !canvasRef.current || !originalStream) return;
 
-    if (room.state !== "connected") {
-      return;
-    }
+    void publishVideoTrack(canvasRef.current);
+  }, [canvasRef, isSaved, originalStream, publishVideoTrack]);
 
-    const canvas = canvasRef.current;
-    const videoStream = canvas.captureStream(FPS);
+  const applySettings = useCallback(
+    (settings: UserVideoSettings) => {
+      setImageURL(settings.imageURL);
+      setWithBlur(settings.withBlur);
+      setVideoSettings(settings);
 
-    const [canvasVideoTrack] = videoStream.getVideoTracks();
-
-    if (!canvasVideoTrack) {
-      console.error("VideoConfig: No video track found in canvas stream");
-
-      return;
-    }
-
-    const localVideoTrack = new LocalVideoTrack(canvasVideoTrack);
-
-    const existingVideoTracks = Array.from(
-      room.localParticipant.trackPublications.values()
-    ).filter((pub) => pub.kind === Track.Kind.Video);
-
-    const unpublishPromises = existingVideoTracks.map(async (publication) => {
-      if (publication.track) {
-        await room.localParticipant.unpublishTrack(publication.track);
-      }
-    });
-
-    Promise.all(unpublishPromises)
-      .then(() => {
-        return room.localParticipant.publishTrack(localVideoTrack, {
-          source: Track.Source.Camera, // Set source when publishing
-        });
-      })
-      .catch((error) => {
-        console.error("VideoConfig: Failed to replace video track:", error);
-      });
-  }, [canvasRef, isSaved, room, originalStream]);
+      setIsSaved(true);
+    },
+    [setImageURL, setWithBlur]
+  );
 
   return {
     isStreamReady: !!originalStream,
@@ -91,5 +62,6 @@ export const useCustomVideo = () => {
     setWithBlur,
     videoSettings,
     setVideoSettings,
+    applySettings,
   };
 };

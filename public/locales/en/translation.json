@@ -130,6 +130,8 @@
     "disableMockStreams": "Disable Mock Streams",
     "muteAll": "Mute All",
     "unmuteAll": "Unmute All",
+    "restartGame": "Restart Game",
+    "videoSettings": "Video Settings",
     "leaveGame": "Leave Game"
   }
 }

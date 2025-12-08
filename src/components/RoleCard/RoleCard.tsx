@@ -48,6 +48,8 @@ export const RoleCard = ({
   const roleImage = roleImages[role as keyof typeof roleImages];
 
   const handleClick = () => {
+    if (isFlipped) return;
+
     setIsFlipped(!isFlipped);
   };
 

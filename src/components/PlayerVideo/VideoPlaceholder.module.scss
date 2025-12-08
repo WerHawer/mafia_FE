@@ -62,6 +62,7 @@
   animation: scaleIn 0.25s ease-out 0.1s backwards;
   flex-shrink: 0;
   transition: box-shadow 0.3s ease;
+  pointer-events: none;
 
   &.speaking {
     animation:

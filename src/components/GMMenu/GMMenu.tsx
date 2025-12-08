@@ -4,6 +4,8 @@ import {
   CrownOutlined,
   LogoutOutlined,
   MoreOutlined,
+  ReloadOutlined,
+  SettingOutlined,
   VideoCameraAddOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
@@ -16,17 +18,23 @@ import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
 import styles from "./GMMenu.module.scss";
 
-export const GMMenu = observer(() => {
+type GMMenuProps = {
+  onOpenVideoConfig: () => void;
+};
+
+export const GMMenu = observer(({ onOpenVideoConfig }: GMMenuProps) => {
   const { t } = useTranslation();
   const {
     isMenuOpen,
     setIsMenuOpen,
     isIGM,
     mockStreamsEnabled,
+    gameFlow,
     onMakeMeGM,
     onToggleMockStreams,
     onMuteAll,
     onUnmuteAll,
+    onRestartGame,
     onLeaveGame,
   } = useGMMenu();
 
@@ -85,9 +93,32 @@ export const GMMenu = observer(() => {
                   onClick={onUnmuteAll}
                 />
 
+                {gameFlow.isStarted && (
+                  <>
+                    <MenuSeparator />
+
+                    <MenuItem
+                      icon={<ReloadOutlined />}
+                      label={t("gmMenu.restartGame")}
+                      onClick={onRestartGame}
+                    />
+                  </>
+                )}
+
                 <MenuSeparator />
               </>
             )}
+
+            <MenuItem
+              icon={<SettingOutlined />}
+              label={t("gmMenu.videoSettings")}
+              onClick={() => {
+                onOpenVideoConfig();
+                setIsMenuOpen(false);
+              }}
+            />
+
+            <MenuSeparator />
 
             <MenuItem
               icon={<LogoutOutlined />}

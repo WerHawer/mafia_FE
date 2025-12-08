@@ -1,8 +1,6 @@
 import { useRef, useState } from "react";
 import { useMount, useUnmount } from "react-use";
 
-import { streamStore } from "@/store/streamsStore.ts";
-
 export const useUserMediaStream = (options: MediaStreamConstraints) => {
   const isFirstRender = useRef(true);
   const [stream, setStream] = useState<MediaStream | null>(null);

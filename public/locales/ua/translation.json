@@ -133,6 +133,8 @@
     "disableMockStreams": "Вимкнути тестові потоки",
     "muteAll": "Вимкнути звук всім",
     "unmuteAll": "Увімкнути звук всім",
+    "restartGame": "Перезапустити гру",
+    "videoSettings": "Налаштування відео",
     "leaveGame": "Вийти з гри"
   }
 }

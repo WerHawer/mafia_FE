@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
 import {
-  useRestartGameMutation,
   useStartDayMutation,
   useStartNightMutation,
 } from "@/api/game/queries.ts";
@@ -23,7 +22,6 @@ export const useGamePanel = () => {
   const { myId } = rootStore.usersStore;
   const isShouldShowModal = useRef(false);
 
-  const { mutate: restartGame } = useRestartGameMutation();
   const { mutate: startDay } = useStartDayMutation();
   const { mutate: startNight } = useStartNightMutation();
 
@@ -82,12 +80,6 @@ export const useGamePanel = () => {
     muteAllForNight,
   ]);
 
-  const onRestartGame = useCallback(() => {
-    if (!activeGameId) return;
-
-    restartGame(activeGameId);
-  }, [activeGameId, restartGame]);
-
   useEffect(() => {
     if (
       !gameFlow.isNight &&
@@ -103,6 +95,5 @@ export const useGamePanel = () => {
   return {
     gameFlow,
     onNightDaySwitch,
-    onRestartGame,
   };
 };

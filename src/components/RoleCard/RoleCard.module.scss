@@ -16,7 +16,7 @@
 }
 
 .flipped {
-  transform: rotateY(180deg);
+  transform: rotateZ(-27deg) rotateY(-180deg) translate(117px);
 }
 
 .front,
@@ -32,12 +32,12 @@
 }
 
 .front {
-  background-color: #4caf50;
+  background-color: transparent;
   transform: rotateY(180deg);
 }
 
 .back {
-  background-color: #f44336;
+  background-color: transparent;
 }
 
 .cardImage {

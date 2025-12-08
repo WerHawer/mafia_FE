@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import {
@@ -10,11 +10,13 @@ import {
 import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import { GameChat } from "@/components/GameChat";
 import { GameInfoSection } from "@/components/GameInfoSection";
-import { GameVideoContainer } from "@/components/GameVideoContainer";
+import { GameVideoManager } from "@/components/GameVideoManager/GameVideoManager.tsx";
 import { GameVote } from "@/components/GameVote";
 import { GMMenu } from "@/components/GMMenu";
 import { LiveKitMafiaRoom } from "@/components/LiveKitMafiaRoom/LiveKitMafiaRoom.tsx";
-import { VideoConfig } from "@/components/VideoConfig";
+import { videoOptions } from "@/config/video.ts";
+import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
+import { useVideoSettings } from "@/hooks/useVideoSettings.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
 import styles from "./GamePage.module.scss";
@@ -26,8 +28,26 @@ const GamePage = observer(() => {
   const { activeGamePlayers, removeActiveGame, updateGame } = gamesStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
+  const [ShouldShowVideoConfig, setShouldShowVideoConfig] = useState(false);
+
+  const originalStream = useUserMediaStream({
+    audio: false,
+    video: videoOptions,
+  });
+
+  const { getSavedSettings } = useVideoSettings(id);
 
   useGetUsersWithAddToStore(activeGamePlayers);
+
+  useEffect(() => {
+    if (!originalStream) return;
+
+    const savedSettings = getSavedSettings();
+
+    if (!savedSettings) {
+      setShouldShowVideoConfig(true);
+    }
+  }, [originalStream, getSavedSettings]);
 
   useEffect(() => {
     if (!myId || !id) return;
@@ -57,13 +77,14 @@ const GamePage = observer(() => {
   return (
     <div className={styles.pageContainer}>
       <LiveKitMafiaRoom>
-        <GMMenu />
+        <GMMenu onOpenVideoConfig={() => setShouldShowVideoConfig(true)} />
 
-        <VideoConfig />
-
-        <div className={styles.videoWrapper}>
-          <GameVideoContainer />
-        </div>
+        <GameVideoManager
+          originalStream={originalStream}
+          gameId={id}
+          showVideoConfig={ShouldShowVideoConfig}
+          onCloseVideoConfig={() => setShouldShowVideoConfig(false)}
+        />
       </LiveKitMafiaRoom>
 
       <aside className={styles.rightContainer}>
@@ -73,14 +94,12 @@ const GamePage = observer(() => {
           <GameInfoSection />
         </section>
 
-        <section className={classNames(styles.asideSection, styles.voteList)}>
-          <GameVote />
-        </section>
-
         <section className={styles.chatSection}>
           <GameChat />
         </section>
       </aside>
+
+      <GameVote />
     </div>
   );
 });

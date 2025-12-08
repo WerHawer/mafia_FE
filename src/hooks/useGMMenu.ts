@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { updateGameGM } from "@/api/game/api.ts";
+import { useRestartGameMutation } from "@/api/game/queries.ts";
 import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { useMockStreams } from "@/hooks/useMockStreams.ts";
 import { routes } from "@/router/routs.ts";
@@ -11,7 +12,8 @@ export const useGMMenu = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { gamesStore, usersStore, isIGM } = rootStore;
-  const { activeGameId, activeGamePlayers, activeGameGm } = gamesStore;
+  const { activeGameId, activeGamePlayers, activeGameGm, gameFlow } =
+    gamesStore;
   const { myId } = usersStore;
 
   const { unmuteAll, muteAllExceptGM } = useBatchMediaControls({
@@ -21,6 +23,7 @@ export const useGMMenu = () => {
   });
 
   const { mockStreamsEnabled, handleToggleMockStreams } = useMockStreams();
+  const { mutate: restartGame } = useRestartGameMutation();
 
   const onMakeMeGM = useCallback(async () => {
     if (!activeGameId || !myId) return;
@@ -51,6 +54,13 @@ export const useGMMenu = () => {
     setIsMenuOpen(false);
   }, [unmuteAll]);
 
+  const onRestartGame = useCallback(() => {
+    if (!activeGameId) return;
+
+    restartGame(activeGameId);
+    setIsMenuOpen(false);
+  }, [activeGameId, restartGame]);
+
   const onLeaveGame = useCallback(() => {
     setIsMenuOpen(false);
     navigate(routes.home);
@@ -61,11 +71,12 @@ export const useGMMenu = () => {
     setIsMenuOpen,
     isIGM,
     mockStreamsEnabled,
+    gameFlow,
     onMakeMeGM,
     onToggleMockStreams,
     onMuteAll,
     onUnmuteAll,
+    onRestartGame,
     onLeaveGame,
   };
 };
-

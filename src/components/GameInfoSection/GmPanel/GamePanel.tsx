@@ -10,14 +10,10 @@ import styles from "./GmPanel.module.scss";
 
 export const GamePanel = observer(() => {
   const { t } = useTranslation();
-  const { gameFlow, onNightDaySwitch, onRestartGame } = useGamePanel();
+  const { gameFlow, onNightDaySwitch } = useGamePanel();
 
   return (
     <>
-      <p className={styles.restart} onClick={onRestartGame}>
-        {t("game.restart")}
-      </p>
-
       <div className={styles.dayNightPanelContainer}>
         <Switcher checked={gameFlow.isNight} onChange={onNightDaySwitch} />
         {gameFlow.isNight ? (

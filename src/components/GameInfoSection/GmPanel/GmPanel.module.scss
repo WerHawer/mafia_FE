@@ -25,15 +25,6 @@
   margin-bottom: 1rem;
 }
 
-.restart {
-  position: absolute;
-  top: 1rem;
-  right: 0;
-  font-size: 1rem;
-
-  cursor: pointer;
-}
-
 .nightContainer,
 .dayContainer {
   @include mixins.flex(row, space-around, flex-start);
