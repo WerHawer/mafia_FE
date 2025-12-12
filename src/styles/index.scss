@@ -59,3 +59,31 @@ a {
   color: inherit;
   transition: color 0.25s;
 }
+
+// Tippy custom styles for RoleIcon tooltips
+.tippy-box[data-theme~="role-tooltip"] {
+  background: linear-gradient(
+    135deg,
+    rgba(theme.$color-dark-secondary, 0.98) 0%,
+    rgba(theme.$color-dark-primary, 0.95) 100%
+  );
+  backdrop-filter: blur(10px);
+  //border: 1px solid rgba(theme.$color-accent-primary, 0.3);
+  border-radius: theme.$border-radius;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(theme.$color-dark-tertiary, 0.15);
+
+  .tippy-content {
+    padding: 4px 8px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-shadow:
+      1px 1px 2px rgba(0, 0, 0, 0.7),
+      0 0 5px rgba(0, 0, 0, 0.5);
+  }
+
+  .tippy-arrow {
+    color: rgba(theme.$color-dark-secondary, 0.98);
+  }
+}

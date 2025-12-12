@@ -22,6 +22,8 @@ export const PlayerPanel = observer(() => {
   useEffect(() => {
     if (!isStarted) {
       setShouldShowDeck(true);
+      setIsUserKnowRole(false);
+
       return;
     }
 

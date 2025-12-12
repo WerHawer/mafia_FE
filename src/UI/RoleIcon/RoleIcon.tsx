@@ -38,7 +38,13 @@ export const RoleIcon = ({ role, size = "s" }: RoleIconProps) => {
   if (!icon) return null;
 
   return (
-    <Tippy content={capitalize(role)}>
+    <Tippy
+      content={capitalize(role)}
+      theme="role-tooltip"
+      animation="scale"
+      duration={[200, 150]}
+      placement={role === Roles.GM ? "bottom" : "top"}
+    >
       <img
         className={classNames(styles.img, styles[size])}
         src={icons[role]}
