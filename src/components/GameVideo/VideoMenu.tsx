@@ -12,6 +12,7 @@ import {
   useUpdateGameFlowMutation,
   useUpdateGameGMMutation,
 } from "@/api/game/queries.ts";
+import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
 import {
@@ -37,8 +38,14 @@ export const VideoMenu = observer(
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { mutate: updateGM } = useUpdateGameGMMutation();
     const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
-    const { gamesStore } = rootStore;
-    const { activeGameId, gameFlow } = gamesStore;
+    const { gamesStore, usersStore } = rootStore;
+    const { activeGameId, gameFlow, activeGameAlivePlayers } = gamesStore;
+    const { myId } = usersStore;
+    const { unmuteSpeaker, muteSpeaker } = useBatchMediaControls({
+      roomId: activeGameId || "",
+      requesterId: myId,
+      allUserIds: activeGameAlivePlayers,
+    });
 
     const onUpdateGM = () => {
       if (!userId || !activeGameId) return;
@@ -62,9 +69,22 @@ export const VideoMenu = observer(
     const onGiveSpeak = () => {
       if (!userId) return;
 
-      updateGameFlow({
-        speaker: userId,
-      });
+      const previousSpeaker = gameFlow.speaker;
+
+      updateGameFlow(
+        {
+          speaker: userId,
+        },
+        {
+          onSuccess: () => {
+            if (previousSpeaker) {
+              muteSpeaker(previousSpeaker);
+            }
+
+            unmuteSpeaker(userId);
+          },
+        }
+      );
       setIsMenuOpen(false);
     };
 

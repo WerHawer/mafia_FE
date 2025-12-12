@@ -6,6 +6,7 @@ import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import styles from "@/components/Modals/VoteResultsModal/VoteResultsModal.module.scss";
 import { Result } from "@/components/Modals/VoteResultsModal/VoteResultsModal.tsx";
 import { wsEvents } from "@/config/wsEvents.ts";
+import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { gamesStore } from "@/store/gamesStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
@@ -13,14 +14,19 @@ import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
 export const OneSelected = observer(({ result }: { result: Result[] }) => {
-  const { sendMessage } = useSocket();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
-  const { getUserName } = usersStore;
-  const { activeGameId } = gamesStore;
+  const { getUserName, myId } = usersStore;
+  const { activeGameId, activeGameAlivePlayers, gameFlow } = gamesStore;
   const { t, i18n } = useTranslation();
 
   const [player, voted] = result[0];
   const playerName = getUserName(player);
+
+  const { unmuteSpeaker, muteSpeaker } = useBatchMediaControls({
+    roomId: activeGameId || "",
+    requesterId: myId,
+    allUserIds: activeGameAlivePlayers,
+  });
 
   // Helper function to get the correct plural form translation key for Ukrainian
   const getUkrainianPluralKey = (count: number) => {
@@ -34,6 +40,14 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
   };
 
   const giveLastSpeech = useCallback(() => {
+    const previousSpeaker = gameFlow.speaker;
+
+    if (previousSpeaker) {
+      muteSpeaker(previousSpeaker);
+    }
+
+    unmuteSpeaker(player);
+
     updateGameFlow({
       speaker: player,
       isVote: false,
@@ -42,12 +56,7 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
       voted: {},
       proposed: [],
     });
-
-    sendMessage(wsEvents.updateSpeaker, {
-      userId: player,
-      gameId: activeGameId!,
-    });
-  }, [activeGameId, player, sendMessage, updateGameFlow]);
+  }, [gameFlow.speaker, muteSpeaker, player, unmuteSpeaker, updateGameFlow]);
 
   return (
     <div className={styles.container}>

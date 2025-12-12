@@ -4,6 +4,7 @@ import { Trans, useTranslation } from "react-i18next";
 
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
+import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
@@ -19,12 +20,16 @@ export type NightResultsModalProps = {
 export const NightResultsModal = observer(
   ({ killedPlayer = [] }: NightResultsModalProps) => {
     const { gamesStore, usersStore, modalStore } = rootStore;
-    const { activeGameId } = gamesStore;
-    const { getUserName } = usersStore;
+    const { activeGameId, activeGameAlivePlayers, gameFlow } = gamesStore;
+    const { getUserName, myId } = usersStore;
     const { closeModal } = modalStore;
     const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
-    const { sendMessage } = useSocket();
     const { t } = useTranslation();
+    const { unmuteSpeaker, muteSpeaker } = useBatchMediaControls({
+      roomId: activeGameId || "",
+      requesterId: myId,
+      allUserIds: activeGameAlivePlayers,
+    });
 
     const isSomeoneKilled = !!killedPlayer.length;
     const playerName = isSomeoneKilled ? getUserName(killedPlayer[0]) : "";
@@ -36,6 +41,14 @@ export const NightResultsModal = observer(
         return;
       }
 
+      const previousSpeaker = gameFlow.speaker;
+
+      if (previousSpeaker) {
+        muteSpeaker(previousSpeaker);
+      }
+
+      unmuteSpeaker(killedPlayer[0]);
+
       updateGameFlow({
         speaker: killedPlayer[0],
         isVote: false,
@@ -45,18 +58,14 @@ export const NightResultsModal = observer(
         proposed: [],
       });
 
-      sendMessage(wsEvents.updateSpeaker, {
-        userId: killedPlayer[0],
-        gameId: activeGameId!,
-      });
-
       closeModal();
     }, [
-      activeGameId,
       closeModal,
+      gameFlow.speaker,
       isSomeoneKilled,
       killedPlayer,
-      sendMessage,
+      muteSpeaker,
+      unmuteSpeaker,
       updateGameFlow,
     ]);
 
