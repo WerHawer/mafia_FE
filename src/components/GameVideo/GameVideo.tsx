@@ -11,7 +11,6 @@ import { Shoot } from "@/components/Shoot";
 import { VoteFlow } from "@/components/VoteFlow";
 import { useGameVideo } from "@/hooks/useGameVideo.ts";
 import { useIsSpeaking } from "@/hooks/useIsSpeaking.ts";
-import { rootStore } from "@/store/rootStore.ts";
 import { Roles } from "@/types/game.types.ts";
 import { RoleIcon } from "@/UI/RoleIcon";
 

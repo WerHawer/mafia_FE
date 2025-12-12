@@ -25,7 +25,6 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     gamesStore;
   const { mutate: voteForUser } = useVoteForUserMutation();
   const { mutate: addUserToProposed } = useAddUserToProposedMutation();
-  console.log("VoteFlow.tsx:24 | gameFlow : ", gameFlow);
 
   const votesForThisUser = useMemo(
     () => gameFlow.voted?.[userId] ?? [],

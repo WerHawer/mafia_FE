@@ -74,7 +74,8 @@
 
   "vote": {
     "voting": "Голосування",
-    "startVoting": "Почати голосування"
+    "startVoting": "Почати голосування",
+    "voteList": "Список голосування"
   },
 
   "videoConfig": {

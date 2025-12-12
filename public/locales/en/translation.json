@@ -72,7 +72,8 @@
 
   "vote": {
     "voting": "Voting",
-    "startVoting": "Start Voting"
+    "startVoting": "Start Voting",
+    "voteList": "Vote List"
   },
 
   "videoConfig": {

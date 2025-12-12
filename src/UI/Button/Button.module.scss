@@ -2,8 +2,8 @@
 @use "../../styles/theme.scss";
 
 .button {
-  display: block;
-  text-align: center;
+  display: flex;
+  align-items: center;
   border-radius: theme.$border-radius-big;
   transition: background-color, opacity;
   transition-duration: 250ms;

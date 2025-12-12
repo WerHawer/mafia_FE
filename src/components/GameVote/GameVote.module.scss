@@ -2,28 +2,12 @@
 @use "../../styles/mixins.scss";
 
 .toggleButton {
-  @include mixins.rounded(theme.$border-radius-big);
-  @include mixins.flex(row, center, center);
   position: fixed;
-  top: 50%;
-  right: 0;
+  top: 42px;
+  right: 52px;
   transform: translateY(-50%);
-  padding: 12px 16px;
-  background-color: theme.$color-dark-secondary;
-  border: 1px solid rgba(theme.$color-accent-primary, 0.7);
-  color: theme.$color-text-primary;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
   z-index: 999;
   gap: 8px;
-  transition: all 0.3s ease;
-  border-radius: theme.$border-radius-big 0 0 theme.$border-radius-big;
-
-  &:hover {
-    background-color: theme.$color-dark-tertiary;
-    border-color: theme.$color-accent-primary;
-  }
 }
 
 .badge {
@@ -44,65 +28,66 @@
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 999;
-  animation: fadeIn 0.3s ease;
 }
 
 .panel {
   @include mixins.flex(column);
-  @include mixins.rounded(
-    theme.$border-radius-big 0 0 theme.$border-radius-big
-  );
+  @include mixins.rounded(theme.$border-radius-big);
   position: fixed;
-  top: 0;
-  right: 0;
+  top: 42px;
+  right: 70px;
   width: 300px;
-  height: 100vh;
-  background-color: theme.$color-dark-secondary;
-  border-left: 1px solid rgba(theme.$color-accent-primary, 0.5);
+  max-height: calc(100vh - 120px);
+  transform-origin: top right;
+  background: linear-gradient(
+    135deg,
+    rgba(theme.$color-dark-secondary, 0.98) 0%,
+    rgba(theme.$color-dark-primary, 0.95) 100%
+  );
+  backdrop-filter: blur(10px);
+  box-shadow:
+    -4px 0 24px rgba(0, 0, 0, 0.5),
+    -2px 0 12px rgba(0, 0, 0, 0.3),
+    inset 1px 0 0 rgba(255, 255, 255, 0.05);
   z-index: 1000;
-  animation: slideIn 0.3s ease;
-}
-
-.panelHeader {
-  @include mixins.flex(row, space-between, center);
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(theme.$color-accent-primary, 0.5);
-
-  h3 {
-    color: theme.$color-text-primary;
-    font-size: 16px;
-    font-weight: 500;
-    margin: 0;
-  }
 }
 
 .closeButton {
-  @include mixins.flex(row, center, center);
-  @include mixins.size(32px);
-  @include mixins.rounded(50%);
-  background-color: transparent;
-  border: 1px solid rgba(theme.$color-accent-primary, 0.5);
-  color: theme.$color-text-primary;
-  font-size: 24px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+}
 
-  &:hover {
-    background-color: rgba(theme.$color-accent-primary, 0.2);
-    border-color: theme.$color-accent-primary;
+.panelHeader {
+  @include mixins.flex(row, center, center);
+  padding: 48px 20px 16px;
+
+  h3 {
+    color: theme.$color-text-primary;
+    font-size: 17px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+    text-shadow:
+      2px 2px 3px rgba(0, 0, 0, 0.65),
+      0 0 9px rgba(0, 0, 0, 0.45);
   }
 }
 
 .listContainer {
   @include mixins.customScrollbar;
+  width: 100%;
   flex: 1;
-  padding: 16px 20px;
+  padding: 16px 20px 20px;
   overflow-y: auto;
+  min-height: 0;
 }
 
 .list {
   @include mixins.flex(column, flex-start, flex-start);
-  gap: 8px;
+  gap: 12px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -110,32 +95,61 @@
 
 .listItem {
   @include mixins.rounded(theme.$border-radius);
+  @include mixins.flex(row, space-between, center);
   width: 100%;
-  padding: 12px 16px;
-  background-color: theme.$color-dark-tertiary;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.03);
   color: theme.$color-text-primary;
-  font-size: 14px;
-  transition: background-color 0.2s ease;
+  font-size: 15px;
+  font-weight: 600;
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.7),
+    0 0 5px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
 
-  &:hover {
-    background-color: rgba(theme.$color-accent-primary, 0.1);
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(theme.$color-dark-secondary, 0.8);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  &.voted {
+    background: linear-gradient(
+      135deg,
+      rgba(theme.$color-dark-secondary, 0.95) 0%,
+      rgba(theme.$color-dark-primary, 0.85) 100%
+    );
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.3),
+      0 0 15px rgba(theme.$color-dark-secondary, 0.3);
   }
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+.votedIndicator {
+  @include mixins.flex(row, center, center);
+  @include mixins.size(24px);
+  @include mixins.rounded(50%);
+  background: theme.$color-dark-message;
+  color: theme.$color-dark-primary;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(theme.$color-dark-message, 0.5);
+  animation: checkPop 0.3s ease;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+@keyframes checkPop {
+  0% {
+    transform: scale(0);
   }
-  to {
-    opacity: 1;
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
   }
 }
