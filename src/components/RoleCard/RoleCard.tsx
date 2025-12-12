@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { capitalize } from "lodash";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import anna from "@/assets/images/cards/anna.webp";
 import cardBack from "@/assets/images/cards/card_back.webp";
@@ -49,12 +49,20 @@ export const RoleCard = ({
 
   const roleImage = roleImages[role as keyof typeof roleImages];
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (isFlipped) return;
 
     onClick?.();
     setIsFlipped(true);
-  };
+  }, [isFlipped, onClick]);
+
+  useEffect(() => {
+    if (isFlipped) return;
+
+    const cardTimeout = setTimeout(() => handleClick(), 30000);
+
+    return () => clearTimeout(cardTimeout);
+  }, [handleClick, isFlipped]);
 
   const style = {
     width: width ?? "200px",
