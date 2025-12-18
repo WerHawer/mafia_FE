@@ -1,6 +1,6 @@
 import Tippy from "@tippyjs/react";
 import classNames from "classnames";
-import { capitalize } from "lodash";
+import { useTranslation } from "react-i18next";
 
 import citizenIcon from "@/assets/icons/citizen.png";
 import doctorIcon from "@/assets/icons/doctor.webp";
@@ -22,6 +22,8 @@ type RoleIconProps = {
 };
 
 export const RoleIcon = ({ role, size = "s" }: RoleIconProps) => {
+  const { t } = useTranslation();
+
   const icons = {
     [Roles.Mafia]: mafiaIcon,
     [Roles.Don]: donIcon,
@@ -39,10 +41,11 @@ export const RoleIcon = ({ role, size = "s" }: RoleIconProps) => {
 
   return (
     <Tippy
-      content={capitalize(role)}
+      content={t(`roles.${role}`)}
       theme="role-tooltip"
       animation="scale"
       duration={[200, 150]}
+      delay={[500, 0]}
       placement={role === Roles.GM ? "bottom" : "top"}
     >
       <img

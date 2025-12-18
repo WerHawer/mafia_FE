@@ -113,6 +113,18 @@
     "restartVote": "Restart vote"
   },
 
+  "roles": {
+    "mafia": "Mafia",
+    "don": "Don",
+    "citizens": "Citizen",
+    "sheriff": "Sheriff",
+    "doctor": "Doctor",
+    "maniac": "Maniac",
+    "prostitute": "Prostitute",
+    "gm": "Game Master",
+    "unknown": "Unknown"
+  },
+
   "checkRole": {
     "mafia": "Mafia",
     "notMafia": "Not Mafia",

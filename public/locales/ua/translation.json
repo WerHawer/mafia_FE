@@ -116,6 +116,18 @@
     "restartVote": "Перезапустити голосування"
   },
 
+  "roles": {
+    "mafia": "Мафія",
+    "don": "Дон",
+    "citizens": "Мирний житель",
+    "sheriff": "Шериф",
+    "doctor": "Доктор",
+    "maniac": "Маніяк",
+    "prostitute": "Повія",
+    "gm": "Ведучий",
+    "unknown": "Невідомий"
+  },
+
   "checkRole": {
     "mafia": "Мафія",
     "notMafia": "Не мафія",

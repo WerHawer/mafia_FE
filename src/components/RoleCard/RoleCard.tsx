@@ -1,6 +1,6 @@
 import classNames from "classnames";
-import { capitalize } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import anna from "@/assets/images/cards/anna.webp";
 import cardBack from "@/assets/images/cards/card_back.webp";
@@ -34,6 +34,7 @@ export const RoleCard = ({
   height,
   onClick,
 }: RoleCardProps) => {
+  const { t } = useTranslation();
   const [isFlipped, setIsFlipped] = useState(false);
 
   const mafia = [don, mafia_1, mafia_2];
@@ -85,7 +86,7 @@ export const RoleCard = ({
           <img src={roleImage} alt={role} className={styles.cardImage} />
 
           <Typography variant="subtitle" className={styles.roleName}>
-            {capitalize(role)}
+            {t(`roles.${role}`)}
           </Typography>
         </div>
       </div>
