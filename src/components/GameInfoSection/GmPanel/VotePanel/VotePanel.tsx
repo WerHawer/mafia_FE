@@ -55,7 +55,7 @@ export const VotePanel = observer(() => {
       )}
 
       {needVote && (
-        <Timer timer={gameFlow.votesTime} resetTrigger={gameFlow.isReVote} />
+        <Timer time={gameFlow.votesTime} resetTrigger={gameFlow.isReVote} />
       )}
     </div>
   );

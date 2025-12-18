@@ -1,7 +1,7 @@
-import { capitalize } from "lodash";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 
+import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
 import { rootStore } from "@/store/rootStore";
 import { Typography } from "@/UI/Typography";
 
@@ -10,12 +10,17 @@ import styles from "./PlayerPanel.module.scss";
 export const PlayerPanelInfo = observer(() => {
   const { t } = useTranslation();
   const { gamesStore, myRole } = rootStore;
-  const { gameFlow } = gamesStore;
+  const { gameFlow, speaker } = gamesStore;
 
-  const { day, isNight } = gameFlow;
+  const { day, isNight, isVote, isReVote, speakTime, votesTime } = gameFlow;
 
   const dayNightLabel = isNight ? t("game.night") : `${t("game.day")} ${day}`;
-  const roleLabel = capitalize(myRole);
+  const roleLabel = t(`roles.${myRole}`);
+  const hasSpeaker = Boolean(speaker);
+
+  const time = isVote || isReVote ? votesTime : speakTime;
+
+  const shouldShowTimer = hasSpeaker || isVote || isReVote;
 
   return (
     <div className={styles.infoContainer}>
@@ -34,11 +39,7 @@ export const PlayerPanelInfo = observer(() => {
         </Typography>
       </div>
 
-      <div className={styles.timerSection}>
-        <Typography variant="caption" className={styles.timerPlaceholder}>
-          {t("game.timer_placeholder")}
-        </Typography>
-      </div>
+      {shouldShowTimer ? <Timer resetTrigger={speaker} time={time} /> : null}
     </div>
   );
 });

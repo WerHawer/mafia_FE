@@ -64,11 +64,8 @@
 
 .timerSection {
   @include mixins.flex(row, center, center);
-  min-height: 40px;
-  padding: 8px 16px;
-  border: 2px dashed rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
+  min-height: 50px;
+  padding: 4px;
 }
 
 .timerPlaceholder {
