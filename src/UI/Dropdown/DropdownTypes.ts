@@ -8,4 +8,5 @@ export interface DropdownProps {
   onToggle: (isOpen: boolean) => void;
   placement?: Placement;
   className?: string;
+  appendTo?: HTMLElement;
 }

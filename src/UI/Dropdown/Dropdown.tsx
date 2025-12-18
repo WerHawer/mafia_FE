@@ -11,6 +11,7 @@ export const Dropdown = ({
   onToggle,
   placement = "bottom-end",
   className,
+  appendTo = document.body,
 }: DropdownProps) => {
   return (
     <Tippy
@@ -21,6 +22,7 @@ export const Dropdown = ({
       interactive
       arrow={false}
       className={classNames(styles.dropdown, className)}
+      appendTo={appendTo}
     >
       <div>{trigger}</div>
     </Tippy>
