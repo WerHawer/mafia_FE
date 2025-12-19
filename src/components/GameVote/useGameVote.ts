@@ -1,15 +1,25 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { useVoteForUserMutation } from "@/api/game/queries.ts";
+import {
+  useUpdateGameFlowMutation,
+  useVoteForUserMutation,
+} from "@/api/game/queries.ts";
+import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
 
 export const useGameVote = () => {
   const { gamesStore, usersStore, isIGM, isIDead } = rootStore;
-  const { gameFlow, activeGameId } = gamesStore;
+  const { gameFlow, activeGameId, activeGameAlivePlayers } = gamesStore;
   const { getUserName, myId } = usersStore;
   const [isOpen, setIsOpen] = useState(false);
   const { mutate: voteForUser } = useVoteForUserMutation();
+  const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
+  const { muteSpeaker } = useBatchMediaControls({
+    roomId: activeGameId || "",
+    requesterId: myId,
+    allUserIds: activeGameAlivePlayers,
+  });
 
   const proposedCount = gameFlow.proposed.length;
 
@@ -30,10 +40,26 @@ export const useGameVote = () => {
   }, [amIVoted, gameFlow.voted, myId]);
 
   const canVote = gameFlow.isVote && !isIDead && !isIGM;
+  const isVotingActive = gameFlow.proposed.length > 1 && gameFlow.isVote;
 
   const onToggle = useCallback(() => {
     setIsOpen((prev) => !prev);
   }, []);
+
+  const onToggleVoting = useCallback(() => {
+    updateGameFlow(
+      {
+        isVote: !gameFlow.isVote,
+        speaker: "",
+      },
+      {
+        onSuccess: () => {
+          muteSpeaker(gameFlow.speaker);
+        },
+      }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameFlow.isVote, gameFlow.speaker]);
 
   const onVoteForPlayer = useCallback(
     (userId: UserId) => {
@@ -61,8 +87,12 @@ export const useGameVote = () => {
     amIVoted,
     votedUserId,
     canVote,
+    isGM: isIGM,
+    isVotingActive,
     proposed: gameFlow.proposed,
+    voted: gameFlow.voted,
     onToggle,
+    onToggleVoting,
     onVoteForPlayer,
     getUserName: getPlayerName,
   };

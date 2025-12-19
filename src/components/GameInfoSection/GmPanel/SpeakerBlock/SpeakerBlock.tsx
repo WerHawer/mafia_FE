@@ -2,12 +2,14 @@ import {
   SoundOutlined,
   StepBackwardOutlined,
   StepForwardOutlined,
+  StopOutlined,
 } from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 
-import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
 import { useSpeakerControl } from "@/hooks/useSpeakerControl.ts";
+import { IconButton } from "@/UI/IconButton";
+import { Typography } from "@/UI/Typography";
 
 import styles from "./SpeakerBlock.module.scss";
 
@@ -17,45 +19,57 @@ export const SpeakerBlock = observer(() => {
     speakerName,
     hasSpeaker,
     isVote,
-    speaker,
     onStartSpeeches,
     onNextSpeaker,
     onPreviousSpeaker,
+    onStopSpeeches,
   } = useSpeakerControl();
 
   if (isVote) return null;
 
+  const onToggleSpeeches = () => {
+    if (hasSpeaker) {
+      onStopSpeeches();
+    } else {
+      onStartSpeeches();
+    }
+  };
+
   return (
     <div className={styles.speakerBlockContainer}>
-      <div className={styles.controlsContainer}>
-        {hasSpeaker && (
-          <StepBackwardOutlined
-            onClick={onPreviousSpeaker}
-            className={styles.controlIcon}
-            title={t("speaker.previousSpeaker")}
-          />
-        )}
+      <Typography variant="body" className={styles.label}>
+        {t("speaker.speaker")}:
+      </Typography>
 
-        <SoundOutlined
-          onClick={onStartSpeeches}
-          className={styles.controlIcon}
-          title={t("speaker.startSpeeches")}
+      <div className={styles.controlsContainer}>
+        <IconButton
+          icon={<StepBackwardOutlined />}
+          onClick={onPreviousSpeaker}
+          disabled={!hasSpeaker}
+          ariaLabel={t("speaker.previousSpeaker")}
         />
 
-        {hasSpeaker && (
-          <StepForwardOutlined
-            onClick={onNextSpeaker}
-            className={styles.controlIcon}
-            title={t("speaker.nextSpeaker")}
-          />
-        )}
+        <IconButton
+          icon={hasSpeaker ? <StopOutlined /> : <SoundOutlined />}
+          onClick={onToggleSpeeches}
+          ariaLabel={
+            hasSpeaker ? t("speaker.stopSpeeches") : t("speaker.startSpeeches")
+          }
+          active={hasSpeaker}
+        />
+
+        <IconButton
+          icon={<StepForwardOutlined />}
+          onClick={onNextSpeaker}
+          disabled={!hasSpeaker}
+          ariaLabel={t("speaker.nextSpeaker")}
+        />
       </div>
 
       {speakerName && (
-        <p className={styles.speakerInfo}>
-          {t("speaker.speaker")}: {speakerName} -{" "}
-          <Timer resetTrigger={speaker} />
-        </p>
+        <Typography variant="body" className={styles.speakerName}>
+          {speakerName}
+        </Typography>
       )}
     </div>
   );

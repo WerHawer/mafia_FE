@@ -127,18 +127,16 @@ export const useSpeakerControl = () => {
       isExtraSpeech: false,
     });
 
-    // Скидаємо попереднього спікера
+    muteSpeaker(previousSpeakerRef.current!);
     previousSpeakerRef.current = null;
-
-    // Вмикаємо мікрофони для всіх
-    unmuteAllForDay();
-  }, [updateGameFlow, unmuteAllForDay]);
+  }, [updateGameFlow, muteSpeaker]);
 
   return {
     speakerName,
     hasSpeaker,
     isVote: gameFlow.isVote,
     speaker: gameFlow.speaker,
+    speakTime: gameFlow.speakTime,
     onStartSpeeches,
     onNextSpeaker,
     onPreviousSpeaker,

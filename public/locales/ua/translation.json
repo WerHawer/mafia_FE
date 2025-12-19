@@ -68,14 +68,17 @@
   "speaker": {
     "speaker": "Спікер",
     "startSpeeches": "Почати промови",
-    "previousSpeaker": "Попередній спікер",
-    "nextSpeaker": "Наступний спікер"
+    "stopSpeeches": "Зупинити промови",
+    "nextSpeaker": "Наступний спікер",
+    "previousSpeaker": "Попередній спікер"
   },
 
   "vote": {
     "voting": "Голосування",
     "startVoting": "Почати голосування",
-    "voteList": "Список голосування"
+    "voteList": "Список голосування",
+    "gmStartVote": "Почати голосування",
+    "gmStopVote": "Зупинити голосування"
   },
 
   "videoConfig": {

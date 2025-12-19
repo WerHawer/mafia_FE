@@ -1,7 +1,10 @@
+import { UsergroupDeleteOutlined } from "@ant-design/icons";
+import classNames from "classnames";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
 import { UserId } from "@/types/user.types.ts";
+import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes";
 import { IconButton } from "@/UI/IconButton";
 
@@ -34,8 +37,12 @@ type VotePanelProps = {
   votedUserId: UserId | null;
   canVote: boolean;
   amIVoted: boolean;
+  isGM: boolean;
+  isVotingActive: boolean;
+  voted: { [key: UserId]: UserId[] };
   onToggle: () => void;
   onVoteForPlayer: (userId: UserId) => void;
+  onToggleVoting: () => void;
   getUserName: (userId: UserId) => string;
 };
 
@@ -44,11 +51,22 @@ export const VotePanel = ({
   votedUserId,
   canVote,
   amIVoted,
+  isGM,
+  isVotingActive,
+  voted,
   onToggle,
   onVoteForPlayer,
+  onToggleVoting,
   getUserName,
 }: VotePanelProps) => {
   const { t } = useTranslation();
+
+  const buttonText = isVotingActive
+    ? t("vote.gmStopVote")
+    : t("vote.gmStartVote");
+  const buttonVariant = isVotingActive
+    ? ButtonVariant.Tertiary
+    : ButtonVariant.Primary;
 
   return (
     <motion.div
@@ -80,6 +98,7 @@ export const VotePanel = ({
           {proposed.map((userId) => {
             const isVotedByMe = votedUserId === userId;
             const isClickable = canVote && !amIVoted;
+            const voteCount = voted[userId]?.length || 0;
 
             return (
               <VoteListItem
@@ -88,10 +107,27 @@ export const VotePanel = ({
                 userName={getUserName(userId)}
                 isVotedByMe={isVotedByMe}
                 isClickable={isClickable}
+                voteCount={voteCount}
                 onVote={onVoteForPlayer}
               />
             );
           })}
+
+          {isGM && (
+            <li className={styles.gmVoteControlItem}>
+              <Button
+                onClick={onToggleVoting}
+                variant={buttonVariant}
+                size={ButtonSize.Medium}
+                className={classNames(styles.gmVoteControlButton, {
+                  [styles.active]: isVotingActive,
+                })}
+              >
+                <UsergroupDeleteOutlined className={styles.icon} />
+                <span>{buttonText}</span>
+              </Button>
+            </li>
+          )}
         </ul>
       </div>
     </motion.div>

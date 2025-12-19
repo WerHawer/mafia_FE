@@ -1,10 +1,10 @@
 @use "../../../styles/mixins.scss";
 
 .gmPanel {
-  @include mixins.flexCenter(column);
+  @include mixins.flex(column, start, start);
   width: 100%;
   height: 100%;
-  column-gap: 2rem;
+  gap: 1rem;
 
   position: relative;
 }
@@ -17,22 +17,54 @@
 }
 
 .dayNightPanelContainer {
-  @include mixins.flex;
-  column-gap: 2rem;
-  min-width: 50%;
+  @include mixins.flex(row, start, center);
   width: 100%;
+  min-height: 55px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.08)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  gap: 16px;
+}
 
-  margin-bottom: 1rem;
+.phaseControl {
+  @include mixins.flex(row, center, center);
+  gap: 12px;
+}
+
+.phaseLabel {
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  text-shadow:
+    2px 2px 4px rgba(0, 0, 0, 0.7),
+    0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.timerWrapper {
+  @include mixins.flex(row, center, center);
+  margin-left: 2rem;
 }
 
 .nightContainer,
 .dayContainer {
-  @include mixins.flex(row, space-around, flex-start);
-
+  @include mixins.flex(row, flex-start, stretch);
   width: 100%;
   font-size: 1.5rem;
-
+  gap: 12px;
   overflow: auto;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 }
 
 .radioLabel {

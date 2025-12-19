@@ -66,14 +66,17 @@
   "speaker": {
     "speaker": "Speaker",
     "startSpeeches": "Start speeches",
-    "previousSpeaker": "Previous speaker",
-    "nextSpeaker": "Next speaker"
+    "stopSpeeches": "Stop speeches",
+    "nextSpeaker": "Next speaker",
+    "previousSpeaker": "Previous speaker"
   },
 
   "vote": {
     "voting": "Voting",
     "startVoting": "Start Voting",
-    "voteList": "Vote List"
+    "voteList": "Vote List",
+    "gmStartVote": "Start vote",
+    "gmStopVote": "Stop vote"
   },
 
   "videoConfig": {

@@ -1,9 +1,12 @@
+import { UsergroupDeleteOutlined } from "@ant-design/icons";
+import Tippy from "@tippyjs/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes";
+import { IconButton } from "@/UI/IconButton";
 
 import styles from "./GameVote.module.scss";
 import { useGameVote } from "./useGameVote";
@@ -24,8 +27,12 @@ export const GameVote = observer(() => {
     votedUserId,
     canVote,
     proposed,
+    voted,
+    isGM,
+    isVotingActive,
     onToggle,
     onVoteForPlayer,
+    onToggleVoting,
     getUserName,
   } = useGameVote();
 
@@ -33,20 +40,46 @@ export const GameVote = observer(() => {
     return null;
   }
 
+  const gmVoteTooltip = isVotingActive
+    ? t("vote.gmStopVote")
+    : t("vote.gmStartVote");
+
   return (
     <>
-      <Button
-        className={styles.toggleButton}
-        onClick={onToggle}
-        variant={ButtonVariant.Secondary}
-        size={ButtonSize.Small}
-        aria-label="Toggle vote list"
-      >
-        {t("vote.voteList")}
-        {proposedCount > 0 && (
-          <span className={styles.badge}>{proposedCount}</span>
+      <div className={styles.toggleButtonContainer}>
+        <Button
+          className={styles.toggleButton}
+          onClick={onToggle}
+          variant={ButtonVariant.Secondary}
+          size={ButtonSize.Small}
+          aria-label="Toggle vote list"
+        >
+          {t("vote.voteList")}
+          {proposedCount > 0 && (
+            <span className={styles.badge}>{proposedCount}</span>
+          )}
+        </Button>
+
+        {isGM && proposedCount > 0 && (
+          <Tippy content={gmVoteTooltip} placement="top" theme="dark">
+            <div>
+              <IconButton
+                icon={<UsergroupDeleteOutlined />}
+                onClick={onToggleVoting}
+                variant={
+                  isVotingActive
+                    ? ButtonVariant.Tertiary
+                    : ButtonVariant.Primary
+                }
+                size={ButtonSize.Small}
+                ariaLabel={gmVoteTooltip}
+                className={styles.gmVoteButton}
+                active={isVotingActive}
+              />
+            </div>
+          </Tippy>
         )}
-      </Button>
+      </div>
 
       <AnimatePresence>
         {isOpen && (
@@ -66,8 +99,12 @@ export const GameVote = observer(() => {
               votedUserId={votedUserId}
               canVote={canVote}
               amIVoted={amIVoted}
+              isGM={isGM}
+              isVotingActive={isVotingActive}
+              voted={voted}
               onToggle={onToggle}
               onVoteForPlayer={onVoteForPlayer}
+              onToggleVoting={onToggleVoting}
               getUserName={getUserName}
             />
           </>

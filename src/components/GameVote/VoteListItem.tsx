@@ -1,4 +1,6 @@
-import { memo } from "react";
+import { DislikeOutlined } from "@ant-design/icons";
+import classNames from "classnames";
+import { KeyboardEvent, memo } from "react";
 
 import { UserId } from "@/types/user.types.ts";
 
@@ -9,6 +11,7 @@ type VoteListItemProps = {
   userName: string;
   isVotedByMe: boolean;
   isClickable: boolean;
+  voteCount: number;
   onVote: (userId: UserId) => void;
 };
 
@@ -18,6 +21,7 @@ export const VoteListItem = memo(
     userName,
     isVotedByMe,
     isClickable,
+    voteCount,
     onVote,
   }: VoteListItemProps) => {
     const handleClick = () => {
@@ -26,7 +30,7 @@ export const VoteListItem = memo(
       }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (isClickable && (e.key === "Enter" || e.key === " ")) {
         e.preventDefault();
         onVote(userId);
@@ -35,16 +39,28 @@ export const VoteListItem = memo(
 
     return (
       <li
-        className={`${styles.listItem} ${
-          isVotedByMe ? styles.voted : ""
-        } ${isClickable ? styles.clickable : ""}`}
+        className={classNames(styles.listItem, {
+          [styles.voted]: isVotedByMe,
+          [styles.clickable]: isClickable,
+        })}
         onClick={handleClick}
         role={isClickable ? "button" : undefined}
         tabIndex={isClickable ? 0 : undefined}
         onKeyDown={handleKeyDown}
       >
-        {userName}
-        {isVotedByMe && <span className={styles.votedIndicator}>✓</span>}
+        <span className={styles.playerName}>{userName}</span>
+
+        <div className={styles.voteInfo}>
+          {isVotedByMe && (
+            <span className={styles.votedIndicator}>
+              <DislikeOutlined />
+            </span>
+          )}
+
+          {voteCount > 0 && (
+            <span className={styles.voteCount}>{voteCount}</span>
+          )}
+        </div>
       </li>
     );
   }

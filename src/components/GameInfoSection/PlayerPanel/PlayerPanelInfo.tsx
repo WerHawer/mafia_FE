@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 
-import { Timer } from "@/components/SpeakerTimer/Timer.tsx";
+import { Timer, TimerSize } from "@/components/SpeakerTimer/Timer.tsx";
 import { rootStore } from "@/store/rootStore";
 import { Typography } from "@/UI/Typography";
 
@@ -19,8 +19,9 @@ export const PlayerPanelInfo = observer(() => {
   const hasSpeaker = Boolean(speaker);
 
   const time = isVote || isReVote ? votesTime : speakTime;
-
-  const shouldShowTimer = hasSpeaker || isVote || isReVote;
+  const isVotingActive = isVote || isReVote;
+  const timerTrigger = isVotingActive ? isReVote : speaker;
+  const shouldShowTimer = hasSpeaker || isVotingActive;
 
   return (
     <div className={styles.infoContainer}>
@@ -39,7 +40,9 @@ export const PlayerPanelInfo = observer(() => {
         </Typography>
       </div>
 
-      {shouldShowTimer ? <Timer resetTrigger={speaker} time={time} /> : null}
+      {shouldShowTimer ? (
+        <Timer resetTrigger={timerTrigger} time={time} size={TimerSize.Large} />
+      ) : null}
     </div>
   );
 });

@@ -2,24 +2,48 @@
 @use "../../../../styles/theme" as *;
 
 .speakerBlockContainer {
-  @include flex(column, start, start);
-  width: 100%;
+  @include flex(row, flex-start, center);
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  gap: 12px;
+
+  &:hover {
+    box-shadow:
+      0 3px 10px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.label {
+  color: $color-text-primary;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
 }
 
 .controlsContainer {
-  @include flex(row, flex-start, center);
-  gap: 10px;
-  width: 100%;
+  @include flex(row, center, center);
+  gap: 8px;
 }
 
-.controlIcon {
-  cursor: pointer;
-  flex-shrink: 0;
-  color: $color-light-primary;
-}
-
-.speakerInfo {
-  margin-top: 8px;
+.speakerName {
   color: $color-text-primary;
-  text-wrap: nowrap;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  margin-left: auto;
+  padding-left: 12px;
 }

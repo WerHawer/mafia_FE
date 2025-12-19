@@ -13,7 +13,7 @@
 
 .infoContainer {
   @include mixins.flex(column, center, start);
-  gap: 8px;
+  gap: 6px;
   margin-left: 105px;
 
   opacity: 0;

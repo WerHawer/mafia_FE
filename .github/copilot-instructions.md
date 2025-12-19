@@ -169,6 +169,11 @@ Examples of what to verify:
 - Create styles with descriptive names that reflect their purpose:
      - Follow existing naming patterns in the codebase
      - Use theme and mixins from the design system for consistent styling (`src/styles`)
+- **Use `classnames` library for combining multiple CSS classes**:
+    - ❌ Bad: `` className={`${styles.container} ${isActive ? styles.active : ''} ${styles[variant]}`} ``
+    - ✅ Good: `className={classNames(styles.container, styles[variant], { [styles.active]: isActive })}`
+    - Import: `import classNames from "classnames";`
+    - Benefits: cleaner code, better readability, conditional classes made simple
 - Optimize interactive components:
     - Use useCallback for event handlers
     - Implement proper memoization
