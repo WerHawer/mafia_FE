@@ -93,6 +93,7 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
       {!isIGM && (
         <Tippy
           content={checkResult}
+          theme="role-tooltip"
           trigger="click"
           placement="right"
           disabled={!checkResult && isCheckDisabled}
