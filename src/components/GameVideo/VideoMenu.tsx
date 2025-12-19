@@ -38,14 +38,9 @@ export const VideoMenu = observer(
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { mutate: updateGM } = useUpdateGameGMMutation();
     const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
-    const { gamesStore, usersStore } = rootStore;
-    const { activeGameId, gameFlow, activeGameAlivePlayers } = gamesStore;
-    const { myId } = usersStore;
-    const { unmuteSpeaker, muteSpeaker } = useBatchMediaControls({
-      roomId: activeGameId || "",
-      requesterId: myId,
-      allUserIds: activeGameAlivePlayers,
-    });
+    const { gamesStore } = rootStore;
+    const { activeGameId, gameFlow } = gamesStore;
+    const { unmuteSpeaker, muteSpeaker } = useBatchMediaControls();
 
     const onUpdateGM = () => {
       if (!userId || !activeGameId) return;

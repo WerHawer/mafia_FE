@@ -10,16 +10,12 @@ import { UserId } from "@/types/user.types.ts";
 
 export const useGameVote = () => {
   const { gamesStore, usersStore, isIGM, isIDead } = rootStore;
-  const { gameFlow, activeGameId, activeGameAlivePlayers } = gamesStore;
+  const { gameFlow, activeGameId } = gamesStore;
   const { getUserName, myId } = usersStore;
   const [isOpen, setIsOpen] = useState(false);
   const { mutate: voteForUser } = useVoteForUserMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
-  const { muteSpeaker } = useBatchMediaControls({
-    roomId: activeGameId || "",
-    requesterId: myId,
-    allUserIds: activeGameAlivePlayers,
-  });
+  const { muteSpeaker } = useBatchMediaControls();
 
   const proposedCount = gameFlow.proposed.length;
 

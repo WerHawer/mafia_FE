@@ -19,17 +19,12 @@ export const useGamePanel = () => {
     activeGameGm,
   } = gamesStore;
   const { openModal } = modalStore;
-  const { myId } = rootStore.usersStore;
   const isShouldShowModal = useRef(false);
 
   const { mutate: startDay } = useStartDayMutation();
   const { mutate: startNight } = useStartNightMutation();
 
-  const { muteAllForNight, unmuteAllForDay } = useBatchMediaControls({
-    roomId: activeGameId || "",
-    requesterId: myId,
-    allUserIds: activeGameAlivePlayers,
-  });
+  const { muteAllForNight, unmuteAllForDay } = useBatchMediaControls();
 
   const killedPlayer: UserId[] = useMemo(() => {
     const { shoot = {} } = gameFlow;

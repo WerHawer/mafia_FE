@@ -12,15 +12,10 @@ export const useGMMenu = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { gamesStore, usersStore, isIGM } = rootStore;
-  const { activeGameId, activeGamePlayers, activeGameGm, gameFlow } =
-    gamesStore;
+  const { activeGameId, activeGameGm, gameFlow } = gamesStore;
   const { myId } = usersStore;
 
-  const { unmuteAll, muteAllExceptGM } = useBatchMediaControls({
-    roomId: activeGameId || "",
-    requesterId: myId,
-    allUserIds: activeGamePlayers,
-  });
+  const { unmuteAll, muteAllExceptGM } = useBatchMediaControls();
 
   const { mockStreamsEnabled, handleToggleMockStreams } = useMockStreams();
   const { mutate: restartGame } = useRestartGameMutation();

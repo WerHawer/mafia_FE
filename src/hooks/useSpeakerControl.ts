@@ -8,23 +8,18 @@ import { UserId } from "@/types/user.types.ts";
 export const useSpeakerControl = () => {
   const { gamesStore, usersStore } = rootStore;
   const {
-    activeGameId,
     gameFlow,
     activeGameAlivePlayers,
     activeGameKilledPlayers,
     activeGamePlayersWithoutGM,
     activeGameGm,
   } = gamesStore;
-  const { getUserName, myId } = usersStore;
+  const { getUserName } = usersStore;
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
   const previousSpeakerRef = useRef<UserId | null>(null);
 
-  const { muteAllExceptSpeaker, unmuteAllForDay, muteSpeaker, unmuteSpeaker } =
-    useBatchMediaControls({
-      roomId: activeGameId || "",
-      requesterId: myId,
-      allUserIds: activeGameAlivePlayers,
-    });
+  const { muteAllExceptSpeaker, muteSpeaker, unmuteSpeaker } =
+    useBatchMediaControls();
 
   const speakerName = getUserName(gameFlow.speaker);
   const hasSpeaker = Boolean(gameFlow.speaker);

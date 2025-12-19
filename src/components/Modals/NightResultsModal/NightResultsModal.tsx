@@ -20,16 +20,12 @@ export type NightResultsModalProps = {
 export const NightResultsModal = observer(
   ({ killedPlayer = [] }: NightResultsModalProps) => {
     const { gamesStore, usersStore, modalStore } = rootStore;
-    const { activeGameId, activeGameAlivePlayers, gameFlow } = gamesStore;
-    const { getUserName, myId } = usersStore;
+    const { gameFlow } = gamesStore;
+    const { getUserName } = usersStore;
     const { closeModal } = modalStore;
     const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
     const { t } = useTranslation();
-    const { unmuteSpeaker, muteSpeaker } = useBatchMediaControls({
-      roomId: activeGameId || "",
-      requesterId: myId,
-      allUserIds: activeGameAlivePlayers,
-    });
+    const { unmuteSpeaker, muteSpeaker } = useBatchMediaControls();
 
     const isSomeoneKilled = !!killedPlayer.length;
     const playerName = isSomeoneKilled ? getUserName(killedPlayer[0]) : "";

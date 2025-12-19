@@ -2,6 +2,7 @@ import { useCallback } from "react";
 
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
+import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
 
 type SetMicrophonesForAllParams = {
@@ -10,18 +11,12 @@ type SetMicrophonesForAllParams = {
   reason?: "night" | "day" | "speaker" | "manual";
 };
 
-type UseBatchMediaControlsProps = {
-  roomId: string;
-  requesterId: UserId;
-  allUserIds: UserId[];
-};
-
-export const useBatchMediaControls = ({
-  roomId,
-  requesterId,
-  allUserIds,
-}: UseBatchMediaControlsProps) => {
+export const useBatchMediaControls = () => {
   const { socket, sendMessage } = useSocket();
+  const { gamesStore, usersStore } = rootStore;
+  const { activeGameId: roomId, activeGameAlivePlayers: allUserIds } =
+    gamesStore;
+  const { myId: requesterId } = usersStore;
 
   const setMicrophonesForAll = useCallback(
     ({
@@ -36,7 +31,7 @@ export const useBatchMediaControls = ({
       );
 
       sendMessage(wsEvents.batchToggleMicrophones, {
-        roomId,
+        roomId: roomId ?? "",
         enabled,
         targetUserIds,
         excludedUserIds,
@@ -111,7 +106,7 @@ export const useBatchMediaControls = ({
       if (!socket) return;
 
       sendMessage(wsEvents.batchToggleMicrophones, {
-        roomId,
+        roomId: roomId ?? "",
         enabled,
         targetUserIds: [userId],
         excludedUserIds: [],
