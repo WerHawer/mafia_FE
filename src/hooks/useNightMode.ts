@@ -31,7 +31,10 @@ export const useNightMode = () => {
 
   // Чи показувати відео інших гравців
   const shouldShowPlayerVideo = useCallback(
-    (_participantId: string) => {
+    (participantId: string) => {
+      // Відео GM показуємо завжди (незалежно від дня/ночі)
+      if (isUserGM(participantId)) return true;
+
       // Вдень - показуємо всі відео
       if (!isNight) return true;
 
@@ -44,7 +47,7 @@ export const useNightMode = () => {
       // Вночі для сплячих - не показуємо відео
       return false;
     },
-    [isNight, isGM, isAwake]
+    [isNight, isGM, isAwake, isUserGM]
   );
 
   return {

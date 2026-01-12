@@ -59,7 +59,7 @@ export const GameVideo = observer(
 
     return (
       <Draggable
-        disabled={!isMyAfterStart}
+        disabled={!isMyAfterStart || isActive}
         defaultClassNameDragging={styles.dragging}
         position={!gameFlow.isStarted ? DEFAULT_VIDEO_POSITION : undefined}
         nodeRef={containerRef}
@@ -67,7 +67,6 @@ export const GameVideo = observer(
         <div
           className={classNames("videoContainer", styles.container, {
             [styles.myVideoContainer]: isMyAfterStart,
-            [styles.myVideoActive]: isMyStream,
             [styles.active]: isActive,
             [styles.speaking]: isSpeaking && !isMyStream,
           })}

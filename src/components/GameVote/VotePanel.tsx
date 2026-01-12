@@ -95,10 +95,12 @@ export const VotePanel = ({
 
       <div className={styles.listContainer}>
         <ul className={styles.list}>
-          {proposed.map((userId) => {
+          {proposed?.map((userId) => {
+            if (!userId) return null;
+
             const isVotedByMe = votedUserId === userId;
             const isClickable = canVote && !amIVoted;
-            const voteCount = voted[userId]?.length || 0;
+            const voteCount = voted?.[userId]?.length || 0;
 
             return (
               <VoteListItem

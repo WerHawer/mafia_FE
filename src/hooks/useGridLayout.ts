@@ -11,9 +11,8 @@ type GridConfig = {
 };
 
 export const useGridLayout = (): GridConfig => {
-  const { gamesStore, usersStore } = rootStore;
+  const { gamesStore } = rootStore;
   const { speaker, gameFlow } = gamesStore;
-  const { myId } = usersStore;
   const { streamsLength } = useMockStreams();
 
   return useMemo(() => {
@@ -29,8 +28,7 @@ export const useGridLayout = (): GridConfig => {
         streamsLength > usersMinMax.four && streamsLength <= usersMinMax.six,
       four:
         streamsLength > usersMinMax.six && streamsLength <= usersMinMax.twelve,
-      five:
-        streamsLength > usersMinMax.twelve || (!!speaker && speaker !== myId),
+      five: streamsLength > usersMinMax.twelve || !!speaker,
     };
-  }, [streamsLength, gameFlow.isStarted, speaker, myId]);
+  }, [streamsLength, gameFlow.isStarted, speaker]);
 };
