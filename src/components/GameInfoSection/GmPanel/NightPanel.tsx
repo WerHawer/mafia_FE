@@ -61,23 +61,25 @@ export const NightPanel = observer(() => {
 
   return (
     <div className={styles.nightContainer}>
-      <span>{t("game.wakeUp")}</span>
+      <span className={styles.wakeUpLabel}>{t("game.wakeUp")}</span>
 
-      {nightRoles.map((role) => {
-        return (
-          <label className={styles.radioLabel} key={role}>
-            <input
-              type="radio"
-              value={role}
-              id={role}
-              name="role"
-              onChange={onRoleChange(role)}
-              checked={role === selectedRole}
-            />
-            {role}
-          </label>
-        );
-      })}
+      <div className={styles.rolesWrapper}>
+        {nightRoles.map((role) => {
+          return (
+            <label className={styles.radioLabel} key={role}>
+              <input
+                type="radio"
+                value={role}
+                id={role}
+                name="role"
+                onChange={onRoleChange(role)}
+                checked={role === selectedRole}
+              />
+              {role}
+            </label>
+          );
+        })}
+      </div>
     </div>
   );
 });

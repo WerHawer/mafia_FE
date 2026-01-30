@@ -56,23 +56,33 @@
 
 .nightContainer,
 .dayContainer {
-  @include mixins.flex(row, flex-start, stretch);
+  @include mixins.flex(row, flex-start, start);
   width: 100%;
   font-size: 1.5rem;
   gap: 12px;
-  overflow: auto;
+}
 
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
+.wakeUpLabel {
+  white-space: nowrap;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.rolesWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  width: 100%;
 }
 
 .radioLabel {
   @include mixins.flexCenter;
   column-gap: 0.5rem;
   cursor: pointer;
+  white-space: nowrap;
 
   & input {
     cursor: pointer;
+    margin: 0;
   }
 }

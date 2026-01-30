@@ -28,7 +28,7 @@ const GamePage = observer(() => {
   const { activeGamePlayers, removeActiveGame, updateGame } = gamesStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
-  const [ShouldShowVideoConfig, setShouldShowVideoConfig] = useState(false);
+  const [shouldShowVideoConfig, setShouldShowVideoConfig] = useState(false);
 
   const originalStream = useUserMediaStream({
     audio: false,
@@ -82,7 +82,7 @@ const GamePage = observer(() => {
         <GameVideoManager
           originalStream={originalStream}
           gameId={id}
-          showVideoConfig={ShouldShowVideoConfig}
+          showVideoConfig={shouldShowVideoConfig}
           onCloseVideoConfig={() => setShouldShowVideoConfig(false)}
         />
       </LiveKitMafiaRoom>

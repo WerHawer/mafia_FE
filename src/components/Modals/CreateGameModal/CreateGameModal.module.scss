@@ -1,0 +1,113 @@
+@use "../../../styles/theme.scss" as theme;
+@use "../../../styles/mixins.scss" as mixins;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  color: theme.$color-text-primary;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 0;
+  color: theme.$color-text-primary;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.label {
+  font-size: 1.2rem;
+  color: theme.$color-text-secondary;
+}
+
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  
+  button {
+    flex: 1;
+  }
+}
+
+.select {
+  padding: 0.8rem 1rem;
+  border-radius: theme.$border-radius;
+  border: 1px solid theme.$color-light-secondary;
+  background-color: theme.$color-input;
+  color: theme.$color-text-primary;
+  font-size: 1.4rem;
+  width: fit-content;
+  min-width: 6rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: theme.$color-accent-primary;
+  }
+}
+
+.readOnlyField {
+  padding: 0.8rem 1rem;
+  border-radius: theme.$border-radius;
+  border: 1px solid theme.$color-light-secondary;
+  background-color: theme.$color-dark-secondary; // Slightly different background to indicate read-only
+  color: theme.$color-text-secondary;
+  font-size: 1.4rem;
+  width: fit-content;
+  min-width: 5rem;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rolesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.roleCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: theme.$border-radius-big;
+  border: 1px solid theme.$color-light-secondary;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: theme.$color-dark-secondary;
+  font-size: 1.2rem;
+
+  &.active {
+    background-color: rgba(theme.$color-accent-primary, 0.2);
+    border-color: theme.$color-accent-primary;
+    color: theme.$color-accent-primary;
+  }
+  
+  &:hover {
+    border-color: theme.$color-text-primary;
+  }
+}

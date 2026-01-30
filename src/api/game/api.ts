@@ -49,6 +49,19 @@ export const removeUserFromGame = async ({
   return axios.patch<IGame>(`${GAMES_URL}/${gameId}/removeUser/${userId}`);
 };
 
+export const verifyGamePassword = async ({
+  gameId,
+  password,
+}: {
+  gameId: GameId;
+  password: string;
+}) => {
+  return axios.post<{ valid: boolean }>(
+    `${GAMES_URL}/${gameId}/verify-password`,
+    { password }
+  );
+};
+
 export const addRolesToGame = async (
   gameId: GameId,
   roles: Partial<IGameRoles>

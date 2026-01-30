@@ -21,9 +21,15 @@ export const InitialPanel = observer(() => {
   const { mutate: startGame } = useStartGameMutation();
 
   const onStartGame = useCallback(() => {
-    if (!activeGameId) return;
+    if (!activeGameId || !gamesStore.activeGame) return;
 
-    const userRoles = rolesCreator(activeGamePlayersWithoutGM);
+    const { mafiaCount = 3, additionalRoles = [] } =
+      gamesStore.activeGame;
+
+    const userRoles = rolesCreator(activeGamePlayersWithoutGM, {
+      mafiaCount,
+      additionalRoles,
+    });
 
     addRoles(
       {
@@ -36,7 +42,13 @@ export const InitialPanel = observer(() => {
         },
       }
     );
-  }, [activeGameId, activeGamePlayersWithoutGM, addRoles, startGame]);
+  }, [
+    activeGameId,
+    activeGamePlayersWithoutGM,
+    addRoles,
+    startGame,
+    gamesStore.activeGame,
+  ]);
 
   return (
     <div className={styles.initialPanelContainer}>

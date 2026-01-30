@@ -169,11 +169,26 @@ export class GamesStore {
   }
 
   get nightRoles(): NightRoles[] {
-    const nightRoles = this.activeGameRoles
-      ? Object.entries(this.activeGameRoles)
-          .filter(([key, value]) => Boolean(value) && key !== Roles.Citizen)
-          .map(([key]) => key)
-      : [];
+    const roles = this.activeGameRoles;
+
+    if (!roles) return [];
+
+    const nightRoles = Object.entries(roles)
+      .filter(([key, value]) => {
+        if (!value || key === Roles.Citizen) return false;
+
+        // If it's Mafia group but we only have 1 (who is also the Don), hide Mafia group option
+        if (
+          key === Roles.Mafia &&
+          Array.isArray(value) &&
+          value.length === 1
+        ) {
+          return false;
+        }
+
+        return true;
+      })
+      .map(([key]) => key);
 
     return nightRoles as NightRoles[];
   }

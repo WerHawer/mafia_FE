@@ -1,13 +1,15 @@
 import { observer } from "mobx-react-lite";
 import ReactModal from "react-modal";
 
-import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import {
-  NightResultsModal,
+  ModalNames,
   NightResultsModalProps,
-} from "@/components/Modals/NightResultsModal/NightResultsModal.tsx";
+} from "@/components/Modals/Modal.types.ts";
+import { NightResultsModal } from "@/components/Modals/NightResultsModal/NightResultsModal.tsx";
 import { modalStore } from "@/store/modalStore.ts";
 
+import { CreateGameModal } from "./CreateGameModal";
+import { EnterPasswordModal } from "./EnterPasswordModal";
 import styles from "./ModalBase.module.scss";
 import { VoteResultsModal } from "./VoteResultsModal";
 
@@ -21,6 +23,8 @@ export const ModalFabric = observer(() => {
     [ModalNames.NightResultsModal]: (
       <NightResultsModal {...(modalData as NightResultsModalProps)} />
     ),
+    [ModalNames.CreateGameModal]: <CreateGameModal />,
+    [ModalNames.EnterPasswordModal]: <EnterPasswordModal />,
   };
 
   return (

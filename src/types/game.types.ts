@@ -60,9 +60,12 @@ export interface IGame extends IGameRoles {
   id: GameId;
   owner: UserId;
   players: UserId[];
+  maxPlayers: number;
   password?: string;
   isPrivate: boolean;
   isActive: boolean;
+  mafiaCount: number;
+  additionalRoles: Roles[];
   startTime: number | null;
   finishTime: number | null;
   creatingTime: number;
@@ -75,11 +78,14 @@ export interface IGameShort {
   id: GameId;
   owner: UserId;
   playersCount: number;
+  maxPlayers?: number;
   isPrivate: boolean;
   isActive: boolean;
   gm: UserId;
   gameType: GameType;
   creatingTime: number;
+  mafiaCount?: number;
+  additionalRoles?: Roles[];
 }
 
 export interface IRoomConnectInfo {

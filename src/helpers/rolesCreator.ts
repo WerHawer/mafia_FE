@@ -1,49 +1,53 @@
 import { shuffle } from "lodash/fp";
 
-import { IGameRoles } from "../types/game.types.ts";
+import { IGameRoles, Roles } from "../types/game.types.ts";
 import { UserId } from "../types/user.types.ts";
 
-type AllRoles = keyof IGameRoles;
-
 type Options = {
-  isStandard?: boolean;
-  mafiaCount?: number;
-  sheriffCount?: number;
+  mafiaCount: number;
+  additionalRoles: Roles[];
 };
 
-// TODO: think about how to make it more flexible
-export const rolesCreator = (playersWithoutGM: UserId[], options?: Options) => {
-  const { isStandard = true, mafiaCount = 3, sheriffCount = 1 } = options || {};
+export const rolesCreator = (
+  playersWithoutGM: UserId[],
+  options: Options
+): IGameRoles => {
+  const { mafiaCount, additionalRoles } = options;
+  const roles: IGameRoles = {};
+  const availablePlayers = shuffle(playersWithoutGM);
 
-  const shuffledPlayersWithoutGM = shuffle(playersWithoutGM);
-
-  const standardRoles = {
-    mafia: mafiaCount,
-    sheriff: sheriffCount,
+  /**
+   * Helper to assign a single player to a specific role.
+   * We cast to any for the singleton assignment as IGameRoles has a mix of shapes.
+   */
+  const assignSingleton = (role: Roles) => {
+    const userId = availablePlayers.pop();
+    if (userId) {
+      (roles as any)[role] = userId;
+    }
   };
 
-  const customRoles = {
-    doctor: 1,
-    prostitute: 1,
-  };
+  // 1. Assign Mafia
+  const mafiaIds: UserId[] = [];
+  const countToAssign = Math.min(mafiaCount, availablePlayers.length);
 
-  const allActiveRoles = isStandard
-    ? standardRoles
-    : { ...standardRoles, ...customRoles };
+  for (let i = 0; i < countToAssign; i++) {
+    const userId = availablePlayers.pop();
+    if (userId) mafiaIds.push(userId);
+  }
+  roles[Roles.Mafia] = mafiaIds;
 
-  const roles = Object.entries(allActiveRoles) as Array<[AllRoles, number]>;
+  // 2. Assign Mandatory Sheriff role
+  assignSingleton(Roles.Sheriff);
 
-  const userRoles = roles.reduce(
-    (acc, [role, count]) => {
-      const spliced = shuffledPlayersWithoutGM.splice(0, count);
+  // 3. Assign Additional Roles (Doctor, Prostitute, etc.)
+  // We filter out Sheriff just in case it was passed in the list to avoid double assignment attempts
+  additionalRoles
+    .filter((role) => role !== Roles.Sheriff)
+    .forEach(assignSingleton);
 
-      // @ts-ignore
-      acc[role] = spliced.length === 1 ? spliced[0] : spliced;
+  // 4. All remaining are Citizens
+  roles[Roles.Citizen] = availablePlayers;
 
-      return acc;
-    },
-    {} as { [Key in AllRoles]?: IGameRoles[Key] }
-  );
-
-  return { ...userRoles, citizens: shuffledPlayersWithoutGM };
+  return roles;
 };

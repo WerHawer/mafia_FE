@@ -3,19 +3,15 @@ import { useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
-import { wsEvents } from "@/config/wsEvents.ts";
 import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
-import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
-import { UserId } from "@/types/user.types.ts";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
+import { NightResultsModalProps } from "@/components/Modals/Modal.types.ts";
 import styles from "./NightResultsModal.module.scss";
 
-export type NightResultsModalProps = {
-  killedPlayer: UserId[];
-};
+// Removed local definition of NightResultsModalProps
 
 export const NightResultsModal = observer(
   ({ killedPlayer = [] }: NightResultsModalProps) => {

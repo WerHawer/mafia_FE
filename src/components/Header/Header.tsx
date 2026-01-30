@@ -4,11 +4,11 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-import { useCreateGameMutation } from "@/api/game/queries.ts";
-import { createGameObj } from "@/helpers/createGameObj.ts";
+import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import { removeTokenFromAxios } from "@/helpers/removeTokenFromAxios.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { routes } from "@/router/routs.ts";
+import { modalStore } from "@/store/modalStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
 import { Button } from "@/UI/Button/Button.tsx";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
@@ -19,23 +19,15 @@ import { UserHeaderInfo } from "../UserInfo/UserHeaderInfo.tsx";
 import styles from "./Header.module.scss";
 
 export const Header = () => {
-  const { mutate: createGame } = useCreateGameMutation();
-  const { logout, myId } = usersStore;
+  const { logout } = usersStore;
+  const { openModal } = modalStore;
   const { disconnect } = useSocket();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleCreateGame = useCallback(() => {
-    if (!myId) return;
-
-    const game = createGameObj({ owner: myId });
-
-    createGame(game, {
-      onSuccess: ({ data }) => {
-        navigate(`${routes.game}/${data.id}`);
-      },
-    });
-  }, [createGame, navigate, myId]);
+    openModal(ModalNames.CreateGameModal);
+  }, [openModal]);
 
   const onLogout = useCallback(() => {
     logout();

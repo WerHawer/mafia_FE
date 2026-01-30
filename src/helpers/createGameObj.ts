@@ -23,19 +23,28 @@ type CreateGameProps = {
   owner: UserId;
   password?: string;
   gameType?: GameType;
+  maxPlayers?: number;
+  mafiaCount?: number;
+  additionalRoles?: Roles[];
 };
 
 export const createGameObj = ({
   owner,
   password,
   gameType = GameType.Standard,
+  maxPlayers = 10,
+  mafiaCount = 3,
+  additionalRoles = [],
 }: CreateGameProps): IGameDTO => {
   return {
     owner,
     players: [owner],
+    maxPlayers,
     password,
     isPrivate: !!password,
     isActive: true,
+    mafiaCount,
+    additionalRoles,
     [Roles.GM]: owner,
     [Roles.Mafia]: [],
     [Roles.Citizen]: [],
