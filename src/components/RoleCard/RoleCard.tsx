@@ -11,9 +11,11 @@ import ken from "@/assets/images/cards/ken.webp";
 import mafia_1 from "@/assets/images/cards/mafia_1.webp";
 import mafia_2 from "@/assets/images/cards/mafia_2.webp";
 import don from "@/assets/images/cards/mafia_don.webp";
+import prostitute from "@/assets/images/cards/prostitute.webp";
 import sheriff from "@/assets/images/cards/sheriff.webp";
 import taras from "@/assets/images/cards/taras.webp";
 import vasyl from "@/assets/images/cards/vasyl.webp";
+
 import { Roles } from "@/types/game.types";
 import { Typography } from "@/UI/Typography";
 
@@ -46,6 +48,7 @@ export const RoleCard = ({
     [Roles.Doctor]: doctor,
     [Roles.Mafia]: mafia[index ?? 0],
     [Roles.Citizen]: citizens[index ?? 0],
+    [Roles.Prostitute]: prostitute,
   };
 
   const roleImage = roleImages[role as keyof typeof roleImages];
