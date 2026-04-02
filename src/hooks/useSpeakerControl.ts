@@ -63,6 +63,10 @@ export const useSpeakerControl = () => {
     ]
   );
 
+  const eligiblePlayers = activeGameAlivePlayers.filter(
+    (player) => player !== gameFlow.prostituteBlock
+  );
+
   const onStartSpeeches = useCallback(() => {
     if (hasSpeaker) return;
 
@@ -70,10 +74,15 @@ export const useSpeakerControl = () => {
     const day = gameFlow.day;
     let index = day - 1 >= maxCount ? 0 : day - 1;
 
+    // Prevent infinite loop if somehow all players are killed/blocked
+    let attempts = 0;
     while (
-      activeGameKilledPlayers.includes(activeGamePlayersWithoutGM[index])
+      (activeGameKilledPlayers.includes(activeGamePlayersWithoutGM[index]) ||
+        activeGamePlayersWithoutGM[index] === gameFlow.prostituteBlock) &&
+      attempts < maxCount
     ) {
       index = (index + 1) % maxCount;
+      attempts++;
     }
 
     const speaker = activeGamePlayersWithoutGM[index];
@@ -83,38 +92,41 @@ export const useSpeakerControl = () => {
     activeGamePlayersWithoutGM,
     activeGameKilledPlayers,
     gameFlow.day,
+    gameFlow.prostituteBlock,
     updateSpeaker,
   ]);
 
   const onNextSpeaker = useCallback(() => {
-    if (!hasSpeaker || activeGameAlivePlayers.length === 0) return;
+    if (!hasSpeaker || eligiblePlayers.length === 0) return;
 
-    const currentSpeakerIndex = activeGameAlivePlayers.findIndex(
+    const currentSpeakerIndex = eligiblePlayers.findIndex(
       (player) => player === gameFlow.speaker
     );
 
-    const speaker =
-      currentSpeakerIndex === activeGameAlivePlayers.length - 1
-        ? activeGameAlivePlayers[0]
-        : activeGameAlivePlayers[currentSpeakerIndex + 1];
+    // If current speaker is not in eligibleList (e.g. was just blocked), we start from 0
+    const nextIndex = currentSpeakerIndex === -1 ? 0 : currentSpeakerIndex + 1;
+    const speaker = nextIndex >= eligiblePlayers.length
+        ? eligiblePlayers[0]
+        : eligiblePlayers[nextIndex];
 
     updateSpeaker(speaker);
-  }, [activeGameAlivePlayers, gameFlow.speaker, hasSpeaker, updateSpeaker]);
+  }, [eligiblePlayers, gameFlow.speaker, hasSpeaker, updateSpeaker]);
 
   const onPreviousSpeaker = useCallback(() => {
-    if (!hasSpeaker || activeGameAlivePlayers.length === 0) return;
+    if (!hasSpeaker || eligiblePlayers.length === 0) return;
 
-    const currentSpeakerIndex = activeGameAlivePlayers.findIndex(
+    const currentSpeakerIndex = eligiblePlayers.findIndex(
       (player) => player === gameFlow.speaker
     );
 
-    const speaker =
-      currentSpeakerIndex === 0
-        ? activeGameAlivePlayers[activeGameAlivePlayers.length - 1]
-        : activeGameAlivePlayers[currentSpeakerIndex - 1];
+    // If current speaker is not in eligibleList, we start from end
+    const prevIndex = currentSpeakerIndex === -1 ? eligiblePlayers.length - 1 : currentSpeakerIndex - 1;
+    const speaker = prevIndex < 0
+        ? eligiblePlayers[eligiblePlayers.length - 1]
+        : eligiblePlayers[prevIndex];
 
     updateSpeaker(speaker);
-  }, [activeGameAlivePlayers, gameFlow.speaker, hasSpeaker, updateSpeaker]);
+  }, [eligiblePlayers, gameFlow.speaker, hasSpeaker, updateSpeaker]);
 
   const onStopSpeeches = useCallback(() => {
     updateGameFlow({

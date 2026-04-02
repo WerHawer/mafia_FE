@@ -164,5 +164,11 @@
     "restartGame": "Restart Game",
     "videoSettings": "Video Settings",
     "leaveGame": "Leave Game"
+  },
+
+  "prostituteAction": {
+    "blocked": "You blocked this player",
+    "blockedByProstitute": "Blocked by Prostitute",
+    "blockedResult": "The prostitute blocked <strong>{{playerName}}</strong>"
   }
 }

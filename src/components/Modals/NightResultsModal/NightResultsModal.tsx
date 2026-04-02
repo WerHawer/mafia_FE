@@ -25,6 +25,9 @@ export const NightResultsModal = observer(
 
     const isSomeoneKilled = !!killedPlayer.length;
     const playerName = isSomeoneKilled ? getUserName(killedPlayer[0]) : "";
+    
+    const isSomeoneBlocked = !!gameFlow.prostituteBlock;
+    const blockedPlayerName = isSomeoneBlocked ? getUserName(gameFlow.prostituteBlock!) : "";
 
     const giveLastSpeech = useCallback(() => {
       if (!isSomeoneKilled) {
@@ -73,6 +76,16 @@ export const NightResultsModal = observer(
           </p>
         ) : (
           <p className={styles.messageText}>{t("nightResults.mafiaMissed")}</p>
+        )}
+
+        {isSomeoneBlocked && (
+          <p className={styles.messageText}>
+            <Trans
+              i18nKey="prostituteAction.blockedResult"
+              values={{ playerName: blockedPlayerName }}
+              components={{ strong: <strong /> }}
+            />
+          </p>
         )}
 
         {isSomeoneKilled && (

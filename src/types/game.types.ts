@@ -45,6 +45,7 @@ export interface IGameFlow {
   sheriffCheck?: UserId;
   doctorSave?: UserId;
   donCheck?: UserId;
+  prostituteBlock?: UserId;
 }
 
 export interface IGameRoles {

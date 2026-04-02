@@ -1,3 +1,4 @@
+import { LockOutlined } from "@ant-design/icons";
 import classNames from "classnames";
 import { Participant, Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
@@ -81,6 +82,12 @@ export const GameVideo = observer(
           <div className={styles.gmIconContainer}>
             {isGM && <RoleIcon role={Roles.GM} size="l" />}
           </div>
+
+          {!gameFlow.isNight && gameFlow.prostituteBlock === userId && !isUserDead && (
+            <div className={styles.prostituteOverlay} title={t("prostituteAction.blockedByProstitute")}>
+              <LockOutlined />
+            </div>
+          )}
 
           {isUserDead && !isMyStream && (
             <div className={styles.deadOverlay}>{t("gameVideo.dead")}</div>

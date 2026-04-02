@@ -61,7 +61,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     !isIDead;
 
   const shouldShowVoteIcon =
-    gameFlow.isVote && gameFlow.proposed.includes(userId) && !isIDead;
+    gameFlow.isVote && gameFlow.proposed.includes(userId) && !isIDead && !rootStore.isIBlocked;
 
   const onPropose = useCallback(() => {
     if (
@@ -85,7 +85,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
 
   const onVote = useCallback(() => {
     if (!userId || !myId || !activeGameId) return;
-    if (amIVoted || isIGM) return;
+    if (amIVoted || isIGM || rootStore.isIBlocked) return;
 
     voteForUser({
       gameId: activeGameId,

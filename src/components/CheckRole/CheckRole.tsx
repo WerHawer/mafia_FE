@@ -1,4 +1,4 @@
-import { EyeOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { EyeOutlined, LockOutlined, QuestionCircleOutlined, HeartOutlined, HeartFilled } from "@ant-design/icons";
 import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -18,9 +18,9 @@ type CheckRoleProps = {
 
 export const CheckRole = observer(({ userId }: CheckRoleProps) => {
   const { t } = useTranslation();
-  const { gamesStore, myRole, isIGM } = rootStore;
+  const { gamesStore, myRole, isIGM, isIProstitute } = rootStore;
   const { getUserRole, gameFlow, isUserGM } = gamesStore;
-  const { sheriffCheck, donCheck } = gameFlow;
+  const { sheriffCheck, donCheck, prostituteBlock } = gameFlow;
   const [checkResult, setCheckResult] = useState("");
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
@@ -30,8 +30,10 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
   const isUserSheriff = userRole === Roles.Sheriff;
   const isUserMafia = userRole === Roles.Mafia || userRole === Roles.Don;
   const userCheckedBySheriff = sheriffCheck === userId;
-
   const userCheckedByDon = donCheck === userId;
+  const userBlockedByProstitute = prostituteBlock === userId;
+
+  const isMyStream = userId === rootStore.usersStore.myId;
 
   const isCheckDisabled = useMemo(() => {
     if (gameFlow.day < 2) return true;
@@ -44,12 +46,17 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
       return !!donCheck;
     }
 
+    if (isIProstitute) {
+      return !!prostituteBlock;
+    }
+
     return false;
-  }, [donCheck, gameFlow.day, isIDon, isISheriff, sheriffCheck]);
+  }, [donCheck, gameFlow.day, isIDon, isISheriff, isIProstitute, prostituteBlock, sheriffCheck]);
 
   const onCheckRole = useCallback(() => {
     if (isCheckDisabled) return;
     if (isUserGM(userId)) return;
+    if (isMyStream) return;
 
     if (isISheriff) {
       const result = isUserMafia
@@ -76,10 +83,22 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
 
       return;
     }
+
+    if (isIProstitute) {
+      setCheckResult(t("prostituteAction.blocked"));
+
+      updateGameFlow({
+        prostituteBlock: userId,
+      });
+
+      return;
+    }
   }, [
     isCheckDisabled,
     isIDon,
     isISheriff,
+    isIProstitute,
+    isMyStream,
     isUserGM,
     isUserMafia,
     isUserSheriff,
@@ -88,9 +107,11 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
     userId,
   ]);
 
+  const showCheckIcon = isISheriff || isIDon || isIProstitute;
+
   return (
     <>
-      {!isIGM && (
+      {!isIGM && showCheckIcon && (
         <Tippy
           content={checkResult}
           theme="role-tooltip"
@@ -98,10 +119,15 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
           placement="right"
           disabled={!checkResult && isCheckDisabled}
         >
-          <QuestionCircleOutlined
-            className={styles.icon}
-            onClick={onCheckRole}
-          />
+          {isIProstitute ? (
+            userBlockedByProstitute ? (
+              <HeartFilled className={styles.icon} style={{ color: "#e91e8c" }} />
+            ) : (
+              <HeartOutlined className={styles.icon} onClick={onCheckRole} style={{ color: "#e91e8c" }} />
+            )
+          ) : (
+            <QuestionCircleOutlined className={styles.icon} onClick={onCheckRole} />
+          )}
         </Tippy>
       )}
 
@@ -119,6 +145,12 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
               userCheckedBySheriff && userCheckedByDon && styles.doubleCheck
             )}
           />
+        </Tippy>
+      )}
+
+      {isIGM && userBlockedByProstitute && (
+        <Tippy content={t("prostituteAction.blockedByProstitute")}>
+          <LockOutlined className={styles.prostituteBlockIcon} />
         </Tippy>
       )}
     </>

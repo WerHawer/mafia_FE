@@ -35,7 +35,7 @@ export const useGameVote = () => {
     return entry ? entry[0] : null;
   }, [amIVoted, gameFlow.voted, myId]);
 
-  const canVote = gameFlow.isVote && !isIDead && !isIGM;
+  const canVote = gameFlow.isVote && !isIDead && !isIGM && !rootStore.isIBlocked;
   const isVotingActive = gameFlow.proposed.length > 1 && gameFlow.isVote;
 
   const onToggle = useCallback(() => {

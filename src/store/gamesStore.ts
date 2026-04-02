@@ -197,6 +197,10 @@ export class GamesStore {
     return toJS(this.activeGame?.gameFlow) ?? initialGameFlow;
   }
 
+  get blockedPlayer() {
+    return this.gameFlow.prostituteBlock ?? "";
+  }
+
   get speaker() {
     return this.gameFlow.speaker;
   }

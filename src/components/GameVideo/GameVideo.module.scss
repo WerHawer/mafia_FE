@@ -177,3 +177,20 @@
   left: 10px;
   z-index: 1;
 }
+
+.prostituteOverlay {
+  @include mixins.flexCenter;
+  
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(#e91e8c, 0.2);
+  border: 2px solid #e91e8c;
+  border-radius: theme.$border-radius;
+  
+  color: #e91e8c;
+  font-size: 5rem;
+  z-index: 9;
+}

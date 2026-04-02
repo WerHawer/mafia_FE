@@ -167,5 +167,11 @@
     "restartGame": "Перезапустити гру",
     "videoSettings": "Налаштування відео",
     "leaveGame": "Вийти з гри"
+  },
+
+  "prostituteAction": {
+    "blocked": "Ви заблокували цього гравця",
+    "blockedByProstitute": "Заблоковано Повією",
+    "blockedResult": "Повія заблокувала <strong>{{playerName}}</strong>"
   }
 }

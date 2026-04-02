@@ -74,11 +74,19 @@ class RootStore {
     const wakedUp = this.gamesStore.gameFlow.wakeUp;
 
     return toJS(
-      (role === Roles.Don || role === Roles.Sheriff) &&
+      (role === Roles.Don || role === Roles.Sheriff || role === Roles.Prostitute) &&
         this.gamesStore.gameFlow.isNight &&
         this.isIWakedUp &&
         wakedUp.length === 1
     );
+  }
+
+  get isIBlocked() {
+    return toJS(this.gamesStore.blockedPlayer === this.usersStore.myId);
+  }
+
+  get isIProstitute() {
+    return toJS(this.myRole === Roles.Prostitute);
   }
 }
 

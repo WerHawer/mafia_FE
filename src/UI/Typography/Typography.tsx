@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, forwardRef } from "react";
 
 import styles from "./Typography.module.scss";
 
@@ -17,26 +17,28 @@ type TypographyProps = PropsWithChildren<{
   className?: string;
 }>;
 
-export const Typography = ({
-  children,
-  variant = "p",
-  className,
-}: TypographyProps) => {
-  const variantsMap = {
-    h1: "h1",
-    h2: "h2",
-    h3: "h3",
-    title: "h2",
-    subtitle: "h4",
-    body: "p",
-    caption: "span",
-    p: "p",
-    span: "span",
-  };
+export const Typography = forwardRef<HTMLElement, TypographyProps>(
+  ({ children, variant = "p", className }, ref) => {
+    const variantsMap: Record<string, keyof JSX.IntrinsicElements> = {
+      h1: "h1",
+      h2: "h2",
+      h3: "h3",
+      title: "h2",
+      subtitle: "h4",
+      body: "p",
+      caption: "span",
+      p: "p",
+      span: "span",
+    };
 
-  const Tag = variantsMap[variant] as keyof JSX.IntrinsicElements;
+    const Tag = variantsMap[variant] as React.ElementType;
 
-  return (
-    <Tag className={classNames(className, styles[variant])}>{children}</Tag>
-  );
-};
+    return (
+      <Tag ref={ref} className={classNames(className, styles[variant])}>
+        {children}
+      </Tag>
+    );
+  }
+);
+
+Typography.displayName = "Typography";

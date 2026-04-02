@@ -4,7 +4,9 @@ import {
   StepForwardOutlined,
   StopOutlined,
 } from "@ant-design/icons";
+import Tippy from "@tippyjs/react";
 import { observer } from "mobx-react-lite";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useSpeakerControl } from "@/hooks/useSpeakerControl.ts";
@@ -24,6 +26,26 @@ export const SpeakerBlock = observer(() => {
     onPreviousSpeaker,
     onStopSpeeches,
   } = useSpeakerControl();
+
+  const textRef = useRef<HTMLDivElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+
+  useEffect(() => {
+    if (!textRef.current) return;
+
+    const checkTruncation = () => {
+      if (textRef.current) {
+        setIsTruncated(textRef.current.scrollWidth > textRef.current.clientWidth);
+      }
+    };
+
+    checkTruncation();
+    
+    const resizeObserver = new ResizeObserver(checkTruncation);
+    resizeObserver.observe(textRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, [speakerName]);
 
   if (isVote) return null;
 
@@ -67,9 +89,21 @@ export const SpeakerBlock = observer(() => {
       </div>
 
       {speakerName && (
-        <Typography variant="body" className={styles.speakerName}>
-          {speakerName}
-        </Typography>
+        <div className={styles.nameWrapper}>
+          <Tippy 
+            content={speakerName} 
+            disabled={!isTruncated} 
+            placement="top" 
+            theme="role-tooltip"
+            animation="scale"
+            duration={[200, 150]}
+            delay={[500, 0]}
+          >
+            <Typography variant="body" ref={textRef} className={styles.speakerName}>
+              {speakerName}
+            </Typography>
+          </Tippy>
+        </div>
       )}
     </div>
   );
