@@ -32,9 +32,11 @@ export const useGameVideo = ({
   const isShootEnabled =
     isIGM || (isIMafia && isIWakedUp && !isGM && notFirstDay && !isIDidShot);
 
+  const isIDoctor = myRole === Roles.Doctor;
+
   const isCheckRoleEnabled =
     isIGM ||
-    (isICanCheck && !isMyStream && !isGM && !isUserDead && notFirstDay);
+    (isICanCheck && (!isMyStream || isIDoctor) && !isGM && !isUserDead && notFirstDay);
 
   const {
     isCameraEnabled,

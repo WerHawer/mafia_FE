@@ -111,7 +111,22 @@
   "nightResults": {
     "mafiaKilled": "Mafia killed <strong>{{playerName}}</strong>",
     "mafiaMissed": "Mafia missed and all citizens still alive after night",
-    "lastSpeech": "Last speech for <strong>{{playerName}}</strong>"
+    "doctorSaved": "Mafia shot <strong>{{playerName}}</strong>, but the doctor saved them. No one died tonight",
+    "lastSpeech": "Last speech for <strong>{{playerName}}</strong>",
+    "summaryTitle": "Night Summary (GM only)",
+    "logMafia": "🔴 Mafia shot <strong>{{playerName}}</strong>",
+    "logProstitute": "💋 Prostitute visited <strong>{{playerName}}</strong>",
+    "logDoctor": "⚕️ Doctor healed <strong>{{playerName}}</strong>",
+    "logDon": "🕵️ Don checked <strong>{{playerName}}</strong> ({{result}})",
+    "logSheriff": "👮 Sheriff checked <strong>{{playerName}}</strong> ({{result}})",
+    "resultSheriff": "Sheriff",
+    "resultNotSheriff": "not Sheriff",
+    "resultMafia": "Mafia",
+    "resultNotMafia": "citizen",
+    "close": "Close",
+    "splitShots": "Mafia shots were split between multiple players",
+    "notAllShot": "Not all mafia members shot ({{shots}} of {{alive}})",
+    "noShots": "Mafia didn't make any shots"
   },
 
   "voteResults": {
@@ -147,7 +162,9 @@
     "sheriff": "Sheriff",
     "notSheriff": "Not Sheriff",
     "checkedBySheriff": "Checked by sheriff",
-    "checkedByDon": "Checked by don"
+    "checkedByDon": "Checked by don",
+    "doctorSaved": "You are treating this player",
+    "doctorSavedGM": "Saved by Doctor"
   },
 
   "gameVideo": {

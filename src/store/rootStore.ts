@@ -74,7 +74,7 @@ class RootStore {
     const wakedUp = this.gamesStore.gameFlow.wakeUp;
 
     return toJS(
-      (role === Roles.Don || role === Roles.Sheriff || role === Roles.Prostitute) &&
+      (role === Roles.Don || role === Roles.Sheriff || role === Roles.Prostitute || role === Roles.Doctor) &&
         this.gamesStore.gameFlow.isNight &&
         this.isIWakedUp &&
         wakedUp.length === 1
@@ -87,6 +87,10 @@ class RootStore {
 
   get isIProstitute() {
     return toJS(this.myRole === Roles.Prostitute);
+  }
+
+  get isIDoctor() {
+    return toJS(this.myRole === Roles.Doctor);
   }
 }
 

@@ -41,9 +41,31 @@
 
   position: absolute;
   top: 10px;
-  left: 10px;
-  color: #e91e8c;
+  right: 10px;
+  color: theme.$color-role-prostitute;
 
   background-color: transparent;
   z-index: 10;
+}
+
+.doctorSaveIcon {
+  @include mixins.size(30px);
+  font-size: 30px;
+
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: theme.$color-role-doctor;
+
+  background-color: transparent;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.prostituteIcon {
+  color: theme.$color-role-prostitute;
+}
+
+.doctorIcon {
+  color: theme.$color-role-doctor;
 }

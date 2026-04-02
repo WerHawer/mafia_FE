@@ -1,4 +1,4 @@
-import { EyeOutlined, LockOutlined, QuestionCircleOutlined, HeartOutlined, HeartFilled } from "@ant-design/icons";
+import { EyeOutlined, LockOutlined, QuestionCircleOutlined, HeartOutlined, HeartFilled, PlusCircleOutlined, PlusCircleFilled } from "@ant-design/icons";
 import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -20,7 +20,7 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
   const { t } = useTranslation();
   const { gamesStore, myRole, isIGM, isIProstitute } = rootStore;
   const { getUserRole, gameFlow, isUserGM } = gamesStore;
-  const { sheriffCheck, donCheck, prostituteBlock } = gameFlow;
+  const { sheriffCheck, donCheck, prostituteBlock, doctorSave } = gameFlow;
   const [checkResult, setCheckResult] = useState("");
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
@@ -32,7 +32,9 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
   const userCheckedBySheriff = sheriffCheck === userId;
   const userCheckedByDon = donCheck === userId;
   const userBlockedByProstitute = prostituteBlock === userId;
-
+  const userSavedByDoctor = doctorSave === userId;
+  
+  const isIDoctor = myRole === Roles.Doctor;
   const isMyStream = userId === rootStore.usersStore.myId;
 
   const isCheckDisabled = useMemo(() => {
@@ -50,13 +52,17 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
       return !!prostituteBlock;
     }
 
+    if (isIDoctor) {
+      return !!doctorSave;
+    }
+
     return false;
-  }, [donCheck, gameFlow.day, isIDon, isISheriff, isIProstitute, prostituteBlock, sheriffCheck]);
+  }, [donCheck, gameFlow.day, isIDon, isISheriff, isIProstitute, prostituteBlock, sheriffCheck, isIDoctor, doctorSave]);
 
   const onCheckRole = useCallback(() => {
     if (isCheckDisabled) return;
     if (isUserGM(userId)) return;
-    if (isMyStream) return;
+    if (isMyStream && !isIDoctor) return;
 
     if (isISheriff) {
       const result = isUserMafia
@@ -93,11 +99,21 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
 
       return;
     }
+    if (isIDoctor) {
+      setCheckResult(t("checkRole.doctorSaved"));
+
+      updateGameFlow({
+        doctorSave: userId,
+      });
+
+      return;
+    }
   }, [
     isCheckDisabled,
     isIDon,
     isISheriff,
     isIProstitute,
+    isIDoctor,
     isMyStream,
     isUserGM,
     isUserMafia,
@@ -107,7 +123,7 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
     userId,
   ]);
 
-  const showCheckIcon = isISheriff || isIDon || isIProstitute;
+  const showCheckIcon = isISheriff || isIDon || isIProstitute || isIDoctor;
 
   return (
     <>
@@ -121,9 +137,15 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
         >
           {isIProstitute ? (
             userBlockedByProstitute ? (
-              <HeartFilled className={styles.icon} style={{ color: "#e91e8c" }} />
+              <HeartFilled className={classNames(styles.icon, styles.prostituteIcon)} />
             ) : (
-              <HeartOutlined className={styles.icon} onClick={onCheckRole} style={{ color: "#e91e8c" }} />
+              <HeartOutlined className={classNames(styles.icon, styles.prostituteIcon)} onClick={onCheckRole} />
+            )
+          ) : isIDoctor ? (
+            userSavedByDoctor ? (
+              <PlusCircleFilled className={classNames(styles.icon, styles.doctorIcon)} />
+            ) : (
+              <PlusCircleOutlined className={classNames(styles.icon, styles.doctorIcon)} onClick={onCheckRole} />
             )
           ) : (
             <QuestionCircleOutlined className={styles.icon} onClick={onCheckRole} />
@@ -151,6 +173,12 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
       {isIGM && userBlockedByProstitute && (
         <Tippy content={t("prostituteAction.blockedByProstitute")}>
           <LockOutlined className={styles.prostituteBlockIcon} />
+        </Tippy>
+      )}
+
+      {isIGM && gameFlow.isNight && userSavedByDoctor && (
+        <Tippy content={t("checkRole.doctorSavedGM")}>
+          <PlusCircleFilled className={styles.doctorSaveIcon} />
         </Tippy>
       )}
     </>

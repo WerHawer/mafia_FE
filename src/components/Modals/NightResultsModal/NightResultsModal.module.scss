@@ -1,12 +1,50 @@
 @use "../../../styles/theme.scss";
 
 .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 }
 
+.title {
+  margin-bottom: 24px;
+  font-size: 24px;
+  font-weight: 600;
+  color: theme.$color-text-primary;
+}
+
+.logsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.logText {
+  font-size: 18px;
+  line-height: 1.4;
+  color: theme.$color-text-primary;
+  margin: 0;
+
+  strong {
+    color: theme.$color-accent-secondary;
+  }
+}
+
+.divider {
+  width: 100%;
+  border: 0;
+  height: 1px;
+  background-color: rgba(theme.$color-text-primary, 0.2);
+  margin: 24px 0;
+}
+
 .messageText {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 10px 0 24px;
+  color: theme.$color-accent-tertiary;
 }
 
 .playerName {

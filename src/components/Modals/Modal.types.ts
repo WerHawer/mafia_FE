@@ -1,7 +1,21 @@
 import { UserId } from "@/types/user.types.ts";
 
+export type MafiaMissReason = "noShots" | "notAllShot" | "splitShots" | "savedByDoctor";
+
+export type NightActionLogs = {
+  targetedByMafia?: string[];
+  savedByDoctor?: string;
+  blockedByProstitute?: string;
+  sheriffChecked?: string;
+  donChecked?: string;
+  mafiaMissReason?: MafiaMissReason;
+  killedPlayer?: string;
+  aliveMafiaCount?: number;
+  totalShots?: number;
+};
+
 export type NightResultsModalProps = {
-  killedPlayer: UserId[];
+  nightActionLogs?: NightActionLogs;
 };
 
 export enum ModalNames {

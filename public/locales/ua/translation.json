@@ -113,7 +113,22 @@
   "nightResults": {
     "mafiaKilled": "Мафія вбила <strong>{{playerName}}</strong>",
     "mafiaMissed": "Мафія промахнулася, і всі мирні жителі залишилися живі",
-    "lastSpeech": "Останнє слово для <strong>{{playerName}}</strong>"
+    "doctorSaved": "Мафія вистрелила в <strong>{{playerName}}</strong>, але лікар врятував. Ніхто не помер цієї ночі",
+    "lastSpeech": "Останнє слово для <strong>{{playerName}}</strong>",
+    "summaryTitle": "Підсумок ночі",
+    "logMafia": "🔴 Мафія стріляла в <strong>{{playerName}}</strong>",
+    "logProstitute": "💋 Повія прийшла до <strong>{{playerName}}</strong>",
+    "logDoctor": "⚕️ Лікар полікував <strong>{{playerName}}</strong>",
+    "logDon": "🕵️ Дон перевірив <strong>{{playerName}}</strong> ({{result}})",
+    "logSheriff": "👮 Шериф перевірив <strong>{{playerName}}</strong> ({{result}})",
+    "resultSheriff": "Шериф",
+    "resultNotSheriff": "не Шериф",
+    "resultMafia": "Мафія",
+    "resultNotMafia": "мирний",
+    "close": "Закрити",
+    "splitShots": "Постріли мафії розділились між кількома гравцями",
+    "notAllShot": "Не всі члени мафії зробили постріл ({{shots}} з {{alive}})",
+    "noShots": "Мафія не зробила жодного пострілу"
   },
 
   "voteResults": {
@@ -150,7 +165,9 @@
     "sheriff": "Шериф",
     "notSheriff": "Не шериф",
     "checkedBySheriff": "Перевірено шерифом",
-    "checkedByDon": "Перевірено доном"
+    "checkedByDon": "Перевірено доном",
+    "doctorSaved": "Ви лікуєте цього гравця",
+    "doctorSavedGM": "Врятовано Лікарем"
   },
 
   "gameVideo": {
