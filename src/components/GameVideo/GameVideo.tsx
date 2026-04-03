@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
 import { HealEffect } from "@/components/HealEffect";
+import { InvestigateEffect } from "@/components/InvestigateEffect";
 import { KissEffect } from "@/components/KissEffect";
 import { MediaControls } from "@/components/MediaControls";
 import { Shoot } from "@/components/Shoot";
@@ -42,6 +43,9 @@ export const GameVideo = observer(
     const [localClickPos, setLocalClickPos] = useState<{ x: number; y: number } | null>(null);
     const [kissPos, setKissPos] = useState<{ x: number; y: number } | null>(null);
     const [healPos, setHealPos] = useState<{ x: number; y: number } | null>(null);
+    const [investigatePos, setInvestigatePos] = useState<{ x: number; y: number } | null>(null);
+    const [investigateResult, setInvestigateResult] = useState<string | null>(null);
+    const [investigateDanger, setInvestigateDanger] = useState(false);
 
     const {
       userId,
@@ -53,6 +57,7 @@ export const GameVideo = observer(
       isShootEnabled,
       isKissEnabled,
       isHealEnabled,
+      isInvestigateEnabled,
       isCheckRoleEnabled,
       isCameraEnabled,
       isMicrophoneEnabled,
@@ -63,6 +68,7 @@ export const GameVideo = observer(
       onShootUser,
       onBlockUser,
       onHealUser,
+      onInvestigateUser,
     } = useGameVideo({ participant, isMyStream });
 
     const isSpeaking = useIsSpeaking(participant);
@@ -89,10 +95,20 @@ export const GameVideo = observer(
       if (isHealEnabled) {
         setHealPos({ x, y });
         onHealUser();
+        return;
+      }
+
+      if (isInvestigateEnabled) {
+        const res = onInvestigateUser();
+        if (res) {
+          setInvestigatePos({ x, y });
+          setInvestigateResult(res.result);
+          setInvestigateDanger(res.isDanger);
+        }
       }
     };
 
-    const isInteractive = (isShootEnabled && !isIGM) || isKissEnabled || isHealEnabled;
+    const isInteractive = (isShootEnabled && !isIGM) || isKissEnabled || isHealEnabled || isInvestigateEnabled;
 
     return (
       <Draggable
@@ -109,6 +125,7 @@ export const GameVideo = observer(
             [styles.shootable]: isShootEnabled && !isIGM,
             [styles.kissable]: isKissEnabled,
             [styles.healable]: isHealEnabled,
+            [styles.checkable]: isInvestigateEnabled,
           })}
           ref={containerRef}
           onClick={isInteractive ? handleVideoClick : undefined}
@@ -120,6 +137,11 @@ export const GameVideo = observer(
           <Shoot userId={userId} clickPosition={localClickPos} />
           <KissEffect userId={userId} clickPosition={kissPos} />
           <HealEffect userId={userId} clickPosition={healPos} />
+          <InvestigateEffect
+            clickPosition={investigatePos}
+            result={investigateResult}
+            isDanger={investigateDanger}
+          />
 
           <div className={styles.gmIconContainer}>
             {isGM && <RoleIcon role={Roles.GM} size="l" />}

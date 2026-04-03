@@ -1,0 +1,76 @@
+@use "../../styles/theme.scss";
+
+$danger-color: theme.$color-error;
+$safe-color: theme.$color-role-doctor;
+
+.container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+}
+
+.resultLabel {
+  position: absolute;
+  translate: -50% -120%;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: labelAppear 0.3s ease-out forwards;
+
+  background-color: rgba($safe-color, 0.9);
+  color: theme.$color-text-primary;
+  box-shadow: 0 2px 12px rgba($safe-color, 0.5);
+
+  &[data-danger="true"] {
+    background-color: rgba($danger-color, 0.9);
+    box-shadow: 0 2px 12px rgba($danger-color, 0.5);
+  }
+}
+
+// Flashing border — safe (green)
+.borderFlashSafe {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 11;
+  animation: borderBlink 0.2s ease-in-out 4;
+  border: 3px solid $safe-color;
+  box-shadow: inset 0 0 20px rgba($safe-color, 0.3), 0 0 15px rgba($safe-color, 0.4);
+}
+
+// Flashing border — danger (red)
+.borderFlashDanger {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 11;
+  animation: borderBlink 0.2s ease-in-out 4;
+  border: 3px solid $danger-color;
+  box-shadow: inset 0 0 20px rgba($danger-color, 0.3), 0 0 15px rgba($danger-color, 0.4);
+}
+
+@keyframes borderBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes labelAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

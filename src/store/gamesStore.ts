@@ -180,6 +180,10 @@ export class GamesStore {
 
     if (!roles) return [];
 
+    const nightRoleOrder: NightRoles[] = [
+      Roles.Mafia, Roles.Don, Roles.Sheriff, Roles.Prostitute, Roles.Doctor,
+    ];
+
     const nightRoles = Object.entries(roles)
       .filter(([key, value]) => {
         if (!value || key === Roles.Citizen) return false;
@@ -197,7 +201,9 @@ export class GamesStore {
       })
       .map(([key]) => key);
 
-    return nightRoles as NightRoles[];
+    return nightRoles.sort(
+      (a, b) => nightRoleOrder.indexOf(a as NightRoles) - nightRoleOrder.indexOf(b as NightRoles)
+    ) as NightRoles[];
   }
 
   get gameFlow() {

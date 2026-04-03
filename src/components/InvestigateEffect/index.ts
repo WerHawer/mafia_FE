@@ -1,0 +1,1 @@
+export { InvestigateEffect } from "./InvestigateEffect";

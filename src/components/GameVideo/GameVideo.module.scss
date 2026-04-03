@@ -223,3 +223,13 @@
     box-shadow: inset 0 0 20px rgba(theme.$color-role-doctor, 0.4);
   }
 }
+
+.checkable {
+  /* noinspection CssUnknownTarget */
+  cursor: url('/question.svg') 16 16, help !important;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: inset 0 0 20px rgba(theme.$color-accent-secondary, 0.4);
+  }
+}

@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Participant } from "livekit-client";
 
 import { useShootUserMutation, useUpdateGameFlowMutation } from "@/api/game/queries.ts";
@@ -19,7 +20,8 @@ export const useGameVideo = ({
     rootStore;
   const { getUser, me, myId } = usersStore;
   const { isUserGM, gameFlow, activeGameId } = gamesStore;
-  const { shoot = {}, killed = [], day, isStarted, prostituteBlock, doctorSave } = gameFlow;
+  const { shoot = {}, killed = [], day, isStarted, prostituteBlock, doctorSave, sheriffCheck, donCheck } = gameFlow;
+  const { t } = useTranslation();
 
   const userId = participant.identity;
   const currentUser = isMyStream ? me : getUser(userId);
@@ -46,9 +48,15 @@ export const useGameVideo = ({
     (!isGM && !isUserDead && notFirstDay) &&
     isIDoctor && isIWakedUp && !doctorSave;
 
-  const isCheckRoleEnabled =
-    isIGM ||
-    (isICanCheck && (!isMyStream || isIDoctor) && !isGM && !isUserDead && notFirstDay);
+  const isISheriff = myRole === Roles.Sheriff;
+  const isIDon = myRole === Roles.Don;
+
+  const isInvestigateEnabled =
+    !isMyStream && !isGM && !isUserDead && notFirstDay &&
+    ((isISheriff && isIWakedUp && !sheriffCheck) ||
+     (isIDon && isIWakedUp && !donCheck));
+
+  const isCheckRoleEnabled = isIGM;
 
   const { mutate: shootUser } = useShootUserMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
@@ -78,6 +86,32 @@ export const useGameVideo = ({
     updateGameFlow({ doctorSave: userId });
   }, [isHealEnabled, updateGameFlow, userId]);
 
+  const onInvestigateUser = useCallback((): { result: string; isDanger: boolean } | null => {
+    if (!isInvestigateEnabled) return null;
+
+    const userRole = gamesStore.getUserRole(userId);
+
+    if (isISheriff) {
+      const isMafia = userRole === Roles.Mafia || userRole === Roles.Don;
+      updateGameFlow({ sheriffCheck: userId });
+      return {
+        result: isMafia ? t("checkRole.mafia") : t("checkRole.notMafia"),
+        isDanger: isMafia,
+      };
+    }
+
+    if (isIDon) {
+      const isSheriff = userRole === Roles.Sheriff;
+      updateGameFlow({ donCheck: userId });
+      return {
+        result: isSheriff ? t("checkRole.sheriff") : t("checkRole.notSheriff"),
+        isDanger: isSheriff,
+      };
+    }
+
+    return null;
+  }, [isInvestigateEnabled, isISheriff, isIDon, gamesStore, userId, updateGameFlow, t]);
+
   const {
     isCameraEnabled,
     isMicrophoneEnabled,
@@ -102,6 +136,7 @@ export const useGameVideo = ({
     isShootEnabled,
     isKissEnabled,
     isHealEnabled,
+    isInvestigateEnabled,
     isCheckRoleEnabled,
     isCameraEnabled,
     isMicrophoneEnabled,
@@ -112,5 +147,6 @@ export const useGameVideo = ({
     onShootUser,
     onBlockUser,
     onHealUser,
+    onInvestigateUser,
   };
 };
