@@ -19,7 +19,7 @@ export const useGameVideo = ({
     rootStore;
   const { getUser, me, myId } = usersStore;
   const { isUserGM, gameFlow, activeGameId } = gamesStore;
-  const { shoot = {}, killed = [], day, isStarted, prostituteBlock } = gameFlow;
+  const { shoot = {}, killed = [], day, isStarted, prostituteBlock, doctorSave } = gameFlow;
 
   const userId = participant.identity;
   const currentUser = isMyStream ? me : getUser(userId);
@@ -41,6 +41,10 @@ export const useGameVideo = ({
   const isKissEnabled =
     !isMyStream && !isGM && !isUserDead && notFirstDay &&
     isIProstitute && isIWakedUp && !prostituteBlock;
+
+  const isHealEnabled =
+    (!isGM && !isUserDead && notFirstDay) &&
+    isIDoctor && isIWakedUp && !doctorSave;
 
   const isCheckRoleEnabled =
     isIGM ||
@@ -69,6 +73,11 @@ export const useGameVideo = ({
     updateGameFlow({ prostituteBlock: userId });
   }, [isKissEnabled, updateGameFlow, userId]);
 
+  const onHealUser = useCallback(() => {
+    if (!isHealEnabled) return;
+    updateGameFlow({ doctorSave: userId });
+  }, [isHealEnabled, updateGameFlow, userId]);
+
   const {
     isCameraEnabled,
     isMicrophoneEnabled,
@@ -92,6 +101,7 @@ export const useGameVideo = ({
     isMyAfterStart,
     isShootEnabled,
     isKissEnabled,
+    isHealEnabled,
     isCheckRoleEnabled,
     isCameraEnabled,
     isMicrophoneEnabled,
@@ -101,5 +111,6 @@ export const useGameVideo = ({
     gameFlow,
     onShootUser,
     onBlockUser,
+    onHealUser,
   };
 };

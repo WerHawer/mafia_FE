@@ -1,4 +1,4 @@
-import { EyeOutlined, PlusCircleFilled, PlusCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { EyeOutlined, PlusCircleFilled, QuestionCircleOutlined } from "@ant-design/icons";
 import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -50,12 +50,8 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
       return !!donCheck;
     }
 
-    if (isIDoctor) {
-      return !!doctorSave;
-    }
-
     return false;
-  }, [donCheck, gameFlow.day, isIDon, isISheriff, sheriffCheck, isIDoctor, doctorSave]);
+  }, [donCheck, gameFlow.day, isIDon, isISheriff, sheriffCheck]);
 
   const onCheckRole = useCallback(() => {
     if (isCheckDisabled) return;
@@ -87,21 +83,10 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
 
       return;
     }
-
-    if (isIDoctor) {
-      setCheckResult(t("checkRole.doctorSaved"));
-
-      updateGameFlow({
-        doctorSave: userId,
-      });
-
-      return;
-    }
   }, [
     isCheckDisabled,
     isIDon,
     isISheriff,
-    isIDoctor,
     isMyStream,
     isUserGM,
     isUserMafia,
@@ -111,7 +96,7 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
     userId,
   ]);
 
-  const showCheckIcon = isISheriff || isIDon || isIDoctor;
+  const showCheckIcon = isISheriff || isIDon;
 
   return (
     <>
@@ -123,15 +108,7 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
           placement="right"
           disabled={!checkResult && isCheckDisabled}
         >
-          {isIDoctor ? (
-            userSavedByDoctor ? (
-              <PlusCircleFilled className={classNames(styles.icon, styles.doctorIcon)} />
-            ) : (
-              <PlusCircleOutlined className={classNames(styles.icon, styles.doctorIcon)} onClick={onCheckRole} />
-            )
-          ) : (
-            <QuestionCircleOutlined className={styles.icon} onClick={onCheckRole} />
-          )}
+          <QuestionCircleOutlined className={styles.icon} onClick={onCheckRole} />
         </Tippy>
       )}
 

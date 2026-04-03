@@ -6,6 +6,7 @@ import Draggable from "react-draggable";
 import { useTranslation } from "react-i18next";
 
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
+import { HealEffect } from "@/components/HealEffect";
 import { KissEffect } from "@/components/KissEffect";
 import { MediaControls } from "@/components/MediaControls";
 import { Shoot } from "@/components/Shoot";
@@ -40,6 +41,7 @@ export const GameVideo = observer(
     const containerRef = useRef<HTMLDivElement>(null);
     const [localClickPos, setLocalClickPos] = useState<{ x: number; y: number } | null>(null);
     const [kissPos, setKissPos] = useState<{ x: number; y: number } | null>(null);
+    const [healPos, setHealPos] = useState<{ x: number; y: number } | null>(null);
 
     const {
       userId,
@@ -50,6 +52,7 @@ export const GameVideo = observer(
       isMyAfterStart,
       isShootEnabled,
       isKissEnabled,
+      isHealEnabled,
       isCheckRoleEnabled,
       isCameraEnabled,
       isMicrophoneEnabled,
@@ -59,6 +62,7 @@ export const GameVideo = observer(
       gameFlow,
       onShootUser,
       onBlockUser,
+      onHealUser,
     } = useGameVideo({ participant, isMyStream });
 
     const isSpeaking = useIsSpeaking(participant);
@@ -79,10 +83,16 @@ export const GameVideo = observer(
       if (isKissEnabled) {
         setKissPos({ x, y });
         onBlockUser();
+        return;
+      }
+
+      if (isHealEnabled) {
+        setHealPos({ x, y });
+        onHealUser();
       }
     };
 
-    const isInteractive = (isShootEnabled && !isIGM) || isKissEnabled;
+    const isInteractive = (isShootEnabled && !isIGM) || isKissEnabled || isHealEnabled;
 
     return (
       <Draggable
@@ -98,6 +108,7 @@ export const GameVideo = observer(
             [styles.speaking]: isSpeaking && !isMyStream,
             [styles.shootable]: isShootEnabled && !isIGM,
             [styles.kissable]: isKissEnabled,
+            [styles.healable]: isHealEnabled,
           })}
           ref={containerRef}
           onClick={isInteractive ? handleVideoClick : undefined}
@@ -108,6 +119,7 @@ export const GameVideo = observer(
 
           <Shoot userId={userId} clickPosition={localClickPos} />
           <KissEffect userId={userId} clickPosition={kissPos} />
+          <HealEffect userId={userId} clickPosition={healPos} />
 
           <div className={styles.gmIconContainer}>
             {isGM && <RoleIcon role={Roles.GM} size="l" />}
