@@ -35,31 +35,32 @@
   left: 20px;
 }
 
-.prostituteBlockIcon {
-  @include mixins.size(30px);
-  font-size: 30px;
-
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  color: theme.$color-role-prostitute;
-
-  background-color: transparent;
-  z-index: 10;
-}
-
-.doctorSaveIcon {
-  @include mixins.size(30px);
-  font-size: 30px;
+// GM icons row — positioned at top-left, icons stack horizontally with gap
+.gmIconsRow {
+  display: flex;
+  align-items: center;
+  column-gap: 6px;
 
   position: absolute;
   top: 10px;
   left: 10px;
-  color: theme.$color-role-doctor;
-
-  background-color: transparent;
   z-index: 10;
-  pointer-events: none;
+}
+
+.gmIcon {
+  font-size: 24px;
+  background-color: rgba(theme.$color-dark-tertiary, 0.5);
+  border-radius: 50%;
+  padding: 3px;
+}
+
+.gmIconImg {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  background-color: rgba(theme.$color-dark-tertiary, 0.5);
+  border-radius: 50%;
+  padding: 2px;
 }
 
 .prostituteIcon {

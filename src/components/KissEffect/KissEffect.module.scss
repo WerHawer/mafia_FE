@@ -1,0 +1,37 @@
+@use "../../styles/mixins.scss";
+
+.container {
+  @include mixins.size(100%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.kissImg {
+  width: 20%;
+  object-fit: contain;
+  position: absolute;
+  translate: -50% -50%;
+  pointer-events: none;
+  animation: kissApproach 0.6s ease-out forwards;
+}
+
+@keyframes kissApproach {
+  0% {
+    opacity: 0.7;
+    transform: scale(4);
+    filter: blur(2px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.9);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}

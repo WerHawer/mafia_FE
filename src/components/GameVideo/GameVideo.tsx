@@ -1,4 +1,3 @@
-import { LockOutlined } from "@ant-design/icons";
 import classNames from "classnames";
 import { Participant, Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
@@ -7,6 +6,7 @@ import Draggable from "react-draggable";
 import { useTranslation } from "react-i18next";
 
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
+import { KissEffect } from "@/components/KissEffect";
 import { MediaControls } from "@/components/MediaControls";
 import { Shoot } from "@/components/Shoot";
 import { VoteFlow } from "@/components/VoteFlow";
@@ -39,6 +39,7 @@ export const GameVideo = observer(
     const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const [localClickPos, setLocalClickPos] = useState<{ x: number; y: number } | null>(null);
+    const [kissPos, setKissPos] = useState<{ x: number; y: number } | null>(null);
 
     const {
       userId,
@@ -48,6 +49,7 @@ export const GameVideo = observer(
       isUserDead,
       isMyAfterStart,
       isShootEnabled,
+      isKissEnabled,
       isCheckRoleEnabled,
       isCameraEnabled,
       isMicrophoneEnabled,
@@ -56,21 +58,31 @@ export const GameVideo = observer(
       canControl,
       gameFlow,
       onShootUser,
+      onBlockUser,
     } = useGameVideo({ participant, isMyStream });
 
     const isSpeaking = useIsSpeaking(participant);
 
     const handleVideoClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+
       if (isShootEnabled && !isIGM) {
-        const rect = containerRef.current?.getBoundingClientRect();
-        if (rect) {
-          const x = ((e.clientX - rect.left) / rect.width) * 100;
-          const y = ((e.clientY - rect.top) / rect.height) * 100;
-          setLocalClickPos({ x, y });
-          onShootUser(x, y);
-        }
+        setLocalClickPos({ x, y });
+        onShootUser(x, y);
+        return;
+      }
+
+      if (isKissEnabled) {
+        setKissPos({ x, y });
+        onBlockUser();
       }
     };
+
+    const isInteractive = (isShootEnabled && !isIGM) || isKissEnabled;
 
     return (
       <Draggable
@@ -85,25 +97,21 @@ export const GameVideo = observer(
             [styles.active]: isActive,
             [styles.speaking]: isSpeaking && !isMyStream,
             [styles.shootable]: isShootEnabled && !isIGM,
+            [styles.kissable]: isKissEnabled,
           })}
           ref={containerRef}
-          onClick={handleVideoClick}
+          onClick={isInteractive ? handleVideoClick : undefined}
         >
           <VoteFlow isMyStream={isMyStream} userId={userId} />
 
           {isCheckRoleEnabled ? <CheckRole userId={userId} /> : null}
 
           <Shoot userId={userId} clickPosition={localClickPos} />
+          <KissEffect userId={userId} clickPosition={kissPos} />
 
           <div className={styles.gmIconContainer}>
             {isGM && <RoleIcon role={Roles.GM} size="l" />}
           </div>
-
-          {!gameFlow.isNight && gameFlow.prostituteBlock === userId && !isUserDead && (
-            <div className={styles.prostituteOverlay} title={t("prostituteAction.blockedByProstitute")}>
-              <LockOutlined />
-            </div>
-          )}
 
           {isUserDead && !isMyStream && (
             <div className={styles.deadOverlay}>{t("gameVideo.dead")}</div>
@@ -150,3 +158,4 @@ export const GameVideo = observer(
 );
 
 GameVideo.displayName = "GameVideo";
+

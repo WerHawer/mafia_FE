@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { Participant } from "livekit-client";
 
-import { useShootUserMutation } from "@/api/game/queries.ts";
+import { useShootUserMutation, useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import { useMediaControls } from "@/hooks/useMediaControls.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { Roles } from "@/types/game.types.ts";
@@ -15,11 +15,11 @@ export const useGameVideo = ({
   participant,
   isMyStream,
 }: UseGameVideoParams) => {
-  const { usersStore, gamesStore, isIGM, myRole, isIWakedUp, isICanCheck } =
+  const { usersStore, gamesStore, isIGM, myRole, isIWakedUp, isICanCheck, isIProstitute } =
     rootStore;
   const { getUser, me, myId } = usersStore;
   const { isUserGM, gameFlow, activeGameId } = gamesStore;
-  const { shoot = {}, killed = [], day, isStarted } = gameFlow;
+  const { shoot = {}, killed = [], day, isStarted, prostituteBlock } = gameFlow;
 
   const userId = participant.identity;
   const currentUser = isMyStream ? me : getUser(userId);
@@ -38,11 +38,16 @@ export const useGameVideo = ({
 
   const isIDoctor = myRole === Roles.Doctor;
 
+  const isKissEnabled =
+    !isMyStream && !isGM && !isUserDead && notFirstDay &&
+    isIProstitute && isIWakedUp && !prostituteBlock;
+
   const isCheckRoleEnabled =
     isIGM ||
     (isICanCheck && (!isMyStream || isIDoctor) && !isGM && !isUserDead && notFirstDay);
 
   const { mutate: shootUser } = useShootUserMutation();
+  const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
   const onShootUser = useCallback((x?: number, y?: number) => {
     if (!activeGameId || !isShootEnabled || isIGM) return;
@@ -58,6 +63,11 @@ export const useGameVideo = ({
       shot,
     });
   }, [activeGameId, isIGM, isShootEnabled, myId, shootUser, userId]);
+
+  const onBlockUser = useCallback(() => {
+    if (!isKissEnabled) return;
+    updateGameFlow({ prostituteBlock: userId });
+  }, [isKissEnabled, updateGameFlow, userId]);
 
   const {
     isCameraEnabled,
@@ -81,6 +91,7 @@ export const useGameVideo = ({
     isUserDead,
     isMyAfterStart,
     isShootEnabled,
+    isKissEnabled,
     isCheckRoleEnabled,
     isCameraEnabled,
     isMicrophoneEnabled,
@@ -89,5 +100,6 @@ export const useGameVideo = ({
     canControl,
     gameFlow,
     onShootUser,
+    onBlockUser,
   };
 };
