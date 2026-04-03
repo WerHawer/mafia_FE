@@ -138,13 +138,16 @@ export const shootUser = async ({
   gameId,
   targetUserId,
   shooterId,
+  shot,
 }: {
   gameId: GameId;
   targetUserId: UserId;
   shooterId: UserId;
+  shot?: { x: number; y: number };
 }) => {
   return axios.patch<IGame>(`${GAMES_URL}/${gameId}/shoot`, {
     targetUserId,
     shooterId,
+    shot,
   });
 };

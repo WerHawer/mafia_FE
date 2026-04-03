@@ -38,7 +38,7 @@ export const useGamePanel = () => {
       const aliveMafiaCount = mafia ? mafia.filter((id) => activeGameAlivePlayers.includes(id)).length : 0;
 
       const shootEntries = Object.entries(shoot);
-      const totalShots = shootEntries.reduce((sum, [, shooters]) => sum + shooters.length, 0);
+      const totalShots = shootEntries.reduce((sum, [, entry]) => sum + (entry.shooters?.length ?? 0), 0);
       const uniqueTargets = Object.keys(shoot);
       
       let mafiaMissReason: "noShots" | "notAllShot" | "splitShots" | "savedByDoctor" | undefined = undefined;

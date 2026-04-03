@@ -156,7 +156,7 @@ export interface WSSubscribedEventData {
   [wsEvents.gamesUpdate]: IGameShort;
   [wsEvents.addToProposed]: UserId;
   [wsEvents.vote]: { targetUserId: UserId; voterId: UserId };
-  [wsEvents.shoot]: { targetUserId: UserId; shooterId: UserId };
+  [wsEvents.shoot]: { targetUserId: UserId; shooterId: UserId; shot?: { x: number; y: number } };
   [wsEvents.userCameraStatusChanged]: { userId: UserId; enabled: boolean };
   [wsEvents.userMicrophoneStatusChanged]: { userId: UserId; enabled: boolean };
 }

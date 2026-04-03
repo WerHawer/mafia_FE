@@ -1,6 +1,10 @@
 import { UserId } from "@/types/user.types.ts";
 
-export type MafiaMissReason = "noShots" | "notAllShot" | "splitShots" | "savedByDoctor";
+export type MafiaMissReason =
+  | "noShots"
+  | "notAllShot"
+  | "splitShots"
+  | "savedByDoctor";
 
 export type NightActionLogs = {
   targetedByMafia?: string[];
@@ -15,7 +19,7 @@ export type NightActionLogs = {
 };
 
 export type NightResultsModalProps = {
-  nightActionLogs?: NightActionLogs;
+  nightActionLogs: NightActionLogs;
 };
 
 export enum ModalNames {

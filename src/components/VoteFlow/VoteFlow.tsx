@@ -23,28 +23,30 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   const { myId, getUser } = usersStore;
   const { isUserGM, speaker, gameFlow, activeGameAlivePlayers, activeGameId } =
     gamesStore;
+  const { isVote, proposed, voted, isExtraSpeech } = gameFlow;
+  const { isIBlocked } = rootStore;
   const { mutate: voteForUser } = useVoteForUserMutation();
   const { mutate: addUserToProposed } = useAddUserToProposedMutation();
 
   const votesForThisUser = useMemo(
-    () => gameFlow.voted?.[userId] ?? [],
-    [gameFlow.voted, userId]
+    () => voted?.[userId] ?? [],
+    [voted, userId]
   );
 
   const amIVoted = useMemo(() => {
-    return Object.values(gameFlow.voted ?? {})
+    return Object.values(voted ?? {})
       .flat()
       .includes(myId);
-  }, [gameFlow.voted, myId]);
+  }, [voted, myId]);
 
   const isUserAddedToVoteList = useMemo(
-    () => (userId ? gameFlow.proposed.includes(userId) : false),
-    [gameFlow.proposed, userId]
+    () => (userId ? proposed.includes(userId) : false),
+    [proposed, userId]
   );
 
   const isThisUserProposed = useMemo(() => {
-    return gameFlow.proposed.includes(userId);
-  }, [gameFlow.proposed, userId]);
+    return proposed.includes(userId);
+  }, [proposed, userId]);
 
   const isVotedByThisUser = useMemo(() => {
     return amIVoted && votesForThisUser.includes(myId);
@@ -57,11 +59,11 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     (isISpeaker || isIGM) &&
     !isMyStream &&
     !isCurrentUserGM &&
-    !gameFlow.isExtraSpeech &&
+    !isExtraSpeech &&
     !isIDead;
 
   const shouldShowVoteIcon =
-    gameFlow.isVote && gameFlow.proposed.includes(userId) && !isIDead && !rootStore.isIBlocked;
+    isVote && proposed.includes(userId) && !isIDead && !isIBlocked;
 
   const onPropose = useCallback(() => {
     if (
@@ -85,7 +87,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
 
   const onVote = useCallback(() => {
     if (!userId || !myId || !activeGameId) return;
-    if (amIVoted || isIGM || rootStore.isIBlocked) return;
+    if (amIVoted || isIGM || isIBlocked) return;
 
     voteForUser({
       gameId: activeGameId,
@@ -127,7 +129,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
         </div>
       )}
 
-      {votesForThisUser.length > 0 && gameFlow.isVote && (
+      {votesForThisUser.length > 0 && isVote && (
         <ul className={styles.voteList}>
           {votesForThisUser.map((id) => (
             <li key={id}>{getUser(id)?.nikName || "Anonimus"}</li>

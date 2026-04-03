@@ -2,7 +2,7 @@ import { LockOutlined } from "@ant-design/icons";
 import classNames from "classnames";
 import { Participant, Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Draggable from "react-draggable";
 import { useTranslation } from "react-i18next";
 
@@ -38,6 +38,7 @@ export const GameVideo = observer(
   }: GameVideoProps) => {
     const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
+    const [localClickPos, setLocalClickPos] = useState<{ x: number; y: number } | null>(null);
 
     const {
       userId,
@@ -54,9 +55,22 @@ export const GameVideo = observer(
       toggleMicrophone,
       canControl,
       gameFlow,
+      onShootUser,
     } = useGameVideo({ participant, isMyStream });
 
     const isSpeaking = useIsSpeaking(participant);
+
+    const handleVideoClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (isShootEnabled && !isIGM) {
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (rect) {
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          setLocalClickPos({ x, y });
+          onShootUser(x, y);
+        }
+      }
+    };
 
     return (
       <Draggable
@@ -70,14 +84,16 @@ export const GameVideo = observer(
             [styles.myVideoContainer]: isMyAfterStart,
             [styles.active]: isActive,
             [styles.speaking]: isSpeaking && !isMyStream,
+            [styles.shootable]: isShootEnabled && !isIGM,
           })}
           ref={containerRef}
+          onClick={handleVideoClick}
         >
           <VoteFlow isMyStream={isMyStream} userId={userId} />
 
           {isCheckRoleEnabled ? <CheckRole userId={userId} /> : null}
 
-          {isShootEnabled && <Shoot userId={userId} />}
+          <Shoot userId={userId} clickPosition={localClickPos} />
 
           <div className={styles.gmIconContainer}>
             {isGM && <RoleIcon role={Roles.GM} size="l" />}

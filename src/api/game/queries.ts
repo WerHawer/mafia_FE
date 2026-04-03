@@ -189,12 +189,14 @@ export const useShootUserMutation = () => {
       gameId,
       targetUserId,
       shooterId,
+      shot,
     }: {
       gameId: GameId;
       targetUserId: UserId;
       shooterId: UserId;
+      shot?: { x: number; y: number };
     }) => {
-      return shootUser({ gameId, targetUserId, shooterId });
+      return shootUser({ gameId, targetUserId, shooterId, shot });
     },
   });
 };

@@ -1,57 +1,56 @@
-import { AimOutlined } from "@ant-design/icons";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useCallback } from "react";
 
-import { useShootUserMutation } from "@/api/game/queries.ts";
-import bangIcon from "@/assets/icons/bang.png";
+import brokenGlassIcon from "@/assets/icons/broken_glass.png";
 import { rootStore } from "@/store/rootStore.ts";
+import { Roles } from "@/types/game.types.ts";
 import { UserId } from "@/types/user.types.ts";
 
 import styles from "./Shoot.module.scss";
 
 type ShootProps = {
   userId: UserId;
+  clickPosition?: { x: number; y: number } | null;
 };
 
-export const Shoot = observer(({ userId }: ShootProps) => {
-  const { gamesStore, usersStore, isIGM } = rootStore;
-  const { gameFlow, activeGameId } = gamesStore;
+export const Shoot = observer(({ userId, clickPosition }: ShootProps) => {
+  const { usersStore, gamesStore, myRole, isIGM } = rootStore;
+  const { gameFlow } = gamesStore;
   const { shoot = {} } = gameFlow;
-  const { myId } = usersStore;
-  const { mutate: shootUser } = useShootUserMutation();
-  const isUserSooted = !!shoot[userId];
+  
+  const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
+  const entry = shoot[userId];
+  const isUserShot = !!entry?.shooters?.length;
+  const shouldSeeShot = isIGM || isIMafia;
 
-  // Nice to have: we can create animation and add sound for shooting
-  const onShoot = useCallback(() => {
-    if (!activeGameId) return;
+  if (!shouldSeeShot || !isUserShot) {
+    return null;
+  }
 
-    const isIShoot = Object.values(shoot).flat().includes(myId);
+  const { shooters, shots } = entry;
 
-    if (isIShoot) return;
-
-    shootUser({
-      gameId: activeGameId,
-      targetUserId: userId,
-      shooterId: myId,
-    });
-  }, [activeGameId, myId, shoot, shootUser, userId]);
-
-  // Mafia should see who shot whom
   return (
     <div className={styles.container}>
-      {!isIGM && <AimOutlined className={styles.icon} onClick={onShoot} />}
+      {shooters.map((shooterId, index) => {
+        const isMyShot = shooterId === usersStore.myId;
+        const shotCoords = isMyShot && clickPosition
+          ? clickPosition
+          : shots[index];
+        
+        const style = shotCoords
+          ? { left: `${shotCoords.x}%`, top: `${shotCoords.y}%` }
+          : {};
 
-      {isIGM && isUserSooted
-        ? shoot[userId].map((shooterId, index) => (
-            <img
-              key={shooterId}
-              src={bangIcon}
-              alt="bang"
-              className={classNames(styles.img, styles[`img${index}`])}
-            />
-          ))
-        : null}
+        return (
+          <img
+            key={shooterId}
+            src={brokenGlassIcon}
+            alt="shot"
+            className={classNames(styles.img, styles[`img${index}`])}
+            style={style}
+          />
+        );
+      })}
     </div>
   );
 });

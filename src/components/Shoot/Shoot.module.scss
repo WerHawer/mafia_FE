@@ -1,28 +1,46 @@
 @use "../../styles/mixins.scss";
 
 .container {
-  @include mixins.size(80px);
-  font-size: 80px;
+  @include mixins.size(100%);
   position: absolute;
-  top: 50%;
-  left: 50%;
-
-  translate: -50% -50%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
   z-index: 10;
 }
 
-.icon {
-  cursor: pointer;
-}
-
 .img {
-  @include mixins.size(100%);
+  @include mixins.size(50%);
+  object-fit: contain;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  pointer-events: none;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 .img1 {
-  translate: 40% -80%;
+  animation: popIn1 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  margin-top: 10px;
 }
 
 .img2 {
-  translate: 0 -100%;
+  animation: popIn2 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  margin-left: -15px;
+}
+
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes popIn1 {
+  0% { opacity: 0; transform: scale(0.05) rotate(45deg); }
+  100% { opacity: 1; transform: scale(0.9) rotate(45deg); }
+}
+
+@keyframes popIn2 {
+  0% { opacity: 0; transform: scale(0.05) rotate(-30deg); }
+  100% { opacity: 1; transform: scale(0.8) rotate(-30deg); }
 }

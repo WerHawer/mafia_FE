@@ -94,15 +94,22 @@ export class GamesStore {
   addShoot({
     targetUserId,
     shooterId,
+    shot,
   }: {
     targetUserId: UserId;
     shooterId: UserId;
+    shot?: { x: number; y: number };
   }) {
     const shoot = this._activeGame?.gameFlow?.shoot ?? {};
+    const existing = shoot[targetUserId] ?? { shooters: [], shots: [] };
+    const defaultShot = { x: 50, y: 50 };
 
     const newShoot = {
       ...shoot,
-      [targetUserId]: [...(shoot[targetUserId] || []), shooterId],
+      [targetUserId]: {
+        shooters: [...existing.shooters, shooterId],
+        shots: [...existing.shots, shot ?? defaultShot],
+      },
     };
 
     this.updateGameFlow({ shoot: newShoot });

@@ -3,16 +3,20 @@ import { useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import {
+  NightResultsModalProps
+} from "@/components/Modals/Modal.types.ts";
 import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { Roles } from "@/types/game.types.ts";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { Typography } from "@/UI/Typography";
 
-import { NightActionLogs, NightResultsModalProps } from "@/components/Modals/Modal.types.ts";
-import { Roles } from "@/types/game.types.ts";
 import styles from "./NightResultsModal.module.scss";
 
 // Removed local definition of NightResultsModalProps
+// TODO: rework this file. It's too big and complex. Create separate components for each log type.
 
 export const NightResultsModal = observer(
   ({ nightActionLogs }: NightResultsModalProps) => {
@@ -66,15 +70,15 @@ export const NightResultsModal = observer(
 
     const getResultForSheriff = (id: string) => {
       const role = getUserRole(id);
-      return role === Roles.Mafia || role === Roles.Don 
-        ? t("nightResults.resultMafia") 
+      return role === Roles.Mafia || role === Roles.Don
+        ? t("nightResults.resultMafia")
         : t("nightResults.resultNotMafia");
     };
 
     const getResultForDon = (id: string) => {
       const role = getUserRole(id);
-      return role === Roles.Sheriff 
-        ? t("nightResults.resultSheriff") 
+      return role === Roles.Sheriff
+        ? t("nightResults.resultSheriff")
         : t("nightResults.resultNotSheriff");
     };
 
@@ -85,116 +89,140 @@ export const NightResultsModal = observer(
 
     return (
       <div className={styles.container}>
-        <h3 className={styles.title}>{t("nightResults.summaryTitle")}</h3>
+        <Typography variant="title" className={styles.title}>
+          {t("nightResults.summaryTitle")}
+        </Typography>
 
         <div className={styles.logsContainer}>
-          {nightActionLogs?.targetedByMafia && nightActionLogs.targetedByMafia.length > 0 && (
-            <p className={styles.logText}>
-              <Trans
-                i18nKey="nightResults.logMafia"
-                values={{ playerName: formatTargetedByMafia(nightActionLogs.targetedByMafia) }}
-                components={{ strong: <strong /> }}
-              />
-            </p>
-          )}
+          {nightActionLogs?.targetedByMafia &&
+            nightActionLogs.targetedByMafia.length > 0 && (
+              <Typography variant="body" className={styles.logText}>
+                <Trans
+                  i18nKey="nightResults.logMafia"
+                  values={{
+                    playerName: formatTargetedByMafia(
+                      nightActionLogs.targetedByMafia
+                    ),
+                  }}
+                  components={{ strong: <strong /> }}
+                />
+              </Typography>
+            )}
 
           {nightActionLogs?.blockedByProstitute && (
-            <p className={styles.logText}>
+            <Typography variant="body" className={styles.logText}>
               <Trans
                 i18nKey="nightResults.logProstitute"
-                values={{ playerName: getUserName(nightActionLogs.blockedByProstitute) }}
+                values={{
+                  playerName: getUserName(nightActionLogs.blockedByProstitute),
+                }}
                 components={{ strong: <strong /> }}
               />
-            </p>
+            </Typography>
           )}
 
           {nightActionLogs?.savedByDoctor && (
-            <p className={styles.logText}>
+            <Typography variant="body" className={styles.logText}>
               <Trans
                 i18nKey="nightResults.logDoctor"
-                values={{ playerName: getUserName(nightActionLogs.savedByDoctor) }}
+                values={{
+                  playerName: getUserName(nightActionLogs.savedByDoctor),
+                }}
                 components={{ strong: <strong /> }}
               />
-            </p>
+            </Typography>
           )}
 
           {nightActionLogs?.donChecked && (
-            <p className={styles.logText}>
+            <Typography variant="body" className={styles.logText}>
               <Trans
                 i18nKey="nightResults.logDon"
-                values={{ 
+                values={{
                   playerName: getUserName(nightActionLogs.donChecked),
-                  result: getResultForDon(nightActionLogs.donChecked)
+                  result: getResultForDon(nightActionLogs.donChecked),
                 }}
                 components={{ strong: <strong /> }}
               />
-            </p>
+            </Typography>
           )}
 
           {nightActionLogs?.sheriffChecked && (
-            <p className={styles.logText}>
+            <Typography variant="body" className={styles.logText}>
               <Trans
                 i18nKey="nightResults.logSheriff"
-                values={{ 
+                values={{
                   playerName: getUserName(nightActionLogs.sheriffChecked),
-                  result: getResultForSheriff(nightActionLogs.sheriffChecked)
+                  result: getResultForSheriff(nightActionLogs.sheriffChecked),
                 }}
                 components={{ strong: <strong /> }}
               />
-            </p>
+            </Typography>
           )}
         </div>
 
         <hr className={styles.divider} />
 
         {isSomeoneKilled ? (
-          <p className={styles.messageText}>
+          <Typography variant="subtitle" className={styles.messageText}>
             <Trans
               i18nKey="nightResults.mafiaKilled"
               values={{ playerName }}
               components={{ strong: <strong /> }}
             />
-          </p>
+          </Typography>
         ) : mafiaMissReason === "savedByDoctor" ? (
-          <p className={styles.messageText}>
+          <Typography variant="subtitle" className={styles.messageText}>
             <Trans
               i18nKey="nightResults.doctorSaved"
-              values={{ playerName: getUserName(nightActionLogs?.savedByDoctor!) }}
+              values={{
+                playerName: getUserName(nightActionLogs.savedByDoctor),
+              }}
               components={{ strong: <strong /> }}
             />
-          </p>
+          </Typography>
         ) : mafiaMissReason === "noShots" ? (
-          <p className={styles.messageText}>{t("nightResults.noShots")}</p>
+          <Typography variant="subtitle" className={styles.messageText}>
+            {t("nightResults.noShots")}
+          </Typography>
         ) : mafiaMissReason === "notAllShot" ? (
-          <p className={styles.messageText}>{t("nightResults.notAllShot", { shots: nightActionLogs?.totalShots, alive: nightActionLogs?.aliveMafiaCount })}</p>
+          <Typography variant="subtitle" className={styles.messageText}>
+            {t("nightResults.notAllShot", {
+              shots: nightActionLogs?.totalShots,
+              alive: nightActionLogs?.aliveMafiaCount,
+            })}
+          </Typography>
         ) : mafiaMissReason === "splitShots" ? (
-          <p className={styles.messageText}>{t("nightResults.splitShots")}</p>
+          <Typography variant="subtitle" className={styles.messageText}>
+            {t("nightResults.splitShots")}
+          </Typography>
         ) : (
-          <p className={styles.messageText}>{t("nightResults.mafiaMissed")}</p>
+          <Typography variant="subtitle" className={styles.messageText}>
+            {t("nightResults.mafiaMissed")}
+          </Typography>
         )}
 
         {isSomeoneKilled ? (
-           <Button
-             onClick={giveLastSpeech}
-             variant={ButtonVariant.Secondary}
-             size={ButtonSize.Large}
-             uppercase
-           >
-             <Trans
-               i18nKey="nightResults.lastSpeech"
-               values={{ playerName }}
-               components={{ strong: <strong /> }}
-             />
-           </Button>
+          <Button
+            onClick={giveLastSpeech}
+            variant={ButtonVariant.Secondary}
+            size={ButtonSize.Large}
+            uppercase
+          >
+            <Trans
+              i18nKey="nightResults.lastSpeech"
+              values={{ playerName }}
+              components={{ strong: <strong /> }}
+            />
+          </Button>
         ) : (
-           <Button
-             onClick={closeModal}
-             variant={ButtonVariant.Secondary}
-             size={ButtonSize.Large}
-             uppercase
-           >
-             {t("nightResults.close")}
-           </Button>
+          <Button
+            onClick={closeModal}
+            variant={ButtonVariant.Secondary}
+            size={ButtonSize.Large}
+            uppercase
+          >
+            {t("nightResults.close")}
+          </Button>
         )}
       </div>
     );
