@@ -50,7 +50,15 @@
 
   "settings": {
     "title": "Settings",
-    "language": "Interface Language"
+    "language": "Interface Language",
+    "audio": "Audio"
+  },
+  "audioSettings": {
+    "title": "Audio Settings",
+    "musicVolume": "Music Volume",
+    "sfxVolume": "Sound Effects",
+    "muteAll": "Mute All",
+    "unmuteAll": "Unmute All"
   },
 
   "notFound": {
@@ -186,6 +194,7 @@
     "unmuteAll": "Unmute All",
     "restartGame": "Restart Game",
     "videoSettings": "Video Settings",
+    "audioSettings": "Audio Settings",
     "leaveGame": "Leave Game"
   },
 

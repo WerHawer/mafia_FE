@@ -1,16 +1,19 @@
 import { observer } from "mobx-react-lite";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Timer, TimerSize } from "@/components/SpeakerTimer/Timer.tsx";
 import { rootStore } from "@/store/rootStore";
+import { SoundEffect } from "@/store/soundStore.ts";
 import { Typography } from "@/UI/Typography";
 
 import styles from "./PlayerPanel.module.scss";
 
 export const PlayerPanelInfo = observer(() => {
   const { t } = useTranslation();
-  const { gamesStore, myRole } = rootStore;
+  const { gamesStore, soundStore, myRole } = rootStore;
   const { gameFlow, speaker } = gamesStore;
+  const { stopMusic, playMusic } = soundStore;
 
   const { day, isNight, isVote, isReVote, speakTime, votesTime } = gameFlow;
 
@@ -20,8 +23,20 @@ export const PlayerPanelInfo = observer(() => {
 
   const time = isVote || isReVote ? votesTime : speakTime;
   const isVotingActive = isVote || isReVote;
-  const timerTrigger = isVotingActive ? isReVote : speaker;
+  const timerTrigger = isVotingActive ? `${isVote}-${isReVote}` : speaker;
   const shouldShowTimer = hasSpeaker || isVotingActive;
+
+  const onTimerStart = useCallback(() => {
+    if (isVotingActive) {
+      playMusic(SoundEffect.Ticking, true, 1.4);
+    }
+  }, [isVotingActive, playMusic]);
+
+  const onVoteTimeUp = useCallback(() => {
+    if (isVotingActive) {
+      stopMusic();
+    }
+  }, [isVotingActive, stopMusic]);
 
   return (
     <div className={styles.infoContainer}>
@@ -41,7 +56,13 @@ export const PlayerPanelInfo = observer(() => {
       </div>
 
       {shouldShowTimer ? (
-        <Timer resetTrigger={timerTrigger} time={time} size={TimerSize.Large} />
+        <Timer
+          resetTrigger={timerTrigger}
+          time={time}
+          size={TimerSize.Large}
+          onTimerStart={isVotingActive ? onTimerStart : undefined}
+          onTimeUp={isVotingActive ? onVoteTimeUp : undefined}
+        />
       ) : null}
     </div>
   );

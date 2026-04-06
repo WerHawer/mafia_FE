@@ -46,6 +46,7 @@ export const useGameVote = () => {
     updateGameFlow(
       {
         isVote: !gameFlow.isVote,
+        isReVote: false,
         speaker: "",
       },
       {

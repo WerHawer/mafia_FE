@@ -4,6 +4,8 @@ import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 import Draggable from "react-draggable";
 import { useTranslation } from "react-i18next";
+import { rootStore } from "@/store/rootStore.ts";
+import { SoundEffect } from "@/store/soundStore.ts";
 
 import deadBg from "@/assets/images/dead_bg.avif";
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
@@ -72,6 +74,7 @@ export const GameVideo = observer(
       onInvestigateUser,
     } = useGameVideo({ participant, isMyStream });
 
+    const { soundStore } = rootStore;
     const isSpeaking = useIsSpeaking(participant);
 
     const handleVideoClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -84,18 +87,21 @@ export const GameVideo = observer(
       if (isShootEnabled && !isIGM) {
         setLocalClickPos({ x, y });
         onShootUser(x, y);
+        // Note: Sound is handled inside Shoot component for better sync with bullet animation
         return;
       }
 
       if (isKissEnabled) {
         setKissPos({ x, y });
         onBlockUser();
+        soundStore.playSfx(SoundEffect.Kiss);
         return;
       }
 
       if (isHealEnabled) {
         setHealPos({ x, y });
         onHealUser();
+        soundStore.playSfx(SoundEffect.Heal);
         return;
       }
 
@@ -105,6 +111,7 @@ export const GameVideo = observer(
           setInvestigatePos({ x, y });
           setInvestigateResult(res.result);
           setInvestigateDanger(res.isDanger);
+          soundStore.playSfx(SoundEffect.Check);
         }
       }
     };

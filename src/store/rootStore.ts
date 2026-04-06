@@ -5,6 +5,7 @@ import { MessagesStore, messagesStore } from "@/store/messagesStore.ts";
 import { ModalStore, modalStore } from "@/store/modalStore.ts";
 import { StreamStore, streamStore } from "@/store/streamsStore.ts";
 import { UsersStore, usersStore } from "@/store/usersStore.ts";
+import { SoundStore, soundStore } from "@/store/soundStore.ts";
 import { Roles } from "@/types/game.types.ts";
 
 class RootStore {
@@ -13,6 +14,7 @@ class RootStore {
   _messagesStore: MessagesStore;
   _modalStore: ModalStore;
   _streamsStore: StreamStore;
+  _soundStore: SoundStore;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -22,6 +24,7 @@ class RootStore {
     this._gamesStore = gamesStore;
     this._usersStore = usersStore;
     this._streamsStore = streamStore;
+    this._soundStore = soundStore;
   }
 
   get usersStore() {
@@ -42,6 +45,10 @@ class RootStore {
 
   get streamsStore() {
     return this._streamsStore;
+  }
+
+  get soundStore() {
+    return this._soundStore;
   }
 
   get isIGM() {

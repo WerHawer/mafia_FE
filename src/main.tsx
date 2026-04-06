@@ -16,7 +16,6 @@ createRoot(document.getElementById("root")!).render(
     {/*<ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />*/}
 
     <SocketProvider>
-
       <RouterProvider router={router} />
     </SocketProvider>
   </QueryClientProvider>

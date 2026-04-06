@@ -14,6 +14,7 @@ import { GameVideoManager } from "@/components/GameVideoManager/GameVideoManager
 import { GameVote } from "@/components/GameVote";
 import { GMMenu } from "@/components/GMMenu";
 import { LiveKitMafiaRoom } from "@/components/LiveKitMafiaRoom/LiveKitMafiaRoom.tsx";
+import { AudioProvider } from "@/components/AudioProvider/AudioProvider.tsx";
 import { videoOptions } from "@/config/video.ts";
 import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
 import { useVideoSettings } from "@/hooks/useVideoSettings.ts";
@@ -29,6 +30,7 @@ const GamePage = observer(() => {
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
   const [shouldShowVideoConfig, setShouldShowVideoConfig] = useState(false);
+  const [shouldShowAudioConfig, setShouldShowAudioConfig] = useState(false);
 
   const originalStream = useUserMediaStream({
     audio: false,
@@ -75,32 +77,39 @@ const GamePage = observer(() => {
   }, [id, myId]);
 
   return (
-    <div className={styles.pageContainer}>
-      <LiveKitMafiaRoom>
-        <GMMenu onOpenVideoConfig={() => setShouldShowVideoConfig(true)} />
+    <AudioProvider>
+      <div className={styles.pageContainer}>
+        <LiveKitMafiaRoom>
+          <GMMenu
+            onOpenVideoConfig={() => setShouldShowVideoConfig(true)}
+            onOpenAudioConfig={() => setShouldShowAudioConfig(true)}
+          />
 
-        <GameVideoManager
-          originalStream={originalStream}
-          gameId={id}
-          showVideoConfig={shouldShowVideoConfig}
-          onCloseVideoConfig={() => setShouldShowVideoConfig(false)}
-        />
-      </LiveKitMafiaRoom>
+          <GameVideoManager
+            originalStream={originalStream}
+            gameId={id}
+            showVideoConfig={shouldShowVideoConfig}
+            onCloseVideoConfig={() => setShouldShowVideoConfig(false)}
+            showAudioConfig={shouldShowAudioConfig}
+            onCloseAudioConfig={() => setShouldShowAudioConfig(false)}
+          />
+        </LiveKitMafiaRoom>
 
-      <aside className={styles.rightContainer}>
-        <section
-          className={classNames(styles.asideSection, styles.personalInfo)}
-        >
-          <GameInfoSection />
-        </section>
+        <aside className={styles.rightContainer}>
+          <section
+            className={classNames(styles.asideSection, styles.personalInfo)}
+          >
+            <GameInfoSection />
+          </section>
 
-        <section className={styles.chatSection}>
-          <GameChat />
-        </section>
-      </aside>
+          <section className={styles.chatSection}>
+            <GameChat />
+          </section>
+        </aside>
 
-      <GameVote />
-    </div>
+        <GameVote />
+      </div>
+    </AudioProvider>
   );
 });
 

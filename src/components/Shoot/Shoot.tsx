@@ -1,8 +1,10 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useEffect, useRef } from "react";
 
 import brokenGlassIcon from "@/assets/icons/broken_glass.png";
 import { rootStore } from "@/store/rootStore.ts";
+import { SoundEffect } from "@/store/soundStore.ts";
 import { Roles } from "@/types/game.types.ts";
 import { UserId } from "@/types/user.types.ts";
 
@@ -14,21 +16,45 @@ type ShootProps = {
 };
 
 export const Shoot = observer(({ userId, clickPosition }: ShootProps) => {
-  const { usersStore, gamesStore, myRole } = rootStore;
+  const { usersStore, gamesStore, myRole, soundStore, isIGM } = rootStore;
   const { gameFlow } = gamesStore;
   const { shoot = {} } = gameFlow;
+  const { playSfx } = soundStore;
 
   const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
+  const canHearShot = isIMafia || isIGM;
+  const myId = usersStore.myId;
   const entry = shoot[userId];
-  const serverShooters = entry?.shooters ?? [];
+  const serverShooters: UserId[] = entry?.shooters ?? [];
   const serverShots = entry?.shots ?? [];
 
-  const shouldSeeShot = isIMafia;
+  const prevShootersCount = useRef(serverShooters.length);
+
+  useEffect(() => {
+    const newShootersCount = serverShooters.length;
+    if (newShootersCount > prevShootersCount.current && canHearShot) {
+      // Check if the new shooter is me - if so, don't play sound (already played on click)
+      const newShooter = serverShooters[newShootersCount - 1];
+      const isMyShot = newShooter === myId;
+
+      if (!isMyShot) {
+        playSfx(SoundEffect.Shot, 0.7);
+      }
+    }
+    prevShootersCount.current = newShootersCount;
+  }, [serverShooters.length, playSfx, canHearShot, serverShooters, myId]);
+
+  useEffect(() => {
+    if (clickPosition && canHearShot) {
+      playSfx(SoundEffect.Shot, 0.7);
+    }
+  }, [clickPosition, playSfx, canHearShot]);
+
+  const shouldSeeShot = isIMafia && gameFlow.isNight;
   const hasAnything = !!clickPosition || serverShooters.length > 0;
 
   if (!shouldSeeShot || !hasAnything) return null;
 
-  const myId = usersStore.myId;
   const mafiaIds = gamesStore.activeGameRoles?.mafia ?? [];
 
   const getVariantClass = (id: UserId) => {

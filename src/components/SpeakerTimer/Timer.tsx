@@ -15,6 +15,8 @@ type TimerProps = {
   time?: number;
   resetTrigger?: boolean | string;
   size?: TimerSize;
+  onTimerStart?: () => void;
+  onTimeUp?: () => void;
 };
 
 const formatTime = (seconds: number): string => {
@@ -25,9 +27,10 @@ const formatTime = (seconds: number): string => {
 };
 
 export const Timer = memo(
-  ({ time = 60, resetTrigger, size = TimerSize.Medium }: TimerProps) => {
+  ({ time = 60, resetTrigger, size = TimerSize.Medium, onTimerStart, onTimeUp }: TimerProps) => {
     const [diff, setDiff] = useState<number>(time);
     const [reset, setReset] = useState<boolean>(false);
+    const [hasCalledTimeUp, setHasCalledTimeUp] = useState<boolean>(false);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const startTime = useMemo(() => Date.now(), [reset]);
@@ -36,7 +39,9 @@ export const Timer = memo(
     const resetTime = useCallback(() => {
       setReset((prev) => !prev);
       setDiff(time);
-    }, [time]);
+      setHasCalledTimeUp(false);
+      onTimerStart?.();
+    }, [time, onTimerStart]);
 
     useEffect(() => {
       resetTime();
@@ -54,6 +59,13 @@ export const Timer = memo(
         clearInterval(interval);
       };
     }, [endTime]);
+
+    useEffect(() => {
+      if (diff === 0 && !hasCalledTimeUp && onTimeUp) {
+        setHasCalledTimeUp(true);
+        onTimeUp();
+      }
+    }, [diff, hasCalledTimeUp, onTimeUp]);
 
     const formattedTime = formatTime(diff);
     const isTimeUp = diff === 0;

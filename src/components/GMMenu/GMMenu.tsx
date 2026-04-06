@@ -6,6 +6,7 @@ import {
   MoreOutlined,
   ReloadOutlined,
   SettingOutlined,
+  SoundOutlined,
   VideoCameraAddOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
@@ -20,9 +21,10 @@ import styles from "./GMMenu.module.scss";
 
 type GMMenuProps = {
   onOpenVideoConfig: () => void;
+  onOpenAudioConfig: () => void;
 };
 
-export const GMMenu = observer(({ onOpenVideoConfig }: GMMenuProps) => {
+export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenuProps) => {
   const { t } = useTranslation();
   const {
     isMenuOpen,
@@ -114,6 +116,15 @@ export const GMMenu = observer(({ onOpenVideoConfig }: GMMenuProps) => {
               label={t("gmMenu.videoSettings")}
               onClick={() => {
                 onOpenVideoConfig();
+                setIsMenuOpen(false);
+              }}
+            />
+
+            <MenuItem
+              icon={<SoundOutlined />}
+              label={t("gmMenu.audioSettings")}
+              onClick={() => {
+                onOpenAudioConfig();
                 setIsMenuOpen(false);
               }}
             />

@@ -7,6 +7,7 @@ import {
 } from "@/api/game/queries.ts";
 import { useVoteResult } from "@/hooks/useVoteResult.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { SoundEffect } from "@/store/soundStore.ts";
 import { UserId } from "@/types/user.types.ts";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 import { VoteIcon } from "@/UI/VoteIcon";
@@ -19,12 +20,13 @@ type VoteFlowProps = {
 };
 
 export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
-  const { usersStore, gamesStore, isIGM, isIDead, isISpeaker } = rootStore;
+  const { usersStore, gamesStore, isIGM, isIDead, isISpeaker, soundStore } = rootStore;
   const { myId, getUser } = usersStore;
   const { isUserGM, speaker, gameFlow, activeGameAlivePlayers, activeGameId } =
     gamesStore;
   const { isVote, proposed, voted, isExtraSpeech } = gameFlow;
   const { isIBlocked } = rootStore;
+  const { playSfx } = soundStore;
   const { mutate: voteForUser } = useVoteForUserMutation();
   const { mutate: addUserToProposed } = useAddUserToProposedMutation();
 
@@ -94,7 +96,8 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
       targetUserId: userId,
       voterId: myId,
     });
-  }, [userId, myId, activeGameId, amIVoted, isIGM, voteForUser]);
+    playSfx(SoundEffect.Vote);
+  }, [userId, myId, activeGameId, amIVoted, isIGM, voteForUser, playSfx]);
 
   useVoteResult({
     alivePlayers: activeGameAlivePlayers,

@@ -25,7 +25,7 @@ export const useGamePanel = () => {
   const { mutate: startDay } = useStartDayMutation();
   const { mutate: startNight } = useStartNightMutation();
 
-  const { muteAllForNight, unmuteAllForDay } = useBatchMediaControls();
+  const { muteAllForNight } = useBatchMediaControls();
 
   // nightActionLogs will store all results required for the modal
 
@@ -69,7 +69,6 @@ export const useGamePanel = () => {
       });
 
       startDay(activeGameId);
-      unmuteAllForDay();
       isShouldShowModal.current = true;
 
       return;
@@ -83,7 +82,6 @@ export const useGamePanel = () => {
     gameFlow.isNight,
     startDay,
     startNight,
-    unmuteAllForDay,
     muteAllForNight,
   ]);
 

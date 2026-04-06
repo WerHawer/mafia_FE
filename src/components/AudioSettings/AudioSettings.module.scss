@@ -1,0 +1,116 @@
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
+
+.audioSettings {
+  @include mixins.flex(column, stretch, stretch);
+  gap: 32px;
+  padding: 16px;
+  width: 100%;
+}
+
+.section {
+  @include mixins.flex(column, stretch, stretch);
+  gap: 16px;
+}
+
+.header {
+  @include mixins.flex(row, space-between, center);
+  gap: 12px;
+  
+  .icon {
+    font-size: 1.6rem;
+    color: theme.$color-accent-primary;
+  }
+}
+
+.label {
+  flex: 1;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: theme.$color-text-primary;
+}
+
+.value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: theme.$color-text-secondary;
+  min-width: 60px;
+  text-align: right;
+}
+
+.slider {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  background: theme.$color-dark-secondary;
+  height: 8px;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: theme.$color-accent-primary;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    @include mixins.transition();
+    
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255, 255, 39, 0.5);
+    }
+  }
+
+  &::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background: theme.$color-accent-primary;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    @include mixins.transition();
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.footer {
+  margin-top: 24px;
+  @include mixins.flex(row, center, center);
+}
+
+.muteButton {
+  @include mixins.flex(row, center, center);
+  gap: 10px;
+  padding: 16px 32px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 2px solid theme.$color-dark-secondary;
+  background-color: transparent;
+  color: theme.$color-text-primary;
+  cursor: pointer;
+  @include mixins.transition();
+  width: 100%;
+  max-width: 300px;
+
+  &:hover {
+    background-color: theme.$color-dark-secondary;
+    transform: translateY(-2px);
+  }
+
+  &.muted {
+    border-color: theme.$color-error;
+    color: theme.$color-error;
+    
+    &:hover {
+      background-color: rgba(theme.$color-error, 0.1);
+    }
+  }
+}

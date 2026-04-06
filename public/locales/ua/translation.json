@@ -52,7 +52,15 @@
 
   "settings": {
     "title": "Налаштування",
-    "language": "Мова інтерфейсу"
+    "language": "Мова інтерфейсу",
+    "audio": "Аудіо"
+  },
+  "audioSettings": {
+    "title": "Налаштування звуку",
+    "musicVolume": "Гучність музики",
+    "sfxVolume": "Звукові ефекти",
+    "muteAll": "Вимкнути все",
+    "unmuteAll": "Увімкнути все"
   },
 
   "notFound": {
@@ -189,6 +197,7 @@
     "unmuteAll": "Увімкнути звук всім",
     "restartGame": "Перезапустити гру",
     "videoSettings": "Налаштування відео",
+    "audioSettings": "Налаштування звуку",
     "leaveGame": "Вийти з гри"
   },
 

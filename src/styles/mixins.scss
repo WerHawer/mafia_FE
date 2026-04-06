@@ -49,3 +49,6 @@
     border-radius: 3px;
   }
 }
+@mixin transition($property: all, $duration: 0.2s, $ease: ease) {
+  transition: $property $duration $ease;
+}

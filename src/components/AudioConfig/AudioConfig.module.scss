@@ -1,0 +1,55 @@
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
+
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  @include mixins.flex(column, center, center);
+  @include mixins.transition();
+  padding: 24px;
+}
+
+.hide {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.95);
+}
+
+.content {
+  background-color: theme.$color-dark-primary;
+  border: 1px solid theme.$color-dark-secondary;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  padding: 32px;
+  @include mixins.flex(column, stretch, center);
+  gap: 32px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.header {
+  @include mixins.flex(row, center, center);
+  width: 100%;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: theme.$color-accent-primary;
+  text-align: center;
+}
+
+.settingsWrapper {
+  width: 100%;
+}
+
+.buttonContainer {
+  @include mixins.flex(row, flex-end, center);
+  width: 100%;
+}

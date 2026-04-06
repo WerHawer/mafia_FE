@@ -2,6 +2,9 @@ import classNames from "classnames";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { rootStore } from "@/store/rootStore.ts";
+import { SoundEffect } from "@/store/soundStore.ts";
+
 import anna from "@/assets/images/cards/anna.webp";
 import cardBack from "@/assets/images/cards/card_back.webp";
 import doctor from "@/assets/images/cards/doctor.webp";
@@ -56,6 +59,7 @@ export const RoleCard = ({
   const handleClick = useCallback(() => {
     if (isFlipped) return;
 
+    rootStore.soundStore.playSfx(SoundEffect.Deal);
     onClick?.();
     setIsFlipped(true);
   }, [isFlipped, onClick]);
