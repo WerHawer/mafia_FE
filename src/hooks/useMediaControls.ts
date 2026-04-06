@@ -26,6 +26,7 @@ export const useMediaControls = ({
   roomId,
   requesterId,
 }: UseMediaControlsProps) => {
+  const { isIDead } = rootStore;
   const { socket, subscribe, sendMessage } = useSocket();
   const room = useRoomContext();
   const localParticipant = room.localParticipant;
@@ -46,8 +47,8 @@ export const useMediaControls = ({
       );
 
       setMediaState({
-        isCameraEnabled: !videoPublication?.isMuted ?? false,
-        isMicrophoneEnabled: !audioPublication?.isMuted ?? false,
+        isCameraEnabled: videoPublication ? !videoPublication.isMuted : false,
+        isMicrophoneEnabled: audioPublication ? !audioPublication.isMuted : false,
       });
     };
 
@@ -157,6 +158,22 @@ export const useMediaControls = ({
     };
   }, [socket, participant, subscribe, localParticipant]);
 
+  // Handle automatic microphone turn-off when player dies
+  useEffect(() => {
+    if (isMyStream && isIDead && mediaState.isMicrophoneEnabled && socket) {
+      console.log("[Media Control] Auto-disabling microphone for dead player");
+      
+      const targetUserId = participant.identity;
+      sendMessage(wsEvents.toggleUserMicrophone, {
+        roomId,
+        userId: targetUserId,
+        participantIdentity: participant.identity,
+        enabled: false,
+        requesterId,
+      });
+    }
+  }, [isMyStream, isIDead, mediaState.isMicrophoneEnabled, socket, participant.identity, roomId, requesterId, sendMessage]);
+
   const toggleCamera = useCallback(() => {
     if (!socket) return;
 
@@ -199,6 +216,10 @@ export const useMediaControls = ({
 
   const toggleMicrophone = useCallback(() => {
     if (!socket) return;
+    if (isIDead && isMyStream) {
+      console.log("[Media Control] Cannot toggle microphone: player is dead");
+      return;
+    }
 
     const canControl = isMyStream || isIGM;
     if (!canControl) return;

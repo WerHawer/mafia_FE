@@ -16,7 +16,7 @@ export const VideoGrid = observer(() => {
   const filteredTracks = useMemo(() => {
     if (!allTracks || allTracks.length === 0) return [];
 
-    return allTracks.filter((trackRef) => {
+    const tracks = allTracks.filter((trackRef) => {
       const isMy = trackRef.participant?.isLocal ?? false;
       const participantId = trackRef.participant?.identity || "";
 
@@ -25,7 +25,23 @@ export const VideoGrid = observer(() => {
         (!isMy && shouldShowPlayerVideo(participantId))
       );
     });
-  }, [allTracks, shouldShowMyVideo, shouldShowPlayerVideo]);
+
+    const { killed = [] } = gamesStore.gameFlow;
+    const { activeGameGm } = gamesStore;
+
+    return [...tracks].sort((a, b) => {
+      const idA = a.participant?.identity || "";
+      const idB = b.participant?.identity || "";
+
+      const getStatusWeight = (id: string) => {
+        if (killed.includes(id)) return 2;
+        if (id === activeGameGm) return 1;
+        return 0;
+      };
+
+      return getStatusWeight(idA) - getStatusWeight(idB);
+    });
+  }, [allTracks, shouldShowMyVideo, shouldShowPlayerVideo, gamesStore.gameFlow.killed, gamesStore.activeGameGm]);
 
   return (
     <>

@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import Draggable from "react-draggable";
 import { useTranslation } from "react-i18next";
 
+import deadBg from "@/assets/images/dead_bg.avif";
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
 import { HealEffect } from "@/components/HealEffect";
 import { InvestigateEffect } from "@/components/InvestigateEffect";
@@ -147,8 +148,12 @@ export const GameVideo = observer(
             {isGM && <RoleIcon role={Roles.GM} size="l" />}
           </div>
 
+          {isUserDead && (
+            <div className={styles.statusLabelDead}>{t("gameVideo.dead")}</div>
+          )}
+
           {isUserDead && !isMyStream && (
-            <div className={styles.deadOverlay}>{t("gameVideo.dead")}</div>
+            <div className={styles.deadOverlay} style={{ backgroundImage: `url(${deadBg})` }} />
           )}
 
           {isIGM && !isMyStream && currentUser && (

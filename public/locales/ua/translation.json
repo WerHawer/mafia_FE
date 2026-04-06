@@ -167,7 +167,8 @@
     "checkedBySheriff": "Перевірено шерифом",
     "checkedByDon": "Перевірено доном",
     "doctorSaved": "Ви лікуєте цього гравця",
-    "doctorSavedGM": "Врятовано Лікарем"
+    "doctorSavedGM": "Врятовано Лікарем",
+    "shotByMafia": "Постріл від мафії ({{count}} рази)"
   },
 
   "gameVideo": {

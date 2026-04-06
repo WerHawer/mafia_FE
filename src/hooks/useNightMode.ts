@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "react";
 import { rootStore } from "@/store/rootStore.ts";
 
 export const useNightMode = () => {
-  const { gamesStore, usersStore } = rootStore;
+  const { gamesStore, usersStore, isIDead } = rootStore;
   const { gameFlow, isUserGM } = gamesStore;
   const { myId } = usersStore;
 
@@ -12,6 +12,8 @@ export const useNightMode = () => {
 
   // Перевіряємо, чи користувач прокинувся (в масиві wakeUp)
   const isAwake = useMemo(() => {
+    if (isIDead) return false;
+
     const wakeUpArray = Array.isArray(gameFlow.wakeUp)
       ? gameFlow.wakeUp
       : gameFlow.wakeUp
@@ -19,7 +21,7 @@ export const useNightMode = () => {
         : [];
 
     return wakeUpArray.includes(myId);
-  }, [gameFlow.wakeUp, myId]);
+  }, [gameFlow.wakeUp, myId, isIDead]);
 
   // Вночі показуємо відео для:
   // 1. GM (завжди бачить все)

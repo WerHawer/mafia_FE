@@ -153,20 +153,18 @@
 }
 
 .deadOverlay {
-  @include mixins.flexCenter;
-
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: theme.$color-dark-primary;
+  
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
   border: 2px solid theme.$color-dark-secondary;
   border-radius: theme.$border-radius;
-
-  color: theme.$color-error;
-  font-size: 5rem;
-  font-weight: 600;
   z-index: 10;
 }
 
@@ -217,11 +215,6 @@
 .healable {
   /* noinspection CssUnknownTarget */
   cursor: url('/syringe.svg') 16 16, pointer !important;
-  transition: box-shadow 0.2s;
-
-  &:hover {
-    box-shadow: inset 0 0 20px rgba(theme.$color-role-doctor, 0.4);
-  }
 }
 
 .checkable {
@@ -232,4 +225,22 @@
   &:hover {
     box-shadow: inset 0 0 20px rgba(theme.$color-accent-secondary, 0.4);
   }
+}
+.statusLabelDead {
+  @include mixins.flexCenter;
+  padding: 4px 8px;
+  
+  position: absolute;
+  top: 10px;
+  left: 10px;
+
+  background-color: theme.$color-error;
+  color: theme.$color-text-primary;
+  border-radius: 4px;
+  
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  z-index: 20;
 }

@@ -164,7 +164,8 @@
     "checkedBySheriff": "Checked by sheriff",
     "checkedByDon": "Checked by don",
     "doctorSaved": "You are treating this player",
-    "doctorSavedGM": "Saved by Doctor"
+    "doctorSavedGM": "Saved by Doctor",
+    "shotByMafia": "Shot by mafia ({{count}}x)"
   },
 
   "gameVideo": {

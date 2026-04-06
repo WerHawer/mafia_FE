@@ -17,16 +17,16 @@
   left: 50%;
   translate: -50% -50%;
   pointer-events: none;
-  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: popIn 0.15s ease-out forwards;
 }
 
 .img1 {
-  animation: popIn1 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: popIn1 0.15s ease-out forwards;
   margin-top: 10px;
 }
 
 .img2 {
-  animation: popIn2 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: popIn2 0.15s ease-out forwards;
   margin-left: -15px;
 }
 

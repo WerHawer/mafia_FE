@@ -33,9 +33,9 @@ export const useGameVideo = ({
   const isUserDead = killed.includes(userId);
   const isMyAfterStart = isMyStream && isStarted;
   const notFirstDay = day > 1;
-  // User cannot shoot themselves
+  // Mafia can also shoot themselves
   const isShootEnabled =
-    (!isMyStream && !isGM && !isUserDead && notFirstDay) &&
+    (!isGM && !isUserDead && notFirstDay) &&
     (isIGM || (isIMafia && isIWakedUp && !isIDidShot));
 
   const isIDoctor = myRole === Roles.Doctor;
@@ -51,10 +51,16 @@ export const useGameVideo = ({
   const isISheriff = myRole === Roles.Sheriff;
   const isIDon = myRole === Roles.Don;
 
+  // Don can investigate only when woken up as Don specifically (wakeUp has only his id).
+  // If Don is the sole mafia member, he's always woken alone anyway, so require shoot-first.
+  const mafiaCount = (gamesStore.activeGameRoles?.mafia ?? []).length;
+  const wakeUpArr = Array.isArray(gameFlow.wakeUp) ? gameFlow.wakeUp : [gameFlow.wakeUp].filter(Boolean);
+  const isWokenAsDon = isIDon && isIWakedUp && wakeUpArr.length === 1 && (mafiaCount <= 1 ? isIDidShot : true);
+
   const isInvestigateEnabled =
-    !isMyStream && !isGM && !isUserDead && notFirstDay &&
-    ((isISheriff && isIWakedUp && !sheriffCheck) ||
-     (isIDon && isIWakedUp && !donCheck));
+    !isGM && !isUserDead && notFirstDay &&
+    ((isISheriff && isIWakedUp && !sheriffCheck && !isMyStream) ||
+     (isIDon && isWokenAsDon && !donCheck && !isMyStream));
 
   const isCheckRoleEnabled = isIGM;
 

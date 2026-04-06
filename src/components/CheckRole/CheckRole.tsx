@@ -1,9 +1,11 @@
 import { EyeOutlined, PlusCircleFilled } from "@ant-design/icons";
 import Tippy from "@tippyjs/react";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 
 import kissMarkIcon from "@/assets/icons/kiss_mark.png";
+import bulletIcon from "@/assets/icons/bullet.png";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
 
@@ -17,17 +19,33 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
   const { t } = useTranslation();
   const { gamesStore, isIGM } = rootStore;
   const { gameFlow } = gamesStore;
-  const { sheriffCheck, donCheck, prostituteBlock, doctorSave } = gameFlow;
+  const { sheriffCheck, donCheck, prostituteBlock, doctorSave, shoot = {} } = gameFlow;
 
   const userCheckedBySheriff = sheriffCheck === userId;
   const userCheckedByDon = donCheck === userId;
   const userBlockedByProstitute = prostituteBlock === userId;
   const userSavedByDoctor = doctorSave === userId;
+  const shotCount = shoot[userId]?.shooters?.length ?? 0;
 
   if (!isIGM) return null;
 
   return (
-    <div className={styles.gmIconsRow}>
+    <div className={classNames(styles.gmIconsRow, { [styles.night]: gameFlow.isNight })}>
+      {shotCount > 0 && (
+        <Tippy content={t("checkRole.shotByMafia", { count: shotCount })}>
+          <div className={styles.gmIconWrapper}>
+            <img
+              src={bulletIcon}
+              alt="shot"
+              className={styles.gmIconImg}
+            />
+            {shotCount > 1 && (
+              <span className={styles.badge}>{shotCount}</span>
+            )}
+          </div>
+        </Tippy>
+      )}
+
       {userCheckedBySheriff && (
         <Tippy content={t("checkRole.checkedBySheriff")}>
           <EyeOutlined className={styles.gmIcon} style={{ color: '#5865f2' }} />

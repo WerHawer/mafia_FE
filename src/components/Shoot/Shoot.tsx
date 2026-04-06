@@ -14,39 +14,59 @@ type ShootProps = {
 };
 
 export const Shoot = observer(({ userId, clickPosition }: ShootProps) => {
-  const { usersStore, gamesStore, myRole, isIGM } = rootStore;
+  const { usersStore, gamesStore, myRole } = rootStore;
   const { gameFlow } = gamesStore;
   const { shoot = {} } = gameFlow;
-  
+
   const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
   const entry = shoot[userId];
-  const isUserShot = !!entry?.shooters?.length;
-  const shouldSeeShot = isIGM || isIMafia;
+  const serverShooters = entry?.shooters ?? [];
+  const serverShots = entry?.shots ?? [];
 
-  if (!shouldSeeShot || !isUserShot) {
+  const shouldSeeShot = isIMafia;
+  const hasAnything = !!clickPosition || serverShooters.length > 0;
+
+  if (!shouldSeeShot || !hasAnything) return null;
+
+  const myId = usersStore.myId;
+  const mafiaIds = gamesStore.activeGameRoles?.mafia ?? [];
+
+  const getVariantClass = (id: UserId) => {
+    const mafiaIndex = mafiaIds.indexOf(id);
+    if (mafiaIndex === 1) return styles.img1;
+    if (mafiaIndex === 2) return styles.img2;
     return null;
-  }
+  };
 
-  const { shooters, shots } = entry;
+  const optimisticStyle = clickPosition
+    ? { left: `${clickPosition.x}%`, top: `${clickPosition.y}%` }
+    : undefined;
 
   return (
     <div className={styles.container}>
-      {shooters.map((shooterId, index) => {
-        const isMyShot = shooterId === usersStore.myId;
-        const shotCoords = isMyShot && clickPosition
-          ? clickPosition
-          : shots[index];
-        
-        const style = shotCoords
-          ? { left: `${shotCoords.x}%`, top: `${shotCoords.y}%` }
-          : {};
+      {/* My shot — always from local clickPosition to avoid flicker on server round-trip */}
+      {optimisticStyle && (
+        <img
+          src={brokenGlassIcon}
+          alt="shot"
+          className={classNames(styles.img, getVariantClass(myId))}
+          style={optimisticStyle}
+        />
+      )}
+
+      {/* Other shooters — from server data, skip my own id */}
+      {serverShooters.map((shooterId, index) => {
+        if (shooterId === myId) return null; // handled above
+
+        const coords = serverShots[index];
+        const style = coords ? { left: `${coords.x}%`, top: `${coords.y}%` } : {};
 
         return (
           <img
             key={shooterId}
             src={brokenGlassIcon}
             alt="shot"
-            className={classNames(styles.img, styles[`img${index}`])}
+            className={classNames(styles.img, getVariantClass(shooterId))}
             style={style}
           />
         );
