@@ -1,5 +1,7 @@
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import { useGetMessagesQueryWithStore } from "@/api/messages/queries.ts";
@@ -14,13 +16,20 @@ import styles from "./GameChat.module.scss";
 
 export const GameChat = observer(() => {
   const { id = "" } = useParams();
-  const { usersStore, messagesStore } = rootStore;
+  const { usersStore, messagesStore, isIDead } = rootStore;
   const { me: user } = usersStore;
   const { getMessages, setNewLocalMessage } = messagesStore;
-  const messages = getMessages(id);
   const { sendMessage } = useSocket();
+  const { t } = useTranslation();
+
+  const [activeTab, setActiveTab] = useState<"general" | "dead">("general");
   const [message, setMessage] = useState("");
+
+  const currentRoomId = activeTab === "dead" ? `${id}_dead` : id;
+  const messages = getMessages(currentRoomId);
+
   useGetMessagesQueryWithStore(id);
+  useGetMessagesQueryWithStore(isIDead ? `${id}_dead` : "");
 
   const chatRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +50,7 @@ export const GameChat = observer(() => {
     const newMessage: IMessage = {
       text: message,
       sender: user,
-      to: { type: MessageTypes.Room, id },
+      to: { type: MessageTypes.Room, id: currentRoomId },
       createdAt: Date.now(),
       isRead: false,
     };
@@ -52,7 +61,9 @@ export const GameChat = observer(() => {
     setMessage("");
 
     sendMessage(wsEvents.messageSend, messageDTO);
-  }, [message, user, id, setNewLocalMessage, sendMessage]);
+  }, [message, user, currentRoomId, setNewLocalMessage, sendMessage]);
+
+  const isGeneralRestricted = activeTab === "general" && isIDead;
 
   return (
     <div className={styles.chatContainer}>
@@ -63,12 +74,41 @@ export const GameChat = observer(() => {
       />
 
       <div className={styles.inputContainer}>
-        <ChatInput
-          value={message}
-          onChange={handleChangeMessage}
-          onSubmit={handleSendMessage}
-        />
+        {isGeneralRestricted ? (
+          <div className={styles.deadNotice}>
+            <span>☠</span>
+            <span>{t("chat.deadRestriction")}</span>
+          </div>
+        ) : (
+          <ChatInput
+            value={message}
+            onChange={handleChangeMessage}
+            onSubmit={handleSendMessage}
+          />
+        )}
       </div>
+
+      {isIDead && (
+        <div className={styles.tabs}>
+          <div
+            className={classNames(styles.tab, {
+              [styles.activeTab]: activeTab === "general",
+            })}
+            onClick={() => setActiveTab("general")}
+          >
+            {t("chat.general")}
+          </div>
+          <div
+            className={classNames(styles.tab, {
+              [styles.activeTab]: activeTab === "dead",
+              [styles.deadTab]: true,
+            })}
+            onClick={() => setActiveTab("dead")}
+          >
+            {t("chat.dead")}
+          </div>
+        </div>
+      )}
     </div>
   );
 });

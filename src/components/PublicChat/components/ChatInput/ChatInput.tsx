@@ -12,9 +12,11 @@ interface ChatInputProps {
   value: string;
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onSubmit: () => void;
+  disabled?: boolean;
+  placeholder?: string;
 }
 
-export const ChatInput = ({ value, onChange, onSubmit }: ChatInputProps) => {
+export const ChatInput = ({ value, onChange, onSubmit, disabled, placeholder }: ChatInputProps) => {
   const { t } = useTranslation();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -52,20 +54,21 @@ export const ChatInput = ({ value, onChange, onSubmit }: ChatInputProps) => {
 
   return (
     <div className={styles.chatInputContainer}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={disabled ? (e) => e.preventDefault() : handleSubmit}>
         <textarea
           ref={textareaRef}
           className={styles.chatInput}
           value={value}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          placeholder={t("typeMessage")}
+          onChange={disabled ? undefined : handleChange}
+          onKeyDown={disabled ? undefined : handleKeyDown}
+          placeholder={placeholder ?? t("typeMessage")}
           rows={1}
+          disabled={disabled}
         />
 
         <Button
           size={ButtonSize.Small}
-          disabled={!value}
+          disabled={!value || disabled}
           type={ButtonType.Submit}
           variant={ButtonVariant.Outline}
           title={t("send")}

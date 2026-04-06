@@ -8,6 +8,11 @@
   "usersConnected_other": "{{count}} users connected to chat",
   "typeMessage": "Type a message...",
   "send": "Send",
+  "chat": {
+    "general": "General",
+    "dead": "Dead Chat",
+    "deadRestriction": "Dead players can’t write here"
+  },
   "activeGames": "Active Games",
   "owner": "Owner",
   "players": "Players",
