@@ -23,6 +23,7 @@ export class SoundStore {
   isMuted = false;
 
   private activeMusicObject: HTMLAudioElement | null = null;
+  private preloadedAudios: Map<string, HTMLAudioElement> = new Map();
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -31,6 +32,38 @@ export class SoundStore {
       properties: ["musicVolume", "sfxVolume", "isMuted"],
       storage: localStorage,
     });
+
+    this.preloadAllAudio();
+  }
+
+  private preloadAllAudio() {
+    // Preload all SFX from enum
+    Object.values(SoundEffect).forEach(effect => {
+      this.preloadAudio(effect);
+    });
+
+    // Preload background music tracks
+    const bgTracks = [
+      "day_bg.mp3", "day_bg_1.mp3", "day_bg_2.mp3",
+      "night_bg.mp3", "night_bg_2.mp3", "night_bg_3.mp3"
+    ];
+
+    bgTracks.forEach(track => {
+      this.preloadAudio(track);
+    });
+  }
+
+  private preloadAudio(filename: string) {
+    if (this.preloadedAudios.has(filename)) return;
+
+    try {
+      const audioPath = getAudioPath(filename);
+      const audio = new Audio(audioPath);
+      audio.preload = "auto";
+      this.preloadedAudios.set(filename, audio);
+    } catch (e) {
+      console.warn(`Failed to preload audio: ${filename}`, e);
+    }
   }
 
   setMusicVolume(volume: number) {
@@ -63,18 +96,27 @@ export class SoundStore {
     if (this.isMuted) return;
 
     try {
-      const audioPath = getAudioPath(effect);
-      const audio = new Audio(audioPath);
-      audio.volume = this.effectiveSfxVolume * volumeMultiplier;
-      audio
+      // Try to get preloaded audio, or create a new one if not found
+      let audio = this.preloadedAudios.get(effect);
+
+      if (!audio) {
+        const audioPath = getAudioPath(effect);
+        audio = new Audio(audioPath);
+        this.preloadedAudios.set(effect, audio);
+      }
+
+      // We need to clone the audio node if we want to play the same sound overlapping
+      const sfx = audio.cloneNode() as HTMLAudioElement;
+      sfx.volume = this.effectiveSfxVolume * volumeMultiplier;
+      sfx
         .play()
         .catch((e) => console.warn(`Failed to play SFX: ${effect}`, e));
 
       // If duration is specified, stop the audio after that time
       if (durationMs) {
         setTimeout(() => {
-          audio.pause();
-          audio.currentTime = 0;
+          sfx.pause();
+          sfx.currentTime = 0;
         }, durationMs);
       }
     } catch (e) {
@@ -96,14 +138,23 @@ export class SoundStore {
       : tracks;
 
     try {
-      const audioPath = getAudioPath(trackName);
-      const audio = new Audio(audioPath);
-      audio.volume = this.effectiveMusicVolume * volumeMultiplier;
-      audio.loop = loop;
-      audio.muted = this.isMuted;
+      let audio = this.preloadedAudios.get(trackName);
 
-      this.activeMusicObject = audio;
-      audio.play().catch((e) => {
+      if (!audio) {
+        const audioPath = getAudioPath(trackName);
+        audio = new Audio(audioPath);
+        this.preloadedAudios.set(trackName, audio);
+      }
+
+      // Clone Node to allow restarting the same track easily
+      // without worrying about internal audio state from previous plays
+      const bgm = audio.cloneNode() as HTMLAudioElement;
+      bgm.volume = this.effectiveMusicVolume * volumeMultiplier;
+      bgm.loop = loop;
+      bgm.muted = this.isMuted;
+
+      this.activeMusicObject = bgm;
+      bgm.play().catch((e) => {
         console.warn(`Autoplay blocked or track missing: ${trackName}`, e);
       });
     } catch (e) {
