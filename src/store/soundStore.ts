@@ -1,6 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 
+import { getAudioPath } from "@/helpers/getAudioPath";
+
 export enum SoundEffect {
   Shot = "shot.wav",
   Kiss = "kiss.m4a",
@@ -61,7 +63,8 @@ export class SoundStore {
     if (this.isMuted) return;
 
     try {
-      const audio = new Audio(`/src/assets/audio/${effect}`);
+      const audioPath = getAudioPath(effect);
+      const audio = new Audio(audioPath);
       audio.volume = this.effectiveSfxVolume * volumeMultiplier;
       audio
         .play()
@@ -93,7 +96,8 @@ export class SoundStore {
       : tracks;
 
     try {
-      const audio = new Audio(`/src/assets/audio/${trackName}`);
+      const audioPath = getAudioPath(trackName);
+      const audio = new Audio(audioPath);
       audio.volume = this.effectiveMusicVolume * volumeMultiplier;
       audio.loop = loop;
       audio.muted = this.isMuted;
