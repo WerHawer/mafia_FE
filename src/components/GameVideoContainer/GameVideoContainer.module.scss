@@ -6,13 +6,7 @@
   align-items: center;
   gap: 0.5rem;
   height: 100%;
-
-  & > .videoContainer {
-    aspect-ratio: 16 / 9;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+  position: relative;
 
   &.twoGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -34,3 +28,21 @@
     grid-template-rows: repeat(3, 1fr);
   }
 }
+
+// Explicit class for motion.div grid cells — avoids bleeding into fixed-position videos
+.gridCell {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+// Applied when the local player's video is in fixed-corner mode (isMyAfterStart).
+// Framer-motion keeps a non-none CSS `transform` on motion.div even after animation completes.
+// Any non-none transform creates a new containing block for position:fixed descendants,
+// breaking .myVideoContainer positioning. !important overrides framer-motion's inline styles.
+.noTransform {
+  transform: none !important;
+  will-change: auto !important;
+}
+

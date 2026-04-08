@@ -15,7 +15,7 @@ export const useGMMenu = () => {
   const { activeGameId, activeGameGm, gameFlow } = gamesStore;
   const { myId } = usersStore;
 
-  const { unmuteAll, muteAllExceptGM } = useBatchMediaControls();
+  const { unmuteAll, muteAllExceptGM, disableAllCamerasExceptGM, enableAllCameras } = useBatchMediaControls();
 
   const { mockStreamsEnabled, handleToggleMockStreams } = useMockStreams();
   const { mutate: restartGame } = useRestartGameMutation();
@@ -49,6 +49,16 @@ export const useGMMenu = () => {
     setIsMenuOpen(false);
   }, [unmuteAll]);
 
+  const onDisableAllCameras = useCallback(() => {
+    disableAllCamerasExceptGM(activeGameGm);
+    setIsMenuOpen(false);
+  }, [activeGameGm, disableAllCamerasExceptGM]);
+
+  const onEnableAllCameras = useCallback(() => {
+    enableAllCameras();
+    setIsMenuOpen(false);
+  }, [enableAllCameras]);
+
   const onRestartGame = useCallback(() => {
     if (!activeGameId) return;
 
@@ -71,6 +81,8 @@ export const useGMMenu = () => {
     onToggleMockStreams,
     onMuteAll,
     onUnmuteAll,
+    onDisableAllCameras,
+    onEnableAllCameras,
     onRestartGame,
     onLeaveGame,
   };

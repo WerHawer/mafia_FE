@@ -119,6 +119,13 @@ export interface WSSentEventData {
     excludedUserIds: UserId[];
     requesterId: UserId;
   };
+  [wsEvents.batchToggleCameras]: {
+    roomId: string;
+    enabled: boolean;
+    targetUserIds: UserId[];
+    excludedUserIds: UserId[];
+    requesterId: UserId;
+  };
 }
 
 export type SendMessageFunction = <T extends keyof WSSentEventData>(

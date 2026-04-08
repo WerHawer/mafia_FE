@@ -2,6 +2,8 @@ import {
   AudioMutedOutlined,
   AudioOutlined,
   CrownOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
   LogoutOutlined,
   MoreOutlined,
   ReloadOutlined,
@@ -36,6 +38,8 @@ export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenu
     onToggleMockStreams,
     onMuteAll,
     onUnmuteAll,
+    onDisableAllCameras,
+    onEnableAllCameras,
     onRestartGame,
     onLeaveGame,
   } = useGMMenu();
@@ -93,6 +97,20 @@ export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenu
                   icon={<AudioOutlined />}
                   label={t("gmMenu.unmuteAll")}
                   onClick={onUnmuteAll}
+                />
+
+                <MenuSeparator />
+
+                <MenuItem
+                  icon={<EyeInvisibleOutlined />}
+                  label={t("gmMenu.disableAllCameras")}
+                  onClick={onDisableAllCameras}
+                />
+
+                <MenuItem
+                  icon={<EyeOutlined />}
+                  label={t("gmMenu.enableAllCameras")}
+                  onClick={onEnableAllCameras}
                 />
 
                 {gameFlow.isStarted && (

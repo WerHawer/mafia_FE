@@ -11,6 +11,11 @@ type SetMicrophonesForAllParams = {
   reason?: "night" | "day" | "speaker" | "manual";
 };
 
+type SetCamerasForAllParams = {
+  enabled: boolean;
+  excludedUserIds: UserId[];
+};
+
 export const useBatchMediaControls = () => {
   const { socket, sendMessage } = useSocket();
   const { gamesStore, usersStore } = rootStore;
@@ -101,6 +106,44 @@ export const useBatchMediaControls = () => {
     });
   }, [setMicrophonesForAll]);
 
+  const setCamerasForAll = useCallback(
+    ({ enabled, excludedUserIds }: SetCamerasForAllParams) => {
+      if (!socket) return;
+
+      const targetUserIds = allUserIds.filter(
+        (userId) => !excludedUserIds.includes(userId)
+      );
+
+      sendMessage(wsEvents.batchToggleCameras, {
+        roomId: roomId ?? "",
+        enabled,
+        targetUserIds,
+        excludedUserIds,
+        requesterId,
+      });
+    },
+    [socket, sendMessage, roomId, requesterId, allUserIds]
+  );
+
+  const disableAllCamerasExceptGM = useCallback(
+    (gmUserId?: UserId) => {
+      if (!gmUserId) return;
+
+      setCamerasForAll({
+        enabled: false,
+        excludedUserIds: [gmUserId],
+      });
+    },
+    [setCamerasForAll]
+  );
+
+  const enableAllCameras = useCallback(() => {
+    setCamerasForAll({
+      enabled: true,
+      excludedUserIds: [],
+    });
+  }, [setCamerasForAll]);
+
   const toggleMicrophoneForUser = useCallback(
     (userId: UserId, enabled: boolean) => {
       if (!socket) return;
@@ -142,5 +185,9 @@ export const useBatchMediaControls = () => {
     muteAllExceptGM,
     muteSpeaker,
     unmuteSpeaker,
+
+    setCamerasForAll,
+    disableAllCamerasExceptGM,
+    enableAllCameras,
   };
 };

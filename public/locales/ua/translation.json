@@ -195,6 +195,8 @@
     "disableMockStreams": "Вимкнути тестові потоки",
     "muteAll": "Вимкнути звук всім",
     "unmuteAll": "Увімкнути звук всім",
+    "disableAllCameras": "Вимкнути камери всім",
+    "enableAllCameras": "Увімкнути камери всім",
     "restartGame": "Перезапустити гру",
     "videoSettings": "Налаштування відео",
     "audioSettings": "Налаштування звуку",

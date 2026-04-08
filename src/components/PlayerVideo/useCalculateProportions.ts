@@ -1,35 +1,35 @@
-import { throttle } from "lodash";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const INDEX_RATIO = 0.57;
-const THROTTLE_DELAY = 150;
 
 export const useCalculateProportions = (container?: HTMLDivElement | null) => {
   const [isWidthProportion, setIsWidthProportion] = useState(false);
 
-  const getSizeDirection = useCallback(() => {
-    if (!container) return;
-
-    const { width, height } = container.getBoundingClientRect();
-    setIsWidthProportion(height / width < INDEX_RATIO);
-  }, [container]);
-
   useEffect(() => {
     if (!container) return;
 
-    getSizeDirection(); // Initial call
+    // Use clientWidth/clientHeight for initial check — not affected by parent CSS transforms
+    const { clientWidth, clientHeight } = container;
+    if (clientWidth && clientHeight) {
+      setIsWidthProportion(clientHeight / clientWidth < INDEX_RATIO);
+    }
 
-    const throttledResize = throttle(getSizeDirection, THROTTLE_DELAY);
-    const resizeObserver = new ResizeObserver(throttledResize);
+    // ResizeObserver contentRect gives real layout dimensions (not transform-affected)
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        if (width && height) {
+          setIsWidthProportion(height / width < INDEX_RATIO);
+        }
+      }
+    });
 
     resizeObserver.observe(container);
 
     return () => {
-      if (container) {
-        resizeObserver.unobserve(container);
-      }
+      resizeObserver.disconnect();
     };
-  }, [container, getSizeDirection]);
+  }, [container]);
 
   return isWidthProportion;
 };

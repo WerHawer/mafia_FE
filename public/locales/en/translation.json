@@ -192,6 +192,8 @@
     "disableMockStreams": "Disable Mock Streams",
     "muteAll": "Mute All",
     "unmuteAll": "Unmute All",
+    "disableAllCameras": "Disable All Cameras",
+    "enableAllCameras": "Enable All Cameras",
     "restartGame": "Restart Game",
     "videoSettings": "Video Settings",
     "audioSettings": "Audio Settings",
