@@ -4,6 +4,10 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  optimizeDeps: {
+    // Krisp noise filter uses WASM — must be excluded from Vite pre-bundling
+    exclude: ["@livekit/krisp-noise-filter"],
+  },
   plugins: [
     react({
       babel: {

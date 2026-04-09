@@ -11,7 +11,8 @@
   "chat": {
     "general": "General",
     "dead": "Dead Chat",
-    "deadRestriction": "Dead players can’t write here"
+    "deadRestriction": "Dead players can't write here",
+    "gmDeadObserver": "GM can observe but not write in dead chat"
   },
   "activeGames": "Active Games",
   "owner": "Owner",
@@ -118,7 +119,9 @@
     "title": "Video menu",
     "doGM": "Make GM",
     "kill": "Kill",
-    "giveSpeak": "Give Speech"
+    "giveSpeak": "Give Speech",
+    "showDeadVideo": "Show live video",
+    "hideDeadVideo": "Hide live video"
   },
 
   "nightResults": {

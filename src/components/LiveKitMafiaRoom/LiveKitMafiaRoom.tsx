@@ -6,6 +6,8 @@ import { LIVEKIT_SERVER } from "@/api/apiConstants.ts";
 import { useGetLiveKitTokenMutation } from "@/api/livekit/queries.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
+import { KrispNoiseProcessor } from "./KrispNoiseProcessor.tsx";
+
 type LiveKitMafiaRoomProps = {
   children?: ReactNode;
 };
@@ -45,6 +47,7 @@ export const LiveKitMafiaRoom = observer(
         audio={{
           echoCancellation: true,
           noiseSuppression: true,
+          autoGainControl: true,
         }}
         connectOptions={{
           autoSubscribe: true,
@@ -59,6 +62,7 @@ export const LiveKitMafiaRoom = observer(
           console.error("GamePage: LiveKit room error:", error);
         }}
       >
+        <KrispNoiseProcessor />
         {children}
       </LiveKitRoom>
     );

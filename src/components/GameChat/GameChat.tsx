@@ -16,7 +16,7 @@ import styles from "./GameChat.module.scss";
 
 export const GameChat = observer(() => {
   const { id = "" } = useParams();
-  const { usersStore, messagesStore, isIDead } = rootStore;
+  const { usersStore, messagesStore, isIDead, isIGM } = rootStore;
   const { me: user } = usersStore;
   const { getMessages, setNewLocalMessage } = messagesStore;
   const { sendMessage } = useSocket();
@@ -29,7 +29,8 @@ export const GameChat = observer(() => {
   const messages = getMessages(currentRoomId);
 
   useGetMessagesQueryWithStore(id);
-  useGetMessagesQueryWithStore(isIDead ? `${id}_dead` : "");
+  // Load dead chat for dead players AND for GM (observer mode)
+  useGetMessagesQueryWithStore(isIDead || isIGM ? `${id}_dead` : "");
 
   const chatRef = useRef<HTMLDivElement>(null);
 
@@ -74,12 +75,13 @@ export const GameChat = observer(() => {
       />
 
       <div className={styles.inputContainer}>
-        {isGeneralRestricted ? (
+        {isGeneralRestricted && (
           <div className={styles.deadNotice}>
             <span>☠</span>
             <span>{t("chat.deadRestriction")}</span>
           </div>
-        ) : (
+        )}
+        {!isGeneralRestricted && (
           <ChatInput
             value={message}
             onChange={handleChangeMessage}
@@ -88,7 +90,7 @@ export const GameChat = observer(() => {
         )}
       </div>
 
-      {isIDead && (
+      {(isIDead || isIGM) && (
         <div className={styles.tabs}>
           <div
             className={classNames(styles.tab, {
@@ -99,9 +101,8 @@ export const GameChat = observer(() => {
             {t("chat.general")}
           </div>
           <div
-            className={classNames(styles.tab, {
+            className={classNames(styles.tab, styles.deadTab, {
               [styles.activeTab]: activeTab === "dead",
-              [styles.deadTab]: true,
             })}
             onClick={() => setActiveTab("dead")}
           >

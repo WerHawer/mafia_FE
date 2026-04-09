@@ -1613,7 +1613,14 @@
   resolved "https://registry.npmjs.org/@livekit/components-styles/-/components-styles-1.1.6.tgz#53d6a7a659d6ca51bd5eaec6542a09f09485cab6"
   integrity sha512-V6zfuREC2ksW8z6T6WSbEvdLB5ICVikGz1GtLr59UcxHDyAsKDbuDHAyl3bF3xBqPKYmY3GWF3Qk39rnScyOtA==
 
-"@livekit/mutex@1.1.1":
+"@livekit/krisp-noise-filter@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/@livekit/krisp-noise-filter/-/krisp-noise-filter-0.4.1.tgz#235d21c23d1e36e3762ee30751876486f2fa1264"
+  integrity sha512-r27IbCCLqR3qaK5a1fiMQEmV551EubwdZDtge/Fp7T/MoQspQQMA229H8No3KK67j6KLQ5wRhOd0swl0uvyaCw==
+  dependencies:
+    "@livekit/mutex" "^1.1.1"
+
+"@livekit/mutex@1.1.1", "@livekit/mutex@^1.1.1":
   version "1.1.1"
   resolved "https://registry.npmjs.org/@livekit/mutex/-/mutex-1.1.1.tgz"
   integrity sha512-EsshAucklmpuUAfkABPxJNhzj9v2sG7JuzFDL4ML1oJQSV14sqrpTYnsaOudMAw9yOaW53NU3QQTlUQoRs4czw==

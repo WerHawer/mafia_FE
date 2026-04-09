@@ -4,8 +4,6 @@ import { observer } from "mobx-react-lite";
 import { useRef, useState } from "react";
 import Draggable from "react-draggable";
 import { useTranslation } from "react-i18next";
-import { rootStore } from "@/store/rootStore.ts";
-import { SoundEffect } from "@/store/soundStore.ts";
 
 import deadBg from "@/assets/images/dead_bg.avif";
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
@@ -17,6 +15,8 @@ import { Shoot } from "@/components/Shoot";
 import { VoteFlow } from "@/components/VoteFlow";
 import { useGameVideo } from "@/hooks/useGameVideo.ts";
 import { useIsSpeaking } from "@/hooks/useIsSpeaking.ts";
+import { rootStore } from "@/store/rootStore.ts";
+import { SoundEffect } from "@/store/soundStore.ts";
 import { Roles } from "@/types/game.types.ts";
 import { RoleIcon } from "@/UI/RoleIcon";
 
@@ -49,7 +49,8 @@ export const GameVideo = observer(
     const [investigatePos, setInvestigatePos] = useState<{ x: number; y: number } | null>(null);
     const [investigateResult, setInvestigateResult] = useState<string | null>(null);
     const [investigateDanger, setInvestigateDanger] = useState(false);
-
+    // GM-only: peek at dead player's real video instead of the dead overlay
+    const [showDeadVideo, setShowDeadVideo] = useState(false);
     const {
       userId,
       currentUser,
@@ -159,12 +160,18 @@ export const GameVideo = observer(
             <div className={styles.statusLabelDead}>{t("gameVideo.dead")}</div>
           )}
 
-          {isUserDead && !isMyStream && (
+          {isUserDead && !isMyStream && !showDeadVideo && (
             <div className={styles.deadOverlay} style={{ backgroundImage: `url(${deadBg})` }} />
           )}
 
           {isIGM && !isMyStream && currentUser && (
-            <VideoMenu userId={currentUser.id} isCurrentUserGM={isGM} />
+            <VideoMenu
+              userId={currentUser.id}
+              isCurrentUserGM={isGM}
+              isUserDead={isUserDead}
+              showDeadVideo={showDeadVideo}
+              onToggleDeadVideo={() => setShowDeadVideo((prev) => !prev)}
+            />
           )}
 
           <PlayerVideo

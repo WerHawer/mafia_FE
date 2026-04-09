@@ -1,5 +1,7 @@
 import {
   CrownOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
   MoreOutlined,
   SoundOutlined,
   UserDeleteOutlined,
@@ -20,7 +22,6 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  MenuItemVariant,
   MenuSeparator,
 } from "@/UI";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
@@ -30,10 +31,13 @@ import styles from "./GameVideo.module.scss";
 type VideoMenuProps = {
   userId?: UserId;
   isCurrentUserGM: boolean;
+  isUserDead?: boolean;
+  showDeadVideo?: boolean;
+  onToggleDeadVideo?: () => void;
 };
 
 export const VideoMenu = observer(
-  ({ userId, isCurrentUserGM }: VideoMenuProps) => {
+  ({ userId, isCurrentUserGM, isUserDead = false, showDeadVideo = false, onToggleDeadVideo }: VideoMenuProps) => {
     const { t } = useTranslation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { mutate: updateGM } = useUpdateGameGMMutation();
@@ -110,6 +114,17 @@ export const VideoMenu = observer(
                 label={t("videoMenu.giveSpeak")}
                 onClick={onGiveSpeak}
               />
+
+              {isUserDead && (
+                <MenuItem
+                  icon={showDeadVideo ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                  label={showDeadVideo ? t("videoMenu.hideDeadVideo") : t("videoMenu.showDeadVideo")}
+                  onClick={() => {
+                    onToggleDeadVideo?.();
+                    setIsMenuOpen(false);
+                  }}
+                />
+              )}
 
               <MenuSeparator />
 
