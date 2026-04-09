@@ -33,7 +33,20 @@ export class SoundStore {
       storage: localStorage,
     });
 
-    this.preloadAllAudio();
+    // Defer audio preloading until the browser is idle (lowest priority).
+    // This prevents audio network requests from competing with the initial page render.
+    this.schedulePreload();
+  }
+
+  private schedulePreload() {
+    const doPreload = () => this.preloadAllAudio();
+
+    if (typeof requestIdleCallback !== "undefined") {
+      requestIdleCallback(doPreload, { timeout: 5000 });
+    } else {
+      // Fallback for Safari which doesn't support requestIdleCallback
+      setTimeout(doPreload, 3000);
+    }
   }
 
   private preloadAllAudio() {
@@ -59,7 +72,9 @@ export class SoundStore {
     try {
       const audioPath = getAudioPath(filename);
       const audio = new Audio(audioPath);
-      audio.preload = "auto";
+      // "metadata" first — loads only duration/format, not the full file.
+      // The full file will be fetched on first play (or when explicitly needed).
+      audio.preload = "metadata";
       this.preloadedAudios.set(filename, audio);
     } catch (e) {
       console.warn(`Failed to preload audio: ${filename}`, e);
