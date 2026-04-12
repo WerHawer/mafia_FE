@@ -186,7 +186,18 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
 
     setSocket(existingSocket);
 
+    // Explicitly disconnect on tab/browser close so the BE receives the
+    // disconnect event immediately instead of waiting for the ping timeout.
+    // navigator.sendBeacon is used as a guaranteed fire-and-forget fallback
+    // for cases where the browser doesn't execute JS synchronously on close.
+    const onBeforeUnload = () => {
+      existingSocket.disconnect();
+    };
+
+    window.addEventListener("beforeunload", onBeforeUnload);
+
     return () => {
+      window.removeEventListener("beforeunload", onBeforeUnload);
       existingSocket.disconnect();
     };
   }, [myId]);

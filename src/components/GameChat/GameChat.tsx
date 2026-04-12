@@ -9,10 +9,17 @@ import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { IMessage, IMessageDTO, MessageTypes } from "@/types/message.types.ts";
+import { Button } from "@/UI/Button/Button.tsx";
+import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
 import { ChatInput } from "../PublicChat/components/ChatInput";
 import { ChatMessages } from "../PublicChat/components/ChatMessages";
 import styles from "./GameChat.module.scss";
+
+enum ChatTab {
+  General = "general",
+  Dead = "dead",
+}
 
 export const GameChat = observer(() => {
   const { id = "" } = useParams();
@@ -22,10 +29,10 @@ export const GameChat = observer(() => {
   const { sendMessage } = useSocket();
   const { t } = useTranslation();
 
-  const [activeTab, setActiveTab] = useState<"general" | "dead">("general");
+  const [activeTab, setActiveTab] = useState<ChatTab>(ChatTab.General);
   const [message, setMessage] = useState("");
 
-  const currentRoomId = activeTab === "dead" ? `${id}_dead` : id;
+  const currentRoomId = activeTab === ChatTab.Dead ? `${id}_dead` : id;
   const messages = getMessages(currentRoomId);
 
   useGetMessagesQueryWithStore(id);
@@ -64,7 +71,7 @@ export const GameChat = observer(() => {
     sendMessage(wsEvents.messageSend, messageDTO);
   }, [message, user, currentRoomId, setNewLocalMessage, sendMessage]);
 
-  const isGeneralRestricted = activeTab === "general" && isIDead;
+  const isGeneralRestricted = activeTab === ChatTab.General && isIDead;
 
   return (
     <div className={styles.chatContainer}>
@@ -92,22 +99,27 @@ export const GameChat = observer(() => {
 
       {(isIDead || isIGM) && (
         <div className={styles.tabs}>
-          <div
+          <Button
+            variant={activeTab === ChatTab.General ? ButtonVariant.Outline : ButtonVariant.Tertiary}
+            size={ButtonSize.Small}
+            onClick={() => setActiveTab(ChatTab.General)}
             className={classNames(styles.tab, {
-              [styles.activeTab]: activeTab === "general",
+              [styles.inactiveTab]: activeTab !== ChatTab.General,
             })}
-            onClick={() => setActiveTab("general")}
           >
             {t("chat.general")}
-          </div>
-          <div
-            className={classNames(styles.tab, styles.deadTab, {
-              [styles.activeTab]: activeTab === "dead",
+          </Button>
+
+          <Button
+            variant={activeTab === ChatTab.Dead ? ButtonVariant.Error : ButtonVariant.Tertiary}
+            size={ButtonSize.Small}
+            onClick={() => setActiveTab(ChatTab.Dead)}
+            className={classNames(styles.tab, {
+              [styles.inactiveTab]: activeTab !== ChatTab.Dead,
             })}
-            onClick={() => setActiveTab("dead")}
           >
             {t("chat.dead")}
-          </div>
+          </Button>
         </div>
       )}
     </div>

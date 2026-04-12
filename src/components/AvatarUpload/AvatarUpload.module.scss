@@ -1,0 +1,215 @@
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
+
+.container {
+  @include mixins.flex(column, flex-start, flex-start);
+  gap: 1.5rem;
+  width: 100%;
+}
+
+// ─── Avatar preview section ───────────────────────────────────────────────────
+
+.avatarSection {
+  @include mixins.flex(row, flex-start, center);
+  gap: 2rem;
+}
+
+.avatarButton {
+  position: relative;
+  @include mixins.size(96px);
+  border-radius: 50%;
+  border: 2px solid theme.$color-dark-secondary;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+  @include mixins.transition(border-color);
+
+  &:hover {
+    border-color: theme.$color-accent-secondary;
+
+    .avatarOverlay {
+      opacity: 1;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid theme.$color-accent-secondary;
+    outline-offset: 2px;
+  }
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatarPlaceholder {
+  @include mixins.flexCenter;
+  width: 100%;
+  height: 100%;
+  background-color: theme.$color-dark-secondary;
+}
+
+.avatarInitial {
+  color: theme.$color-text-secondary;
+  user-select: none;
+}
+
+.avatarOverlay {
+  @include mixins.flexCenter;
+  position: absolute;
+  inset: 0;
+  background-color: rgba(theme.$color-dark-primary, 0.65);
+  opacity: 0;
+  @include mixins.transition(opacity);
+}
+
+.avatarOverlayText {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: theme.$color-text-primary;
+  text-align: center;
+  padding: 0 0.4rem;
+}
+
+.avatarInfo {
+  @include mixins.flex(column, flex-start, flex-start);
+  gap: 1rem;
+}
+
+.userName {
+  color: theme.$color-text-primary;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.error {
+  color: theme.$color-error;
+}
+
+// ─── Crop modal ───────────────────────────────────────────────────────────────
+
+.modalOverlay {
+  @include mixins.flexCenter;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(theme.$color-dark-primary, 0.8);
+  z-index: 200;
+}
+
+.modal {
+  @include mixins.flex(column, flex-start, stretch);
+  gap: 2rem;
+  width: min(480px, 92vw);
+  background-color: theme.$color-dark-tertiary;
+  border-radius: theme.$border-radius-medium;
+  box-shadow: theme.$shadow;
+  padding: 2rem;
+}
+
+.modalTitle {
+  margin: 0;
+  text-align: center;
+  color: theme.$color-text-primary;
+}
+
+.cropContainer {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border-radius: theme.$border-radius;
+  overflow: hidden;
+  background-color: theme.$color-dark-primary;
+}
+
+// ─── Sliders ──────────────────────────────────────────────────────────────────
+
+.controls {
+  @include mixins.flex(column, flex-start, stretch);
+  gap: 1.2rem;
+}
+
+.controlRow {
+  @include mixins.flex(row, flex-start, center);
+  gap: 1.2rem;
+}
+
+.controlLabel {
+  color: theme.$color-text-secondary;
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+.slider {
+  flex: 1;
+  height: 4px;
+  appearance: none;
+  background: theme.$color-dark-secondary;
+  border-radius: 2px;
+  cursor: pointer;
+  outline: none;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: theme.$color-accent-secondary;
+    cursor: pointer;
+    @include mixins.transition(transform);
+
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+
+  &::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border: none;
+    border-radius: 50%;
+    background: theme.$color-accent-secondary;
+    cursor: pointer;
+  }
+}
+
+.modalActions {
+  @include mixins.flex(column, flex-start, stretch);
+  gap: 0.8rem;
+}
+
+.modalButtons {
+  @include mixins.flex(row, flex-end, center);
+  gap: 1rem;
+}
+
+.uploadError {
+  @include mixins.flex(row, flex-start, center);
+  gap: 0.5rem;
+  color: theme.$color-error;
+  padding: 0.6rem 0.8rem;
+  border-radius: theme.$border-radius;
+  background-color: rgba(theme.$color-error, 0.08);
+  border: 1px solid rgba(theme.$color-error, 0.3);
+
+  &::before {
+    content: "⚠";
+    flex-shrink: 0;
+  }
+}
+
+
+
+
+
+
+
+
+
+

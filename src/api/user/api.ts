@@ -11,3 +11,25 @@ export const getUserById = async (id: string) =>
 
 export const getUsersByIds = async (ids: string[]) =>
   axios.get<IUser[]>(`${USER_URL}/ids`, { params: { ids: ids.join(",") } });
+
+export type UpdateAvatarResponse = {
+  user: IUser;
+  message: string;
+};
+
+export const updateAvatar = async (
+  userId: string,
+  file: File
+): Promise<UpdateAvatarResponse> => {
+  const formData = new FormData();
+  formData.append("avatar", file);
+
+  const response = await axios.patch<UpdateAvatarResponse>(
+    `${USER_URL}/${userId}/avatar`,
+    formData,
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
+
+  return response.data;
+};
+

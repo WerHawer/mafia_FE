@@ -39,18 +39,18 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
 
         if (gameJustStarted) {
           // On first start only — play current phase music without transition sfx
-          soundStore.playMusic(isNight ? nightTracks : dayTracks);
+          soundStore.playMusic(isNight ? nightTracks : dayTracks, true, 0.5);
           return;
         }
 
         if (nightToggled) {
           if (isNight) {
             soundStore.playSfx(SoundEffect.NightStart, 0.8, 3000);
-            setTimeout(() => soundStore.playMusic(nightTracks), 1000);
+            setTimeout(() => soundStore.playMusic(nightTracks, true, 0.5), 1000);
           } else if (isStarted) {
             // Only play day music if game is actually running (not after restart)
             soundStore.playSfx(SoundEffect.DayStart);
-            setTimeout(() => soundStore.playMusic(dayTracks), 1000);
+            setTimeout(() => soundStore.playMusic(dayTracks, true, 0.5), 1000);
           }
         }
       }

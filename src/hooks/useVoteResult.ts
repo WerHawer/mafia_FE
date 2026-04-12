@@ -17,11 +17,19 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
   const { openModal, closeModal } = modalStore;
   const { gameFlow } = gamesStore;
   const { isIGM } = rootStore;
-  const { voted, votesTime, proposed, isVote, isReVote } = gameFlow;
+  const { voted, votesTime, proposed, isVote, isReVote, prostituteBlock } =
+    gameFlow;
 
   const enabled = isVote || isReVote;
 
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
+
+  // Players who are eligible to vote: alive players excluding the one blocked by prostitute.
+  // A blocked player can neither vote manually nor receive an auto-random vote.
+  const eligibleVoters = useMemo(
+    () => alivePlayers.filter((player) => player !== prostituteBlock),
+    [alivePlayers, prostituteBlock]
+  );
 
   const endVoteTime = useMemo(
     () => votesTime * 1000 + Date.now(),
@@ -37,7 +45,8 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
   const randomVote = useCallback(() => {
     if (!isIGM) return;
 
-    const notVotedPlayers = alivePlayers.filter(
+    // Only auto-vote for eligible voters (blocked player is excluded)
+    const notVotedPlayers = eligibleVoters.filter(
       (player) => !Object.values(voted).flat().includes(player)
     );
 
@@ -54,7 +63,7 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
     updateGameFlow({
       voted: newVoted,
     });
-  }, [alivePlayers, isIGM, proposed, updateGameFlow, voted]);
+  }, [eligibleVoters, isIGM, proposed, updateGameFlow, voted]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -73,7 +82,7 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
 
       clearInterval(interval);
 
-      if (alivePlayers.length > votedCount && isIGM) {
+      if (eligibleVoters.length > votedCount && isIGM) {
         randomVote();
       }
     }, 1000);
@@ -82,7 +91,7 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
       clearInterval(interval);
     };
   }, [
-    alivePlayers.length,
+    eligibleVoters.length,
     enabled,
     endVoteTime,
     isIGM,
@@ -95,10 +104,18 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
   useEffect(() => {
     if (!enabled) return;
 
-    if (alivePlayers.length === votedCount && isIGM) {
+    // Modal opens when all eligible voters have voted (blocked player is excluded from the count)
+    if (eligibleVoters.length === votedCount && isIGM) {
       openModal(ModalNames.VoteResultModal);
     }
-  }, [alivePlayers, enabled, isIGM, openModal, votedCount]);
+  }, [
+    eligibleVoters,
+    eligibleVoters.length,
+    enabled,
+    isIGM,
+    openModal,
+    votedCount,
+  ]);
 
   useEffect(() => {
     if (!enabled) {

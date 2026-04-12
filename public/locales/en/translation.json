@@ -51,8 +51,21 @@
 
   "settings": {
     "title": "Settings",
+    "profile": "Profile",
     "language": "Interface Language",
     "audio": "Audio"
+  },
+  "avatar": {
+    "changeAvatar": "Change avatar",
+    "change": "Change",
+    "uploadPhoto": "Upload Photo",
+    "cropTitle": "Crop your avatar",
+    "zoom": "Zoom",
+    "rotate": "Rotate",
+    "save": "Save",
+    "uploading": "Uploading...",
+    "errorFileSize": "File is too large. Maximum size is 5MB",
+    "errorUpload": "Failed to upload avatar. Please try again"
   },
   "audioSettings": {
     "title": "Audio Settings",

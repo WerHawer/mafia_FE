@@ -12,43 +12,19 @@
   @include mixins.flex(row, center, center);
   width: 100%;
   border-top: 1px solid theme.$color-dark-secondary;
-  padding: 4px 8px;
-  gap: 4px;
+  padding: 6px 8px;
+  gap: 6px;
 }
 
 .tab {
-  padding: 5px 14px;
-  text-align: center;
-  cursor: pointer;
+  flex: 1;
+}
+
+.inactiveTab {
   color: theme.$color-text-secondary;
-  font-size: 1.5rem;
-  font-weight: 500;
-  border-radius: 10px;
-  transition: all 0.2s ease;
-  background-color: transparent;
-  border: 1px solid transparent;
 
   &:hover {
     color: theme.$color-text-primary;
-    border-color: theme.$color-dark-secondary;
-  }
-}
-
-.activeTab {
-  background-color: transparent;
-  border-color: theme.$color-accent-primary;
-  color: theme.$color-accent-primary;
-}
-
-.deadTab {
-  &:hover {
-    color: theme.$color-error;
-    border-color: theme.$color-error;
-  }
-
-  &.activeTab {
-    border-color: theme.$color-error;
-    color: theme.$color-error;
   }
 }
 

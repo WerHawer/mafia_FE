@@ -46,6 +46,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-draggable": "^4.4.6",
+    "react-easy-crop": "^5.5.7",
     "react-hook-form": "^7.51.1",
     "react-i18next": "^14.0.3",
     "react-modal": "^3.16.1",

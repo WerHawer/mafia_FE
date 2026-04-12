@@ -1,4 +1,3 @@
-import * as cam from "@mediapipe/camera_utils";
 import { Results, SelfieSegmentation } from "@mediapipe/selfie_segmentation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -7,6 +6,13 @@ import { UserVideoSettings } from "@/types/user.types.ts";
 
 const HIGH_VIDEO_WIDTH = videoOptions.width;
 const HIGH_VIDEO_HEIGHT = videoOptions.height;
+
+/**
+ * Interval used as fallback when RAF is throttled (hidden tab / blurred window).
+ * Browsers allow setInterval to run even in background (throttled to ~1fps minimum),
+ * ensuring the canvas stream does not completely freeze for remote participants.
+ */
+const BACKGROUND_FRAME_INTERVAL_MS = 1000 / 30; // ~33ms @ 30fps
 
 const bgEffects = {
   blur: "blur",
@@ -69,15 +75,9 @@ export const useConfigureVideo = (
       lastFrameTimeRef.current = now;
 
       const img = imgRef.current;
-      const video = videoRef.current;
       const canvas = canvasRef.current;
       const videoTrack = myOriginalStream.getVideoTracks()[0];
       const settings = videoTrack.getSettings();
-
-      // Уникаємо повторного встановлення srcObject, якщо воно не змінилося
-      if (video.srcObject !== myOriginalStream) {
-        video.srcObject = myOriginalStream;
-      }
 
       const videoWidth = settings.width ?? HIGH_VIDEO_WIDTH;
       const videoHeight = settings.height ?? HIGH_VIDEO_HEIGHT;
@@ -202,6 +202,8 @@ export const useConfigureVideo = (
 
     const videoTrack = myOriginalStream.getVideoTracks()[0];
     const settings = videoTrack.getSettings();
+    const width = settings.width ?? HIGH_VIDEO_WIDTH;
+    const height = settings.height ?? HIGH_VIDEO_HEIGHT;
 
     const selfieSegmentation = new SelfieSegmentation({
       locateFile: (file) => {
@@ -216,26 +218,143 @@ export const useConfigureVideo = (
 
     selfieSegmentation.onResults(onResults);
 
-    if (videoRef.current) {
-      const camera = new cam.Camera(videoRef.current, {
-        onFrame: async () => {
-          if (videoRef.current) {
-            await selfieSegmentation.send({ image: videoRef.current });
-          }
-        },
-        width: settings.width ?? HIGH_VIDEO_WIDTH,
-        height: settings.height ?? HIGH_VIDEO_HEIGHT,
+    const video = videoRef.current;
+
+    if (!video) return;
+
+    // Point the video element directly at the original stream so segmentation
+    // always processes the user's own camera feed.
+    video.srcObject = myOriginalStream;
+    video.width = width;
+    video.height = height;
+    video.muted = true;
+    video.playsInline = true;
+
+    let isRunning = true;
+    let isProcessingFrame = false;
+    let rafId: number | null = null;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
+    /**
+     * Send a single frame to MediaPipe for segmentation.
+     * The isProcessingFrame guard prevents frame queue buildup when
+     * segmentation takes longer than one RAF tick.
+     */
+    const processFrame = async (): Promise<void> => {
+      if (
+        !isRunning ||
+        isProcessingFrame ||
+        !video ||
+        video.paused ||
+        video.ended ||
+        video.readyState < 2
+      ) {
+        return;
+      }
+
+      isProcessingFrame = true;
+
+      try {
+        await selfieSegmentation.send({ image: video });
+      } catch {
+        // Silently ignore transient frame-processing errors
+      } finally {
+        isProcessingFrame = false;
+      }
+    };
+
+    const stopRAF = () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    };
+
+    const stopInterval = () => {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    };
+
+    /**
+     * Primary loop — uses requestAnimationFrame when the tab is visible.
+     * Provides smooth 30fps rendering aligned with the display refresh cycle.
+     */
+    const startRAF = () => {
+      stopInterval();
+
+      if (rafId !== null) return;
+
+      const loop = () => {
+        if (!isRunning) return;
+
+        void processFrame();
+        rafId = requestAnimationFrame(loop);
+      };
+
+      rafId = requestAnimationFrame(loop);
+    };
+
+    /**
+     * Fallback loop — uses setInterval when the page is hidden or blurred.
+     * Browsers throttle RAF to 0fps in hidden tabs but still allow setInterval
+     * (albeit throttled to ~1fps), keeping the canvas stream alive for remote participants.
+     */
+    const startIntervalFallback = () => {
+      stopRAF();
+
+      if (intervalId !== null) return;
+
+      intervalId = setInterval(() => {
+        void processFrame();
+      }, BACKGROUND_FRAME_INTERVAL_MS);
+    };
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        startIntervalFallback();
+      } else {
+        startRAF();
+      }
+    };
+
+    // window blur fires when another OS window covers or steals focus from the browser
+    const onWindowBlur = () => startIntervalFallback();
+    const onWindowFocus = () => {
+      if (!document.hidden) {
+        startRAF();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("blur", onWindowBlur);
+    window.addEventListener("focus", onWindowFocus);
+
+    // Brief delay mirrors the original camera.start() timeout, allowing the
+    // video element time to attach the stream before the first send().
+    const startTimeout = setTimeout(() => {
+      void video.play().catch((err) => {
+        console.error("[useConfigureVideo] Failed to play video:", err);
       });
 
-      setTimeout(() => {
-        camera.start();
-      }, 100);
+      if (document.hidden) {
+        startIntervalFallback();
+      } else {
+        startRAF();
+      }
+    }, 100);
 
-      return () => {
-        camera.stop();
-        selfieSegmentation.close();
-      };
-    }
+    return () => {
+      isRunning = false;
+      clearTimeout(startTimeout);
+      stopRAF();
+      stopInterval();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("blur", onWindowBlur);
+      window.removeEventListener("focus", onWindowFocus);
+      selfieSegmentation.close();
+    };
   }, [myOriginalStream, onResults, withBlur, withoutEffects]);
 
   return {

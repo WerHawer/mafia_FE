@@ -18,7 +18,7 @@ export enum SoundEffect {
 }
 
 export class SoundStore {
-  musicVolume = 0.03;
+  musicVolume = 0.4;
   sfxVolume = 0.2;
   isMuted = false;
 

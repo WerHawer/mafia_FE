@@ -122,6 +122,10 @@
     background-color: transparent;
     color: inherit;
 
+    &:hover:not(:disabled) {
+      color: theme.$color-light-secondary;
+    }
+
     &:disabled {
       background-color: theme.$color-accent-tertiary;
       opacity: 0.5;
@@ -158,6 +162,22 @@
 
     &:hover:not(:disabled) {
       background-color: rgba(theme.$color-accent-primary, 0.1);
+    }
+
+    &:disabled {
+      border-color: theme.$color-button-inactive;
+      color: theme.$color-button-inactive;
+      background-color: transparent;
+    }
+  }
+
+  &.error {
+    background-color: transparent;
+    border: 2px solid theme.$color-error;
+    color: theme.$color-error;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(theme.$color-error, 0.1);
     }
 
     &:disabled {
