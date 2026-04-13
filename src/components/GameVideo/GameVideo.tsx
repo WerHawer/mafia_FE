@@ -69,6 +69,7 @@ export const GameVideo = observer(
       toggleMicrophone,
       canControl,
       gameFlow,
+      shouldShowMafiaGlow,
       onShootUser,
       onBlockUser,
       onHealUser,
@@ -135,6 +136,7 @@ export const GameVideo = observer(
             [styles.kissable]: isKissEnabled,
             [styles.healable]: isHealEnabled,
             [styles.checkable]: isInvestigateEnabled,
+            [styles.mafiaGlow]: shouldShowMafiaGlow,
           })}
           ref={containerRef}
           onClick={isInteractive ? handleVideoClick : undefined}

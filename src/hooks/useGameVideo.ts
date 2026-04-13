@@ -57,6 +57,13 @@ export const useGameVideo = ({
   const wakeUpArr = Array.isArray(gameFlow.wakeUp) ? gameFlow.wakeUp : [gameFlow.wakeUp].filter(Boolean);
   const isWokenAsDon = isIDon && isIWakedUp && wakeUpArr.length === 1 && (mafiaCount <= 1 ? isIDidShot : true);
 
+  const isFirstNight = gameFlow.isNight && day === 1;
+  const participantRole = gamesStore.getUserRole(userId);
+  const isParticipantMafia = participantRole === Roles.Mafia || participantRole === Roles.Don;
+  // Show glowing border on first night only for Mafia players viewing other Mafia members,
+  // and only when there is more than 1 Mafia player (so they can identify each other).
+  const shouldShowMafiaGlow = isFirstNight && mafiaCount > 1 && isIMafia && isParticipantMafia && !isMyStream;
+
   const isInvestigateEnabled =
     !isGM && !isUserDead && notFirstDay &&
     ((isISheriff && isIWakedUp && !sheriffCheck && !isMyStream) ||
@@ -150,6 +157,7 @@ export const useGameVideo = ({
     toggleMicrophone,
     canControl,
     gameFlow,
+    shouldShowMafiaGlow,
     onShootUser,
     onBlockUser,
     onHealUser,

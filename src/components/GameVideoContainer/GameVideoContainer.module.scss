@@ -6,6 +6,7 @@
   align-items: center;
   gap: 0.5rem;
   height: 100%;
+  padding: 4px;
   position: relative;
 
   &.twoGrid {
@@ -45,4 +46,3 @@
   transform: none !important;
   will-change: auto !important;
 }
-
