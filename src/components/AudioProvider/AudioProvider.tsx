@@ -39,18 +39,21 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
 
         if (gameJustStarted) {
           // On first start only — play current phase music without transition sfx
-          soundStore.playMusic(isNight ? nightTracks : dayTracks, true, 0.5);
+          soundStore.playMusic(isNight ? nightTracks : dayTracks, true, 0.3);
           return;
         }
 
         if (nightToggled) {
           if (isNight) {
-            soundStore.playSfx(SoundEffect.NightStart, 0.8, 3000);
-            setTimeout(() => soundStore.playMusic(nightTracks, true, 0.5), 1000);
+            soundStore.playSfx(SoundEffect.NightStart, 0.75, 3000);
+            setTimeout(
+              () => soundStore.playMusic(nightTracks, true, 0.3),
+              1000
+            );
           } else if (isStarted) {
             // Only play day music if game is actually running (not after restart)
             soundStore.playSfx(SoundEffect.DayStart);
-            setTimeout(() => soundStore.playMusic(dayTracks, true, 0.5), 1000);
+            setTimeout(() => soundStore.playMusic(dayTracks, true, 0.3), 1000);
           }
         }
       }
@@ -84,7 +87,6 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
         prevPlayersCount = current.players;
       }
     );
-
 
     // 3. Reaction: Role-action sounds (server-confirmed)
     const disposeActions = reaction(
