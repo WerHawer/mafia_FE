@@ -33,7 +33,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
     null
   );
 
-  const { setNewMessage } = messagesStore;
+  const { setNewMessage, replaceMessages } = messagesStore;
   const { updateGame, updateGames, setToProposed, addVoted, addShoot } =
     gamesStore;
   const { setSocketConnectedCount, myId } = usersStore;
@@ -75,6 +75,9 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       [wsEvents.messageSend]: (message) => {
         setNewMessage(message);
       },
+      [wsEvents.messagesUpdate]: (messages) => {
+        replaceMessages(messages);
+      },
       [wsEvents.roomConnection]: (data) => {
         updateGames(data.game);
       },
@@ -111,6 +114,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
     setSocketConnectedCount,
     connectionAttempts,
     setNewMessage,
+    replaceMessages,
     updateGames,
     updateGame,
     setToProposed,

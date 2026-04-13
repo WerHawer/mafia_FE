@@ -3,15 +3,14 @@ import { useMutation } from "@tanstack/react-query";
 import { messagesStore } from "@/store/messagesStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
 
-import { updateAvatar } from "./api.ts";
+import { deleteAvatar } from "./api.ts";
 
-export const useUpdateAvatarMutation = () => {
+export const useDeleteAvatarMutation = () => {
   const { setMyUser, me } = usersStore;
   const { replaceMessages } = messagesStore;
 
   return useMutation({
-    mutationFn: ({ userId, file }: { userId: string; file: File }) =>
-      updateAvatar(userId, file),
+    mutationFn: ({ avatarId }: { avatarId: string }) => deleteAvatar(avatarId),
     onSuccess: ({ user, messages }) => {
       // Merge with current user to preserve all fields
       if (me) {

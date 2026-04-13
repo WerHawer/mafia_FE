@@ -30,6 +30,7 @@
     "classnames": "^2.5.1",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
+    "emoji-picker-react": "^4.18.0",
     "framer-motion": "^12.6.0",
     "i18next": "^23.8.2",
     "i18next-browser-languagedetector": "^7.2.0",

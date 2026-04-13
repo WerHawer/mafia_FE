@@ -150,6 +150,7 @@ export interface WSSubscribedEventData {
   [wsEvents.roomConnection]: IRoomConnectInfo;
   [wsEvents.roomLeave]: IRoomConnectInfo;
   [wsEvents.messageSend]: IMessage;
+  [wsEvents.messagesUpdate]: IMessage[];
   [wsEvents.gameUpdate]: IGame;
   [wsEvents.peerDisconnect]: {
     streamId: UserStreamId;

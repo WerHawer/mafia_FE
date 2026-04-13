@@ -5,6 +5,7 @@ export enum wsEvents {
   roomConnection = "roomConnection",
   roomLeave = "roomLeave",
   messageSend = "messageSend",
+  messagesUpdate = "messagesUpdate",
   disconnect = "disconnect",
   stream = "stream",
   call = "call",

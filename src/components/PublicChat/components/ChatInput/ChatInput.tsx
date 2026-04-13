@@ -1,6 +1,7 @@
 import { SendOutlined } from "@ant-design/icons";
-import classNames from "classnames";
-import { ChangeEvent, FormEvent, useRef } from "react";
+import EmojiPicker, { EmojiClickData, EmojiStyle, Theme } from "emoji-picker-react";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/UI/Button";
@@ -16,13 +17,124 @@ interface ChatInputProps {
   placeholder?: string;
 }
 
+interface PickerPosition {
+  top: number;
+  left: number;
+}
+
+const PICKER_HEIGHT = 450;
+const PICKER_WIDTH = 350;
+const PICKER_MARGIN = 8;
+
 export const ChatInput = ({ value, onChange, onSubmit, disabled, placeholder }: ChatInputProps) => {
   const { t } = useTranslation();
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [pickerPosition, setPickerPosition] = useState<PickerPosition>({ top: 0, left: 0 });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const emojiButtonRef = useRef<HTMLButtonElement>(null);
+
+  const calculatePosition = useCallback(() => {
+    if (!emojiButtonRef.current) return;
+
+    const rect = emojiButtonRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+
+    // Place above the button by default; fall back to below if not enough space
+    const spaceAbove = rect.top;
+    const spaceBelow = viewportHeight - rect.bottom;
+
+    let top: number;
+
+    if (spaceAbove >= PICKER_HEIGHT + PICKER_MARGIN) {
+      // Open upward
+      top = rect.top - PICKER_HEIGHT - PICKER_MARGIN;
+    } else if (spaceBelow >= PICKER_HEIGHT + PICKER_MARGIN) {
+      // Open downward
+      top = rect.bottom + PICKER_MARGIN;
+    } else {
+      // Not enough space either way — open upward and cap at viewport top
+      top = Math.max(PICKER_MARGIN, rect.top - PICKER_HEIGHT - PICKER_MARGIN);
+    }
+
+    // Align right edge with button; clamp within viewport
+    let left = rect.right - PICKER_WIDTH;
+
+    if (left < PICKER_MARGIN) left = PICKER_MARGIN;
+    if (left + PICKER_WIDTH > viewportWidth - PICKER_MARGIN) {
+      left = viewportWidth - PICKER_WIDTH - PICKER_MARGIN;
+    }
+
+    setPickerPosition({ top, left });
+  }, []);
+
+  useEffect(() => {
+    if (!showEmojiPicker) return;
+
+    calculatePosition();
+
+    const onClose = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const pickerEl = document.getElementById("emoji-picker-portal");
+
+      if (
+        emojiButtonRef.current?.contains(target) ||
+        pickerEl?.contains(target)
+      ) {
+        return;
+      }
+
+      setShowEmojiPicker(false);
+    };
+
+    const onScroll = (e: Event) => {
+      const pickerEl = document.getElementById("emoji-picker-portal");
+
+      // Ignore scroll events that originate inside the picker itself
+      if (pickerEl?.contains(e.target as Node)) return;
+
+      setShowEmojiPicker(false);
+    };
+    const onResize = () => calculatePosition();
+
+    document.addEventListener("mousedown", onClose);
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      document.removeEventListener("mousedown", onClose);
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [showEmojiPicker, calculatePosition]);
+
+  const handleEmojiClick = (emojiData: EmojiClickData) => {
+    const ref = textareaRef.current;
+
+    if (!ref) {
+      onChange({ target: { value: value + emojiData.emoji } } as ChangeEvent<HTMLTextAreaElement>);
+
+      return;
+    }
+
+    const start = ref.selectionStart;
+    const end = ref.selectionEnd;
+    const before = value.substring(0, start);
+    const after = value.substring(end);
+    const newValue = before + emojiData.emoji + after;
+
+    onChange({ target: { value: newValue } } as ChangeEvent<HTMLTextAreaElement>);
+
+    setTimeout(() => {
+      ref.focus();
+      ref.setSelectionRange(start + emojiData.emoji.length, start + emojiData.emoji.length);
+    }, 0);
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
+    setShowEmojiPicker(false);
     onSubmit();
 
     if (textareaRef.current) {
@@ -35,36 +147,46 @@ export const ChatInput = ({ value, onChange, onSubmit, disabled, placeholder }: 
 
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${Math.min(
-        textareaRef.current.scrollHeight,
-        120
-      )}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter") {
-      if (e.shiftKey || e.ctrlKey) {
-        return;
-      }
+      if (e.shiftKey || e.ctrlKey) return;
 
       handleSubmit(e);
     }
   };
 
+  const onToggleEmojiPicker = () => setShowEmojiPicker((prev) => !prev);
+
   return (
     <div className={styles.chatInputContainer}>
       <form onSubmit={disabled ? (e) => e.preventDefault() : handleSubmit}>
-        <textarea
-          ref={textareaRef}
-          className={styles.chatInput}
-          value={value}
-          onChange={disabled ? undefined : handleChange}
-          onKeyDown={disabled ? undefined : handleKeyDown}
-          placeholder={placeholder ?? t("typeMessage")}
-          rows={1}
-          disabled={disabled}
-        />
+        <div className={styles.chatInputWrapper}>
+          <textarea
+            ref={textareaRef}
+            className={styles.chatInput}
+            value={value}
+            onChange={disabled ? undefined : handleChange}
+            onKeyDown={disabled ? undefined : handleKeyDown}
+            placeholder={placeholder ?? t("typeMessage")}
+            rows={1}
+            disabled={disabled}
+          />
+
+          <button
+            ref={emojiButtonRef}
+            type="button"
+            className={styles.emojiButton}
+            disabled={disabled}
+            onClick={onToggleEmojiPicker}
+            title={t("emoji_smile", "Emoji")}
+          >
+            😀
+          </button>
+        </div>
 
         <Button
           size={ButtonSize.Small}
@@ -79,6 +201,27 @@ export const ChatInput = ({ value, onChange, onSubmit, disabled, placeholder }: 
           <SendOutlined className={styles.icon} />
         </Button>
       </form>
+
+      {showEmojiPicker &&
+        createPortal(
+          <div
+            id="emoji-picker-portal"
+            style={{
+              position: "fixed",
+              top: pickerPosition.top,
+              left: pickerPosition.left,
+              zIndex: 9999,
+            }}
+          >
+            <EmojiPicker
+              onEmojiClick={handleEmojiClick}
+              theme={Theme.DARK}
+              lazyLoadEmojis
+              emojiStyle={EmojiStyle.NATIVE}
+            />
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

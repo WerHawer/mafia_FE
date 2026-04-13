@@ -28,6 +28,16 @@ export class MessagesStore {
     ]);
   }
 
+  replaceMessages(messages: IMessage[]) {
+    if (!messages.length) return;
+
+    const key =
+      messages[0].to.type === MessageTypes.All ? PUBLIC : messages[0].to.id;
+
+    // Fully replace the cache with the new messages sorted by creation time
+    this.messages[key] = flow([sortBy("createdAt")])(messages);
+  }
+
   setNewLocalMessage(message: IMessage) {
     const key = message.to.type === MessageTypes.All ? PUBLIC : message.to.id;
 

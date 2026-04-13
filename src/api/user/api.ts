@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { IMessage } from "../../types/message.types.ts";
 import { IUser } from "../../types/user.types.ts";
 
 const USER_URL = "/users";
@@ -15,6 +16,7 @@ export const getUsersByIds = async (ids: string[]) =>
 export type UpdateAvatarResponse = {
   user: IUser;
   message: string;
+  messages?: IMessage[];
 };
 
 export const updateAvatar = async (
@@ -33,3 +35,12 @@ export const updateAvatar = async (
   return response.data;
 };
 
+export const deleteAvatar = async (
+  avatarId: string
+): Promise<UpdateAvatarResponse> => {
+  const response = await axios.delete<UpdateAvatarResponse>(
+    `${USER_URL}/${avatarId}`
+  );
+
+  return response.data;
+};
