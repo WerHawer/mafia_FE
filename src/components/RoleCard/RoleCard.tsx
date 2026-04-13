@@ -1,5 +1,6 @@
+import { InfoCircleOutlined } from "@ant-design/icons";
 import classNames from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { rootStore } from "@/store/rootStore.ts";
@@ -23,6 +24,7 @@ import { Roles } from "@/types/game.types";
 import { Typography } from "@/UI/Typography";
 
 import styles from "./RoleCard.module.scss";
+import { RoleInfoModal } from "./RoleInfoModal.tsx";
 
 type RoleCardProps = {
   role: Partial<Roles>;
@@ -40,7 +42,10 @@ export const RoleCard = ({
   onClick,
 }: RoleCardProps) => {
   const { t } = useTranslation();
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [cardRect, setCardRect] = useState<DOMRect | null>(null);
 
   const mafia = [don, mafia_1, mafia_2];
   const citizens = [anna, janna, kate, ken, taras, vasyl];
@@ -72,6 +77,18 @@ export const RoleCard = ({
     return () => clearTimeout(cardTimeout);
   }, [handleClick, isFlipped]);
 
+  const onInfoClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (containerRef.current) {
+      setCardRect(containerRef.current.getBoundingClientRect());
+    }
+    setIsInfoOpen(true);
+  }, []);
+
+  const onInfoClose = useCallback(() => {
+    setIsInfoOpen(false);
+  }, []);
+
   const style = {
     width: width ?? "200px",
     height: height ?? "300px",
@@ -80,7 +97,12 @@ export const RoleCard = ({
   if (!roleImage) return null;
 
   return (
-    <div className={styles.container} onClick={handleClick} style={style}>
+    <div
+      className={styles.container}
+      onClick={handleClick}
+      style={style}
+      ref={containerRef}
+    >
       <div
         className={classNames(styles.card, {
           [styles.flipped]: isFlipped,
@@ -95,8 +117,27 @@ export const RoleCard = ({
           <Typography variant="subtitle" className={styles.roleName}>
             {t(`roles.${role}`)}
           </Typography>
+
+          {isFlipped && (
+            <button
+              className={styles.infoBtn}
+              onClick={onInfoClick}
+              aria-label="Role info"
+              tabIndex={0}
+            >
+              <InfoCircleOutlined />
+            </button>
+          )}
         </div>
       </div>
+
+      <RoleInfoModal
+        isOpen={isInfoOpen}
+        role={role}
+        image={roleImage}
+        cardRect={cardRect}
+        onClose={onInfoClose}
+      />
     </div>
   );
 };
