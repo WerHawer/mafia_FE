@@ -1,4 +1,4 @@
-import { HomeFilled, SettingFilled } from "@ant-design/icons";
+import { BookFilled, HomeFilled, SettingFilled } from "@ant-design/icons";
 import classNames from "classnames";
 import { NavLink } from "react-router-dom";
 
@@ -9,6 +9,7 @@ import styles from "./Nav.module.scss";
 const links = [
   { to: routes.home, label: "Home", icon: <HomeFilled /> },
   { to: routes.settings, label: "Settings", icon: <SettingFilled /> },
+  { to: routes.rules, label: "Rules", icon: <BookFilled /> },
 ];
 
 export const HeaderNav = () => {

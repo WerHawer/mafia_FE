@@ -220,5 +220,72 @@
     "blocked": "You blocked this player",
     "blockedByProstitute": "Blocked by Prostitute",
     "blockedResult": "The prostitute blocked <strong>{{playerName}}</strong>"
+  },
+
+  "rules": {
+    "title": "Game Rules",
+    "label": {
+      "night": "Night",
+      "goal": "Goal"
+    },
+    "intro": {
+      "title": "About the Game",
+      "text": "Mafia is a social deduction game where the town fights against hidden criminals. Days are for debate and voting, nights are for secret actions. The town wins by eliminating all Mafia. The Mafia wins when their number equals or outnumbers the remaining townspeople."
+    },
+    "flow": {
+      "title": "How to Play",
+      "step1": { "title": "First Night", "text": "The Mafia sees each other and silently gets acquainted." },
+      "step2": { "title": "Day — Discussion & Vote", "text": "Everyone debates. The GM gives the floor in turn. After discussion, a vote decides who is eliminated." },
+      "step3": { "title": "Night — Secret Actions", "text": "The GM disables cameras. Roles act in order: Mafia shoots, Don investigates, Doctor heals, Sheriff investigates, Prostitute visits." },
+      "step4": { "title": "Morning", "text": "The GM announces the night results. A new day begins." },
+      "step5": { "title": "Victory", "text": "Town wins when all Mafia are eliminated. Mafia wins when their count equals or outnumbers the remaining townspeople." }
+    },
+    "roles": {
+      "title": "Roles",
+      "mafia": {
+        "tagline": "Kill by night, blend in by day",
+        "night": "Votes with the team on a target and shoots.",
+        "goal": "Reach parity with or outnumber the townspeople.",
+        "tip": "Coordinate with your team — split shots are wasted shots."
+      },
+      "don": {
+        "tagline": "The Mafia leader with a hidden radar",
+        "night": "Shoots with the team + can check one player to see if they are the Sheriff.",
+        "goal": "Same as Mafia — lead the team to victory.",
+        "tip": "The Don is a priority target. Stay quiet and let others do the talking."
+      },
+      "citizen": {
+        "tagline": "Logic and words are your only weapons",
+        "night": "Sleeps — no night abilities.",
+        "goal": "Convince the town to vote out all Mafia members.",
+        "tip": "Remember who voted for whom — Mafia members protect each other."
+      },
+      "sheriff": {
+        "tagline": "The town's detective",
+        "night": "Investigates one player — receives \"Mafia\" or \"Not Mafia\".",
+        "goal": "Find the Mafia and convince the town with your findings.",
+        "tip": "Don't reveal yourself too early — Mafia will target you the next night."
+      },
+      "doctor": {
+        "tagline": "The healer who works in the shadows",
+        "night": "Protects one player. If Mafia targets the same person — they survive.",
+        "goal": "Keep key players alive to preserve the town's majority.",
+        "tip": "Heal players who speak loudly — they're the Mafia's top targets."
+      },
+      "prostitute": {
+        "tagline": "Silences the most dangerous player for a day",
+        "night": "Visits one player — they cannot speak or vote the following day.",
+        "goal": "Neutralize the Don or a key Mafia member at a critical moment.",
+        "tip": "A silenced Don is worth more than any piece of information."
+      }
+    },
+    "tips": {
+      "title": "Tips for Beginners",
+      "1": "Watch reactions during accusations — nervousness reveals the Mafia.",
+      "2": "Don't reveal your role without a good reason — it makes you a target.",
+      "3": "Stay active in discussions — silent players draw suspicion.",
+      "4": "Pay attention to the GM at night — the wake-up order gives hints.",
+      "5": "Town only wins together — build trust and collaborate."
+    }
   }
 }

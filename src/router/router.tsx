@@ -10,6 +10,7 @@ import {
   LazyGamePage,
   LazyHomePage,
   LazyLoginPage,
+  LazyRulesPage,
   LazySettingsPage,
   LazySingUpPage,
 } from "./lazyComponents.ts";
@@ -51,6 +52,15 @@ export const router = createBrowserRouter([
         element: (
           <Suspense>
             <LazySettingsPage />
+          </Suspense>
+        ),
+      },
+
+      {
+        path: routes.rules,
+        element: (
+          <Suspense>
+            <LazyRulesPage />
           </Suspense>
         ),
       },

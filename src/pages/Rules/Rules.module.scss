@@ -1,0 +1,248 @@
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
+
+// Full-height scrollable + centering shell
+.scrollWrapper {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+
+  @include mixins.customScrollbar;
+}
+
+// Centered content column
+.container {
+  @include mixins.flex(column, flex-start, flex-start);
+  width: 100%;
+  max-width: 960px;
+  padding: 2rem 2rem 4rem;
+  gap: 3rem;
+}
+
+.pageTitle {
+  color: theme.$color-text-primary;
+}
+
+.sectionTitle {
+  color: theme.$color-text-secondary;
+  margin-bottom: 0.5rem;
+}
+
+// ── Section wrapper ───────────────────────────────────────────
+.section {
+  @include mixins.flex(column, flex-start, flex-start);
+  width: 100%;
+  gap: 1.5rem;
+}
+
+// ── Intro block ───────────────────────────────────────────────
+.introBlock {
+  @include mixins.flex(row, flex-start, center);
+  gap: 2rem;
+  background-color: theme.$color-dark-secondary;
+  border-radius: theme.$border-radius-medium;
+  padding: 1.5rem;
+  width: 100%;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.introImage {
+  width: 110px;
+  flex-shrink: 0;
+  border-radius: theme.$border-radius;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.introText {
+  color: theme.$color-light-secondary;
+  font-size: 1.5rem;
+  line-height: 1.7;
+}
+
+// ── Flow steps ────────────────────────────────────────────────
+.stepsList {
+  @include mixins.flex(column, flex-start, flex-start);
+  width: 100%;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.step {
+  @include mixins.flex(row, flex-start, flex-start);
+  gap: 1.5rem;
+  background-color: theme.$color-dark-secondary;
+  border-radius: theme.$border-radius;
+  padding: 1rem 1.5rem;
+  width: 100%;
+}
+
+.stepEmoji {
+  font-size: 2.2rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.stepContent {
+  @include mixins.flex(column, flex-start, flex-start);
+  gap: 0.3rem;
+}
+
+.stepTitle {
+  color: theme.$color-text-primary;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.stepText {
+  color: theme.$color-light-secondary;
+  font-size: 1.4rem;
+  line-height: 1.6;
+}
+
+// ── Roles grid ────────────────────────────────────────────────
+.rolesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.roleCard {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background-color: theme.$color-dark-secondary;
+  border-radius: theme.$border-radius-medium;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.roleImageWrapper {
+  position: relative;
+  width: 112px;
+  flex-shrink: 0;
+  background-color: theme.$color-dark-primary;
+}
+
+.roleImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.roleNameBadge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.4rem 0.5rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-align: center;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 60%, transparent);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  line-height: 1.2;
+}
+
+.roleContent {
+  @include mixins.flex(column, flex-start, flex-start);
+  flex: 1;
+  gap: 0.7rem;
+  padding: 1rem 1.2rem;
+  min-width: 0;
+}
+
+.roleTagline {
+  color: theme.$color-light-secondary;
+  font-style: italic;
+  font-size: 1.3rem;
+  line-height: 1.5;
+}
+
+.roleRow {
+  @include mixins.flex(column, flex-start, flex-start);
+  gap: 0.2rem;
+}
+
+.roleLabel {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: theme.$color-light-tertiary;
+}
+
+.roleText {
+  color: theme.$color-light-secondary;
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+
+.roleTip {
+  @include mixins.flex(row, flex-start, flex-start);
+  gap: 0.6rem;
+  background-color: rgba(theme.$color-accent-primary, 0.06);
+  border-left: 2px solid rgba(theme.$color-accent-primary, 0.4);
+  border-radius: 0 theme.$border-radius theme.$border-radius 0;
+  padding: 0.5rem 0.8rem;
+  margin-top: 0.2rem;
+}
+
+.roleTipEmoji {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.roleTipText {
+  color: theme.$color-light-secondary;
+  font-size: 1.3rem;
+  line-height: 1.5;
+}
+
+// ── Tips list ─────────────────────────────────────────────────
+.tipsList {
+  @include mixins.flex(column, flex-start, flex-start);
+  gap: 0.75rem;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tip {
+  @include mixins.flex(row, flex-start, flex-start);
+  gap: 1.2rem;
+  background-color: theme.$color-dark-secondary;
+  border-radius: theme.$border-radius;
+  padding: 1rem 1.5rem;
+  width: 100%;
+}
+
+.tipEmoji {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.tipText {
+  color: theme.$color-light-secondary;
+  font-size: 1.4rem;
+  line-height: 1.6;
+}

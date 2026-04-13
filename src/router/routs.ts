@@ -6,4 +6,5 @@ export const routes = {
   login: "/login",
   singUp: "/sing-up",
   settings: "/settings",
+  rules: "/rules",
 };

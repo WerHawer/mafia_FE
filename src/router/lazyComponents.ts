@@ -8,3 +8,4 @@ export const LazyNotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 export const LazySettingsPage = lazy(
   () => import("../pages/Settings/Settings")
 );
+export const LazyRulesPage = lazy(() => import("../pages/Rules/Rules"));
