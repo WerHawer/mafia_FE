@@ -123,10 +123,11 @@
   background-color: theme.$color-dark-secondary;
   border-radius: theme.$border-radius-medium;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
-    transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   }
 }
