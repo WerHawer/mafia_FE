@@ -49,6 +49,11 @@
     "repeatPassword": "Repeat your password"
   },
 
+  "nav": {
+    "home": "Home",
+    "rules": "Rules"
+  },
+
   "settings": {
     "title": "Settings",
     "profile": "Profile",

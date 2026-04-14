@@ -28,7 +28,7 @@ export const PlayerPanelInfo = observer(() => {
 
   const onTimerStart = useCallback(() => {
     if (isVotingActive) {
-      playMusic(SoundEffect.Ticking, true, 1.4);
+      playMusic(SoundEffect.Ticking, true, 1.6);
     }
   }, [isVotingActive, playMusic]);
 

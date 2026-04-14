@@ -17,12 +17,18 @@ export enum SoundEffect {
   Connect = "new_player_conected.wav",
 }
 
+export const BG_MUSIC_VOLUME_MULTIPLIER = 0.1;
+
 export class SoundStore {
   musicVolume = 0.3;
   sfxVolume = 0.2;
   isMuted = false;
+  isPlayingMusic = false;
 
   private activeMusicObject: HTMLAudioElement | null = null;
+  // Stores the volumeMultiplier used when the current track started playing.
+  // Required so setMusicVolume can keep the same relative loudness on slider change.
+  private activeMusicVolumeMultiplier = 1;
   private preloadedAudios: Map<string, HTMLAudioElement> = new Map();
 
   constructor() {
@@ -51,17 +57,21 @@ export class SoundStore {
 
   private preloadAllAudio() {
     // Preload all SFX from enum
-    Object.values(SoundEffect).forEach(effect => {
+    Object.values(SoundEffect).forEach((effect) => {
       this.preloadAudio(effect);
     });
 
     // Preload background music tracks
     const bgTracks = [
-      "day_bg.mp3", "day_bg_1.mp3", "day_bg_2.mp3",
-      "night_bg.mp3", "night_bg_2.mp3", "night_bg_3.mp3"
+      "day_bg.mp3",
+      "day_bg_1.mp3",
+      "day_bg_2.mp3",
+      "night_bg.mp3",
+      "night_bg_2.mp3",
+      "night_bg_3.mp3",
     ];
 
-    bgTracks.forEach(track => {
+    bgTracks.forEach((track) => {
       this.preloadAudio(track);
     });
   }
@@ -84,7 +94,7 @@ export class SoundStore {
   setMusicVolume(volume: number) {
     this.musicVolume = volume;
     if (this.activeMusicObject) {
-      this.activeMusicObject.volume = this.effectiveMusicVolume;
+      this.activeMusicObject.volume = this.effectiveMusicVolume * this.activeMusicVolumeMultiplier;
     }
   }
 
@@ -107,7 +117,15 @@ export class SoundStore {
     return this.isMuted ? 0 : this.sfxVolume;
   }
 
-  playSfx(effect: SoundEffect | string, volumeMultiplier = 1, durationMs?: number) {
+  playBgMusic(tracks: string | string[], loop = true) {
+    this.playMusic(tracks, loop, BG_MUSIC_VOLUME_MULTIPLIER);
+  }
+
+  playSfx(
+    effect: SoundEffect | string,
+    volumeMultiplier = 1,
+    durationMs?: number
+  ) {
     if (this.isMuted) return;
 
     try {
@@ -123,9 +141,7 @@ export class SoundStore {
       // We need to clone the audio node if we want to play the same sound overlapping
       const sfx = audio.cloneNode() as HTMLAudioElement;
       sfx.volume = this.effectiveSfxVolume * volumeMultiplier;
-      sfx
-        .play()
-        .catch((e) => console.warn(`Failed to play SFX: ${effect}`, e));
+      sfx.play().catch((e) => console.warn(`Failed to play SFX: ${effect}`, e));
 
       // If duration is specified, stop the audio after that time
       if (durationMs) {
@@ -148,6 +164,9 @@ export class SoundStore {
       this.activeMusicObject = null;
     }
 
+    // Remember the multiplier so volume updates stay consistent.
+    this.activeMusicVolumeMultiplier = volumeMultiplier;
+
     const trackName = Array.isArray(tracks)
       ? tracks[Math.floor(Math.random() * tracks.length)]
       : tracks;
@@ -169,11 +188,18 @@ export class SoundStore {
       bgm.muted = this.isMuted;
 
       this.activeMusicObject = bgm;
-      bgm.play().catch((e) => {
-        console.warn(`Autoplay blocked or track missing: ${trackName}`, e);
-      });
+      bgm
+        .play()
+        .then(() => {
+          this.isPlayingMusic = true;
+        })
+        .catch((e) => {
+          console.warn(`Autoplay blocked or track missing: ${trackName}`, e);
+          this.isPlayingMusic = false;
+        });
     } catch (e) {
       console.error(`Error playing music: ${trackName}`, e);
+      this.isPlayingMusic = false;
     }
   }
 
@@ -181,6 +207,8 @@ export class SoundStore {
     if (this.activeMusicObject) {
       this.activeMusicObject.pause();
       this.activeMusicObject = null;
+      this.activeMusicVolumeMultiplier = 1;
+      this.isPlayingMusic = false;
     }
   }
 }

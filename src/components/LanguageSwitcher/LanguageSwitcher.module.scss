@@ -4,6 +4,12 @@
 .container {
   @include mixins.flex;
   column-gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.separator {
+  color: theme.$color-text-secondary;
+  user-select: none;
 }
 
 .button {

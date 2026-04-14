@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
+import { LanguageSwitcher } from "@/components/LanguageSwitcher/LanguageSwitcher.tsx";
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import { removeTokenFromAxios } from "@/helpers/removeTokenFromAxios.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
@@ -41,6 +42,8 @@ export const Header = () => {
       <Logo size="medium" />
 
       <HeaderNav />
+
+      <LanguageSwitcher />
 
       <Button
         onClick={handleCreateGame}

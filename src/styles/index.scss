@@ -60,6 +60,28 @@ a {
   transition: color 0.25s;
 }
 
+// Tippy custom styles for nav tooltips
+.tippy-box[data-theme~="nav-tooltip"] {
+  background-color: theme.$color-dark-secondary;
+  border: 1px solid rgba(theme.$color-accent-primary, 0.4);
+  border-radius: theme.$border-radius;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 0 12px rgba(theme.$color-accent-primary, 0.08);
+
+  .tippy-content {
+    padding: 5px 12px;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: theme.$color-text-primary;
+    letter-spacing: 0.03em;
+  }
+
+  .tippy-arrow {
+    color: theme.$color-dark-secondary;
+  }
+}
+
 // Tippy custom styles for RoleIcon tooltips
 .tippy-box[data-theme~="role-tooltip"] {
   background: linear-gradient(
