@@ -117,7 +117,13 @@ export const VideoConfig = observer(
                 {t("videoConfig.effectsTitle")}
               </h3>
               <div className={styles.baseEffectButton}>
-                <Tippy content={t("videoConfig.removeEffect")}>
+                <Tippy
+                  content={t("videoConfig.removeEffect")}
+                  theme="nav-tooltip"
+                  placement="top"
+                  animation="shift-away"
+                  delay={[300, 0]}
+                >
                   <img
                     className={styles.icon}
                     src={removeIcon}
@@ -131,7 +137,13 @@ export const VideoConfig = observer(
                   />
                 </Tippy>
 
-                <Tippy content={t("videoConfig.blurEffect")}>
+                <Tippy
+                  content={t("videoConfig.blurEffect")}
+                  theme="nav-tooltip"
+                  placement="top"
+                  animation="shift-away"
+                  delay={[300, 0]}
+                >
                   <img
                     className={styles.icon}
                     src={blurIcon}

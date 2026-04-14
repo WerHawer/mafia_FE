@@ -1,11 +1,25 @@
 import { SendOutlined } from "@ant-design/icons";
-import EmojiPicker, { EmojiClickData, EmojiStyle, Theme } from "emoji-picker-react";
-import { ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import EmojiPicker, {
+  Emoji,
+  EmojiClickData,
+  EmojiStyle,
+  Theme,
+} from "emoji-picker-react";
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes";
+import { parseMessageToSegments } from "@/helpers/parseMessageToSegments.ts";
 
 import styles from "../../PublicChat.module.scss";
 
@@ -26,12 +40,37 @@ const PICKER_HEIGHT = 450;
 const PICKER_WIDTH = 350;
 const PICKER_MARGIN = 8;
 
-export const ChatInput = ({ value, onChange, onSubmit, disabled, placeholder }: ChatInputProps) => {
+// Size (px) of Apple emoji images rendered inside the input mirror.
+// Matches the textarea font-size (19px) exactly so it doesn't desync the caret.
+const INPUT_EMOJI_SIZE = 19;
+
+export const ChatInput = ({
+  value,
+  onChange,
+  onSubmit,
+  disabled,
+  placeholder,
+}: ChatInputProps) => {
   const { t } = useTranslation();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [pickerPosition, setPickerPosition] = useState<PickerPosition>({ top: 0, left: 0 });
+  const [pickerPosition, setPickerPosition] = useState<PickerPosition>({
+    top: 0,
+    left: 0,
+  });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const emojiButtonRef = useRef<HTMLButtonElement>(null);
+  const mirrorRef = useRef<HTMLDivElement>(null);
+
+  // Parsed segments for the mirror — recomputed only when value changes.
+  const mirrorSegments = useMemo(() => parseMessageToSegments(value), [value]);
+
+  // Sync the mirror's scroll position with the textarea so Apple emojis
+  // stay aligned when the user scrolls a long message (content > 120px).
+  const onTextareaScroll = useCallback(() => {
+    if (mirrorRef.current && textareaRef.current) {
+      mirrorRef.current.scrollTop = textareaRef.current.scrollTop;
+    }
+  }, []);
 
   const calculatePosition = useCallback(() => {
     if (!emojiButtonRef.current) return;
@@ -112,7 +151,9 @@ export const ChatInput = ({ value, onChange, onSubmit, disabled, placeholder }: 
     const ref = textareaRef.current;
 
     if (!ref) {
-      onChange({ target: { value: value + emojiData.emoji } } as ChangeEvent<HTMLTextAreaElement>);
+      onChange({
+        target: { value: value + emojiData.emoji },
+      } as ChangeEvent<HTMLTextAreaElement>);
 
       return;
     }
@@ -123,11 +164,16 @@ export const ChatInput = ({ value, onChange, onSubmit, disabled, placeholder }: 
     const after = value.substring(end);
     const newValue = before + emojiData.emoji + after;
 
-    onChange({ target: { value: newValue } } as ChangeEvent<HTMLTextAreaElement>);
+    onChange({
+      target: { value: newValue },
+    } as ChangeEvent<HTMLTextAreaElement>);
 
     setTimeout(() => {
       ref.focus();
-      ref.setSelectionRange(start + emojiData.emoji.length, start + emojiData.emoji.length);
+      ref.setSelectionRange(
+        start + emojiData.emoji.length,
+        start + emojiData.emoji.length
+      );
     }, 0);
   };
 
@@ -165,12 +211,33 @@ export const ChatInput = ({ value, onChange, onSubmit, disabled, placeholder }: 
     <div className={styles.chatInputContainer}>
       <form onSubmit={disabled ? (e) => e.preventDefault() : handleSubmit}>
         <div className={styles.chatInputWrapper}>
+          {/* Apple emoji mirror — sits behind the transparent textarea */}
+          <div
+            ref={mirrorRef}
+            className={styles.chatInputMirror}
+            aria-hidden="true"
+          >
+            {mirrorSegments.map((segment, i) =>
+              segment.type === "emoji" ? (
+                <Emoji
+                  key={i}
+                  unified={segment.unified}
+                  emojiStyle={EmojiStyle.APPLE}
+                  size={INPUT_EMOJI_SIZE}
+                />
+              ) : (
+                <span key={i}>{segment.value}</span>
+              )
+            )}
+          </div>
+
           <textarea
             ref={textareaRef}
             className={styles.chatInput}
             value={value}
             onChange={disabled ? undefined : handleChange}
             onKeyDown={disabled ? undefined : handleKeyDown}
+            onScroll={onTextareaScroll}
             placeholder={placeholder ?? t("typeMessage")}
             rows={1}
             disabled={disabled}
@@ -184,7 +251,7 @@ export const ChatInput = ({ value, onChange, onSubmit, disabled, placeholder }: 
             onClick={onToggleEmojiPicker}
             title={t("emoji_smile", "Emoji")}
           >
-            😀
+            <Emoji unified="1f600" emojiStyle={EmojiStyle.APPLE} size={22} />
           </button>
         </div>
 
@@ -217,7 +284,7 @@ export const ChatInput = ({ value, onChange, onSubmit, disabled, placeholder }: 
               onEmojiClick={handleEmojiClick}
               theme={Theme.DARK}
               lazyLoadEmojis
-              emojiStyle={EmojiStyle.NATIVE}
+              emojiStyle={EmojiStyle.APPLE}
             />
           </div>,
           document.body

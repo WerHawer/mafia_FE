@@ -137,6 +137,7 @@
     "title": "Video menu",
     "doGM": "Make GM",
     "kill": "Kill",
+    "revive": "Revive",
     "giveSpeak": "Give Speech",
     "showDeadVideo": "Show live video",
     "hideDeadVideo": "Hide live video"

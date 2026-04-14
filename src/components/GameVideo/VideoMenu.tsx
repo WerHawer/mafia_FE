@@ -2,6 +2,7 @@ import {
   CrownOutlined,
   EyeInvisibleOutlined,
   EyeOutlined,
+  HeartOutlined,
   MoreOutlined,
   SoundOutlined,
   UserDeleteOutlined,
@@ -54,13 +55,18 @@ export const VideoMenu = observer(
       setIsMenuOpen(false);
     };
 
-    const onKill = (killed: string[]) => {
+    const onKillOrRevive = (killed: string[]) => {
       if (!userId) return;
+
+      const isDead = killed.includes(userId);
+      const newKilled = isDead
+        ? killed.filter((id) => id !== userId)
+        : [...killed, userId];
 
       updateGameFlow({
         speaker: "",
         isExtraSpeech: false,
-        killed: [...killed, userId],
+        killed: newKilled,
       });
       setIsMenuOpen(false);
     };
@@ -129,9 +135,9 @@ export const VideoMenu = observer(
               <MenuSeparator />
 
               <MenuItem
-                icon={<UserDeleteOutlined />}
-                label={t("videoMenu.kill")}
-                onClick={() => onKill(gameFlow.killed)}
+                icon={isUserDead ? <HeartOutlined /> : <UserDeleteOutlined />}
+                label={isUserDead ? t("videoMenu.revive") : t("videoMenu.kill")}
+                onClick={() => onKillOrRevive(gameFlow.killed || [])}
               />
             </Menu>
           }

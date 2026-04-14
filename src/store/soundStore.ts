@@ -92,6 +92,7 @@ export class SoundStore {
   }
 
   setMusicVolume(volume: number) {
+    this.autoUnmute();
     this.musicVolume = volume;
     if (this.activeMusicObject) {
       this.activeMusicObject.volume = this.effectiveMusicVolume * this.activeMusicVolumeMultiplier;
@@ -99,6 +100,7 @@ export class SoundStore {
   }
 
   setSfxVolume(volume: number) {
+    this.autoUnmute();
     this.sfxVolume = volume;
   }
 
@@ -115,6 +117,17 @@ export class SoundStore {
 
   get effectiveSfxVolume() {
     return this.isMuted ? 0 : this.sfxVolume;
+  }
+
+  // Automatically unmutes when the user takes an explicit audio action.
+  // The .muted property controls browser-level mute; resetting it restores
+  // whatever .volume was already set — no need to recalculate volume here.
+  private autoUnmute() {
+    if (!this.isMuted) return;
+    this.isMuted = false;
+    if (this.activeMusicObject) {
+      this.activeMusicObject.muted = false;
+    }
   }
 
   playBgMusic(tracks: string | string[], loop = true) {
@@ -159,6 +172,7 @@ export class SoundStore {
    * Plays music. If an array of tracks is provided, picks one randomly.
    */
   playMusic(tracks: string | string[], loop = true, volumeMultiplier = 1) {
+
     if (this.activeMusicObject) {
       this.activeMusicObject.pause();
       this.activeMusicObject = null;

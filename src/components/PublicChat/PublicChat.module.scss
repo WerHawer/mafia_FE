@@ -53,7 +53,7 @@
   margin-left: 46px;
   background-color: $color-dark-tertiary;
   color: $color-text-primary;
-  font-size: 14px;
+  font-size: 1.6rem;
   align-items: flex-start;
 
   span {
@@ -87,6 +87,39 @@
       clip-path: polygon(0 0, 0 100%, 100% 100%);
     }
   }
+
+  // ── Emoji-only variants (no bubble, no triangle) ──────────────
+  &.emojiSingle,
+  &.emojiFew {
+    background: transparent;
+    padding: 2px 0;
+    border-radius: 0;
+
+    &::before {
+      display: none;
+    }
+
+    // Override the myMessage background (higher specificity: 3 classes vs 2)
+    .myMessage & {
+      background: transparent;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+
+  // 1 emoji — largest (≈60px at 10px root)
+  &.emojiSingle {
+    font-size: 6rem;
+    line-height: 1.15;
+  }
+
+  // 2–3 emojis — medium large (≈36px at 10px root)
+  &.emojiFew {
+    font-size: 3.6rem;
+    line-height: 1.15;
+  }
 }
 
 .strong {
@@ -94,6 +127,28 @@
   font-size: 12px;
   color: rgba($color-text-primary, 0.7);
   margin-bottom: 4px;
+}
+
+// Wraps all text/emoji segments so they stay inline within the column-flex parent.
+// flex-wrap: wrap lets long lines break naturally; align-items: center vertically
+// centers emoji images with surrounding text.
+.messageContent {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  word-break: break-word;
+
+  span {
+    white-space: pre-wrap;
+  }
+
+  // Keep emoji images vertically aligned with text baseline
+  img {
+    display: inline-block;
+    vertical-align: middle;
+  }
 }
 
 .avatar {
@@ -139,32 +194,78 @@
 }
 
 .chatInputWrapper {
+  @include rounded(20px);
   position: relative;
   flex: 1;
   display: flex;
+  overflow: hidden;
+  background-color: $color-input;
+  border: 1px solid rgba($color-accent-primary, 0.7);
+}
+
+// Invisible mirror that renders Apple emoji images behind the transparent textarea.
+// Positioned to fill the wrapper exactly; pointer-events disabled so the textarea
+// captures all user interaction.
+.chatInputMirror {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 12px 40px 12px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: $color-text-primary;
+
+  img {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    // We force the image layout box to exactly match a text character height to prevent reflows
+    height: 1.2em;
+    width: 1.2em;
+    transform: translateY(-0.1em);
+  }
 }
 
 .chatInput {
-  @include rounded(20px);
   box-sizing: border-box;
+  margin: 0;
   flex: 1;
   min-height: 50px;
   max-height: 120px;
   height: auto;
   padding: 12px 40px 12px 20px;
-  background-color: $color-input;
-  border: 1px solid rgba($color-accent-primary, 0.7);
-  color: $color-text-primary;
+  background: transparent;
+  border: none;
+  // Native emoji characters are invisible; the mirror shows Apple emoji images.
+  // caret-color keeps the cursor visible for the user.
+  color: transparent;
+  caret-color: $color-text-primary;
+  font-family: inherit;
   font-size: 14px;
   line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
   resize: none;
   overflow-y: auto;
 
   &::placeholder {
+    // Override the transparent color so the placeholder remains readable
     color: rgba($color-text-primary, 0.5);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  &::selection {
+    background-color: rgba($color-accent-primary, 0.35);
   }
 
   &:focus {
@@ -186,6 +287,7 @@
   justify-content: center;
   color: rgba($color-accent-primary, 0.7);
   transition: color 0.2s;
+  font-size: 18px;
 
   &:hover {
     color: rgba($color-accent-primary, 1);

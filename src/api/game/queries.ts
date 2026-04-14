@@ -30,7 +30,7 @@ export const useFetchActiveGamesQuery = () => {
     queryKey: [queryKeys.games],
     queryFn: fetchActiveGames,
     select: ({ data }) => data,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
 };
