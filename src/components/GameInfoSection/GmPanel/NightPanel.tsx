@@ -75,7 +75,7 @@ export const NightPanel = observer(() => {
                 onChange={onRoleChange(role)}
                 checked={role === selectedRole}
               />
-              {role}
+              {t(`roles.${role.toLowerCase()}`)}
             </label>
           );
         })}

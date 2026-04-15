@@ -61,8 +61,8 @@ export const GameVote = observer(() => {
         </Button>
 
         {isGM && proposedCount > 0 && (
-          <Tippy content={gmVoteTooltip} placement="top" theme="dark">
-            <div>
+          <Tippy content={gmVoteTooltip} placement="top" theme="nav-tooltip" delay={[500, 0]}>
+            <div className={styles.gmVoteButtonWrapper}>
               <IconButton
                 icon={<UsergroupDeleteOutlined />}
                 onClick={onToggleVoting}

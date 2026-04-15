@@ -128,7 +128,8 @@
     "background": "background",
     "removeEffect": "Remove effect",
     "blurEffect": "Blur effect",
-    "download": "Upload image",
+    "download": "Download image",
+    "fileTooLarge": "File is too large. Maximum size is 1MB.",
     "effectsTitle": "Effects",
     "backgroundsTitle": "Backgrounds"
   },

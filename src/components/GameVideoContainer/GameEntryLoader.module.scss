@@ -1,0 +1,64 @@
+@use "../../styles/mixins.scss";
+@use "../../styles/theme.scss";
+
+.loaderContainer {
+  @include mixins.flex(column, center, center);
+  @include mixins.size(100%, 100vh);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: theme.$color-dark-primary;
+  z-index: 10;
+  gap: 20px;
+}
+
+.loaderGroup {
+  position: relative;
+  @include mixins.size(80px);
+  @include mixins.flex(row, center, center);
+}
+
+.aimWrapper {
+  @include mixins.size(100%);
+  position: absolute;
+  animation: aimSpin 3s linear infinite;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 8px theme.$color-accent-primary);
+}
+
+.aimIcon {
+  @include mixins.size(100%);
+  filter: brightness(0) saturate(100%) invert(35%) sepia(87%) saturate(2256%) hue-rotate(334deg) brightness(97%) contrast(92%); // approximations of accent primary
+}
+
+.bulletDot {
+  @include mixins.size(16px);
+  @include mixins.rounded(50%);
+  background-color: theme.$color-accent-primary;
+  box-shadow: 0 0 12px theme.$color-accent-primary;
+  animation: gunPulse 1s ease-in-out infinite;
+}
+
+.loadingText {
+  color: theme.$color-text-primary;
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  animation: pulseText 2s ease-in-out infinite;
+}
+
+@keyframes aimSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes gunPulse {
+  0%, 100% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes pulseText {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}

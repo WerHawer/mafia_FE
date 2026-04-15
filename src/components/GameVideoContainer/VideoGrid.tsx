@@ -10,6 +10,8 @@ import { rootStore } from "@/store/rootStore.ts";
 import { GameVideo } from "../GameVideo";
 import styles from "./GameVideoContainer.module.scss";
 
+import { GameEntryLoader } from "./GameEntryLoader";
+
 const VIDEO_TRANSITION = { type: "spring", stiffness: 280, damping: 35 };
 
 export const VideoGrid = observer(() => {
@@ -49,6 +51,10 @@ export const VideoGrid = observer(() => {
       return getStatusWeight(idA) - getStatusWeight(idB);
     });
   }, [allTracks, shouldShowMyVideo, shouldShowPlayerVideo, gamesStore.gameFlow.killed, gamesStore.activeGameGm]);
+
+  if (filteredTracks.length === 0) {
+    return <GameEntryLoader />;
+  }
 
   return (
     <LayoutGroup>

@@ -1,51 +1,83 @@
 import { observer } from "mobx-react-lite";
 
-import natural1 from "@/assets/images/bg/natural_a.jpeg";
-import natural2 from "@/assets/images/bg/natural_b.jpg";
-import natural3 from "@/assets/images/bg/natural_c.jpg";
-import office1 from "@/assets/images/bg/Office_a.jpg";
-import office2 from "@/assets/images/bg/office_b.webp";
-import space1 from "@/assets/images/bg/space_a.jpg";
-import space2 from "@/assets/images/bg/space_b.jpg";
-import space3 from "@/assets/images/bg/space_c.jpg";
-import space4 from "@/assets/images/bg/starWars.jpg";
+import city from "@/assets/images/bg/city.avif";
+import city_1 from "@/assets/images/bg/city_1.avif";
+import city_2 from "@/assets/images/bg/city_2.jpg";
+import dark_3 from "@/assets/images/bg/dark_3.jpg";
+import dark from "@/assets/images/bg/dark.jpg";
+import dark_1 from "@/assets/images/bg/dark_1.jpg";
+import dark_2 from "@/assets/images/bg/dark_2.jpg";
+import forest from "@/assets/images/bg/Forest.jpg";
+import forest_1 from "@/assets/images/bg/Forest_1.jpg";
+import lights from "@/assets/images/bg/lights.jpg";
+import natural_c from "@/assets/images/bg/natural_c.jpg";
+import office from "@/assets/images/bg/office.png";
+import office_1 from "@/assets/images/bg/office_1.jpg";
+import office_2 from "@/assets/images/bg/office_2.jpg";
+import office_3 from "@/assets/images/bg/office_3.avif";
+import office_4 from "@/assets/images/bg/office_4.webp";
+import office_5 from "@/assets/images/bg/office_5.jpg";
+import office_a from "@/assets/images/bg/Office_a.jpg";
+import office_b from "@/assets/images/bg/office_b.webp";
+import space_b from "@/assets/images/bg/space_b.jpg";
+import space_c from "@/assets/images/bg/space_c.jpg";
+import starWars from "@/assets/images/bg/starWars.jpg";
 import wall from "@/assets/images/bg/wall.webp";
 import styles from "@/components/VideoConfig/VideoConfig.module.scss";
 import { rootStore } from "@/store/rootStore.ts";
 
 export const BackgroundImageList = observer(
   ({ onImageClick }: { onImageClick: (url: string) => void }) => {
-    const { streamsStore } = rootStore;
-    const { myBackgroundImages } = streamsStore;
+    const { streamsStore, usersStore } = rootStore;
+    const { myId } = usersStore;
+
+    const myBackgroundImages = myId
+      ? streamsStore.getUserBackgroundImages(myId)
+      : [];
 
     const images: string[] = [
-      natural1,
-      natural2,
-      natural3,
-      space1,
-      space2,
-      space3,
-      space4,
-      office1,
-      office2,
+      city,
+      city_1,
+      city_2,
+      dark_3,
+      dark,
+      dark_1,
+      dark_2,
+      forest,
+      forest_1,
+      lights,
+      natural_c,
+      office,
+      office_1,
+      office_2,
+      office_3,
+      office_4,
+      office_5,
+      office_a,
+      office_b,
+      space_b,
+      space_c,
+      starWars,
       wall,
       ...myBackgroundImages,
     ];
 
     return (
       <div className={styles.imageContainer}>
-        {images.map((src) => (
-          <img
-            key={src}
-            className={styles.imagePreview}
-            src={src}
-            alt="background image"
-            onClick={() => onImageClick(src)}
-            width="40"
-            height="40"
-          />
-        ))}
+        {images
+          .sort((a, b) => a.localeCompare(b, "en"))
+          .map((src) => (
+            <img
+              key={src}
+              className={styles.imagePreview}
+              src={src}
+              alt="background image"
+              onClick={() => onImageClick(src)}
+              width="40"
+              height="40"
+            />
+          ))}
       </div>
     );
-  },
+  }
 );

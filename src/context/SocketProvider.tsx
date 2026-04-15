@@ -8,7 +8,9 @@ import {
   useState,
 } from "react";
 import { io, Socket } from "socket.io-client";
+import { useQueryClient } from "@tanstack/react-query";
 
+import { queryKeys } from "../api/apiConstants.ts";
 import { SERVER } from "../api/apiConstants.ts";
 import { wsEvents } from "../config/wsEvents.ts";
 import { gamesStore } from "../store/gamesStore.ts";
@@ -32,6 +34,8 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   const [lastConnectionTime, setLastConnectionTime] = useState<number | null>(
     null
   );
+
+  const queryClient = useQueryClient();
 
   const { setNewMessage, replaceMessages } = messagesStore;
   const { updateGame, updateGames, setToProposed, addVoted, addShoot } =
@@ -80,15 +84,20 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       },
       [wsEvents.roomConnection]: (data) => {
         updateGames(data.game);
+        queryClient.invalidateQueries({ queryKey: [queryKeys.games] });
       },
       [wsEvents.roomLeave]: (data) => {
         updateGames(data.game);
+        queryClient.invalidateQueries({ queryKey: [queryKeys.games] });
       },
       [wsEvents.gameUpdate]: (newGame) => {
         updateGame(newGame);
+        queryClient.invalidateQueries({ queryKey: [queryKeys.games] });
+        queryClient.invalidateQueries({ queryKey: [queryKeys.game, newGame.id] });
       },
       [wsEvents.gamesUpdate]: (newGame) => {
         updateGames(newGame);
+        queryClient.invalidateQueries({ queryKey: [queryKeys.games] });
       },
       [wsEvents.socketDisconnect]: (connectedUsers) => {
         setSocketConnectedCount(connectedUsers);

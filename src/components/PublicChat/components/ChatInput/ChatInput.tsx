@@ -61,14 +61,20 @@ export const ChatInput = ({
   const emojiButtonRef = useRef<HTMLButtonElement>(null);
   const mirrorRef = useRef<HTMLDivElement>(null);
 
-  // Parsed segments for the mirror — recomputed only when value changes.
-  const mirrorSegments = useMemo(() => parseMessageToSegments(value), [value]);
+  const [caretPosition, setCaretPosition] = useState<number | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   // Sync the mirror's scroll position with the textarea so Apple emojis
   // stay aligned when the user scrolls a long message (content > 120px).
   const onTextareaScroll = useCallback(() => {
     if (mirrorRef.current && textareaRef.current) {
       mirrorRef.current.scrollTop = textareaRef.current.scrollTop;
+    }
+  }, []);
+
+  const updateCaret = useCallback(() => {
+    if (textareaRef.current) {
+      setCaretPosition(textareaRef.current.selectionStart);
     }
   }, []);
 
@@ -147,6 +153,19 @@ export const ChatInput = ({
     };
   }, [showEmojiPicker, calculatePosition]);
 
+  // Split value into before and after the caret to render the fake caret exactly at the correct width
+  const beforeText =
+    caretPosition !== null ? value.slice(0, caretPosition) : value;
+  const afterText = caretPosition !== null ? value.slice(caretPosition) : "";
+  const beforeSegments = useMemo(
+    () => parseMessageToSegments(beforeText),
+    [beforeText]
+  );
+  const afterSegments = useMemo(
+    () => parseMessageToSegments(afterText),
+    [afterText]
+  );
+
   const handleEmojiClick = (emojiData: EmojiClickData) => {
     const ref = textareaRef.current;
 
@@ -174,6 +193,7 @@ export const ChatInput = ({
         start + emojiData.emoji.length,
         start + emojiData.emoji.length
       );
+      updateCaret();
     }, 0);
   };
 
@@ -200,12 +220,16 @@ export const ChatInput = ({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter") {
       if (e.shiftKey || e.ctrlKey) return;
-
       handleSubmit(e);
     }
   };
 
   const onToggleEmojiPicker = () => setShowEmojiPicker((prev) => !prev);
+
+  const showFakeCaret =
+    isFocused &&
+    caretPosition !== null &&
+    textareaRef.current?.selectionStart === textareaRef.current?.selectionEnd;
 
   return (
     <div className={styles.chatInputContainer}>
@@ -217,7 +241,7 @@ export const ChatInput = ({
             className={styles.chatInputMirror}
             aria-hidden="true"
           >
-            {mirrorSegments.map((segment, i) =>
+            {beforeSegments.map((segment, i) =>
               segment.type === "emoji" ? (
                 <Emoji
                   key={i}
@@ -229,14 +253,43 @@ export const ChatInput = ({
                 <span key={i}>{segment.value}</span>
               )
             )}
+
+            {showFakeCaret && <span className={styles.fakeCaret} />}
+
+            {caretPosition !== null &&
+              afterSegments.map((segment, i) =>
+                segment.type === "emoji" ? (
+                  <Emoji
+                    key={i}
+                    unified={segment.unified}
+                    emojiStyle={EmojiStyle.APPLE}
+                    size={INPUT_EMOJI_SIZE}
+                  />
+                ) : (
+                  <span key={i}>{segment.value}</span>
+                )
+              )}
           </div>
 
           <textarea
+            id="textarea_chat"
             ref={textareaRef}
             className={styles.chatInput}
             value={value}
-            onChange={disabled ? undefined : handleChange}
+            onChange={(e) => {
+              handleChange(e);
+              updateCaret();
+            }}
             onKeyDown={disabled ? undefined : handleKeyDown}
+            onKeyUp={updateCaret}
+            onSelect={updateCaret}
+            onFocus={() => {
+              setIsFocused(true);
+              updateCaret();
+            }}
+            onBlur={() => setIsFocused(false)}
+            onPointerDown={updateCaret}
+            onPointerUp={updateCaret}
             onScroll={onTextareaScroll}
             placeholder={placeholder ?? t("typeMessage")}
             rows={1}

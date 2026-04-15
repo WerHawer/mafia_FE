@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { Participant, Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Draggable from "react-draggable";
 import { useTranslation } from "react-i18next";
 
@@ -78,6 +78,17 @@ export const GameVideo = observer(
 
     const { soundStore } = rootStore;
     const isSpeaking = useIsSpeaking(participant);
+
+    useEffect(() => {
+      if (!gameFlow.isNight) {
+        setLocalClickPos(null);
+        setKissPos(null);
+        setHealPos(null);
+        setInvestigatePos(null);
+        setInvestigateResult(null);
+        setInvestigateDanger(false);
+      }
+    }, [gameFlow.isNight]);
 
     const handleVideoClick = (e: React.MouseEvent<HTMLDivElement>) => {
       const rect = containerRef.current?.getBoundingClientRect();

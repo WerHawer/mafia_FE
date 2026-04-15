@@ -5,7 +5,7 @@ import { rootStore } from "@/store/rootStore.ts";
 import { SoundEffect } from "@/store/soundStore.ts";
 
 export const AudioProvider = ({ children }: { children: ReactNode }) => {
-  const { gamesStore, soundStore, isIGM } = rootStore;
+  const { gamesStore, soundStore, isIGM, usersStore } = rootStore;
 
   useEffect(() => {
     const dayTracks = ["day_bg.mp3", "day_bg_1.mp3", "day_bg_2.mp3"];
@@ -60,13 +60,13 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
     );
 
     // 2. Reaction: Game events (deaths, connections)
-    let prevPlayersCount = gamesStore.activeGamePlayers.length;
+    let prevPlayers = gamesStore.activeGamePlayers.slice();
     let prevKilledCount = gamesStore.activeGameKilledPlayers.length;
 
     const disposeGameEvents = reaction(
       () => ({
         killed: gamesStore.activeGameKilledPlayers.length,
-        players: gamesStore.activeGamePlayers.length,
+        players: gamesStore.activeGamePlayers.slice(),
         gameId: gamesStore.activeGameId,
         isStarted: gamesStore.gameFlow.isStarted,
       }),
@@ -80,11 +80,20 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
         }
         prevKilledCount = current.killed;
 
-        // New player join
-        if (current.players > prevPlayersCount) {
-          soundStore.playSfx(SoundEffect.Connect);
+        // New player join (only if it's not the current user or initial load)
+        if (current.players.length > prevPlayers.length) {
+          const newPlayers = current.players.filter(
+            (p) => !prevPlayers.includes(p)
+          );
+
+          const amIJustJoined = newPlayers.includes(usersStore.myId!);
+          const isInitialHydration = prevPlayers.length === 0;
+
+          if (!amIJustJoined && !isInitialHydration && newPlayers.length > 0) {
+            soundStore.playSfx(SoundEffect.Connect);
+          }
         }
-        prevPlayersCount = current.players;
+        prevPlayers = current.players;
       }
     );
 

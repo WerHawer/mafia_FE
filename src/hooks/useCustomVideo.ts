@@ -26,31 +26,32 @@ export const useCustomVideo = (
     videoRef,
     imgRef,
     canvasRef,
+    isBackgroundReady,
   } = useConfigureVideo(videoSettings, originalStream);
+
+  const applySettings = useCallback(
+    (settings: UserVideoSettings) => {
+      setVideoSettings(settings);
+      setImageURL(settings.imageURL);
+      setWithBlur(settings.withBlur);
+      setIsSaved(true);
+    },
+    [setImageURL, setWithBlur]
+  );
 
   useEffect(() => {
     setVideoSettings({ withBlur, imageURL });
   }, [setVideoSettings, withBlur, imageURL]);
 
   useEffect(() => {
-    if (!isSaved || !canvasRef.current || !originalStream) return;
+    if (!canvasRef.current || !isSaved || !originalStream || !isBackgroundReady) return;
 
     void publishVideoTrack(canvasRef.current);
-  }, [canvasRef, isSaved, originalStream, publishVideoTrack]);
-
-  const applySettings = useCallback(
-    (settings: UserVideoSettings) => {
-      setImageURL(settings.imageURL);
-      setWithBlur(settings.withBlur);
-      setVideoSettings(settings);
-
-      setIsSaved(true);
-    },
-    [setImageURL, setWithBlur]
-  );
+  }, [canvasRef, isSaved, originalStream, publishVideoTrack, isBackgroundReady]);
 
   return {
     isStreamReady: !!originalStream,
+    isBackgroundReady,
     isSaved,
     setIsSaved,
     videoRef,

@@ -93,7 +93,7 @@
   flex-wrap: wrap;
   gap: 1rem;
   margin: 1rem 0;
-  max-height: 300px;
+  max-height: 230px;
   overflow-y: auto;
   @include mixins.customScrollbar(6px, theme.$color-accent-secondary);
 }

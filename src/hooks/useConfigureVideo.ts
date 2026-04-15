@@ -83,6 +83,8 @@ export const useConfigureVideo = (
   const isFirstRender = useRef(true);
   const lastFrameTimeRef = useRef<number>(0);
   const withoutEffects = !imageURL && !withBlur;
+  const [isBackgroundReady, setIsBackgroundReady] = useState(withoutEffects);
+  const isBackgroundReadyRef = useRef(withoutEffects);
 
   // Keeps bgEffectsRef in sync with React state so the render loop always
   // reads the current background mode without depending on stale closures.
@@ -103,7 +105,11 @@ export const useConfigureVideo = (
   }, [withBlur, imageURL, withoutEffects]);
 
   useEffect(() => {
-    if (!myOriginalStream) return;
+    if (!myOriginalStream) {
+      setIsBackgroundReady(false);
+      isBackgroundReadyRef.current = false;
+      return;
+    }
 
     const video = videoRef.current;
 
@@ -185,12 +191,20 @@ export const useConfigureVideo = (
 
         if (ctx && !video.paused && video.readyState >= 2) {
           ctx.clearRect(0, 0, vw, vh);
-          // Mirror horizontally so the preview matches webcam selfie convention
-          ctx.save();
-          ctx.translate(vw, 0);
-          ctx.scale(-1, 1);
-          ctx.drawImage(video, 0, 0, vw, vh);
-          ctx.restore();
+
+          if (bgEffectsRef.current === bgEffects.none) {
+            // Mirror horizontally so the preview matches webcam selfie convention
+            ctx.save();
+            ctx.translate(vw, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0, vw, vh);
+            ctx.restore();
+
+            if (!isBackgroundReadyRef.current) {
+              isBackgroundReadyRef.current = true;
+              setIsBackgroundReady(true);
+            }
+          }
         }
       }
 
@@ -404,6 +418,11 @@ export const useConfigureVideo = (
       ctx.scale(-1, 1);
       ctx.drawImage(compCanvas, 0, 0);
       ctx.restore();
+
+      if (!isBackgroundReadyRef.current) {
+        isBackgroundReadyRef.current = true;
+        setIsBackgroundReady(true);
+      }
     };
 
     const stopRAF = () => {
@@ -544,12 +563,12 @@ export const useConfigureVideo = (
 
   return {
     setImageURL,
-    withBlur,
-    withoutEffects,
-    imageURL,
     setWithBlur,
+    imageURL,
+    withBlur,
     videoRef,
-    canvasRef,
     imgRef,
+    canvasRef,
+    isBackgroundReady,
   };
 };

@@ -25,7 +25,7 @@ type VideoConfigProps = {
 export const VideoConfig = observer(
   ({ originalStream, gameId, onClose, isShown }: VideoConfigProps) => {
     const { t } = useTranslation();
-    const { streamsStore } = rootStore;
+    const { streamsStore, usersStore } = rootStore;
     const { setImageToBackgrounds } = streamsStore;
     const { saveSettings, getSavedSettings } = useVideoSettings(gameId);
 
@@ -54,19 +54,32 @@ export const VideoConfig = observer(
 
     const onDownloadImage = useCallback(
       (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Check if file size > 1MB
+        if (file.size > 1024 * 1024) {
+          alert(t("videoConfig.fileTooLarge", "File is too large. Maximum size is 1MB."));
+          e.target.value = "";
+          return;
+        }
+
         const reader = new FileReader();
 
         reader.onload = () => {
           if (reader.readyState === 2) {
+            const myId = usersStore.myId;
             setImageURL(reader.result as string);
-            setImageToBackgrounds(reader.result as string);
+            if (myId) {
+              setImageToBackgrounds(myId, reader.result as string);
+            }
             setWithBlur(false);
           }
         };
 
-        reader.readAsDataURL(e.target.files![0]);
+        reader.readAsDataURL(file);
       },
-      [setImageToBackgrounds, setImageURL, setWithBlur]
+      [setImageToBackgrounds, setImageURL, setWithBlur, usersStore.myId, t]
     );
 
     const handleSave = useCallback(() => {

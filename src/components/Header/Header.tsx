@@ -56,7 +56,7 @@ export const Header = () => {
 
       <UserHeaderInfo />
 
-      <Tippy content={t("logout")}>
+      <Tippy content={t("logout")} theme="nav-tooltip" delay={[500, 0]}>
         <LogoutOutlined onClick={onLogout} className={styles.logoutButton} />
       </Tippy>
     </header>

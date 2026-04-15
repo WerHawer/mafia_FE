@@ -131,6 +131,7 @@
     "removeEffect": "Прибрати ефект",
     "blurEffect": "Ефект розмиття",
     "download": "Завантажити зображення",
+    "fileTooLarge": "Файл занадто великий. Максимальний розмір — 1 МБ.",
     "effectsTitle": "Ефекти",
     "backgroundsTitle": "Фони"
   },

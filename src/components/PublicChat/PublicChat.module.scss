@@ -232,6 +232,27 @@
     width: 1.2em;
     transform: translateY(-0.1em);
   }
+
+  .fakeCaret {
+    display: inline-block;
+    width: 1px;
+    height: 1.2em;
+    background-color: $color-text-primary;
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+    transform: translateY(-0.1em);
+    margin-left: 1px;
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .chatInput {
@@ -245,9 +266,8 @@
   background: transparent;
   border: none;
   // Native emoji characters are invisible; the mirror shows Apple emoji images.
-  // caret-color keeps the cursor visible for the user.
   color: transparent;
-  caret-color: $color-text-primary;
+  caret-color: transparent;
   font-family: inherit;
   font-size: 14px;
   line-height: 1.5;
