@@ -22,13 +22,13 @@ type VoteFlowProps = {
 export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   const { usersStore, gamesStore, isIGM, isIDead, isISpeaker, soundStore } = rootStore;
   const { myId, getUser } = usersStore;
-  const { isUserGM, speaker, gameFlow, activeGameAlivePlayers, activeGameId } =
+  const { isUserGM, speaker, gameFlow, activeGameAlivePlayers, activeGameId, setToProposed, addVoted } =
     gamesStore;
   const { isVote, proposed, voted, isExtraSpeech } = gameFlow;
   const { isIBlocked } = rootStore;
   const { playSfx } = soundStore;
-  const { mutate: voteForUser } = useVoteForUserMutation();
-  const { mutate: addUserToProposed } = useAddUserToProposedMutation();
+  const { mutate: voteForUser, isPending: isVoting } = useVoteForUserMutation();
+  const { mutate: addUserToProposed, isPending: isAddingToProposed } = useAddUserToProposedMutation();
 
   const votesForThisUser = useMemo(
     () => voted?.[userId] ?? [],
@@ -72,32 +72,37 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
       (myId !== speaker && !isUserGM(myId)) ||
       !userId ||
       !activeGameId ||
-      isThisUserProposed
+      isThisUserProposed ||
+      isAddingToProposed
     )
       return;
 
+    setToProposed(userId);
     addUserToProposed({ gameId: activeGameId, userId });
   }, [
     activeGameId,
     addUserToProposed,
     isThisUserProposed,
+    isAddingToProposed,
     isUserGM,
     myId,
+    setToProposed,
     speaker,
     userId,
   ]);
 
   const onVote = useCallback(() => {
     if (!userId || !myId || !activeGameId) return;
-    if (amIVoted || isIGM || isIBlocked) return;
+    if (amIVoted || isIGM || isIBlocked || isVoting) return;
 
+    addVoted({ targetUserId: userId, voterId: myId });
     voteForUser({
       gameId: activeGameId,
       targetUserId: userId,
       voterId: myId,
     });
     playSfx(SoundEffect.Vote);
-  }, [userId, myId, activeGameId, amIVoted, isIGM, voteForUser, playSfx]);
+  }, [userId, myId, activeGameId, amIVoted, isIGM, isIBlocked, isVoting, addVoted, voteForUser, playSfx]);
 
   useVoteResult({
     alivePlayers: activeGameAlivePlayers,

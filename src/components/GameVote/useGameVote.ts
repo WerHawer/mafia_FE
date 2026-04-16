@@ -10,10 +10,10 @@ import { UserId } from "@/types/user.types.ts";
 
 export const useGameVote = () => {
   const { gamesStore, usersStore, isIGM, isIDead } = rootStore;
-  const { gameFlow, activeGameId } = gamesStore;
+  const { gameFlow, activeGameId, addVoted } = gamesStore;
   const { getUserName, myId } = usersStore;
   const [isOpen, setIsOpen] = useState(false);
-  const { mutate: voteForUser } = useVoteForUserMutation();
+  const { mutate: voteForUser, isPending: isVoting } = useVoteForUserMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
   const { muteSpeaker } = useBatchMediaControls();
 
@@ -60,15 +60,16 @@ export const useGameVote = () => {
 
   const onVoteForPlayer = useCallback(
     (userId: UserId) => {
-      if (!canVote || amIVoted || !activeGameId) return;
+      if (!canVote || amIVoted || isVoting || !activeGameId) return;
 
+      addVoted({ targetUserId: userId, voterId: myId });
       voteForUser({
         gameId: activeGameId,
         targetUserId: userId,
         voterId: myId,
       });
     },
-    [canVote, amIVoted, activeGameId, voteForUser, myId]
+    [canVote, amIVoted, isVoting, activeGameId, myId, addVoted, voteForUser]
   );
 
   const getPlayerName = useCallback(

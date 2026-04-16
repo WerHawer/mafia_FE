@@ -66,6 +66,7 @@ export class GamesStore {
     const proposed = this._activeGame?.gameFlow?.proposed;
 
     if (!proposed) return;
+    if (proposed.includes(playerId)) return;
 
     const newProposed = [...proposed, playerId];
 
@@ -83,9 +84,12 @@ export class GamesStore {
 
     if (!voted) return;
 
+    const currentVoters = voted[targetUserId] || [];
+    if (currentVoters.includes(voterId)) return;
+
     const newVoted = {
       ...voted,
-      [targetUserId]: [...(voted[targetUserId] || []), voterId],
+      [targetUserId]: [...currentVoters, voterId],
     };
 
     this.updateGameFlow({ voted: newVoted });
