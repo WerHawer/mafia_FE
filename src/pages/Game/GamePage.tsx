@@ -20,7 +20,20 @@ import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
 import { useVideoSettings } from "@/hooks/useVideoSettings.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
+import brokenGlassIcon from "@/assets/icons/broken_glass.png";
+import kissMarkIcon from "@/assets/icons/kiss_mark.png";
+
 import styles from "./GamePage.module.scss";
+
+// Preload required SVG/PNG assets so they display instantly upon game action
+const PRELOAD_ASSETS = [
+  brokenGlassIcon,
+  kissMarkIcon,
+  "/aim.svg",
+  "/kiss.svg",
+  "/syringe.svg",
+  "/question.svg",
+];
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
@@ -38,6 +51,14 @@ const GamePage = observer(() => {
   });
 
   const { getSavedSettings } = useVideoSettings(id);
+
+  // Preload visual effect images exactly once when page loads
+  useEffect(() => {
+    PRELOAD_ASSETS.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   useGetUsersWithAddToStore(activeGamePlayers);
 

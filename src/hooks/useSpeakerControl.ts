@@ -35,6 +35,7 @@ export const useSpeakerControl = () => {
           onSuccess: () => {
             if (isFirstSpeaker) {
               muteAllExceptSpeaker(speaker, activeGameGm);
+              unmuteSpeaker(speaker);
               previousSpeakerRef.current = speaker;
 
               return;

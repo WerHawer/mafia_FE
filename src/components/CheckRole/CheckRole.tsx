@@ -32,7 +32,7 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
   return (
     <div className={classNames(styles.gmIconsRow, { [styles.night]: gameFlow.isNight })}>
       {shotCount > 0 && (
-        <Tippy content={t("checkRole.shotByMafia", { count: shotCount })}>
+        <Tippy theme="role-tooltip" content={t("checkRole.shotByMafia", { count: shotCount })}>
           <div className={styles.gmIconWrapper}>
             <img
               src={bulletIcon}
@@ -47,19 +47,19 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
       )}
 
       {userCheckedBySheriff && (
-        <Tippy content={t("checkRole.checkedBySheriff")}>
+        <Tippy theme="role-tooltip" content={t("checkRole.checkedBySheriff")}>
           <EyeOutlined className={styles.gmIcon} style={{ color: '#5865f2' }} />
         </Tippy>
       )}
 
       {userCheckedByDon && (
-        <Tippy content={t("checkRole.checkedByDon")}>
+        <Tippy theme="role-tooltip" content={t("checkRole.checkedByDon")}>
           <EyeOutlined className={styles.gmIcon} style={{ color: '#ffff27' }} />
         </Tippy>
       )}
 
       {userBlockedByProstitute && (
-        <Tippy content={t("prostituteAction.blockedByProstitute")}>
+        <Tippy theme="role-tooltip" content={t("prostituteAction.blockedByProstitute")}>
           <img
             src={kissMarkIcon}
             alt="kiss"
@@ -69,7 +69,7 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
       )}
 
       {gameFlow.isNight && userSavedByDoctor && (
-        <Tippy content={t("checkRole.doctorSavedGM")}>
+        <Tippy theme="role-tooltip" content={t("checkRole.doctorSavedGM")}>
           <PlusCircleFilled className={styles.gmIcon} style={{ color: '#52c41a' }} />
         </Tippy>
       )}

@@ -35,9 +35,17 @@ export const GameChat = observer(() => {
   const currentRoomId = activeTab === ChatTab.Dead ? `${id}_dead` : id;
   const messages = getMessages(currentRoomId);
 
-  useGetMessagesQueryWithStore(id);
+  // Load general chat always
+  useGetMessagesQueryWithStore(id, !!id);
   // Load dead chat for dead players AND for GM (observer mode)
-  useGetMessagesQueryWithStore(isIDead || isIGM ? `${id}_dead` : "");
+  const shouldLoadDeadChat = isIDead || isIGM;
+  useGetMessagesQueryWithStore(`${id}_dead`, shouldLoadDeadChat && !!id);
+
+  useEffect(() => {
+    if (shouldLoadDeadChat && user?.id) {
+      sendMessage(wsEvents.roomConnection, [`${id}_dead`, user.id]);
+    }
+  }, [shouldLoadDeadChat, id, user?.id, sendMessage]);
 
   const chatRef = useRef<HTMLDivElement>(null);
 

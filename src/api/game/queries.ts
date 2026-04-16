@@ -1,11 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocketContext } from "@/context/SocketProvider.tsx";
 import { gamesStore } from "@/store/gamesStore.ts";
 import { GameId, IGameFlow, IGameRoles } from "@/types/game.types.ts";
-import { UserId } from "@/types/user.types.ts";
 
 import { queryKeys } from "../apiConstants.ts";
 import {
@@ -25,6 +24,23 @@ import {
   updateGameGM,
   voteForUser,
 } from "./api.ts";
+
+const CACHE_INVALIDATION_DELAY_MS = 300;
+
+const invalidateGameQueries = (queryClient: QueryClient, gameId?: GameId, withDelay = false) => {
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: [queryKeys.games] });
+    if (gameId) {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.game, gameId] });
+    }
+  };
+
+  if (withDelay) {
+    setTimeout(invalidate, CACHE_INVALIDATION_DELAY_MS);
+  } else {
+    invalidate();
+  }
+};
 
 export const useFetchActiveGamesQuery = () => {
   return useQuery({
@@ -48,8 +64,11 @@ export const useFetchActiveGamesWithStore = () => {
 };
 
 export const useCreateGameMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: createGame,
+    onSuccess: () => invalidateGameQueries(queryClient),
   });
 };
 
@@ -76,24 +95,26 @@ export const useFetchGameWithStore = (id: GameId) => {
 
 export const useAddUserToGameMutation = () => {
   const { socket } = useSocketContext();
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (args: { gameId: GameId; userId: UserId }) =>
-      addUserToGame(args),
+    mutationFn: addUserToGame,
     onSuccess: (_, { gameId, userId }) => {
       socket?.emit(wsEvents.roomConnection, [gameId, userId]);
+      invalidateGameQueries(queryClient, gameId, true);
     },
   });
 };
 
 export const useRemoveUserFromGameMutation = () => {
   const { socket } = useSocketContext();
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (args: { gameId: GameId; userId: UserId }) =>
-      removeUserFromGame(args),
+    mutationFn: removeUserFromGame,
     onSuccess: (_, { gameId, userId }) => {
       socket?.emit(wsEvents.roomLeave, [gameId, userId]);
+      invalidateGameQueries(queryClient, gameId, true);
     },
   });
 };
@@ -111,19 +132,11 @@ export const useAddRolesToGameMutation = () => {
 };
 
 export const useUpdateGameGMMutation = () => {
-  return useMutation({
-    mutationFn: ({ gameId, userId }: { gameId: GameId; userId: UserId }) => {
-      return updateGameGM({ gameId, userId });
-    },
-  });
+  return useMutation({ mutationFn: updateGameGM });
 };
 
 export const useStartGameMutation = () => {
-  return useMutation({
-    mutationFn: (gameId: GameId) => {
-      return startGame(gameId);
-    },
-  });
+  return useMutation({ mutationFn: startGame });
 };
 
 export const useUpdateGameFlowMutation = () => {
@@ -140,66 +153,25 @@ export const useUpdateGameFlowMutation = () => {
 };
 
 export const useRestartGameMutation = () => {
-  return useMutation({
-    mutationFn: (gameId: GameId) => {
-      return restartGame(gameId);
-    },
-  });
+  return useMutation({ mutationFn: restartGame });
 };
 
 export const useStartDayMutation = () => {
-  return useMutation({
-    mutationFn: (gameId: GameId) => {
-      return startDay(gameId);
-    },
-  });
+  return useMutation({ mutationFn: startDay });
 };
 
 export const useStartNightMutation = () => {
-  return useMutation({
-    mutationFn: (gameId: GameId) => {
-      return startNight(gameId);
-    },
-  });
+  return useMutation({ mutationFn: startNight });
 };
 
 export const useAddUserToProposedMutation = () => {
-  return useMutation({
-    mutationFn: ({ gameId, userId }: { gameId: GameId; userId: UserId }) => {
-      return addUserToProposed({ gameId, userId });
-    },
-  });
+  return useMutation({ mutationFn: addUserToProposed });
 };
 
 export const useVoteForUserMutation = () => {
-  return useMutation({
-    mutationFn: ({
-      gameId,
-      targetUserId,
-      voterId,
-    }: {
-      gameId: GameId;
-      targetUserId: UserId;
-      voterId: UserId;
-    }) => {
-      return voteForUser({ gameId, targetUserId, voterId });
-    },
-  });
+  return useMutation({ mutationFn: voteForUser });
 };
+
 export const useShootUserMutation = () => {
-  return useMutation({
-    mutationFn: ({
-      gameId,
-      targetUserId,
-      shooterId,
-      shot,
-    }: {
-      gameId: GameId;
-      targetUserId: UserId;
-      shooterId: UserId;
-      shot?: { x: number; y: number };
-    }) => {
-      return shootUser({ gameId, targetUserId, shooterId, shot });
-    },
-  });
+  return useMutation({ mutationFn: shootUser });
 };
