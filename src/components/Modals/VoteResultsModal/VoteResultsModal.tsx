@@ -13,11 +13,16 @@ export const VoteResultsModal = observer(() => {
   const { gameFlow } = gamesStore;
 
   const result: Result[] | null = useMemo(() => {
-    const { voted = {} } = gameFlow;
+    const { voted = {}, proposed = [] } = gameFlow;
 
     const votesArr = Object.entries(voted);
 
-    if (votesArr.length === 0) return null;
+    if (votesArr.length === 0) {
+      if (proposed.length === 1) {
+        return [[proposed[0], []]];
+      }
+      return null;
+    }
 
     const playerWithMaxVotes = votesArr.reduce(
       (acc, [player, votes]) =>

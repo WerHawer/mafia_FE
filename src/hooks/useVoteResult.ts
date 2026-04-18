@@ -69,6 +69,13 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
     if (!enabled) return;
 
     if (proposed.length === 1 && isIGM) {
+      // Automatically assign all eligible votes to the single candidate
+      const automaticVoted = { [proposed[0]]: eligibleVoters };
+
+      updateGameFlow({
+        voted: automaticVoted,
+      });
+
       openModal(ModalNames.VoteResultModal);
 
       return;
