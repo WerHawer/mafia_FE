@@ -101,6 +101,7 @@
     "role": "Роль",
     "timer_placeholder": "Таймер з'явиться тут",
     "wakeUp": "Прокидайтеся:",
+    "sleepAll": "Всі сплять",
     "nightMode": {
       "title": "Настала ніч",
       "playerSubtitle": "Місто спить, але зло не дрімає...",
@@ -123,7 +124,9 @@
     "startVoting": "Почати голосування",
     "voteList": "Список голосування",
     "gmStartVote": "Почати голосування",
-    "gmStopVote": "Зупинити голосування"
+    "gmStopVote": "Зупинити голосування",
+    "proposePlayer": "Виставити на голосування",
+    "voteAgainst": "Проголосувати проти"
   },
 
   "videoConfig": {
@@ -143,7 +146,9 @@
     "revive": "Оживити",
     "giveSpeak": "Дати слово",
     "showDeadVideo": "Показати живе відео",
-    "hideDeadVideo": "Сховати живе відео"
+    "hideDeadVideo": "Сховати живе відео",
+    "sleep": "Приспати",
+    "wake": "Розбудити"
   },
 
   "nightResults": {

@@ -17,6 +17,7 @@ export const initialGameFlow: IGameFlow = {
   killed: [],
   shoot: {},
   wakeUp: [],
+  sleeping: [],
 };
 
 type CreateGameProps = {

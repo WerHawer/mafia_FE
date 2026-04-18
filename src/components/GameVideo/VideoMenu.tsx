@@ -4,6 +4,7 @@ import {
   EyeOutlined,
   HeartOutlined,
   MoreOutlined,
+  MoonOutlined,
   SoundOutlined,
   UserDeleteOutlined,
 } from "@ant-design/icons";
@@ -15,7 +16,9 @@ import {
   useUpdateGameFlowMutation,
   useUpdateGameGMMutation,
 } from "@/api/game/queries.ts";
+import { wsEvents } from "@/config/wsEvents.ts";
 import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
+import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
 import {
@@ -33,19 +36,22 @@ type VideoMenuProps = {
   userId?: UserId;
   isCurrentUserGM: boolean;
   isUserDead?: boolean;
+  isSleeping?: boolean;
   showDeadVideo?: boolean;
   onToggleDeadVideo?: () => void;
 };
 
 export const VideoMenu = observer(
-  ({ userId, isCurrentUserGM, isUserDead = false, showDeadVideo = false, onToggleDeadVideo }: VideoMenuProps) => {
+  ({ userId, isCurrentUserGM, isUserDead = false, isSleeping = false, showDeadVideo = false, onToggleDeadVideo }: VideoMenuProps) => {
     const { t } = useTranslation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { mutate: updateGM } = useUpdateGameGMMutation();
     const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
-    const { gamesStore } = rootStore;
+    const { gamesStore, usersStore } = rootStore;
+    const { myId } = usersStore;
     const { activeGameId, gameFlow } = gamesStore;
     const { unmuteSpeaker, muteSpeaker } = useBatchMediaControls();
+    const { sendMessage } = useSocket();
 
     const onUpdateGM = () => {
       if (!userId || !activeGameId) return;
@@ -93,6 +99,29 @@ export const VideoMenu = observer(
       setIsMenuOpen(false);
     };
 
+    const onToggleSleep = () => {
+      if (!userId || !activeGameId) return;
+
+      let currentWakeUp = Array.isArray(gameFlow.wakeUp)
+        ? gameFlow.wakeUp
+        : gameFlow.wakeUp
+          ? [gameFlow.wakeUp]
+          : [];
+
+      if (isSleeping) {
+        // Розбудити: додати гравця до wakeUp масиву
+        if (!currentWakeUp.includes(userId)) {
+          currentWakeUp = [...currentWakeUp, userId];
+        }
+      } else {
+        // Приспати: прибрати гравця з wakeUp масиву
+        currentWakeUp = currentWakeUp.filter((id) => id !== userId);
+      }
+
+      updateGameFlow({ wakeUp: currentWakeUp });
+      setIsMenuOpen(false);
+    };
+
     return (
       <div className={styles.menuContainer}>
         <Dropdown
@@ -133,6 +162,14 @@ export const VideoMenu = observer(
               )}
 
               <MenuSeparator />
+
+              {gameFlow.isNight && (
+                <MenuItem
+                  icon={<MoonOutlined />}
+                  label={isSleeping ? t("videoMenu.wake") : t("videoMenu.sleep")}
+                  onClick={onToggleSleep}
+                />
+              )}
 
               <MenuItem
                 icon={isUserDead ? <HeartOutlined /> : <UserDeleteOutlined />}

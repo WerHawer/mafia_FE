@@ -46,6 +46,10 @@ export const HIGH_PRIORITY_EVENTS = new Set([
   wsEvents.updateSpeaker,
   wsEvents.roomConnection,
   wsEvents.roomLeave,
+  wsEvents.playerSleepConfirm,
+  wsEvents.playerWakeConfirm,
+  wsEvents.manualSleep,
+  wsEvents.manualWake,
 ] as const);
 
 // Normal priority events
@@ -126,6 +130,10 @@ export interface WSSentEventData {
     excludedUserIds: UserId[];
     requesterId: UserId;
   };
+  [wsEvents.playerSleepConfirm]: { gameId: GameId; userId: UserId };
+  [wsEvents.playerWakeConfirm]: { gameId: GameId; userId: UserId };
+  [wsEvents.manualSleep]: { gameId: GameId; userId: UserId; gm: UserId };
+  [wsEvents.manualWake]: { gameId: GameId; userId: UserId; gm: UserId };
 }
 
 export type SendMessageFunction = <T extends keyof WSSentEventData>(
@@ -167,6 +175,10 @@ export interface WSSubscribedEventData {
   [wsEvents.shoot]: { targetUserId: UserId; shooterId: UserId; shot?: { x: number; y: number } };
   [wsEvents.userCameraStatusChanged]: { userId: UserId; enabled: boolean };
   [wsEvents.userMicrophoneStatusChanged]: { userId: UserId; enabled: boolean };
+  [wsEvents.playerSleepAck]: { userId: UserId };
+  [wsEvents.playerWakeAck]: { userId: UserId };
+  [wsEvents.manualSleep]: { userId: UserId };
+  [wsEvents.manualWake]: { userId: UserId };
 }
 
 export type SubscribeEvent = keyof WSSubscribedEventData;

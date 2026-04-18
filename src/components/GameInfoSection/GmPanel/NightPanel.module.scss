@@ -1,0 +1,72 @@
+@use "../../../styles/theme.scss";
+@use "../../../styles/mixins.scss";
+
+.container {
+  @include mixins.flex(row, flex-start, center);
+  width: 100%;
+  flex-wrap: wrap;
+  font-size: 1.5rem;
+  gap: 8px;
+}
+
+.label {
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.rolesWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.roleButton {
+  @include mixins.flex(row, center, center);
+  gap: 6px;
+  padding: 4px 10px;
+  flex: 1 1 auto;
+  min-width: max-content;
+  border-radius: theme.$border-radius-big;
+  border: 1px solid rgba(theme.$color-light-secondary, 0.25);
+  background: rgba(theme.$color-dark-secondary, 0.5);
+  color: theme.$color-light-secondary;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  user-select: none;
+
+  &:hover {
+    border-color: rgba(theme.$color-accent-primary, 0.5);
+    color: theme.$color-light-primary;
+  }
+
+  &.active {
+    border-color: theme.$color-accent-primary;
+    background: rgba(theme.$color-accent-primary, 0.15);
+    color: theme.$color-accent-primary;
+    box-shadow: 0 0 8px rgba(theme.$color-accent-primary, 0.3);
+  }
+
+  &.sleepAll {
+    border-color: rgba(theme.$color-light-secondary, 0.3);
+    color: theme.$color-light-secondary;
+
+    &.active {
+      border-color: theme.$color-accent-secondary;
+      background: rgba(theme.$color-accent-secondary, 0.15);
+      color: theme.$color-accent-secondary;
+      box-shadow: 0 0 8px rgba(theme.$color-accent-secondary, 0.3);
+    }
+  }
+}
+
+.eyeIcon {
+  font-size: 1.5rem;
+  transition: transform 0.2s ease;
+
+  .active & {
+    transform: scale(1.1);
+  }
+}

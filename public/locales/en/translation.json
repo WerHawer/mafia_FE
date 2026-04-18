@@ -99,6 +99,7 @@
     "role": "Role",
     "timer_placeholder": "Timer will appear here",
     "wakeUp": "Wake up:",
+    "sleepAll": "All sleep",
     "nightMode": {
       "title": "Night Time",
       "playerSubtitle": "The city sleeps, but evil is awake...",
@@ -119,9 +120,11 @@
   "vote": {
     "voting": "Voting",
     "startVoting": "Start Voting",
-    "voteList": "Vote List",
-    "gmStartVote": "Start vote",
-    "gmStopVote": "Stop vote"
+    "voteList": "Voting List",
+    "gmStartVote": "Start Voting",
+    "gmStopVote": "Stop Voting",
+    "proposePlayer": "Propose for voting",
+    "voteAgainst": "Vote against player"
   },
 
   "videoConfig": {
@@ -141,7 +144,9 @@
     "revive": "Revive",
     "giveSpeak": "Give Speech",
     "showDeadVideo": "Show live video",
-    "hideDeadVideo": "Hide live video"
+    "hideDeadVideo": "Hide live video",
+    "sleep": "Put to sleep",
+    "wake": "Wake up"
   },
 
   "nightResults": {

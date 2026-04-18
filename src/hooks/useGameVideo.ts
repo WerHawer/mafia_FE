@@ -20,7 +20,7 @@ export const useGameVideo = ({
     rootStore;
   const { getUser, me, myId } = usersStore;
   const { isUserGM, gameFlow, activeGameId } = gamesStore;
-  const { shoot = {}, killed = [], day, isStarted, prostituteBlock, doctorSave, sheriffCheck, donCheck } = gameFlow;
+  const { shoot = {}, killed = [], sleeping = [], day, isStarted, prostituteBlock, doctorSave, sheriffCheck, donCheck } = gameFlow;
   const { t } = useTranslation();
 
   const userId = participant.identity;
@@ -31,6 +31,7 @@ export const useGameVideo = ({
     entry.shooters?.includes(myId)
   );
   const isUserDead = killed.includes(userId);
+  const isSleeping = sleeping.includes(userId);
   const isMyAfterStart = isMyStream && isStarted;
   const notFirstDay = day > 1;
   // Mafia can also shoot themselves
@@ -145,6 +146,7 @@ export const useGameVideo = ({
     isGM,
     isIGM,
     isUserDead,
+    isSleeping,
     isMyAfterStart,
     isShootEnabled,
     isKissEnabled,

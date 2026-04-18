@@ -1,5 +1,8 @@
 import { observer } from "mobx-react-lite";
 import { useCallback, useMemo } from "react";
+import Tippy from "@tippyjs/react";
+import { useTranslation } from "react-i18next";
+import classNames from "classnames";
 
 import {
   useAddUserToProposedMutation,
@@ -20,6 +23,7 @@ type VoteFlowProps = {
 };
 
 export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
+  const { t } = useTranslation();
   const { usersStore, gamesStore, isIGM, isIDead, isISpeaker, soundStore } = rootStore;
   const { myId, getUser } = usersStore;
   const { isUserGM, speaker, gameFlow, activeGameAlivePlayers, activeGameId, setToProposed, addVoted } =
@@ -62,7 +66,8 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     !isMyStream &&
     !isCurrentUserGM &&
     !isExtraSpeech &&
-    !isIDead;
+    !isIDead &&
+    gameFlow.day > 1;
 
   const shouldShowVoteIcon =
     isVote && proposed.includes(userId) && !isIDead && !isIBlocked;
@@ -73,7 +78,8 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
       !userId ||
       !activeGameId ||
       isThisUserProposed ||
-      isAddingToProposed
+      isAddingToProposed ||
+      gameFlow.day <= 1
     )
       return;
 
@@ -89,6 +95,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     setToProposed,
     speaker,
     userId,
+    gameFlow.day,
   ]);
 
   const onVote = useCallback(() => {
@@ -112,24 +119,34 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   return (
     <>
       {shouldShowProposeIcon && (
-        <VoteIcon
-          className={styles.voteIcon}
-          size={ButtonSize.Small}
-          variant={ButtonVariant.Secondary}
-          isVoted={isUserAddedToVoteList}
-          onClick={onPropose}
-        />
+        <div className={styles.proposeIconContainer}>
+          <Tippy content={t("vote.proposePlayer")} theme="role-tooltip" delay={[500, 0]}>
+            <div>
+              <VoteIcon
+                className={classNames(styles.voteIcon, styles.voteIconScaled)}
+                size={ButtonSize.Small}
+                variant={ButtonVariant.Secondary}
+                isVoted={isUserAddedToVoteList}
+                onClick={onPropose}
+              />
+            </div>
+          </Tippy>
+        </div>
       )}
 
       {shouldShowVoteIcon && (
-        <div className={styles.iconContainer}>
-          <VoteIcon
-            className={styles.voteIcon}
-            size={ButtonSize.Small}
-            variant={ButtonVariant.Secondary}
-            onClick={onVote}
-            isVoted={isVotedByThisUser}
-          />
+        <div className={classNames(styles.iconContainer, styles.voteIconScaledWrapper)}>
+          <Tippy content={t("vote.voteAgainst")} theme="role-tooltip" delay={[500, 0]}>
+            <div>
+              <VoteIcon
+                className={classNames(styles.voteIcon, styles.voteIconScaled)}
+                size={ButtonSize.Small}
+                variant={ButtonVariant.Secondary}
+                onClick={onVote}
+                isVoted={isVotedByThisUser}
+              />
+            </div>
+          </Tippy>
 
           {votesForThisUser.length > 0 && (
             <p className={styles.voteCounter}>{votesForThisUser.length}</p>

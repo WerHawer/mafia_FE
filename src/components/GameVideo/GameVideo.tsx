@@ -12,6 +12,7 @@ import { InvestigateEffect } from "@/components/InvestigateEffect";
 import { KissEffect } from "@/components/KissEffect";
 import { MediaControls } from "@/components/MediaControls";
 import { Shoot } from "@/components/Shoot";
+import { SleepIcon } from "@/components/SleepIcon";
 import { VoteFlow } from "@/components/VoteFlow";
 import { useGameVideo } from "@/hooks/useGameVideo.ts";
 import { useIsSpeaking } from "@/hooks/useIsSpeaking.ts";
@@ -57,6 +58,7 @@ export const GameVideo = observer(
       isGM,
       isIGM,
       isUserDead,
+      isSleeping,
       isMyAfterStart,
       isShootEnabled,
       isKissEnabled,
@@ -177,11 +179,16 @@ export const GameVideo = observer(
             <div className={styles.deadOverlay} style={{ backgroundImage: `url(${deadBg})` }} />
           )}
 
+          {isIGM && !isMyStream && (
+            <SleepIcon isVisible={isSleeping} />
+          )}
+
           {isIGM && !isMyStream && currentUser && (
             <VideoMenu
               userId={currentUser.id}
               isCurrentUserGM={isGM}
               isUserDead={isUserDead}
+              isSleeping={isSleeping}
               showDeadVideo={showDeadVideo}
               onToggleDeadVideo={() => setShowDeadVideo((prev) => !prev)}
             />

@@ -1,85 +1,87 @@
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
-import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
-import { NightRoles, Roles } from "@/types/game.types.ts";
+import { NightRoles } from "@/types/game.types.ts";
 
-import styles from "./GmPanel.module.scss";
+import styles from "./NightPanel.module.scss";
+
+const SLEEP_ALL = "sleepAll" as const;
+type RoleSelection = NightRoles | typeof SLEEP_ALL;
 
 export const NightPanel = observer(() => {
   const { t } = useTranslation();
   const { gamesStore } = rootStore;
-  const { activeGameRoles, activeGameId, activeGameGm, gameFlow, nightRoles } =
-    gamesStore;
-  const { sendMessage } = useSocket();
-  const [selectedRole, setSelectedRole] = useState<Roles | null>(null);
+  const { activeGameRoles, nightRoles } = gamesStore;
+  const [selectedRole, setSelectedRole] = useState<RoleSelection>(SLEEP_ALL);
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
-  const onRoleChange = useCallback(
-    (role: NightRoles) => () => {
-      let roleIds: string | string[] = activeGameRoles![role] ?? [];
+  const onSelectRole = useCallback(
+    (role: RoleSelection) => {
+      // Clicking already active role puts everyone to sleep
+      if (role === selectedRole || role === SLEEP_ALL) {
+        setSelectedRole(SLEEP_ALL);
+        updateGameFlow({ wakeUp: [] });
+        return;
+      }
 
-      setSelectedRole(role);
+      let roleIds: string | string[] =
+        activeGameRoles![role as NightRoles] ?? [];
 
       if (typeof roleIds === "string") {
         roleIds = [roleIds];
       }
 
-      updateGameFlow({
-        wakeUp: roleIds,
-      });
-
-      // if (gameFlow.day > 1 && selectedRole === Roles.Mafia) {
-      //   sendMessage(wsEvents.wakeUp, {
-      //     gameId: activeGameId,
-      //     users: [],
-      //     gm: activeGameGm,
-      //   });
-      //
-      //   return;
-      // }
-      //
-      // sendMessage(wsEvents.wakeUp, {
-      //   gameId: activeGameId,
-      //   users: roleIds,
-      //   gm: activeGameGm,
-      // });
+      setSelectedRole(role);
+      updateGameFlow({ wakeUp: roleIds });
     },
-    [
-      activeGameGm,
-      activeGameId,
-      activeGameRoles,
-      gameFlow.day,
-      selectedRole,
-      sendMessage,
-      updateGameFlow,
-    ]
+    [activeGameRoles, selectedRole, updateGameFlow]
   );
 
   return (
-    <div className={styles.nightContainer}>
-      <span className={styles.wakeUpLabel}>{t("game.wakeUp")}</span>
+    <div className={styles.container}>
+      <span className={styles.label}>{t("game.wakeUp")}</span>
 
-      <div className={styles.rolesWrapper}>
-        {nightRoles.map((role) => {
-          return (
-            <label className={styles.radioLabel} key={role}>
-              <input
-                type="radio"
-                value={role}
-                id={role}
-                name="role"
-                onChange={onRoleChange(role)}
-                checked={role === selectedRole}
-              />
-              {t(`roles.${role.toLowerCase()}`)}
-            </label>
-          );
+      <button
+        className={classNames(styles.roleButton, styles.sleepAll, {
+          [styles.active]: selectedRole === SLEEP_ALL,
         })}
-      </div>
+        onClick={() => onSelectRole(SLEEP_ALL)}
+        type="button"
+      >
+        {selectedRole === SLEEP_ALL ? (
+          <EyeInvisibleOutlined className={styles.eyeIcon} />
+        ) : (
+          <EyeInvisibleOutlined className={styles.eyeIcon} />
+        )}
+        {t("game.sleepAll")}
+      </button>
+
+      {nightRoles.map((role) => {
+        const isActive = role === selectedRole;
+
+        return (
+          <button
+            key={role}
+            className={classNames(styles.roleButton, {
+              [styles.active]: isActive,
+            })}
+            onClick={() => onSelectRole(role)}
+            type="button"
+          >
+            {isActive ? (
+              <EyeOutlined className={styles.eyeIcon} />
+            ) : (
+              <EyeInvisibleOutlined className={styles.eyeIcon} />
+            )}
+            {t(`roles.${role.toLowerCase()}`)}
+          </button>
+        );
+      })}
     </div>
   );
 });
