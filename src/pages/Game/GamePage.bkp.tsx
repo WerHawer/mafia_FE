@@ -10,7 +10,6 @@ import {
 import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import { GameChat } from "@/components/GameChat";
 import { GameInfoSection } from "@/components/GameInfoSection";
-import { FloatingReactions, GameReactionsBar } from "@/components/GameReactions";
 import { GameVideoManager } from "@/components/GameVideoManager/GameVideoManager.tsx";
 import { GameVote } from "@/components/GameVote";
 import { GMMenu } from "@/components/GMMenu";
@@ -19,7 +18,6 @@ import { AudioProvider } from "@/components/AudioProvider/AudioProvider.tsx";
 import { videoOptions } from "@/config/video.ts";
 import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
 import { useVideoSettings } from "@/hooks/useVideoSettings.ts";
-import { useGameReactions } from "@/hooks/useGameReactions.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
 import brokenGlassIcon from "@/assets/icons/broken_glass.png";
@@ -46,8 +44,6 @@ const GamePage = observer(() => {
   const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
   const [shouldShowVideoConfig, setShouldShowVideoConfig] = useState(false);
   const [shouldShowAudioConfig, setShouldShowAudioConfig] = useState(false);
-
-  const { sendReaction } = useGameReactions();
 
   const originalStream = useUserMediaStream({
     audio: false,
@@ -104,28 +100,20 @@ const GamePage = observer(() => {
   return (
     <AudioProvider>
       <div className={styles.pageContainer}>
-        <FloatingReactions />
-
         <LiveKitMafiaRoom>
-          <div className={styles.videoSection}>
-            <GMMenu
-              onOpenVideoConfig={() => setShouldShowVideoConfig(true)}
-              onOpenAudioConfig={() => setShouldShowAudioConfig(true)}
-            />
+          <GMMenu
+            onOpenVideoConfig={() => setShouldShowVideoConfig(true)}
+            onOpenAudioConfig={() => setShouldShowAudioConfig(true)}
+          />
 
-            <div className={styles.videoGridWrapper}>
-              <GameVideoManager
-                originalStream={originalStream}
-                gameId={id}
-                showVideoConfig={shouldShowVideoConfig}
-                onCloseVideoConfig={() => setShouldShowVideoConfig(false)}
-                showAudioConfig={shouldShowAudioConfig}
-                onCloseAudioConfig={() => setShouldShowAudioConfig(false)}
-              />
-            </div>
-
-            <GameReactionsBar sendReaction={sendReaction} />
-          </div>
+          <GameVideoManager
+            originalStream={originalStream}
+            gameId={id}
+            showVideoConfig={shouldShowVideoConfig}
+            onCloseVideoConfig={() => setShouldShowVideoConfig(false)}
+            showAudioConfig={shouldShowAudioConfig}
+            onCloseAudioConfig={() => setShouldShowAudioConfig(false)}
+          />
         </LiveKitMafiaRoom>
 
         <aside className={styles.rightContainer}>

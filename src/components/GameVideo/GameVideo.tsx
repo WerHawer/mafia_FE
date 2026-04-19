@@ -11,6 +11,7 @@ import { HealEffect } from "@/components/HealEffect";
 import { InvestigateEffect } from "@/components/InvestigateEffect";
 import { KissEffect } from "@/components/KissEffect";
 import { MediaControls } from "@/components/MediaControls";
+import { ReactionCornerBadge } from "@/components/GameReactions";
 import { Shoot } from "@/components/Shoot";
 import { SleepIcon } from "@/components/SleepIcon";
 import { VoteFlow } from "@/components/VoteFlow";
@@ -157,6 +158,7 @@ export const GameVideo = observer(
           <VoteFlow isMyStream={isMyStream} userId={userId} />
 
           {isCheckRoleEnabled ? <CheckRole userId={userId} /> : null}
+          <ReactionCornerBadge userId={userId} />
 
           <Shoot userId={userId} clickPosition={localClickPos} />
           <KissEffect userId={userId} clickPosition={kissPos} />

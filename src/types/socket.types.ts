@@ -134,6 +134,7 @@ export interface WSSentEventData {
   [wsEvents.playerWakeConfirm]: { gameId: GameId; userId: UserId };
   [wsEvents.manualSleep]: { gameId: GameId; userId: UserId; gm: UserId };
   [wsEvents.manualWake]: { gameId: GameId; userId: UserId; gm: UserId };
+  [wsEvents.gameReaction]: { gameId: GameId; userId: UserId; emoji: string };
 }
 
 export type SendMessageFunction = <T extends keyof WSSentEventData>(
@@ -179,6 +180,7 @@ export interface WSSubscribedEventData {
   [wsEvents.playerWakeAck]: { userId: UserId };
   [wsEvents.manualSleep]: { userId: UserId };
   [wsEvents.manualWake]: { userId: UserId };
+  [wsEvents.gameReaction]: { userId: UserId; userName: string; emoji: string };
 }
 
 export type SubscribeEvent = keyof WSSubscribedEventData;

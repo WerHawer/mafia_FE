@@ -10,6 +10,21 @@
   font-size: 1.8rem;
 }
 
+.videoSection {
+  @include mixins.flex(column, flex-start, stretch);
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: theme.$border-radius-big;
+}
+
+.videoGridWrapper {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
 .hidden {
   visibility: hidden;
   opacity: 0;

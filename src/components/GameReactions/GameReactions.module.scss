@@ -1,0 +1,139 @@
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
+
+// --- GameReactionsBar ---
+.bar {
+  @include mixins.flex(row, center, center);
+  width: 100%;
+  gap: 6px;
+  padding: 10px 16px;
+  background-color: transparent;
+  z-index: 10;
+}
+
+.reactionBtn {
+  @include mixins.flexCenter;
+  background: rgba(theme.$color-light-primary, 0.15);
+  border: 1px solid rgba(theme.$color-light-primary, 0.1);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 0;
+  margin: 0;
+
+  &:hover {
+    background: rgba(theme.$color-light-primary, 0.3);
+    transform: scale(1.15) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// --- FloatingReactions ---
+.floatingContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 30%;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1000;
+  overflow: visible;
+}
+
+.floatingItem {
+  position: absolute;
+  bottom: 60px;
+  @include mixins.flex(column, flex-start, center);
+  gap: 4px;
+  // Use CSS variables set inline to drive the dynamic animation
+  animation: floatUp var(--duration, 4s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+             wobble 2s ease-in-out infinite alternate;
+}
+
+.emojiWrap {
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+}
+
+.floatingName {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes floatUp {
+  0% {
+    bottom: 60px;
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  30% {
+    transform: scale(1);
+  }
+  100% {
+    bottom: 75vh;
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes wobble {
+  0% {
+    transform: translateX(calc(var(--wobble-amplitude, 30px) * -1));
+  }
+  100% {
+    transform: translateX(var(--wobble-amplitude, 30px));
+  }
+}
+
+// --- ReactionCornerBadge ---
+.cornerBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background-color: rgba(theme.$color-dark-primary, 0.6);
+  border-radius: theme.$border-radius;
+  padding: 2px;
+  @include mixins.flexCenter;
+  animation: badgeFadeIn 0.3s ease-out forwards;
+}
+
+.cornerBadgeHiding {
+  animation: badgeFadeOut 0.3s ease-in forwards;
+}
+
+@keyframes badgeFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes badgeFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
