@@ -57,10 +57,11 @@ export const MediaControls = memo(
     // Показуємо індикатор звуку замість мікрофона якщо:
     // - є відео (камера ввімкнена)
     // - людина говорить
-    // - це не мій стрім (користувач не бачить свій індикатор)
     // - мікрофон ввімкнений
+    // Примітка: showSoundIndicator тепер true і для свого стріму — але видимість
+    // контролів регулюється пропом shouldShowMicrophone нижче.
     const showSoundIndicator =
-      isCameraEnabled && isSpeaking && !isMyStream && !isIGM;
+      isCameraEnabled && isSpeaking && !isIGM;
 
     // Логіка відображення контролів:
     // 1. GM бачить всі контроли для всіх

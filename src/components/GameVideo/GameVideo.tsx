@@ -203,7 +203,7 @@ export const GameVideo = observer(
             userName={currentUser?.nikName}
             avatar={currentUser?.avatar}
             isCameraEnabled={isCameraEnabled}
-            isSpeaking={isSpeaking && !isMyStream}
+            isSpeaking={isSpeaking}
           />
 
           <MediaControls
@@ -215,7 +215,7 @@ export const GameVideo = observer(
             isMyAfterStart={isMyAfterStart}
             isIGM={isIGM}
             isMyStream={isMyStream}
-            isSpeaking={isSpeaking && !isMyStream}
+            isSpeaking={isSpeaking}
           />
 
           {currentUser && (
