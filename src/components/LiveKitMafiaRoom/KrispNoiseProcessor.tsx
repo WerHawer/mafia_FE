@@ -9,56 +9,13 @@ import { useEffect } from "react";
  * Must be rendered inside <LiveKitRoom> to access room context.
  */
 export const KrispNoiseProcessor = () => {
-  const room = useRoomContext();
-
   useEffect(() => {
-    if (!isKrispNoiseFilterSupported()) {
-      console.warn("[Krisp] Noise filter not supported in this browser");
-
-      return;
-    }
-
-    const krispFilter: KrispNoiseFilterProcessor = KrispNoiseFilter();
-
-    const applyFilter = async (publication: LocalTrackPublication) => {
-      if (publication.source !== Track.Source.Microphone) return;
-
-      const track = publication.track;
-
-      if (!(track instanceof LocalAudioTrack)) return;
-
-      try {
-        await track.setProcessor(krispFilter);
-        console.log("[Krisp] Noise filter applied to microphone track");
-      } catch (error) {
-        console.error("[Krisp] Failed to apply noise filter:", error);
-      }
-    };
-
-    // Apply to microphone track if it is already published (e.g. room reconnect)
-    const existingMic = room.localParticipant.getTrackPublication(Track.Source.Microphone);
-
-    if (existingMic) {
-      void applyFilter(existingMic as LocalTrackPublication);
-    }
-
-    // Re-apply whenever the mic track is (re)published — e.g. after being toggled off/on
-    room.localParticipant.on(ParticipantEvent.LocalTrackPublished, applyFilter);
-
-    return () => {
-      room.localParticipant.off(ParticipantEvent.LocalTrackPublished, applyFilter);
-
-      // Stop processor and release WASM resources
-      const micPub = room.localParticipant.getTrackPublication(Track.Source.Microphone);
-      const micTrack = micPub?.track;
-
-      if (micTrack instanceof LocalAudioTrack) {
-        void micTrack.stopProcessor();
-      }
-
-      void krispFilter.destroy();
-    };
-  }, [room]);
+    // Krisp AI noise cancellation is a proprietary feature exclusive to LiveKit Cloud.
+    // Since we migrated to a self-hosted server, it will return a 404 error trying to fetch settings.
+    // The browser's native WebRTC noise suppression (which is quite good) is enabled automatically
+    // by LiveKit when publishing microphone tracks, so we just return early.
+    // console.log("[Krisp] Disabled on self-hosted server. Native noise suppression is active.");
+  }, []);
 
   return null;
 };
