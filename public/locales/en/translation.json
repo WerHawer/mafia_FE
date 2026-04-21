@@ -35,6 +35,7 @@
   "privateGame": "Private Game",
   "enterPassword": "Enter Password",
   "maxPlayers": "Max Players",
+  "maxPlayersNote": "Maximum 12 people (including GM)",
   "mafiaCount": "Mafia Count",
   "additionalRoles": "Additional Roles",
 
@@ -93,6 +94,7 @@
 
   "game": {
     "startGame": "Start Game",
+    "minPlayersNote": "Minimum 5 people (including GM)",
     "restart": "Restart",
     "night": "Night",
     "day": "Day",

@@ -20,11 +20,22 @@ export const InitialPanel = observer(() => {
   const { mutate: addRoles } = useAddRolesToGameMutation();
   const { mutate: startGame } = useStartGameMutation();
 
-  const onStartGame = useCallback(() => {
-    if (!activeGameId || !gamesStore.activeGame) return;
+  const canStartGame = activeGamePlayersWithoutGM.length >= 4;
 
-    const { mafiaCount = 3, additionalRoles = [] } =
-      gamesStore.activeGame;
+  const onStartGame = useCallback(() => {
+    if (!activeGameId || !gamesStore.activeGame || !canStartGame) return;
+
+    const { additionalRoles = [] } = gamesStore.activeGame;
+    const playersCount = activeGamePlayersWithoutGM.length;
+    let mafiaCount = 1;
+
+    if (playersCount >= 8) {
+      mafiaCount = 3;
+    } else if (playersCount === 7) {
+      mafiaCount = 2;
+    } else {
+      mafiaCount = 1; // 4, 5, 6 players
+    }
 
     const userRoles = rolesCreator(activeGamePlayersWithoutGM, {
       mafiaCount,
@@ -48,17 +59,26 @@ export const InitialPanel = observer(() => {
     addRoles,
     startGame,
     gamesStore.activeGame,
+    canStartGame,
   ]);
 
   return (
     <div className={styles.initialPanelContainer}>
-      <Button
-        size={ButtonSize.Large}
-        variant={ButtonVariant.Success}
-        onClick={onStartGame}
-      >
-        {t("game.startGame")}
-      </Button>
+      <div className={styles.startButtonWrapper}>
+        <Button
+          size={ButtonSize.Large}
+          variant={ButtonVariant.Success}
+          onClick={onStartGame}
+          disabled={!canStartGame}
+        >
+          {t("game.startGame")}
+        </Button>
+        {!canStartGame && (
+          <div className={styles.startNote}>
+            {t("game.minPlayersNote", "Мінімум 5 людей (з ведучим)")}
+          </div>
+        )}
+      </div>
     </div>
   );
 });

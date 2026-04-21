@@ -104,7 +104,7 @@ export const GamesList = observer(() => {
                     </div>
 
                     <Typography variant="span" className={styles.playerCount}>
-                      {game.playersCount}/{maxPlayers}
+                      {game.playersCount}
                     </Typography>
 
                     <Typography variant="span" className={styles.createdAt}>

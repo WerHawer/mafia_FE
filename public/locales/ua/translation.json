@@ -37,6 +37,7 @@
   "privateGame": "Приватна гра",
   "enterPassword": "Введіть пароль",
   "maxPlayers": "Макс. гравців",
+  "maxPlayersNote": "Максимум 12 людей (з ведучим)",
   "mafiaCount": "Кількість мафії",
   "additionalRoles": "Додаткові ролі",
 
@@ -95,6 +96,7 @@
 
   "game": {
     "startGame": "Почати гру",
+    "minPlayersNote": "Мінімум 5 людей (з ведучим)",
     "restart": "Перезапустити",
     "night": "Ніч",
     "day": "День",

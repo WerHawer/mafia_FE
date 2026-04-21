@@ -20,8 +20,7 @@ import { Switcher } from "@/UI/Switcher";
 import {
     ADDITIONAL_ROLES_OPTIONS,
     DEFAULT_VALUES,
-    FormValues,
-    MAX_PLAYERS_OPTIONS
+    FormValues
 } from "./CreateGameModal.config.ts";
 import styles from "./CreateGameModal.module.scss";
 
@@ -32,32 +31,12 @@ export const CreateGameModal = observer(() => {
   const { myId } = usersStore;
   const { closeModal } = modalStore;
 
-  const { control, handleSubmit, watch, register, setValue } =
+  const { control, handleSubmit, watch } =
     useForm<FormValues>({
       defaultValues: DEFAULT_VALUES,
     });
 
   const isPrivate = watch("isPrivate");
-  const maxPlayers = watch("maxPlayers");
-
-  // Auto-calculate mafia count based on player count
-  // 5-6 players -> 1 mafia
-  // 7 players -> 2 mafia
-  // 8+ players -> 3 mafia
-  useEffect(() => {
-    let count = 1;
-    const players = Number(maxPlayers);
-
-    if (players >= 8) {
-      count = 3;
-    } else if (players === 7) {
-      count = 2;
-    } else {
-      count = 1;
-    }
-
-    setValue("mafiaCount", count);
-  }, [maxPlayers, setValue]);
 
   const onSubmit = useCallback(
     (data: FormValues) => {
@@ -66,8 +45,8 @@ export const CreateGameModal = observer(() => {
       const game = createGameObj({
         owner: myId,
         gameType: GameType.Standard,
-        maxPlayers: Number(data.maxPlayers),
-        mafiaCount: Number(data.mafiaCount),
+        maxPlayers: 12,
+        mafiaCount: 0,
         additionalRoles: data.additionalRoles,
         password: data.isPrivate ? data.password : undefined,
       });
@@ -88,27 +67,9 @@ export const CreateGameModal = observer(() => {
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <div className={styles.row}>
-          <label className={styles.label}>{t("maxPlayers")}</label>
-          <select
-            {...register("maxPlayers", { valueAsNumber: true })}
-            className={styles.select}
-          >
-            {MAX_PLAYERS_OPTIONS.map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className={styles.row}>
-          <label className={styles.label}>{t("mafiaCount")}</label>
-          <div className={styles.readOnlyField}>{watch("mafiaCount")}</div>
-          {/* Hidden input to ensure value is registered */}
-          <input
-            type="hidden"
-            {...register("mafiaCount", { valueAsNumber: true })}
-          />
+          <div className={styles.infoMessage}>
+            {t("maxPlayersNote", "Максимум 12 людей (з ведучим)")}
+          </div>
         </div>
 
         <div className={styles.row}>
