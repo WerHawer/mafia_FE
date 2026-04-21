@@ -99,10 +99,22 @@ export const useMediaControls = ({
 
       if (isForMe && participant.isLocal) {
         try {
-          console.log(
-            `[Media Control] Executing local camera ${data.enabled ? "unmute" : "mute"}`
-          );
-          await localParticipant.setCameraEnabled(data.enabled);
+          // We use a canvas-based video track (not the native camera).
+          // setCameraEnabled() would try to open the real camera — we must NOT call it.
+          // Instead, mute/unmute the already-published track directly.
+          const videoPub = localParticipant.getTrackPublication(Track.Source.Camera);
+          if (videoPub?.track) {
+            if (data.enabled) {
+              await videoPub.track.unmute();
+            } else {
+              await videoPub.track.mute();
+            }
+            console.log(
+              `[Media Control] Canvas video track ${data.enabled ? "unmuted" : "muted"}`
+            );
+          } else {
+            console.warn("[Media Control] No local camera track found to toggle");
+          }
         } catch (error) {
           console.error("[Media Control] Error toggling camera:", error);
         }
@@ -133,10 +145,21 @@ export const useMediaControls = ({
 
       if (isForMe && participant.isLocal) {
         try {
-          console.log(
-            `[Media Control] Executing local microphone ${data.enabled ? "unmute" : "mute"}`
-          );
-          await localParticipant.setMicrophoneEnabled(data.enabled);
+          // Use direct track muting to avoid triggering getUserMedia again.
+          const audioPub = localParticipant.getTrackPublication(Track.Source.Microphone);
+          if (audioPub?.track) {
+            if (data.enabled) {
+              await audioPub.track.unmute();
+            } else {
+              await audioPub.track.mute();
+            }
+            console.log(
+              `[Media Control] Microphone track ${data.enabled ? "unmuted" : "muted"}`
+            );
+          } else {
+            // Fallback: if no track yet (e.g. mic not yet published), let LiveKit handle it
+            await localParticipant.setMicrophoneEnabled(data.enabled);
+          }
         } catch (error) {
           console.error("[Media Control] Error toggling microphone:", error);
         }

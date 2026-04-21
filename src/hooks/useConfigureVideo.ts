@@ -25,8 +25,8 @@ const FRAME_TARGET_MS = 1000 / 30;
  * so 640x360 captures full detail without the cost of feeding 1080p.
  * The resulting mask is scaled up to video resolution at draw time.
  */
-const SEGMENTATION_WIDTH = 640;
-const SEGMENTATION_HEIGHT = 360;
+const SEGMENTATION_WIDTH = 256;
+const SEGMENTATION_HEIGHT = 144;
 
 /**
  * WASM runtime CDN for @mediapipe/tasks-vision.
@@ -230,6 +230,35 @@ export const useConfigureVideo = (
 
       const vw = video.videoWidth || HIGH_VIDEO_WIDTH;
       const vh = video.videoHeight || HIGH_VIDEO_HEIGHT;
+
+      // FAST PATH: If no effects are applied, skip all segmentation and compositing
+      if (bgEffectsRef.current === bgEffects.none) {
+        if (mainCanvas.width !== vw || mainCanvas.height !== vh) {
+          mainCanvas.width = vw;
+          mainCanvas.height = vh;
+        }
+
+        const ctx = mainCanvas.getContext("2d", {
+          desynchronized: true,
+          alpha: true,
+          willReadFrequently: false,
+        });
+
+        if (ctx) {
+          ctx.clearRect(0, 0, vw, vh);
+          ctx.save();
+          ctx.translate(vw, 0);
+          ctx.scale(-1, 1);
+          ctx.drawImage(video, 0, 0, vw, vh);
+          ctx.restore();
+        }
+
+        if (!isBackgroundReadyRef.current) {
+          isBackgroundReadyRef.current = true;
+          setIsBackgroundReady(true);
+        }
+        return;
+      }
 
       // Clear before draw to prevent stale pixel bleed on aspect-ratio mismatches
       segInputCtx.clearRect(0, 0, SEGMENTATION_WIDTH, SEGMENTATION_HEIGHT);
@@ -493,14 +522,7 @@ export const useConfigureVideo = (
       }
     };
 
-    const onWindowBlur = () => startIntervalFallback();
-    const onWindowFocus = () => {
-      if (!document.hidden) startRAF();
-    };
-
     document.addEventListener("visibilitychange", onVisibilityChange);
-    window.addEventListener("blur", onWindowBlur);
-    window.addEventListener("focus", onWindowFocus);
 
     const init = async (): Promise<void> => {
       try {
@@ -555,8 +577,6 @@ export const useConfigureVideo = (
       stopRAF();
       stopInterval();
       document.removeEventListener("visibilitychange", onVisibilityChange);
-      window.removeEventListener("blur", onWindowBlur);
-      window.removeEventListener("focus", onWindowFocus);
       imageSegmenter?.close();
     };
   }, [myOriginalStream]);

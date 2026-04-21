@@ -35,4 +35,5 @@ export enum wsEvents {
   manualSleep = "manualSleep",
   manualWake = "manualWake",
   gameReaction = "gameReaction",
+  healthCheck = "healthCheck",
 }

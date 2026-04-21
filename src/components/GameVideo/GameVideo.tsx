@@ -2,7 +2,6 @@ import classNames from "classnames";
 import { Participant, Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
-import Draggable from "react-draggable";
 import { useTranslation } from "react-i18next";
 
 import deadBg from "@/assets/images/dead_bg.avif";
@@ -60,7 +59,6 @@ export const GameVideo = observer(
       isIGM,
       isUserDead,
       isSleeping,
-      isMyAfterStart,
       isShootEnabled,
       isKissEnabled,
       isHealEnabled,
@@ -135,15 +133,8 @@ export const GameVideo = observer(
     const isInteractive = (isShootEnabled && !isIGM) || isKissEnabled || isHealEnabled || isInvestigateEnabled;
 
     return (
-      <Draggable
-        disabled={!isMyAfterStart || isActive}
-        defaultClassNameDragging={styles.dragging}
-        position={!gameFlow.isStarted ? DEFAULT_VIDEO_POSITION : undefined}
-        nodeRef={containerRef}
-      >
         <div
           className={classNames("videoContainer", styles.container, {
-            [styles.myVideoContainer]: isMyAfterStart,
             [styles.active]: isActive,
             [styles.speaking]: isSpeaking && !isMyStream,
             [styles.shootable]: isShootEnabled && !isIGM,
@@ -214,7 +205,6 @@ export const GameVideo = observer(
             onToggleCamera={toggleCamera}
             onToggleMicrophone={toggleMicrophone}
             canControl={canControl}
-            isMyAfterStart={isMyAfterStart}
             isIGM={isIGM}
             isMyStream={isMyStream}
             isSpeaking={isSpeaking}
@@ -227,7 +217,6 @@ export const GameVideo = observer(
             />
           )}
         </div>
-      </Draggable>
     );
   }
 );

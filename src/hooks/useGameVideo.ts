@@ -32,7 +32,6 @@ export const useGameVideo = ({
   );
   const isUserDead = killed.includes(userId);
   const isSleeping = sleeping.includes(userId);
-  const isMyAfterStart = isMyStream && isStarted;
   const notFirstDay = day > 1;
   // Mafia can also shoot themselves
   const isShootEnabled =
@@ -147,7 +146,6 @@ export const useGameVideo = ({
     isIGM,
     isUserDead,
     isSleeping,
-    isMyAfterStart,
     isShootEnabled,
     isKissEnabled,
     isHealEnabled,

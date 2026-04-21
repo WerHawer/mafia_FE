@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 import { usersStore } from "../../store/usersStore.ts";
 import { FIVE_MINUTES, ONE_DAY, queryKeys } from "../apiConstants.ts";
@@ -36,9 +37,11 @@ export const useGetUsersWithAddToStore = (ids: string[], enabled = true) => {
   const users = useGetUsersByIds(ids, enabled);
   const { setUsers } = usersStore;
 
-  if (users.data) {
-    setUsers(users.data);
-  }
+  useEffect(() => {
+    if (users.data) {
+      setUsers(users.data);
+    }
+  }, [users.data, setUsers]);
 
   return users;
 };

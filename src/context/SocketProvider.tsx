@@ -45,16 +45,22 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   const { setSocketConnectedCount, myId } = usersStore;
 
   const updateRQGamesCache = useCallback((newGame: IGame | IGameShort) => {
-    queryClient.setQueryData<IGameShort[]>([queryKeys.games], (oldData) => {
-      if (!oldData) return undefined;
-      const exists = oldData.some((g) => g.id === newGame.id);
-      if (!exists) return [...oldData, newGame];
-      return oldData.map((g) => (g.id === newGame.id ? newGame : g));
+    queryClient.setQueryData<any>([queryKeys.games], (oldData: any) => {
+      if (!oldData || !oldData.data) return oldData;
+      const exists = oldData.data.some((g: any) => g.id === newGame.id);
+      if (!exists) return { ...oldData, data: [...oldData.data, newGame] };
+      return {
+        ...oldData,
+        data: oldData.data.map((g: any) => (g.id === newGame.id ? newGame : g)),
+      };
     });
   }, [queryClient]);
 
   const updateRQSingleGameCache = useCallback((newGame: IGame) => {
-    queryClient.setQueryData<IGame>([queryKeys.game, newGame.id], newGame);
+    queryClient.setQueryData<any>([queryKeys.game, newGame.id], (oldData: any) => {
+        if (!oldData) return { data: newGame };
+        return { ...oldData, data: newGame };
+    });
   }, [queryClient]);
 
   const subscribers: MassSubscribeEvents = useMemo(() => {
@@ -165,11 +171,11 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       transports: ["websocket", "polling"],
       upgrade: true,
       rememberUpgrade: true,
-      timeout: 20000,
+      timeout: 30000,
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 30000,
-      reconnectionAttempts: 10,
+      reconnectionAttempts: 20,
       randomizationFactor: 0.5,
       // Pass user ID for custom socket identification
       auth: {
@@ -182,6 +188,12 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       console.log("Socket connected successfully");
       setConnectionAttempts(0);
       setLastConnectionTime(Date.now());
+
+      const gameId = gamesStore.activeGameId;
+      if (gameId && myId) {
+        console.log("Socket connected during active game. Re-joining room.", gameId);
+        existingSocket.emit(wsEvents.roomConnection, [gameId, myId]);
+      }
     });
 
     existingSocket.on("connect_error", (error) => {
@@ -229,6 +241,25 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       existingSocket.disconnect();
     };
   }, [myId]);
+
+  useEffect(() => {
+    if (!socket || !myId) return;
+
+    const interval = setInterval(() => {
+      const gameId = gamesStore.activeGameId;
+
+      // Only emit healthCheck if socket is naturally connected.
+      // Socket.IO Native heartbeat will handle dropping and reconnecting.
+      if (socket.connected && gameId && myId) {
+        socket.emit(wsEvents.healthCheck, { gameId, userId: myId }, () => {
+           // We just send healthCheck to let backend know we are alive
+           // and backend will force socket.join(gameId) if we fell out of the room.
+        });
+      }
+    }, 15000); // Check every 15 seconds
+
+    return () => clearInterval(interval);
+  }, [socket, myId]);
 
   useEffect(() => {
     if (!socket) return;

@@ -12,23 +12,15 @@ type GridConfig = {
 
 export const useGridLayout = (): GridConfig => {
   const { gamesStore } = rootStore;
-  const { speaker, gameFlow } = gamesStore;
+  const { speaker } = gamesStore;
   const { streamsLength } = useMockStreams();
 
   return useMemo(() => {
-    const usersMinMax = {
-      four: gameFlow.isStarted ? 5 : 4,
-      six: gameFlow.isStarted ? 7 : 6,
-      twelve: gameFlow.isStarted ? 13 : 12,
-    };
-
     return {
-      two: streamsLength <= usersMinMax.four,
-      three:
-        streamsLength > usersMinMax.four && streamsLength <= usersMinMax.six,
-      four:
-        streamsLength > usersMinMax.six && streamsLength <= usersMinMax.twelve,
-      five: streamsLength > usersMinMax.twelve || !!speaker,
+      two: streamsLength <= 4,
+      three: streamsLength > 4 && streamsLength <= 6,
+      four: streamsLength > 6 && streamsLength <= 12,
+      five: streamsLength > 12 || !!speaker,
     };
-  }, [streamsLength, gameFlow.isStarted, speaker]);
+  }, [streamsLength, speaker]);
 };

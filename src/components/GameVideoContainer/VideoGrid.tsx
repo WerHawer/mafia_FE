@@ -29,6 +29,9 @@ export const VideoGrid = observer(() => {
       const isMy = trackRef.participant?.isLocal ?? false;
       const participantId = trackRef.participant?.identity || "";
 
+      // Before game starts — always show everyone
+      if (!isGameStarted) return true;
+
       return (
         (isMy && shouldShowMyVideo) ||
         (!isMy && shouldShowPlayerVideo(participantId))
@@ -50,7 +53,7 @@ export const VideoGrid = observer(() => {
 
       return getStatusWeight(idA) - getStatusWeight(idB);
     });
-  }, [allTracks, shouldShowMyVideo, shouldShowPlayerVideo, gamesStore.gameFlow.killed, gamesStore.activeGameGm]);
+  }, [allTracks, isGameStarted, shouldShowMyVideo, shouldShowPlayerVideo, gamesStore.gameFlow.killed, gamesStore.activeGameGm]);
 
   if (filteredTracks.length === 0) {
     return <GameEntryLoader />;
@@ -65,32 +68,21 @@ export const VideoGrid = observer(() => {
           const actualTrack = trackRef.publication?.track;
           const identity = trackRef.participant?.identity || "unknown";
 
-          // When game starts, player's own video gets position:fixed via CSS (.myVideoContainer).
-          // We remove the motion.div from grid flow (position: absolute, 0x0)
-          // so it doesn't leave an empty grid cell — but keep it mounted to preserve containerRef.
-          // Exception: when the player IS the active speaker, they go back into the grid as the large cell.
-          const isMyAfterStart = isMy && isGameStarted && !isActive;
-
           return (
             <motion.div
               key={identity}
-              layoutId={!isMyAfterStart ? identity : undefined}
-              layout={!isMyAfterStart}
-              className={classNames({
-                [styles.gridCell]: !isMyAfterStart,
-                [styles.noTransform]: isMyAfterStart,
-              })}
+              layoutId={identity}
+              layout={true}
+              className={styles.gridCell}
               style={
-                isMyAfterStart
-                  ? { position: "absolute", width: 0, height: 0, overflow: "visible" }
-                  : isActive
+                isActive
                   ? { gridColumn: "2 / 5", gridRow: "1 / 3" }
                   : undefined
               }
               transition={VIDEO_TRANSITION}
-              initial={!isMyAfterStart ? { opacity: 0, scale: 0.95 } : false}
-              animate={!isMyAfterStart ? { opacity: 1, scale: 1 } : {}}
-              exit={!isMyAfterStart ? { opacity: 0, scale: 0.95 } : {}}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
             >
               <GameVideo
                 participant={trackRef.participant!}

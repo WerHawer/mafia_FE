@@ -28,9 +28,6 @@ export const useNightMode = () => {
   // 2. Тих, хто прокинувся (в масиві wakeUp)
   const shouldShowVideos = !isNight || isGM || isAwake;
 
-  // Своє відео можна показувати завжди
-  const shouldShowMyVideo = true;
-
   // Чи показувати відео інших гравців
   const shouldShowPlayerVideo = useCallback(
     (participantId: string) => {
@@ -51,6 +48,9 @@ export const useNightMode = () => {
     },
     [isNight, isGM, isAwake, isUserGM]
   );
+
+  // Звичайний гравець бачить своє відео за тими ж правилами, що й інші (вночі не бачить, якщо спить)
+  const shouldShowMyVideo = myId ? shouldShowPlayerVideo(myId) : false;
 
   return {
     isNight,

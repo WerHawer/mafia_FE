@@ -17,7 +17,6 @@ type MediaControlsProps = {
   onToggleCamera: () => void;
   onToggleMicrophone: () => void;
   canControl: boolean;
-  isMyAfterStart: boolean;
   isIGM?: boolean;
   isMyStream?: boolean;
   isSpeaking?: boolean;
@@ -31,7 +30,6 @@ export const MediaControls = memo(
     onToggleCamera,
     onToggleMicrophone,
     canControl,
-    isMyAfterStart,
     isIGM = false,
     isMyStream = false,
     isSpeaking = false,
@@ -72,11 +70,7 @@ export const MediaControls = memo(
     const shouldShowCamera = isIGM || isMyStream;
 
     return (
-      <div
-        className={classNames(styles.mediaControls, {
-          [styles.small]: isMyAfterStart,
-        })}
-      >
+      <div className={styles.mediaControls}>
         {shouldShowMicrophone ? (
           <div
             className={classNames(styles.controlButton, {
