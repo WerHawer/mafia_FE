@@ -10,10 +10,11 @@ import { KrispNoiseProcessor } from "./KrispNoiseProcessor.tsx";
 
 type LiveKitMafiaRoomProps = {
   children?: ReactNode;
+  enabled?: boolean;
 };
 
 export const LiveKitMafiaRoom = observer(
-  ({ children }: LiveKitMafiaRoomProps) => {
+  ({ children, enabled = false }: LiveKitMafiaRoomProps) => {
     const [LKToken, setLKToken] = useState("");
 
     const { usersStore, gamesStore } = rootStore;
@@ -23,7 +24,7 @@ export const LiveKitMafiaRoom = observer(
     const { mutateAsync: getToken } = useGetLiveKitTokenMutation();
 
     useEffect(() => {
-      if (!myId || !id) return;
+      if (!myId || !id || !enabled) return;
 
       void getToken(
         { roomName: id, participantName: myId },
@@ -36,7 +37,7 @@ export const LiveKitMafiaRoom = observer(
           },
         }
       );
-    }, [myId, id, getToken]);
+    }, [myId, id, enabled, getToken]);
 
     return (
       <LiveKitRoom

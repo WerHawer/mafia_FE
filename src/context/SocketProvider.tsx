@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import {
   createContext,
   PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -16,6 +17,7 @@ import { wsEvents } from "../config/wsEvents.ts";
 import { gamesStore } from "../store/gamesStore.ts";
 import { messagesStore } from "../store/messagesStore.ts";
 import { usersStore } from "../store/usersStore.ts";
+import { IGame, IGameShort } from "../types/game.types.ts";
 import { ListenFunction, MassSubscribeEvents } from "../types/socket.types.ts";
 
 export const SocketContext = createContext<{
@@ -41,6 +43,19 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   const { updateGame, updateGames, setToProposed, addVoted, addShoot } =
     gamesStore;
   const { setSocketConnectedCount, myId } = usersStore;
+
+  const updateRQGamesCache = useCallback((newGame: IGame | IGameShort) => {
+    queryClient.setQueryData<IGameShort[]>([queryKeys.games], (oldData) => {
+      if (!oldData) return undefined;
+      const exists = oldData.some((g) => g.id === newGame.id);
+      if (!exists) return [...oldData, newGame];
+      return oldData.map((g) => (g.id === newGame.id ? newGame : g));
+    });
+  }, [queryClient]);
+
+  const updateRQSingleGameCache = useCallback((newGame: IGame) => {
+    queryClient.setQueryData<IGame>([queryKeys.game, newGame.id], newGame);
+  }, [queryClient]);
 
   const subscribers: MassSubscribeEvents = useMemo(() => {
     if (!socket) return {};
@@ -84,20 +99,20 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       },
       [wsEvents.roomConnection]: (data) => {
         updateGames(data.game);
-        queryClient.invalidateQueries({ queryKey: [queryKeys.games] });
+        updateRQGamesCache(data.game);
       },
       [wsEvents.roomLeave]: (data) => {
         updateGames(data.game);
-        queryClient.invalidateQueries({ queryKey: [queryKeys.games] });
+        updateRQGamesCache(data.game);
       },
       [wsEvents.gameUpdate]: (newGame) => {
         updateGame(newGame);
-        queryClient.invalidateQueries({ queryKey: [queryKeys.games] });
-        queryClient.invalidateQueries({ queryKey: [queryKeys.game, newGame.id] });
+        updateRQGamesCache(newGame);
+        updateRQSingleGameCache(newGame);
       },
       [wsEvents.gamesUpdate]: (newGame) => {
         updateGames(newGame);
-        queryClient.invalidateQueries({ queryKey: [queryKeys.games] });
+        updateRQGamesCache(newGame);
       },
       [wsEvents.socketDisconnect]: (connectedUsers) => {
         setSocketConnectedCount(connectedUsers);

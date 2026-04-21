@@ -27,16 +27,22 @@ import {
 
 const CACHE_INVALIDATION_DELAY_MS = 300;
 
+let invalidateTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
 const invalidateGameQueries = (queryClient: QueryClient, gameId?: GameId, withDelay = false) => {
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: [queryKeys.games] });
     if (gameId) {
       queryClient.invalidateQueries({ queryKey: [queryKeys.game, gameId] });
     }
+    invalidateTimeoutId = null;
   };
 
   if (withDelay) {
-    setTimeout(invalidate, CACHE_INVALIDATION_DELAY_MS);
+    if (invalidateTimeoutId) {
+      clearTimeout(invalidateTimeoutId);
+    }
+    invalidateTimeoutId = setTimeout(invalidate, CACHE_INVALIDATION_DELAY_MS);
   } else {
     invalidate();
   }

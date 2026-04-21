@@ -44,6 +44,7 @@ const GamePage = observer(() => {
   const { activeGamePlayers, removeActiveGame, updateGame } = gamesStore;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
+  const [isJoinedToGame, setIsJoinedToGame] = useState(false);
   const [shouldShowVideoConfig, setShouldShowVideoConfig] = useState(false);
   const [shouldShowAudioConfig, setShouldShowAudioConfig] = useState(false);
 
@@ -87,11 +88,16 @@ const GamePage = observer(() => {
       {
         onSuccess: ({ data: game }) => {
           updateGame(game);
+          setIsJoinedToGame(true);
+        },
+        onError: () => {
+          setIsJoinedToGame(false);
         },
       }
     );
 
     return () => {
+      setIsJoinedToGame(false);
       removeActiveGame();
       removeUserFromGame({
         userId: myId,
@@ -106,7 +112,7 @@ const GamePage = observer(() => {
       <div className={styles.pageContainer}>
         <FloatingReactions />
 
-        <LiveKitMafiaRoom>
+        <LiveKitMafiaRoom enabled={isJoinedToGame}>
           <div className={styles.videoSection}>
             <GMMenu
               onOpenVideoConfig={() => setShouldShowVideoConfig(true)}
