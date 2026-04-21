@@ -44,24 +44,35 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
     gamesStore;
   const { setSocketConnectedCount, myId } = usersStore;
 
-  const updateRQGamesCache = useCallback((newGame: IGame | IGameShort) => {
-    queryClient.setQueryData<any>([queryKeys.games], (oldData: any) => {
-      if (!oldData || !oldData.data) return oldData;
-      const exists = oldData.data.some((g: any) => g.id === newGame.id);
-      if (!exists) return { ...oldData, data: [...oldData.data, newGame] };
-      return {
-        ...oldData,
-        data: oldData.data.map((g: any) => (g.id === newGame.id ? newGame : g)),
-      };
-    });
-  }, [queryClient]);
+  const updateRQGamesCache = useCallback(
+    (newGame: IGame | IGameShort) => {
+      queryClient.setQueryData<any>([queryKeys.games], (oldData: any) => {
+        if (!oldData || !oldData.data) return oldData;
+        const exists = oldData.data.some((g: any) => g.id === newGame.id);
+        if (!exists) return { ...oldData, data: [...oldData.data, newGame] };
+        return {
+          ...oldData,
+          data: oldData.data.map((g: any) =>
+            g.id === newGame.id ? newGame : g
+          ),
+        };
+      });
+    },
+    [queryClient]
+  );
 
-  const updateRQSingleGameCache = useCallback((newGame: IGame) => {
-    queryClient.setQueryData<any>([queryKeys.game, newGame.id], (oldData: any) => {
-        if (!oldData) return { data: newGame };
-        return { ...oldData, data: newGame };
-    });
-  }, [queryClient]);
+  const updateRQSingleGameCache = useCallback(
+    (newGame: IGame) => {
+      queryClient.setQueryData<any>(
+        [queryKeys.game, newGame.id],
+        (oldData: any) => {
+          if (!oldData) return { data: newGame };
+          return { ...oldData, data: newGame };
+        }
+      );
+    },
+    [queryClient]
+  );
 
   const subscribers: MassSubscribeEvents = useMemo(() => {
     if (!socket) return {};
@@ -119,6 +130,12 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       [wsEvents.gamesUpdate]: (newGame) => {
         updateGames(newGame);
         updateRQGamesCache(newGame);
+      },
+      [wsEvents.gameNotFound]: ({ roomId }) => {
+        console.warn(
+          `Game ${roomId} was not found on the server. Clearing local state.`
+        );
+        gamesStore.removeActiveGame();
       },
       [wsEvents.socketDisconnect]: (connectedUsers) => {
         setSocketConnectedCount(connectedUsers);
@@ -191,7 +208,10 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
 
       const gameId = gamesStore.activeGameId;
       if (gameId && myId) {
-        console.log("Socket connected during active game. Re-joining room.", gameId);
+        console.log(
+          "Socket connected during active game. Re-joining room.",
+          gameId
+        );
         existingSocket.emit(wsEvents.roomConnection, [gameId, myId]);
       }
     });
@@ -252,8 +272,8 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       // Socket.IO Native heartbeat will handle dropping and reconnecting.
       if (socket.connected && gameId && myId) {
         socket.emit(wsEvents.healthCheck, { gameId, userId: myId }, () => {
-           // We just send healthCheck to let backend know we are alive
-           // and backend will force socket.join(gameId) if we fell out of the room.
+          // We just send healthCheck to let backend know we are alive
+          // and backend will force socket.join(gameId) if we fell out of the room.
         });
       }
     }, 15000); // Check every 15 seconds

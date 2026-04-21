@@ -181,6 +181,7 @@ export interface WSSubscribedEventData {
   [wsEvents.manualSleep]: { userId: UserId };
   [wsEvents.manualWake]: { userId: UserId };
   [wsEvents.gameReaction]: { userId: UserId; userName: string; emoji: string };
+  [wsEvents.gameNotFound]: { roomId: GameId };
 }
 
 export type SubscribeEvent = keyof WSSubscribedEventData;
