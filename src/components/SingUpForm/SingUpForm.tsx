@@ -33,9 +33,12 @@ export const SingUpForm = observer(() => {
       { login, password },
       {
         onSuccess: (res) => {
-          const { token } = res.data;
+          const { token, refreshToken } = res.data;
           addTokenToAxios(token);
           setToken(token);
+          if (refreshToken) {
+            usersStore.setRefreshToken(refreshToken);
+          }
           setMyUser(res.data.user);
 
           if (socket && !isConnected) {

@@ -18,3 +18,9 @@ export const auth = async (token?: string) => {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
 };
+
+export const refreshTokenRequest = async (refreshToken: string) => {
+  return axios.post<{ token: string; refreshToken?: string }>(`/refresh`, {
+    refreshToken,
+  });
+};

@@ -31,9 +31,12 @@ export const LoginForm = observer(() => {
   const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
     mutate(data, {
       onSuccess: (res) => {
-        const { token } = res.data;
+        const { token, refreshToken } = res.data;
         addTokenToAxios(token);
         setToken(token);
+        if (refreshToken) {
+          usersStore.setRefreshToken(refreshToken);
+        }
         setMyUser(res.data.user);
 
         if (socket && !isConnected) {

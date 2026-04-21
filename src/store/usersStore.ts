@@ -7,14 +7,15 @@ export class UsersStore {
   _myUser: IUser | null = null;
   _users: Record<string, IUser> = {};
   _token: string = "";
+  _refreshToken: string = "";
   _socketConnectedCount: number = 0;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
     makePersistable(this, {
       name: "Users_mobx",
-      properties: ["_token", "_myUser"],
-      storage: sessionStorage,
+      properties: ["_token", "_refreshToken", "_myUser"],
+      storage: localStorage,
     });
   }
 
@@ -39,12 +40,20 @@ export class UsersStore {
     this._token = token;
   };
 
+  setRefreshToken = (token: string) => {
+    this._refreshToken = token;
+  };
+
   setSocketConnectedCount = (count: number) => {
     this._socketConnectedCount = count;
   };
 
   removeToken = () => {
     this._token = "";
+  };
+
+  removeRefreshToken = () => {
+    this._refreshToken = "";
   };
 
   removeUsers = () => {
@@ -57,6 +66,7 @@ export class UsersStore {
 
   logout = () => {
     this.removeToken();
+    this.removeRefreshToken();
     this.removeMyUser();
     this.removeUsers();
   };
@@ -75,6 +85,10 @@ export class UsersStore {
 
   get token() {
     return toJS(this._token);
+  }
+
+  get refreshToken() {
+    return toJS(this._refreshToken);
   }
 
   get me() {

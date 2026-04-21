@@ -7,9 +7,12 @@ import { RouterProvider } from "react-router-dom";
 
 
 import { SocketProvider } from "./context/SocketProvider.tsx";
+import { setupAxiosInterceptors } from "./helpers/setupAxiosInterceptors.ts";
 import { router } from "./router/router.tsx";
 
 const queryClient = new QueryClient();
+
+setupAxiosInterceptors();
 
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
