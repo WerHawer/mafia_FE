@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import {
@@ -16,7 +16,7 @@ import { GameVote } from "@/components/GameVote";
 import { GMMenu } from "@/components/GMMenu";
 import { LiveKitMafiaRoom } from "@/components/LiveKitMafiaRoom/LiveKitMafiaRoom.tsx";
 import { AudioProvider } from "@/components/AudioProvider/AudioProvider.tsx";
-import { videoOptions } from "@/config/video.ts";
+import { useAdaptiveQuality } from "@/hooks/useAdaptiveQuality.ts";
 import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
 import { useVideoSettings } from "@/hooks/useVideoSettings.ts";
 import { useGameReactions } from "@/hooks/useGameReactions.ts";
@@ -50,10 +50,22 @@ const GamePage = observer(() => {
 
   const { sendReaction } = useGameReactions();
 
+  const quality = useAdaptiveQuality();
+
   const originalStream = useUserMediaStream({
     audio: false,
-    video: videoOptions,
+    video: {
+      width: { ideal: quality.settings.width },
+      height: { ideal: quality.settings.height },
+      frameRate: { ideal: quality.settings.fps },
+    },
   });
+
+  // Once we have the stream, verify the camera actually delivered the requested quality
+  useEffect(() => {
+    if (originalStream) quality.onStreamReady(originalStream);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [originalStream]);
 
   const { getSavedSettings } = useVideoSettings(id);
 
@@ -67,8 +79,12 @@ const GamePage = observer(() => {
 
   useGetUsersWithAddToStore(activeGamePlayers);
 
+  const firstStreamRef = useRef(false);
+
   useEffect(() => {
-    if (!originalStream) return;
+    if (!originalStream || firstStreamRef.current) return;
+
+    firstStreamRef.current = true;
 
     const savedSettings = getSavedSettings();
 
@@ -123,6 +139,7 @@ const GamePage = observer(() => {
               <GameVideoManager
                 originalStream={originalStream}
                 gameId={id}
+                quality={quality}
                 showVideoConfig={shouldShowVideoConfig}
                 onCloseVideoConfig={() => setShouldShowVideoConfig(false)}
                 showAudioConfig={shouldShowAudioConfig}

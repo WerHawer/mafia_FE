@@ -1,7 +1,7 @@
 import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { ChangeEvent, useCallback, useEffect } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import blurIcon from "@/assets/icons/blur.png";
@@ -15,15 +15,19 @@ import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
 import styles from "./VideoConfig.module.scss";
 
+import { useAdaptiveQuality } from "@/hooks/useAdaptiveQuality.ts";
+import { QUALITY_PRESETS, QualityTier } from "@/config/video.ts";
+
 type VideoConfigProps = {
   originalStream: MediaStream | null;
   gameId: string;
   onClose?: () => void;
   isShown?: boolean;
+  quality?: ReturnType<typeof useAdaptiveQuality>;
 };
 
 export const VideoConfig = observer(
-  ({ originalStream, gameId, onClose, isShown }: VideoConfigProps) => {
+  ({ originalStream, gameId, onClose, isShown, quality }: VideoConfigProps) => {
     const { t } = useTranslation();
     const { streamsStore, usersStore } = rootStore;
     const { setImageToBackgrounds } = streamsStore;
@@ -42,8 +46,15 @@ export const VideoConfig = observer(
       applySettings,
     } = useCustomVideo(originalStream, getSavedSettings());
 
+    // Apply saved settings exactly once — when the stream first becomes available.
+    // We use a ref flag so quality-change stream restarts don't re-apply stale
+    // localStorage settings over the user's current in-memory selection.
+    const settingsAppliedRef = useRef(false);
+
     useEffect(() => {
-      if (!originalStream) return;
+      if (!originalStream || settingsAppliedRef.current) return;
+
+      settingsAppliedRef.current = true;
 
       const savedSettings = getSavedSettings();
 
@@ -169,6 +180,48 @@ export const VideoConfig = observer(
                     height="40"
                   />
                 </Tippy>
+
+                {/* Quality picker — compact icon with Tippy popover */}
+                {quality && (
+                  <Tippy
+                    content={
+                      <div className={styles.qualityPopover}>
+                        {(Object.keys(QUALITY_PRESETS) as QualityTier[]).map((t_) => (
+                          <button
+                            key={t_}
+                            className={classNames(
+                              styles.qualityOption,
+                              quality.tier === t_ && styles.qualityOptionActive
+                            )}
+                            onClick={() => quality.setTier(t_)}
+                          >
+                            {QUALITY_PRESETS[t_].label}
+                            {t_ === quality.detectedTier && (
+                              <span className={styles.autoTag}>авто</span>
+                            )}
+                          </button>
+                        ))}
+                        {quality.actualResolution && (
+                          <p className={styles.qualityActual}>
+                            📷 {quality.actualResolution.width}×{quality.actualResolution.height}
+                          </p>
+                        )}
+                      </div>
+                    }
+                    theme="quality-picker"
+                    trigger="click"
+                    interactive
+                    placement="bottom-start"
+                    appendTo="parent"
+                  >
+                    <div
+                      className={styles.qualityBadge}
+                      title={t("videoConfig.qualityTitle", "Якість відео")}
+                    >
+                      {quality.settings.height}p
+                    </div>
+                  </Tippy>
+                )}
               </div>
             </div>
 

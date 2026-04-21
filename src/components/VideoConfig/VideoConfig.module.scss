@@ -182,3 +182,79 @@
   @include mixins.flex(column, flex-start, flex-start);
   width: 100%;
 }
+
+// ─── Quality picker (badge + popover) ──────────────────────────────────
+.qualityBadge {
+  @include mixins.flexCenter;
+  min-width: 5.5rem;
+  height: 5.5rem;
+  border-radius: theme.$border-radius;
+  background: color.adjust(theme.$color-dark-tertiary, $lightness: 15%);
+  border: 1px solid theme.$color-light-tertiary;
+  color: theme.$color-text-primary;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.8rem;
+
+  &:hover {
+    background: color.adjust(theme.$color-dark-tertiary, $lightness: 25%);
+    border-color: theme.$color-accent-primary;
+  }
+}
+
+.qualityPopover {
+  @include mixins.flex(column, flex-start, stretch);
+  gap: 0.3rem;
+  padding: 0.6rem;
+  min-width: 160px;
+}
+
+.qualityOption {
+  @include mixins.flex(row, space-between);
+  padding: 0.55rem 0.8rem;
+  border-radius: theme.$border-radius;
+  border: 1px solid transparent;
+  background: transparent;
+  color: theme.$color-text-primary;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  gap: 0.5rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: theme.$color-light-tertiary;
+  }
+
+  &.qualityOptionActive {
+    border-color: theme.$color-accent-primary;
+    background: rgba(theme.$color-accent-primary, 0.15);
+    font-weight: 600;
+  }
+}
+
+.autoTag {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: theme.$color-accent-secondary;
+  color: theme.$color-text-primary;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.qualityActual {
+  font-size: 0.8rem;
+  color: theme.$color-text-secondary;
+  margin-top: 0.3rem;
+  padding: 0 0.4rem;
+}
+
+.qualityHint {
+  font-size: 0.85rem;
+  color: theme.$color-text-secondary;
+}

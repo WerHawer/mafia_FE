@@ -1,29 +1,12 @@
 import { FilesetResolver, ImageSegmenter } from "@mediapipe/tasks-vision";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import { videoOptions } from "@/config/video.ts";
+import { QualitySettings } from "@/config/video.ts";
 import { UserVideoSettings } from "@/types/user.types.ts";
-
-const HIGH_VIDEO_WIDTH = videoOptions.width;
-const HIGH_VIDEO_HEIGHT = videoOptions.height;
-
-/**
- * Fallback frame interval when RAF is throttled in hidden tabs / blurred windows.
- * setInterval continues running (throttled to ~1fps by browsers) keeping the
- * canvas stream alive for remote participants.
- */
-const BACKGROUND_FRAME_INTERVAL_MS = 1000 / 30;
-
-/**
- * Target frame time for the 30fps processing cap.
- */
-const FRAME_TARGET_MS = 1000 / 30;
 
 /**
  * Input resolution fed to the segmentation model.
- * The selfie_segmenter_landscape model operates at ~256x144 internally,
- * so 640x360 captures full detail without the cost of feeding 1080p.
- * The resulting mask is scaled up to video resolution at draw time.
+ * Kept small — the model operates at ~256x144 internally.
  */
 const SEGMENTATION_WIDTH = 256;
 const SEGMENTATION_HEIGHT = 144;
@@ -67,8 +50,16 @@ type BackgroundEffects = keyof typeof bgEffects;
 
 export const useConfigureVideo = (
   videoSettings: UserVideoSettings,
-  myOriginalStream: MediaStream | null
+  myOriginalStream: MediaStream | null,
+  qualitySettings?: QualitySettings
 ) => {
+  const fps = qualitySettings?.fps ?? 24;
+  const canvasWidth  = qualitySettings?.width  ?? 854;
+  const canvasHeight = qualitySettings?.height ?? 480;
+
+  // Derived frame timing — recalculated when quality changes
+  const frameTargetMs         = 1000 / fps;
+  const backgroundIntervalMs  = 1000 / fps;
   const [imageURL, setImageURL] = useState(videoSettings.imageURL);
   const [withBlur, setWithBlur] = useState(videoSettings.withBlur);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -162,8 +153,8 @@ export const useConfigureVideo = (
      * that occurs on some GPU drivers / browsers.
      */
     const compCanvas = document.createElement("canvas");
-    compCanvas.width = HIGH_VIDEO_WIDTH;
-    compCanvas.height = HIGH_VIDEO_HEIGHT;
+    compCanvas.width = canvasWidth;
+    compCanvas.height = canvasHeight;
     let compCtx = compCanvas.getContext("2d", { alpha: true });
 
     /**
@@ -220,7 +211,7 @@ export const useConfigureVideo = (
 
       const now = performance.now();
 
-      if (now - lastFrameTimeRef.current < FRAME_TARGET_MS) return;
+      if (now - lastFrameTimeRef.current < frameTargetMs) return;
 
       lastFrameTimeRef.current = now;
 
@@ -228,8 +219,8 @@ export const useConfigureVideo = (
 
       if (!mainCanvas) return;
 
-      const vw = video.videoWidth || HIGH_VIDEO_WIDTH;
-      const vh = video.videoHeight || HIGH_VIDEO_HEIGHT;
+      const vw = video.videoWidth || canvasWidth;
+      const vh = video.videoHeight || canvasHeight;
 
       // FAST PATH: If no effects are applied, skip all segmentation and compositing
       if (bgEffectsRef.current === bgEffects.none) {
@@ -511,7 +502,7 @@ export const useConfigureVideo = (
             err
           );
         }
-      }, BACKGROUND_FRAME_INTERVAL_MS);
+      }, backgroundIntervalMs);
     };
 
     const onVisibilityChange = () => {

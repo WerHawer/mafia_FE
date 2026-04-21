@@ -109,3 +109,22 @@ a {
     color: rgba(theme.$color-dark-secondary, 0.98);
   }
 }
+// Tippy theme for quality picker popover
+.tippy-box[data-theme~="quality-picker"] {
+  background-color: theme.$color-dark-secondary;
+  border: 1px solid rgba(theme.$color-accent-primary, 0.35);
+  border-radius: theme.$border-radius;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.55),
+    0 0 10px rgba(theme.$color-accent-primary, 0.06);
+
+  .tippy-content {
+    padding: 0;
+    font-size: 1rem;
+    color: theme.$color-text-primary;
+  }
+
+  .tippy-arrow {
+    color: theme.$color-dark-secondary;
+  }
+}
