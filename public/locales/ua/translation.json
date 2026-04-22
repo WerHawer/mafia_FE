@@ -127,8 +127,12 @@
     "voteList": "Список голосування",
     "gmStartVote": "Почати голосування",
     "gmStopVote": "Зупинити голосування",
+    "resetVoting": "Скинути голоси",
+    "toastVoteStarted": "Голосування починається!",
+    "toastRevoteStarted": "Переголосування починається!",
     "proposePlayer": "Виставити на голосування",
-    "voteAgainst": "Проголосувати проти"
+    "voteAgainst": "Проголосувати проти",
+    "proposedBy": "Запропонував: {{name}}"
   },
 
   "videoConfig": {

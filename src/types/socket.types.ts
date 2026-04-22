@@ -172,7 +172,7 @@ export interface WSSubscribedEventData {
   [wsEvents.connectionError]: Error;
   [wsEvents.userStreamStatus]: StreamsArr;
   [wsEvents.gamesUpdate]: IGameShort;
-  [wsEvents.addToProposed]: UserId;
+  [wsEvents.addToProposed]: { userId: UserId; proposerId: UserId };
   [wsEvents.vote]: { targetUserId: UserId; voterId: UserId };
   [wsEvents.shoot]: { targetUserId: UserId; shooterId: UserId; shot?: { x: number; y: number } };
   [wsEvents.userCameraStatusChanged]: { userId: UserId; enabled: boolean };

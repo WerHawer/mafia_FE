@@ -1,209 +1,223 @@
 @use "../../styles/theme.scss";
 @use "../../styles/mixins.scss";
 
-.toggleButtonContainer {
-  @include mixins.flex(row, flex-end, center);
-  position: fixed;
-  top: 42px;
-  right: 52px;
-  transform: translateY(-50%);
-  z-index: 999;
+// ── Outer wrapper ─────────────────────────────────────────────────────────────
+.voteContainer {
+  width: 100%;
+  flex-shrink: 0;
+  max-height: 50%;
+
+  @include mixins.rounded(theme.$border-radius-medium);
+  background-color: theme.$color-dark-secondary;
+  padding: 10px 14px;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
-.toggleButton {
+// ── GM header row ─────────────────────────────────────────────────────────────
+.gmHeaderRow {
+  @include mixins.flex(row, space-between, center);
   gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(theme.$color-light-primary, 0.08);
+  margin-bottom: 6px;
+}
+
+.gmToggleBtn {
+  @include mixins.flex(row, flex-start, center);
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: theme.$color-text-primary;
+  font-size: 1.4rem;
+  font-weight: 600;
+  padding: 0;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: theme.$color-light-secondary;
+  }
 }
 
 .badge {
   @include mixins.flex(row, center, center);
   @include mixins.rounded(50%);
-  @include mixins.size(24px);
-  background-color: theme.$color-accent-primary;
+  @include mixins.size(18px);
+  background-color: theme.$color-accent-tertiary;
   color: theme.$color-dark-primary;
-  font-size: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.chevronIcon {
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+  display: inline-block;
+
+  &.chevronOpen {
+    transform: rotate(180deg);
+  }
+}
+
+// ── List title ───────────────────────────────────────────────────────────────
+.listTitle {
+  font-size: 1.4rem;
   font-weight: 600;
+  color: theme.$color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0 2px 6px;
+  border-bottom: 1px solid rgba(theme.$color-light-primary, 0.07);
+  margin-bottom: 6px;
 }
 
-.gmVoteButtonWrapper {
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  z-index: 10;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-}
-
-.gmVoteButton {
-  @include mixins.rounded(50%);
-  @include mixins.size(24px);
-  padding: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  }
-
-  &:active {
-    transform: scale(1.05);
-  }
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-}
-
-.panel {
-  @include mixins.flex(column);
-  @include mixins.rounded(theme.$border-radius-big);
-  position: fixed;
-  top: 42px;
-  right: 70px;
-  width: 300px;
-  max-height: calc(100vh - 120px);
-  transform-origin: top right;
-  background: linear-gradient(
-    135deg,
-    rgba(theme.$color-dark-secondary, 0.98) 0%,
-    rgba(theme.$color-dark-primary, 0.95) 100%
-  );
-  backdrop-filter: blur(10px);
-  box-shadow:
-    -4px 0 24px rgba(0, 0, 0, 0.5),
-    -2px 0 12px rgba(0, 0, 0, 0.3),
-    inset 1px 0 0 rgba(255, 255, 255, 0.05);
-  z-index: 1000;
-}
-
-.closeButton {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 10;
-}
-
-.panelHeader {
-  @include mixins.flex(row, center, center);
-  padding: 48px 20px 16px;
-
-  h3 {
-    color: theme.$color-text-primary;
-    font-size: 17px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 0;
-    text-shadow:
-      2px 2px 3px rgba(0, 0, 0, 0.65),
-      0 0 9px rgba(0, 0, 0, 0.45);
-  }
-}
-
-.listContainer {
-  @include mixins.customScrollbar;
-  width: 100%;
-  flex: 1;
-  padding: 16px 20px 25px;
-  overflow-y: auto;
-  min-height: 0;
-}
-
+// ── List ──────────────────────────────────────────────────────────────────────
 .list {
-  @include mixins.flex(column, flex-start, flex-start);
-  gap: 12px;
+  @include mixins.flex(column, flex-start, stretch);
+  gap: 5px;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
+// ── List item ─────────────────────────────────────────────────────────────────
 .listItem {
+  @include mixins.flex(column, flex-start, stretch);
   @include mixins.rounded(theme.$border-radius);
-  @include mixins.flex(row, space-between, center);
-  width: 100%;
-  padding: 14px 18px;
-  background: rgba(255, 255, 255, 0.03);
-  color: theme.$color-text-primary;
-  font-size: 15px;
-  font-weight: 600;
-  text-shadow:
-    1px 1px 2px rgba(0, 0, 0, 0.7),
-    0 0 5px rgba(0, 0, 0, 0.5);
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  position: relative;
+  gap: 3px;
+  padding: 8px 10px;
+  background: rgba(theme.$color-light-primary, 0.04);
+  border: 1px solid rgba(theme.$color-light-primary, 0.06);
+  transition: all 0.15s ease;
 
   &.clickable {
     cursor: pointer;
 
     &:hover {
-      background: rgba(theme.$color-dark-secondary, 0.8);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      background: rgba(theme.$color-light-primary, 0.09);
+      border-color: rgba(theme.$color-light-primary, 0.12);
     }
   }
 
   &.voted {
-    background: linear-gradient(
-      135deg,
-      rgba(theme.$color-dark-secondary, 0.95) 0%,
-      rgba(theme.$color-dark-primary, 0.85) 100%
-    );
-    box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.3),
-      0 0 15px rgba(theme.$color-dark-secondary, 0.3);
+    border-color: rgba(theme.$color-accent-tertiary, 0.35);
+    background: rgba(theme.$color-accent-tertiary, 0.07);
   }
 }
 
-.votedIndicator {
+// ── Avatar ────────────────────────────────────────────────────────────────────
+.avatar {
   @include mixins.flex(row, center, center);
-  @include mixins.size(24px);
+  @include mixins.size(20px);
   @include mixins.rounded(50%);
-  background: theme.$color-dark-message;
-  color: theme.$color-dark-primary;
-  font-size: 16px;
-  font-weight: 700;
-  box-shadow: 0 2px 6px rgba(theme.$color-dark-message, 0.5);
-  animation: checkPop 0.3s ease;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: rgba(theme.$color-light-primary, 0.12);
+  border: 1px solid rgba(theme.$color-light-primary, 0.15);
 }
 
-@keyframes thumbPop {
-  0% {
-    transform: scale(0) rotate(0deg);
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarFallback {
+  font-size: 1rem;
+  font-weight: 600;
+  color: theme.$color-text-secondary;
+  line-height: 1;
+}
+
+// ── Item inner layout ─────────────────────────────────────────────────────────
+.itemMain {
+  @include mixins.flex(row, space-between, center);
+  gap: 6px;
+  width: 100%;
+}
+
+.itemFlow {
+  @include mixins.flex(row, flex-start, center);
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.proposerName {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: theme.$color-accent-tertiary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arrow {
+  font-size: 1.8rem;
+  color: theme.$color-text-secondary;
+  flex-shrink: 0;
+}
+
+.candidateName {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: theme.$color-text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thumbIcon {
+  @include mixins.flex(row, center, center);
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 1.6rem;
+  color: theme.$color-text-secondary;
+  transition: color 0.15s ease;
+
+  &.thumbActive {
+    color: theme.$color-accent-tertiary;
   }
-  50% {
-    transform: scale(1.2) rotate(-10deg);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
+
+  &.thumbClickable {
+    &:hover {
+      color: theme.$color-light-secondary;
+    }
   }
 }
 
+.voteCount {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+// Voters row — second line, indented to align under the candidate name
+.votersRow {
+  font-size: 1.2rem;
+  color: theme.$color-text-secondary;
+  line-height: 1.4;
+}
+
+// ── GM vote control ───────────────────────────────────────────────────────────
 .gmVoteControlItem {
+  @include mixins.flex(row, flex-start, center);
+  gap: 6px;
   list-style: none;
   width: 100%;
   padding-top: 8px;
-  margin-top: 8px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(theme.$color-light-primary, 0.08);
 }
 
 .gmVoteControlButton {
   @include mixins.flex(row, center, center);
   gap: 8px;
   width: 100%;
-  transition: all 0.3s ease;
 }
 
 .icon {
-  font-size: 18px;
-}
-
-.voteInfo {
-  @include mixins.flex(row, start, center);
-  gap: 10px;
+  font-size: 1.5rem;
 }

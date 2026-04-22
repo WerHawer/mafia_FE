@@ -1,4 +1,4 @@
-import { DislikeOutlined } from "@ant-design/icons";
+import { DislikeFilled, DislikeOutlined, UserOutlined } from "@ant-design/icons";
 import classNames from "classnames";
 import { KeyboardEvent, memo } from "react";
 
@@ -11,9 +11,26 @@ type VoteListItemProps = {
   userName: string;
   isVotedByMe: boolean;
   isClickable: boolean;
+  isVotingActive: boolean;
   voteCount: number;
+  proposerName?: string;
+  proposerAvatar?: string;
+  candidateAvatar?: string;
+  votersList?: string[];
   onVote: (userId: UserId) => void;
 };
+
+const Avatar = ({ src, name }: { src?: string; name?: string }) => (
+  <span className={styles.avatar}>
+    {src ? (
+      <img src={src} alt={name || ""} className={styles.avatarImg} />
+    ) : (
+      <span className={styles.avatarFallback}>
+        {name ? name[0].toUpperCase() : <UserOutlined />}
+      </span>
+    )}
+  </span>
+);
 
 export const VoteListItem = memo(
   ({
@@ -21,7 +38,12 @@ export const VoteListItem = memo(
     userName,
     isVotedByMe,
     isClickable,
+    isVotingActive,
     voteCount,
+    proposerName,
+    proposerAvatar,
+    candidateAvatar,
+    votersList,
     onVote,
   }: VoteListItemProps) => {
     const handleClick = () => {
@@ -48,19 +70,40 @@ export const VoteListItem = memo(
         tabIndex={isClickable ? 0 : undefined}
         onKeyDown={handleKeyDown}
       >
-        <span className={styles.playerName}>{userName}</span>
+        {/* Main row: [Proposer avatar + name → Candidate avatar + name] + [👎] */}
+        <div className={styles.itemMain}>
+          <span className={styles.itemFlow}>
+            {/* Show proposer only when voting hasn't started yet */}
+            {!isVotingActive && proposerName && (
+              <>
+                <Avatar src={proposerAvatar} name={proposerName} />
+                <span className={styles.proposerName}>{proposerName}</span>
+                <span className={styles.arrow}>→</span>
+              </>
+            )}
+            <Avatar src={candidateAvatar} name={userName} />
+            <span className={styles.candidateName}>{userName}</span>
+          </span>
 
-        <div className={styles.voteInfo}>
-          {isVotedByMe && (
-            <span className={styles.votedIndicator}>
-              <DislikeOutlined />
-            </span>
-          )}
-
-          {voteCount > 0 && (
-            <span className={styles.voteCount}>{voteCount}</span>
-          )}
+          <span
+            className={classNames(styles.thumbIcon, {
+              [styles.thumbActive]: isVotedByMe,
+              [styles.thumbClickable]: isClickable && !isVotedByMe,
+            })}
+          >
+            {isVotedByMe ? <DislikeFilled /> : <DislikeOutlined />}
+            {voteCount > 0 && (
+              <span className={styles.voteCount}>{voteCount}</span>
+            )}
+          </span>
         </div>
+
+        {/* Voters row — names of who voted, indented under candidate */}
+        {votersList && votersList.length > 0 && (
+          <div className={styles.votersRow}>
+            {votersList.join(", ")}
+          </div>
+        )}
       </li>
     );
   }

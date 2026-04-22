@@ -42,7 +42,6 @@ export const MenuItem = ({
       onKeyDown={handleKeyDown}
       disabled={disabled}
       tabIndex={disabled ? -1 : 0}
-      aria-label={label}
     >
       {icon && <span className={styles.menuItemIcon}>{icon}</span>}
       <span className={styles.menuItemText}>{label}</span>

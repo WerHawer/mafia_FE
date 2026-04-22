@@ -1,4 +1,5 @@
-import { useCallback, useEffect } from "react";
+import { throttle } from "lodash";
+import { useCallback, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 
 import { wsEvents } from "@/config/wsEvents.ts";
@@ -25,13 +26,20 @@ export const useGameReactions = () => {
     return unsubscribe;
   }, [subscribe]);
 
+  const throttledSend = useMemo(
+    () =>
+      throttle((emoji: string) => {
+        if (!gameId || !myId) return;
+        sendMessage(wsEvents.gameReaction, { gameId, userId: myId, emoji });
+      }, 300), // Max ~3.3 reactions per second
+    [gameId, myId, sendMessage]
+  );
+
   const sendReaction = useCallback(
     (emoji: string) => {
-      if (!gameId || !myId) return;
-
-      sendMessage(wsEvents.gameReaction, { gameId, userId: myId, emoji });
+      throttledSend(emoji);
     },
-    [gameId, myId, sendMessage]
+    [throttledSend]
   );
 
   return { sendReaction };

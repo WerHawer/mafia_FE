@@ -110,12 +110,15 @@ export const startNight = async (gameId: GameId) => {
 export const addUserToProposed = async ({
   gameId,
   userId,
+  proposerId,
 }: {
   gameId: GameId;
   userId: UserId;
+  proposerId: UserId;
 }) => {
   return axios.patch<IGame>(`${GAMES_URL}/${gameId}/addToProposed`, {
     userId,
+    proposerId,
   });
 };
 

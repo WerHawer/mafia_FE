@@ -13,6 +13,7 @@ export const initialGameFlow: IGameFlow = {
   isExtraSpeech: false,
   day: 0,
   proposed: [],
+  proposedBy: {},
   voted: {},
   killed: [],
   shoot: {},

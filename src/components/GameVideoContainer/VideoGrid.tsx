@@ -38,22 +38,35 @@ export const VideoGrid = observer(() => {
       );
     });
 
-    const { killed = [] } = gamesStore.gameFlow;
+    const { killed = [], proposed = [], isVote, isReVote } = gamesStore.gameFlow;
     const { activeGameGm } = gamesStore;
+    const isVoting = isVote || isReVote;
 
     return [...tracks].sort((a, b) => {
       const idA = a.participant?.identity || "";
       const idB = b.participant?.identity || "";
 
       const getStatusWeight = (id: string) => {
-        if (killed.includes(id)) return 2;
-        if (id === activeGameGm) return 1;
+        if (killed.includes(id)) return 3;
+        if (id === activeGameGm) return 2;
+        // During voting: proposed players float to the front
+        if (isVoting && proposed.includes(id)) return -1;
         return 0;
       };
 
       return getStatusWeight(idA) - getStatusWeight(idB);
     });
-  }, [allTracks, isGameStarted, shouldShowMyVideo, shouldShowPlayerVideo, gamesStore.gameFlow.killed, gamesStore.activeGameGm]);
+  }, [
+    allTracks,
+    isGameStarted,
+    shouldShowMyVideo,
+    shouldShowPlayerVideo,
+    gamesStore.gameFlow.killed,
+    gamesStore.gameFlow.proposed,
+    gamesStore.gameFlow.isVote,
+    gamesStore.gameFlow.isReVote,
+    gamesStore.activeGameGm,
+  ]);
 
   if (filteredTracks.length === 0) {
     return <GameEntryLoader />;

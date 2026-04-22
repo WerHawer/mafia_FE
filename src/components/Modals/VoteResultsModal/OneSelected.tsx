@@ -49,6 +49,7 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
       isExtraSpeech: true,
       voted: {},
       proposed: [],
+      proposedBy: {},
     });
   }, [gameFlow.speaker, muteSpeaker, player, unmuteSpeaker, updateGameFlow]);
 

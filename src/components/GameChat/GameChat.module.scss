@@ -2,7 +2,6 @@
 @use "../../styles/mixins.scss";
 
 .chatContainer {
-
   @include mixins.flex(column, stretch, center);
   height: 100%;
   width: 100%;

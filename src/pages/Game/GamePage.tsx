@@ -39,7 +39,9 @@ const GamePage = observer(() => {
   const { id = "" } = useParams();
   const { usersStore, gamesStore } = rootStore;
   const { myId } = usersStore;
-  const { activeGamePlayers, removeActiveGame, updateGame } = gamesStore;
+  const { activeGamePlayers, removeActiveGame, updateGame, gameFlow } = gamesStore;
+  const { isIGM } = rootStore;
+  const proposedCount = gameFlow.proposed.length;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
   const [isJoinedToGame, setIsJoinedToGame] = useState(false);
@@ -163,18 +165,22 @@ const GamePage = observer(() => {
         </LiveKitMafiaRoom>
 
         <aside className={styles.rightContainer}>
-          <section
-            className={classNames(styles.asideSection, styles.personalInfo)}
-          >
-            <GameInfoSection />
-          </section>
+          {/* personalInfo: always for GM, for players only when no vote active */}
+          {(isIGM || proposedCount === 0) && (
+            <section
+              className={classNames(styles.asideSection, styles.personalInfo)}
+            >
+              <GameInfoSection />
+            </section>
+          )}
+
+          {/* Vote panel: inline in flow, replaces personalInfo for players */}
+          <GameVote />
 
           <section className={styles.chatSection}>
             <GameChat />
           </section>
         </aside>
-
-        <GameVote />
       </div>
     </AudioProvider>
   );

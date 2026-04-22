@@ -1,10 +1,11 @@
 import { UsergroupDeleteOutlined } from "@ant-design/icons";
 import Tippy from "@tippyjs/react";
 import { AnimatePresence, motion } from "framer-motion";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes";
 import { IconButton } from "@/UI/IconButton";
 
@@ -12,104 +13,107 @@ import styles from "./GameVote.module.scss";
 import { useGameVote } from "./useGameVote";
 import { VotePanel } from "./VotePanel";
 
-const overlayVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 },
-  exit: { opacity: 0 },
-};
-
 export const GameVote = observer(() => {
   const { t } = useTranslation();
   const {
-    isOpen,
     proposedCount,
     amIVoted,
     votedUserId,
     canVote,
     proposed,
+    proposedBy,
     voted,
     isGM,
     isVotingActive,
-    onToggle,
+    myId,
     onVoteForPlayer,
     onToggleVoting,
+    onResetVoting,
     getUserName,
+    getUser,
   } = useGameVote();
 
-  if (proposedCount === 0) {
-    return null;
-  }
+  const [isGMOpen, setIsGMOpen] = useState(false);
 
-  const gmVoteTooltip = isVotingActive
-    ? t("vote.gmStopVote")
-    : t("vote.gmStartVote");
+  if (proposedCount === 0) return null;
+
+  // Players always see the panel; GM must expand it manually
+  const isPanelVisible = !isGM || isGMOpen;
+  const gmVoteTooltip = isVotingActive ? t("vote.gmStopVote") : t("vote.gmStartVote");
 
   return (
-    <>
-      <div className={styles.toggleButtonContainer}>
-        <Button
-          className={styles.toggleButton}
-          onClick={onToggle}
-          variant={ButtonVariant.Secondary}
-          size={ButtonSize.Small}
-          aria-label="Toggle vote list"
-        >
-          {t("vote.voteList")}
-          {proposedCount > 0 && (
+    <div className={styles.voteContainer}>
+      {/* GM-only collapsible header */}
+      {isGM && (
+        <div className={styles.gmHeaderRow}>
+          <button
+            className={styles.gmToggleBtn}
+            onClick={() => setIsGMOpen((p) => !p)}
+          >
+            <span>{t("vote.voteList")}</span>
             <span className={styles.badge}>{proposedCount}</span>
-          )}
-        </Button>
+            <span
+              className={classNames(styles.chevronIcon, {
+                [styles.chevronOpen]: isGMOpen,
+              })}
+            >
+              ▾
+            </span>
+          </button>
 
-        {isGM && proposedCount > 0 && (
-          <Tippy content={gmVoteTooltip} placement="top" theme="nav-tooltip" delay={[500, 0]}>
-            <div className={styles.gmVoteButtonWrapper}>
+          <Tippy
+            content={gmVoteTooltip}
+            placement="top"
+            theme="nav-tooltip"
+            delay={[500, 0]}
+          >
+            <div>
               <IconButton
                 icon={<UsergroupDeleteOutlined />}
                 onClick={onToggleVoting}
                 variant={
-                  isVotingActive
-                    ? ButtonVariant.Tertiary
-                    : ButtonVariant.Primary
+                  isVotingActive ? ButtonVariant.Tertiary : ButtonVariant.Primary
                 }
                 size={ButtonSize.Small}
                 ariaLabel={gmVoteTooltip}
-                className={styles.gmVoteButton}
                 active={isVotingActive}
               />
             </div>
           </Tippy>
-        )}
-      </div>
+        </div>
+      )}
 
       <AnimatePresence>
-        {isOpen && (
-          <>
-            <motion.div
-              className={styles.overlay}
-              variants={overlayVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-              onClick={onToggle}
-            />
-
+        {isPanelVisible && (
+          <motion.div
+            key="vote-panel"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
+          >
             <VotePanel
               proposed={proposed}
+              proposedBy={proposedBy}
               votedUserId={votedUserId}
               canVote={canVote}
               amIVoted={amIVoted}
               isGM={isGM}
               isVotingActive={isVotingActive}
+              myId={myId}
               voted={voted}
-              onToggle={onToggle}
               onVoteForPlayer={onVoteForPlayer}
               onToggleVoting={onToggleVoting}
+              onResetVoting={onResetVoting}
               getUserName={getUserName}
+              getUser={getUser}
             />
-          </>
+          </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 });
+
+GameVote.displayName = "GameVote";

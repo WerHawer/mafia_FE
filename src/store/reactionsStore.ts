@@ -36,6 +36,9 @@ class ReactionsStore {
   }
 
   addReaction(userId: string, userName: string, emoji: string) {
+    // Basic flood protection: don't render more than 40 reactions at once
+    if (this.reactions.length > 40) return;
+
     const id = `${userId}-${Date.now()}-${Math.random()}`;
     const x = Math.floor(randomBetween(16, window.innerWidth * MAX_X_FRACTION));
     const duration = Math.floor(randomBetween(MIN_DURATION, MAX_DURATION));

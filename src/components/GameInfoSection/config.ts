@@ -29,6 +29,13 @@ export const playerCardAnimation = {
   },
 };
 
+// Used when the card was already dealt — skip flying animation, just appear
+export const staticCardAnimation = {
+  initial: { opacity: 0 },
+  animate: { x: "100px", y: 0, opacity: 1, scale: 1, rotate: 387 },
+  transition: { duration: 0.25, ease: "easeOut" },
+};
+
 export const getFakeCardAnimation = (
   index: number,
   targetX: number,

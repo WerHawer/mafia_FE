@@ -47,14 +47,15 @@ export const GameBottomBar = observer(
     const { allTracks } = useMockStreams();
 
     const [isVisible, setIsVisible] = useState(false);
+    const { isNight } = rootStore.gamesStore.gameFlow;
 
     useEffect(() => {
-      if (isJoinedToGame && allTracks.length > 0) {
+      if (isJoinedToGame && allTracks.length > 0 && (isIGM || !isNight)) {
         setIsVisible(true);
       } else {
         setIsVisible(false);
       }
-    }, [isJoinedToGame, allTracks.length]);
+    }, [isJoinedToGame, allTracks.length, isNight, isIGM]);
 
     return (
       <div className={classNames(styles.bottomBar, { [styles.bottomBarVisible]: isVisible })}>

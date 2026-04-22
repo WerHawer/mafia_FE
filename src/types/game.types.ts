@@ -38,6 +38,7 @@ export interface IGameFlow {
   isExtraSpeech: boolean;
   day: number;
   proposed: UserId[];
+  proposedBy: Record<UserId, UserId>;
   voted: { [key: UserId]: UserId[] };
   wakeUp: UserId[] | UserId;
   shoot: { [key: UserId]: { shooters: UserId[]; shots: { x: number; y: number }[] } };

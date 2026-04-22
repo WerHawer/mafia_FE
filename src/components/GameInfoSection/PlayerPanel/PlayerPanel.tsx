@@ -1,38 +1,39 @@
 import { motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { PlayerPanelInfo } from "@/components/GameInfoSection/PlayerPanel/PlayerPanelInfo.tsx";
 import { rootStore } from "@/store/rootStore.ts";
 import { Roles } from "@/types/game.types.ts";
 
 import { RoleCard } from "../../RoleCard/RoleCard.tsx";
-import { playerCardAnimation } from "../config.ts";
+import { playerCardAnimation, staticCardAnimation } from "../config.ts";
 import { DealingAnimation } from "../DealingAnimation.tsx";
 import styles from "./PlayerPanel.module.scss";
 
 export const PlayerPanel = observer(() => {
   const { gamesStore, usersStore, myRole } = rootStore;
-  const { gameFlow, activeGameRoles } = gamesStore;
+  const { gameFlow, activeGameRoles, isDealingComplete, isRoleRevealed } = gamesStore;
   const { isStarted, isNight } = gameFlow;
   const { myId } = usersStore;
-  const [shouldShowDeck, setShouldShowDeck] = useState(true);
-  const [isUserKnowRole, setIsUserKnowRole] = useState(false);
 
   useEffect(() => {
     if (!isStarted) {
-      setShouldShowDeck(true);
-      setIsUserKnowRole(false);
-
+      // Game reset — clear persisted UI flags
+      gamesStore.isDealingComplete = false;
+      gamesStore.isRoleRevealed = false;
       return;
     }
 
+    // If dealing already completed in this session, skip the timer
+    if (isDealingComplete) return;
+
     const timer = setTimeout(() => {
-      setShouldShowDeck(false);
+      gamesStore.isDealingComplete = true;
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, [isStarted]);
+  }, [isStarted, isDealingComplete, gamesStore]);
 
   const roleIndex = useMemo(() => {
     if (myRole === Roles.Citizen) {
@@ -47,21 +48,22 @@ export const PlayerPanel = observer(() => {
   }, [activeGameRoles, myId, myRole]);
 
   const onCardClick = useCallback(() => {
-    setIsUserKnowRole(true);
-  }, []);
+    gamesStore.isRoleRevealed = true;
+  }, [gamesStore]);
 
   return (
     <div className={styles.playerPanel}>
       {myRole && isStarted ? (
         <motion.div
           className={styles.roleCardContainer}
-          {...playerCardAnimation}
+          {...(isDealingComplete ? staticCardAnimation : playerCardAnimation)}
         >
           <RoleCard
             role={myRole}
             width={100}
             height={150}
             index={roleIndex}
+            initialFlipped={isRoleRevealed}
             onClick={onCardClick}
           />
         </motion.div>
@@ -69,9 +71,9 @@ export const PlayerPanel = observer(() => {
 
       {!isStarted ? <p>Waiting for start...</p> : null}
 
-      {isStarted && shouldShowDeck ? <DealingAnimation /> : null}
+      {isStarted && !isDealingComplete ? <DealingAnimation /> : null}
 
-      {isStarted && isUserKnowRole ? <PlayerPanelInfo /> : null}
+      {isStarted && isRoleRevealed ? <PlayerPanelInfo /> : null}
     </div>
   );
 });

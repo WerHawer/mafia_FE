@@ -11,7 +11,7 @@ import { UserId } from "@/types/user.types.ts";
 export const useGameVote = () => {
   const { gamesStore, usersStore, isIGM, isIDead } = rootStore;
   const { gameFlow, activeGameId, addVoted } = gamesStore;
-  const { getUserName, myId } = usersStore;
+  const { getUserName, getUser, myId } = usersStore;
   const [isOpen, setIsOpen] = useState(false);
   const { mutate: voteForUser, isPending: isVoting } = useVoteForUserMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
@@ -43,10 +43,14 @@ export const useGameVote = () => {
   }, []);
 
   const onToggleVoting = useCallback(() => {
+    const isStarting = !gameFlow.isVote;
+
     updateGameFlow(
       {
-        isVote: !gameFlow.isVote,
-        isReVote: false,
+        isVote: isStarting,
+        // When re-starting a revote round, clear previous votes
+        ...(isStarting && gameFlow.isReVote ? { voted: {} } : {}),
+        // isReVote is intentionally NOT reset here — the draw modal manages it
         speaker: "",
       },
       {
@@ -56,11 +60,20 @@ export const useGameVote = () => {
       }
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameFlow.isVote, gameFlow.speaker]);
+  }, [gameFlow.isVote, gameFlow.isReVote, gameFlow.speaker]);
+
+  const onResetVoting = useCallback(() => {
+    updateGameFlow({
+      isVote: false,
+      isReVote: false,
+      voted: {},
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateGameFlow]);
 
   const onVoteForPlayer = useCallback(
     (userId: UserId) => {
-      if (!canVote || amIVoted || isVoting || !activeGameId) return;
+      if (!canVote || amIVoted || isVoting || !activeGameId || userId === myId) return;
 
       addVoted({ targetUserId: userId, voterId: myId });
       voteForUser({
@@ -87,11 +100,15 @@ export const useGameVote = () => {
     canVote,
     isGM: isIGM,
     isVotingActive,
+    myId,
     proposed: gameFlow.proposed,
+    proposedBy: gameFlow.proposedBy || {},
     voted: gameFlow.voted,
     onToggle,
     onToggleVoting,
+    onResetVoting,
     onVoteForPlayer,
     getUserName: getPlayerName,
+    getUser,
   };
 };

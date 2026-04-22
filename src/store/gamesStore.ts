@@ -16,6 +16,9 @@ export class GamesStore {
   _games: IGameShort[] = [];
   _activeGame: IGame | null = null;
   forceMutedUsers: UserId[] = [];
+  // Persisted UI state — survives component unmount/remount during voting
+  isDealingComplete: boolean = false;
+  isRoleRevealed: boolean = false;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -51,6 +54,8 @@ export class GamesStore {
   removeActiveGame() {
     this._activeGame = null;
     this.forceMutedUsers = [];
+    this.isDealingComplete = false;
+    this.isRoleRevealed = false;
   }
 
   setForceMutedUser(userId: UserId, isMuted: boolean) {
@@ -78,15 +83,19 @@ export class GamesStore {
     } as IGame);
   }
 
-  setToProposed(playerId: UserId) {
-    const proposed = this._activeGame?.gameFlow?.proposed;
+  setToProposed(playerId: UserId, proposerId: UserId) {
+    const gameFlow = this._activeGame?.gameFlow;
+    if (!gameFlow) return;
 
-    if (!proposed) return;
+    const proposed = gameFlow.proposed;
+    const proposedBy = gameFlow.proposedBy || {};
+
     if (proposed.includes(playerId)) return;
 
     const newProposed = [...proposed, playerId];
+    const newProposedBy = { ...proposedBy, [playerId]: proposerId };
 
-    this.updateGameFlow({ proposed: newProposed });
+    this.updateGameFlow({ proposed: newProposed, proposedBy: newProposedBy });
   }
 
   addVoted({

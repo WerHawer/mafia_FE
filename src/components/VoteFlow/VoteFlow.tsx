@@ -1,14 +1,13 @@
+import Tippy from "@tippyjs/react";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useCallback, useMemo } from "react";
-import Tippy from "@tippyjs/react";
 import { useTranslation } from "react-i18next";
-import classNames from "classnames";
 
 import {
   useAddUserToProposedMutation,
   useVoteForUserMutation,
 } from "@/api/game/queries.ts";
-import { useVoteResult } from "@/hooks/useVoteResult.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { SoundEffect } from "@/store/soundStore.ts";
 import { UserId } from "@/types/user.types.ts";
@@ -24,15 +23,25 @@ type VoteFlowProps = {
 
 export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   const { t } = useTranslation();
-  const { usersStore, gamesStore, isIGM, isIDead, isISpeaker, soundStore } = rootStore;
+  const { usersStore, gamesStore, isIGM, isIDead, isISpeaker, soundStore } =
+    rootStore;
   const { myId, getUser } = usersStore;
-  const { isUserGM, speaker, gameFlow, activeGameAlivePlayers, activeGameId, setToProposed, addVoted } =
-    gamesStore;
-  const { isVote, proposed, voted, isExtraSpeech } = gameFlow;
+  const {
+    isUserGM,
+    speaker,
+    gameFlow,
+    activeGameAlivePlayers,
+    activeGameId,
+    setToProposed,
+    addVoted,
+  } = gamesStore;
+  const { isVote, isReVote, proposed, voted, isExtraSpeech } = gameFlow;
+  const isVotingActive = isVote || isReVote;
   const { isIBlocked } = rootStore;
   const { playSfx } = soundStore;
   const { mutate: voteForUser, isPending: isVoting } = useVoteForUserMutation();
-  const { mutate: addUserToProposed, isPending: isAddingToProposed } = useAddUserToProposedMutation();
+  const { mutate: addUserToProposed, isPending: isAddingToProposed } =
+    useAddUserToProposedMutation();
 
   const votesForThisUser = useMemo(
     () => voted?.[userId] ?? [],
@@ -58,37 +67,73 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     return amIVoted && votesForThisUser.includes(myId);
   }, [amIVoted, votesForThisUser, myId]);
 
+  // Who proposed this player (from any user's perspective)
+  const proposerId = gameFlow.proposedBy?.[userId];
+  const proposerName = proposerId
+    ? getUser(proposerId)?.nikName || "Anonimus"
+    : undefined;
+
   const isCurrentUserGM = isUserGM(userId);
 
-  const shouldShowProposeIcon =
+  // The current speaker already used their "propose" quota this round
+  const speakerAlreadyProposed = Object.values(
+    gameFlow.proposedBy || {}
+  ).includes(speaker);
+
+  /**
+   * INTERACTIVE propose button: visible ONLY to the current speaker or GM,
+   * and ONLY when no one has been proposed yet for this speech.
+   * Once the quota is used OR this specific player is already proposed → hidden.
+   */
+  const shouldShowInteractiveProposeBtn =
     !!speaker &&
     (isISpeaker || isIGM) &&
-    !isMyStream &&
+    userId !== speaker &&
     !isCurrentUserGM &&
     !isExtraSpeech &&
     !isIDead &&
+    !speakerAlreadyProposed &&
+    !isThisUserProposed &&
     gameFlow.day > 1;
 
+  /**
+   * STATIC proposed badge: visible to ALL users once this player has been proposed,
+   * but ONLY before voting starts and before any votes have been cast.
+   * Once voting begins or votes exist → hidden permanently for this round.
+   */
+  const hasVotingOccurred = Object.keys(voted ?? {}).length > 0;
+  const shouldShowProposedBadge =
+    isUserAddedToVoteList && !isVotingActive && !hasVotingOccurred;
+
+  /** Voting icon: visible to ALL alive, unblocked players for proposed candidates */
   const shouldShowVoteIcon =
-    isVote && proposed.includes(userId) && !isIDead && !isIBlocked;
+    isVote &&
+    proposed.includes(userId) &&
+    userId !== myId &&
+    !isIGM &&
+    !isIDead &&
+    !isIBlocked;
 
   const onPropose = useCallback(() => {
+    // Block even if GM clicks, when speaker quota is already used
     if (
       (myId !== speaker && !isUserGM(myId)) ||
       !userId ||
       !activeGameId ||
       isThisUserProposed ||
+      speakerAlreadyProposed ||
       isAddingToProposed ||
       gameFlow.day <= 1
     )
       return;
 
-    setToProposed(userId);
-    addUserToProposed({ gameId: activeGameId, userId });
+    setToProposed(userId, speaker);
+    addUserToProposed({ gameId: activeGameId, userId, proposerId: speaker });
   }, [
     activeGameId,
     addUserToProposed,
     isThisUserProposed,
+    speakerAlreadyProposed,
     isAddingToProposed,
     isUserGM,
     myId,
@@ -99,7 +144,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   ]);
 
   const onVote = useCallback(() => {
-    if (!userId || !myId || !activeGameId) return;
+    if (!userId || !myId || !activeGameId || userId === myId) return;
     if (amIVoted || isIGM || isIBlocked || isVoting) return;
 
     addVoted({ targetUserId: userId, voterId: myId });
@@ -109,24 +154,35 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
       voterId: myId,
     });
     playSfx(SoundEffect.Vote);
-  }, [userId, myId, activeGameId, amIVoted, isIGM, isIBlocked, isVoting, addVoted, voteForUser, playSfx]);
-
-  useVoteResult({
-    alivePlayers: activeGameAlivePlayers,
+  }, [
+    userId,
+    myId,
+    activeGameId,
+    amIVoted,
     isIGM,
-  });
+    isIBlocked,
+    isVoting,
+    addVoted,
+    voteForUser,
+    playSfx,
+  ]);
 
   return (
     <>
-      {shouldShowProposeIcon && (
+      {/* Interactive propose button — speaker/GM only, before anyone is proposed */}
+      {shouldShowInteractiveProposeBtn && (
         <div className={styles.proposeIconContainer}>
-          <Tippy content={t("vote.proposePlayer")} theme="role-tooltip" delay={[500, 0]}>
+          <Tippy
+            content={t("vote.proposePlayer")}
+            theme="role-tooltip"
+            delay={[500, 0]}
+          >
             <div>
               <VoteIcon
                 className={classNames(styles.voteIcon, styles.voteIconScaled)}
                 size={ButtonSize.Small}
                 variant={ButtonVariant.Secondary}
-                isVoted={isUserAddedToVoteList}
+                isVoted={false}
                 onClick={onPropose}
               />
             </div>
@@ -134,9 +190,31 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
         </div>
       )}
 
+      {/* Static proposed badge — visible to EVERYONE once the player is proposed */}
+      {shouldShowProposedBadge && !shouldShowInteractiveProposeBtn && (
+        <div className={styles.proposeIconContainer}>
+          <VoteIcon
+            className={classNames(styles.voteIcon, styles.voteIconScaled)}
+            size={ButtonSize.Small}
+            variant={ButtonVariant.Secondary}
+            isVoted={true}
+          />
+        </div>
+      )}
+
+      {/* Vote icon — visible to all eligible voters */}
       {shouldShowVoteIcon && (
-        <div className={classNames(styles.iconContainer, styles.voteIconScaledWrapper)}>
-          <Tippy content={t("vote.voteAgainst")} theme="role-tooltip" delay={[500, 0]}>
+        <div
+          className={classNames(
+            styles.iconContainer,
+            styles.voteIconScaledWrapper
+          )}
+        >
+          <Tippy
+            content={t("vote.voteAgainst")}
+            theme="role-tooltip"
+            delay={[500, 0]}
+          >
             <div>
               <VoteIcon
                 className={classNames(styles.voteIcon, styles.voteIconScaled)}
@@ -154,11 +232,16 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
         </div>
       )}
 
-      {votesForThisUser.length > 0 && isVote && (
+      {/* Info list — proposer shown only before voting; voters shown during voting */}
+      {((!isVotingActive && !hasVotingOccurred && proposerName) || (isVotingActive && votesForThisUser.length > 0)) && (
         <ul className={styles.voteList}>
-          {votesForThisUser.map((id) => (
-            <li key={id}>{getUser(id)?.nikName || "Anonimus"}</li>
-          ))}
+          {!isVotingActive && !hasVotingOccurred && proposerName && (
+            <li className={styles.proposerItem}>⬆️ {proposerName}</li>
+          )}
+          {isVotingActive &&
+            votesForThisUser.map((id) => (
+              <li key={id}>👎 {getUser(id)?.nikName || "Anonimus"}</li>
+            ))}
         </ul>
       )}
     </>

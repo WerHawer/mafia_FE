@@ -1,6 +1,4 @@
-import {
-  AudioMutedOutlined,
-} from "@ant-design/icons";
+import { AudioMutedOutlined } from "@ant-design/icons";
 import classNames from "classnames";
 import { Participant, Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
@@ -9,11 +7,11 @@ import { useTranslation } from "react-i18next";
 
 import deadBg from "@/assets/images/dead_bg.avif";
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
+import { ReactionCornerBadge } from "@/components/GameReactions";
 import { HealEffect } from "@/components/HealEffect";
 import { InvestigateEffect } from "@/components/InvestigateEffect";
 import { KissEffect } from "@/components/KissEffect";
 import { MediaControls } from "@/components/MediaControls";
-import { ReactionCornerBadge } from "@/components/GameReactions";
 import { Shoot } from "@/components/Shoot";
 import { SleepIcon } from "@/components/SleepIcon";
 import { SoundIndicator } from "@/components/SoundIndicator";
@@ -48,11 +46,23 @@ export const GameVideo = observer(
   }: GameVideoProps) => {
     const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
-    const [localClickPos, setLocalClickPos] = useState<{ x: number; y: number } | null>(null);
-    const [kissPos, setKissPos] = useState<{ x: number; y: number } | null>(null);
-    const [healPos, setHealPos] = useState<{ x: number; y: number } | null>(null);
-    const [investigatePos, setInvestigatePos] = useState<{ x: number; y: number } | null>(null);
-    const [investigateResult, setInvestigateResult] = useState<string | null>(null);
+    const [localClickPos, setLocalClickPos] = useState<{
+      x: number;
+      y: number;
+    } | null>(null);
+    const [kissPos, setKissPos] = useState<{ x: number; y: number } | null>(
+      null
+    );
+    const [healPos, setHealPos] = useState<{ x: number; y: number } | null>(
+      null
+    );
+    const [investigatePos, setInvestigatePos] = useState<{
+      x: number;
+      y: number;
+    } | null>(null);
+    const [investigateResult, setInvestigateResult] = useState<string | null>(
+      null
+    );
     const [investigateDanger, setInvestigateDanger] = useState(false);
     // GM-only: peek at dead player's real video instead of the dead overlay
     const [showDeadVideo, setShowDeadVideo] = useState(false);
@@ -134,116 +144,121 @@ export const GameVideo = observer(
       }
     };
 
-    const isInteractive = (isShootEnabled && !isIGM) || isKissEnabled || isHealEnabled || isInvestigateEnabled;
+    const isInteractive =
+      (isShootEnabled && !isIGM) ||
+      isKissEnabled ||
+      isHealEnabled ||
+      isInvestigateEnabled;
 
     return (
-        <div
-          className={classNames("videoContainer", styles.container, {
-            [styles.active]: isActive,
-            [styles.speaking]: isSpeaking && !isMyStream,
-            [styles.shootable]: isShootEnabled && !isIGM,
-            [styles.kissable]: isKissEnabled,
-            [styles.healable]: isHealEnabled,
-            [styles.checkable]: isInvestigateEnabled,
-            [styles.mafiaGlow]: shouldShowMafiaGlow,
-          })}
-          ref={containerRef}
-          onClick={isInteractive ? handleVideoClick : undefined}
-        >
-          <VoteFlow isMyStream={isMyStream} userId={userId} />
+      <div
+        className={classNames("videoContainer", styles.container, {
+          [styles.active]: isActive,
+          [styles.speaking]: isSpeaking && !isMyStream,
+          [styles.shootable]: isShootEnabled && !isIGM,
+          [styles.kissable]: isKissEnabled,
+          [styles.healable]: isHealEnabled,
+          [styles.checkable]: isInvestigateEnabled,
+          [styles.mafiaGlow]: shouldShowMafiaGlow,
+        })}
+        ref={containerRef}
+        onClick={isInteractive ? handleVideoClick : undefined}
+      >
+        <VoteFlow isMyStream={isMyStream} userId={userId} />
 
-          {isCheckRoleEnabled ? <CheckRole userId={userId} /> : null}
-          <ReactionCornerBadge userId={userId} />
+        {isCheckRoleEnabled ? <CheckRole userId={userId} /> : null}
 
-          <Shoot userId={userId} clickPosition={localClickPos} />
-          <KissEffect userId={userId} clickPosition={kissPos} />
-          <HealEffect userId={userId} clickPosition={healPos} />
-          <InvestigateEffect
-            clickPosition={investigatePos}
-            result={investigateResult}
-            isDanger={investigateDanger}
+        <ReactionCornerBadge userId={userId} />
+
+        <Shoot userId={userId} clickPosition={localClickPos} />
+        <KissEffect userId={userId} clickPosition={kissPos} />
+        <HealEffect userId={userId} clickPosition={healPos} />
+        <InvestigateEffect
+          clickPosition={investigatePos}
+          result={investigateResult}
+          isDanger={investigateDanger}
+        />
+
+        <div className={styles.gmIconContainer}>
+          {isGM && <RoleIcon role={Roles.GM} size="l" />}
+        </div>
+
+        {isUserDead && (
+          <div className={styles.statusLabelDead}>{t("gameVideo.dead")}</div>
+        )}
+
+        {isUserDead && !isMyStream && !showDeadVideo && (
+          <div
+            className={styles.deadOverlay}
+            style={{ backgroundImage: `url(${deadBg})` }}
           />
+        )}
 
-          <div className={styles.gmIconContainer}>
-            {isGM && <RoleIcon role={Roles.GM} size="l" />}
+        {isIGM && !isMyStream && <SleepIcon isVisible={isSleeping} />}
+
+        {isIGM && !isMyStream && currentUser && (
+          <VideoMenu
+            userId={currentUser.id}
+            isCurrentUserGM={isGM}
+            isUserDead={isUserDead}
+            isSleeping={isSleeping}
+            showDeadVideo={showDeadVideo}
+            onToggleDeadVideo={() => setShowDeadVideo((prev) => !prev)}
+          />
+        )}
+
+        <PlayerVideo
+          participant={participant}
+          track={track}
+          isActive={isActive}
+          container={containerRef.current}
+          muted={participant.isLocal}
+          userName={currentUser?.nikName}
+          avatar={currentUser?.avatar}
+          isCameraEnabled={isCameraEnabled}
+          isSpeaking={isSpeaking}
+        />
+
+        {/* ── Universal audio overlays (all except GM viewing others) ── */}
+        {/* When isIGM && !isMyStream → MediaControls handles visual state  */}
+
+        {/* Speaking: SoundIndicator in bottom-right corner when camera ON */}
+        {isSpeaking && isCameraEnabled && !(isIGM && !isMyStream) && (
+          <div className={styles.speakingOverlay}>
+            <SoundIndicator />
           </div>
+        )}
 
-          {isUserDead && (
-            <div className={styles.statusLabelDead}>{t("gameVideo.dead")}</div>
-          )}
+        {/* Muted mic: crossed icon in bottom-right (skipped for GM→others, MediaControls shows it) */}
+        {!isMicrophoneEnabled && !(isIGM && !isMyStream) && (
+          <div className={styles.mutedMicOverlay}>
+            <AudioMutedOutlined className={styles.mutedMicIcon} />
+          </div>
+        )}
 
-          {isUserDead && !isMyStream && !showDeadVideo && (
-            <div className={styles.deadOverlay} style={{ backgroundImage: `url(${deadBg})` }} />
-          )}
-
-          {isIGM && !isMyStream && (
-            <SleepIcon isVisible={isSleeping} />
-          )}
-
-          {isIGM && !isMyStream && currentUser && (
-            <VideoMenu
-              userId={currentUser.id}
-              isCurrentUserGM={isGM}
-              isUserDead={isUserDead}
-              isSleeping={isSleeping}
-              showDeadVideo={showDeadVideo}
-              onToggleDeadVideo={() => setShowDeadVideo((prev) => !prev)}
-            />
-          )}
-
-          <PlayerVideo
-            participant={participant}
-            track={track}
-            isActive={isActive}
-            container={containerRef.current}
-            muted={participant.isLocal}
-            userName={currentUser?.nikName}
-            avatar={currentUser?.avatar}
+        {/* ── GM-only toggle buttons for other players (bottom-right) ── */}
+        {isIGM && !isMyStream && (
+          <MediaControls
             isCameraEnabled={isCameraEnabled}
+            isMicrophoneEnabled={isMicrophoneEnabled}
+            onToggleCamera={toggleCamera}
+            onToggleMicrophone={toggleMicrophone}
+            canControl={canControl}
+            isIGM={isIGM}
+            isMyStream={isMyStream}
             isSpeaking={isSpeaking}
           />
+        )}
 
-          {/* ── Universal audio overlays (all except GM viewing others) ── */}
-          {/* When isIGM && !isMyStream → MediaControls handles visual state  */}
-
-          {/* Speaking: SoundIndicator in bottom-right corner when camera ON */}
-          {isSpeaking && isCameraEnabled && !(isIGM && !isMyStream) && (
-            <div className={styles.speakingOverlay}>
-              <SoundIndicator />
-            </div>
-          )}
-
-          {/* Muted mic: crossed icon in bottom-right (skipped for GM→others, MediaControls shows it) */}
-          {!isMicrophoneEnabled && !(isIGM && !isMyStream) && (
-            <div className={styles.mutedMicOverlay}>
-              <AudioMutedOutlined className={styles.mutedMicIcon} />
-            </div>
-          )}
-
-          {/* ── GM-only toggle buttons for other players (bottom-right) ── */}
-          {isIGM && !isMyStream && (
-            <MediaControls
-              isCameraEnabled={isCameraEnabled}
-              isMicrophoneEnabled={isMicrophoneEnabled}
-              onToggleCamera={toggleCamera}
-              onToggleMicrophone={toggleMicrophone}
-              canControl={canControl}
-              isIGM={isIGM}
-              isMyStream={isMyStream}
-              isSpeaking={isSpeaking}
-            />
-          )}
-
-          {currentUser && (
-            <VideoUserInfo
-              userName={currentUser.nikName}
-              userId={currentUser.id}
-            />
-          )}
-        </div>
+        {currentUser && (
+          <VideoUserInfo
+            userName={currentUser.nikName}
+            userId={currentUser.id}
+          />
+        )}
+      </div>
     );
   }
 );
 
 GameVideo.displayName = "GameVideo";
-

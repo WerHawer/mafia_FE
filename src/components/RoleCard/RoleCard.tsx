@@ -31,6 +31,7 @@ type RoleCardProps = {
   width?: number;
   height?: number;
   index?: number;
+  initialFlipped?: boolean;
   onClick?: () => void;
 };
 
@@ -39,11 +40,12 @@ export const RoleCard = ({
   index,
   width,
   height,
+  initialFlipped = false,
   onClick,
 }: RoleCardProps) => {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(initialFlipped);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [cardRect, setCardRect] = useState<DOMRect | null>(null);
 

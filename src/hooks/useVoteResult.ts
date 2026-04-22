@@ -1,5 +1,5 @@
 import { random } from "lodash/fp";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
@@ -13,6 +13,10 @@ type VoteResult = {
   isIGM: boolean;
 };
 
+// How long to wait after stopping voting before reading final state and randomizing.
+// Gives any last-second in-flight manual votes time to arrive.
+const VOTE_SETTLE_DELAY_MS = 800;
+
 export const useVoteResult = ({ alivePlayers }: VoteResult) => {
   const { openModal, closeModal } = modalStore;
   const { gameFlow } = gamesStore;
@@ -25,7 +29,6 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
   // Players who are eligible to vote: alive players excluding the one blocked by prostitute.
-  // A blocked player can neither vote manually nor receive an auto-random vote.
   const eligibleVoters = useMemo(
     () => alivePlayers.filter((player) => player !== prostituteBlock),
     [alivePlayers, prostituteBlock]
@@ -42,76 +45,126 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
     [voted, isReVote, isVote]
   );
 
+  // Ref so randomVote always reads the freshest voted state without recreating on every vote.
+  const votedRef = useRef(voted);
+  votedRef.current = voted;
+
+  // Ref so eligibleVoters is always fresh inside the setTimeout callback.
+  const eligibleVotersRef = useRef(eligibleVoters);
+  eligibleVotersRef.current = eligibleVoters;
+
+  // Prevents the auto-randomize from firing more than once per voting round.
+  const hasAutoVotedRef = useRef(false);
+
+  // Reset the flag at the start of each new voting round.
+  useEffect(() => {
+    if (enabled) {
+      hasAutoVotedRef.current = false;
+    }
+  }, [enabled, isVote, isReVote]);
+
+  /**
+   * Assigns random candidates to every eligible voter who hasn't voted yet,
+   * then opens the result modal.
+   *
+   * Called AFTER a settle delay, so votedRef.current reflects any last-second
+   * manual votes that were in-flight when the timer fired.
+   */
   const randomVote = useCallback(() => {
     if (!isIGM) return;
 
-    // Only auto-vote for eligible voters (blocked player is excluded)
-    const notVotedPlayers = eligibleVoters.filter(
-      (player) => !Object.values(voted).flat().includes(player)
+    const currentVoted = votedRef.current;
+    const currentEligible = eligibleVotersRef.current;
+
+    const notVotedPlayers = currentEligible.filter(
+      (player) => !Object.values(currentVoted).flat().includes(player)
     );
 
-    const newVoted = { ...voted };
+    if (notVotedPlayers.length === 0) {
+      // Everyone voted manually in the grace period — just open the modal.
+      openModal(ModalNames.VoteResultModal);
+      return;
+    }
+
+    const newVoted = { ...currentVoted };
 
     notVotedPlayers.forEach((player) => {
-      const randomIndex = random(0, proposed.length - 1);
-      const randomCandidate = proposed[randomIndex];
-      const prevCandidateVoices = newVoted[randomCandidate] ?? [];
+      let candidateList = proposed.filter((p) => p !== player);
+      if (candidateList.length === 0) {
+        candidateList = proposed;
+      }
 
-      newVoted[randomCandidate] = [...prevCandidateVoices, player];
+      const randomIndex = random(0, candidateList.length - 1);
+      const randomCandidate = candidateList[randomIndex];
+      newVoted[randomCandidate] = [
+        ...(newVoted[randomCandidate] ?? []),
+        player,
+      ];
     });
 
-    updateGameFlow({
-      voted: newVoted,
-    });
-  }, [eligibleVoters, isIGM, proposed, updateGameFlow, voted]);
+    updateGameFlow(
+      { voted: newVoted },
+      {
+        onSuccess: () => {
+          openModal(ModalNames.VoteResultModal);
+        },
+      }
+    );
+  }, [isIGM, proposed, updateGameFlow, openModal]);
 
   useEffect(() => {
     if (!enabled) return;
 
     if (proposed.length === 1 && isIGM) {
-      // Automatically assign all eligible votes to the single candidate
+      // Single candidate — all eligible votes go to them automatically.
       const automaticVoted = { [proposed[0]]: eligibleVoters };
-
-      updateGameFlow({
-        voted: automaticVoted,
-      });
-
+      updateGameFlow({ voted: automaticVoted });
       openModal(ModalNames.VoteResultModal);
-
       return;
     }
 
     const interval = setInterval(() => {
-      const currentTime = Date.now();
-      const isTimeOver = endVoteTime <= currentTime;
-
+      const isTimeOver = endVoteTime <= Date.now();
       if (!isTimeOver) return;
 
       clearInterval(interval);
 
-      if (eligibleVoters.length > votedCount && isIGM) {
-        randomVote();
-      }
+      if (!isIGM || hasAutoVotedRef.current) return;
+      hasAutoVotedRef.current = true;
+
+      // Step 1: Stop voting on ALL clients immediately so no new manual votes can be cast.
+      updateGameFlow(
+        { isVote: false },
+        {
+          onSuccess: () => {
+            // Step 2: Wait for any last-second in-flight manual votes to arrive.
+            setTimeout(() => {
+              randomVote();
+            }, VOTE_SETTLE_DELAY_MS);
+          },
+        }
+      );
     }, 1000);
 
     return () => {
       clearInterval(interval);
     };
   }, [
+    eligibleVoters,
     eligibleVoters.length,
     enabled,
     endVoteTime,
     isIGM,
     openModal,
+    proposed,
     proposed.length,
     randomVote,
-    votedCount,
+    updateGameFlow,
   ]);
 
+  // Opens the result modal as soon as every eligible voter has voted (manual path).
   useEffect(() => {
     if (!enabled) return;
-
-    // Modal opens when all eligible voters have voted (blocked player is excluded from the count)
     if (eligibleVoters.length === votedCount && isIGM) {
       openModal(ModalNames.VoteResultModal);
     }

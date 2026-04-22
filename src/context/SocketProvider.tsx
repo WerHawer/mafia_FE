@@ -140,8 +140,8 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       [wsEvents.socketDisconnect]: (connectedUsers) => {
         setSocketConnectedCount(connectedUsers);
       },
-      [wsEvents.addToProposed]: (userId) => {
-        setToProposed(userId);
+      [wsEvents.addToProposed]: ({ userId, proposerId }) => {
+        setToProposed(userId, proposerId);
       },
       [wsEvents.vote]: (data) => {
         addVoted(data);

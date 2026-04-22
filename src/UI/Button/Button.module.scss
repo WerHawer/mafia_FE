@@ -12,6 +12,11 @@
   text-wrap: nowrap;
   cursor: pointer;
 
+  // Prevent SVG icons (e.g. Ant Design) from intercepting pointer events
+  svg, path {
+    pointer-events: none;
+  }
+
   &.fullWidth {
     width: 100%;
   }

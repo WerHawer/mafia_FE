@@ -125,8 +125,12 @@
     "voteList": "Voting List",
     "gmStartVote": "Start Voting",
     "gmStopVote": "Stop Voting",
+    "resetVoting": "Reset votes",
+    "toastVoteStarted": "Voting has started!",
+    "toastRevoteStarted": "Revote has started!",
     "proposePlayer": "Propose for voting",
-    "voteAgainst": "Vote against player"
+    "voteAgainst": "Vote against player",
+    "proposedBy": "Proposed by: {{name}}"
   },
 
   "videoConfig": {

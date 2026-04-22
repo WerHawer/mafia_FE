@@ -23,10 +23,12 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
 
   const onButtonClick = useCallback(() => {
     if (gameFlow.isReVote) {
+      // Second draw — finish voting entirely, no one is eliminated today
       updateGameFlow({
         isVote: false,
         isReVote: false,
         proposed: [],
+        proposedBy: {},
         voted: {},
       });
 
@@ -35,6 +37,7 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
       return;
     }
 
+    // First draw — filter to tied candidates and immediately start revote round
     const newProposed = gameFlow.proposed.filter((id) =>
       candidates.includes(id)
     );
@@ -43,6 +46,7 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
       proposed: newProposed,
       voted: {},
       isReVote: true,
+      isVote: true,  // start the revote immediately
     });
 
     closeModal();
