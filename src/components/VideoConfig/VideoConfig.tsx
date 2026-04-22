@@ -44,7 +44,7 @@ export const VideoConfig = observer(
       setWithBlur,
       videoSettings,
       applySettings,
-    } = useCustomVideo(originalStream, getSavedSettings());
+    } = useCustomVideo(originalStream, getSavedSettings(), quality?.settings);
 
     // Apply saved settings exactly once — when the stream first becomes available.
     // We use a ref flag so quality-change stream restarts don't re-apply stale

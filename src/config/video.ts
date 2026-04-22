@@ -21,12 +21,14 @@ export interface QualitySettings {
   fps: number;
   /** Human-readable label shown in the settings UI */
   label: string;
+  /** LiveKit publish encoding — max bitrate in bps */
+  maxBitrate: number;
 }
 
 export const QUALITY_PRESETS: Record<QualityTier, QualitySettings> = {
-  high:   { width: 1280, height: 720,  fps: 30, label: '720p · 30 fps' },
-  medium: { width: 854,  height: 480,  fps: 24, label: '480p · 24 fps' },
-  low:    { width: 640,  height: 360,  fps: 20, label: '360p · 20 fps' },
+  high:   { width: 1280, height: 720,  fps: 30, label: '720p · 30 fps', maxBitrate: 1_500_000 },
+  medium: { width: 854,  height: 480,  fps: 24, label: '480p · 24 fps', maxBitrate:   800_000 },
+  low:    { width: 640,  height: 360,  fps: 20, label: '360p · 20 fps', maxBitrate:   400_000 },
 };
 
 export const QUALITY_STORAGE_KEY = 'mafia_video_quality';

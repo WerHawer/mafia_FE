@@ -2,11 +2,13 @@ import { useRoomContext } from "@livekit/components-react";
 import { LocalVideoTrack, RoomEvent, Track } from "livekit-client";
 import { useCallback, useEffect, useRef } from "react";
 
-const FPS = 30;
+import { QualitySettings, QUALITY_PRESETS } from "@/config/video.ts";
+
+const DEFAULT_ENCODING = QUALITY_PRESETS.high;
 const MAX_RETRY_ATTEMPTS = 10;
 const RETRY_DELAY_MS = 500;
 
-export const usePublishVideoTrack = () => {
+export const usePublishVideoTrack = (qualitySettings?: QualitySettings) => {
   const room = useRoomContext();
   const pendingCanvasRef = useRef<HTMLCanvasElement | null>(null);
   // Keep a reference to the last successfully published canvas so we can
@@ -41,7 +43,10 @@ export const usePublishVideoTrack = () => {
       pendingCanvasRef.current = null;
 
       try {
-        const videoStream = canvasElement.captureStream(FPS);
+        const fps = qualitySettings?.fps ?? DEFAULT_ENCODING.fps;
+        const maxBitrate = qualitySettings?.maxBitrate ?? DEFAULT_ENCODING.maxBitrate;
+
+        const videoStream = canvasElement.captureStream(fps);
         const [canvasVideoTrack] = videoStream.getVideoTracks();
 
         if (!canvasVideoTrack) {
@@ -79,6 +84,10 @@ export const usePublishVideoTrack = () => {
 
         await room.localParticipant.publishTrack(localVideoTrack, {
           source: Track.Source.Camera,
+          videoEncoding: {
+            maxBitrate,
+            maxFramerate: fps,
+          },
         });
 
         // Remember the canvas so we can republish after reconnection

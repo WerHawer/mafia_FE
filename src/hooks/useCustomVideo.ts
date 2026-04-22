@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { QualitySettings } from "@/config/video.ts";
 import { useConfigureVideo } from "@/hooks/useConfigureVideo.ts";
 import { usePublishVideoTrack } from "@/hooks/usePublishVideoTrack.ts";
 import { UserVideoSettings } from "@/types/user.types.ts";
 
 export const useCustomVideo = (
   originalStream: MediaStream | null,
-  settings?: { withBlur: boolean; imageURL: string } | null
+  settings?: { withBlur: boolean; imageURL: string } | null,
+  qualitySettings?: QualitySettings
 ) => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [videoSettings, setVideoSettings] = useState<UserVideoSettings>(
@@ -16,7 +18,7 @@ export const useCustomVideo = (
     }
   );
 
-  const { publishVideoTrack } = usePublishVideoTrack();
+  const { publishVideoTrack } = usePublishVideoTrack(qualitySettings);
 
   const {
     setImageURL,
