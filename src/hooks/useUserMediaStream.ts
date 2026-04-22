@@ -9,11 +9,12 @@ import { useEffect, useRef, useState } from "react";
 export const useUserMediaStream = (options: MediaStreamConstraints) => {
   const [stream, setStream] = useState<MediaStream | null>(null);
 
-  // Use width/height as the restart key so we don't re-request on every render
+  // Use width/height/fps/deviceId as the restart key
   const video = options.video as MediaTrackConstraints | undefined;
-  const width  = (video?.width  as ConstrainULongRange | undefined)?.ideal ?? 0;
-  const height = (video?.height as ConstrainULongRange | undefined)?.ideal ?? 0;
-  const fps    = (video?.frameRate as ConstrainDoubleRange | undefined)?.ideal ?? 0;
+  const width    = (video?.width     as ConstrainULongRange   | undefined)?.ideal ?? 0;
+  const height   = (video?.height    as ConstrainULongRange   | undefined)?.ideal ?? 0;
+  const fps      = (video?.frameRate as ConstrainDoubleRange  | undefined)?.ideal ?? 0;
+  const deviceId = (video?.deviceId  as ConstrainDOMStringParameters | undefined)?.exact ?? "";
 
   const currentStreamRef = useRef<MediaStream | null>(null);
 
@@ -52,9 +53,9 @@ export const useUserMediaStream = (options: MediaStreamConstraints) => {
         currentStreamRef.current = null;
       }
     };
-  // Re-run only when the actual resolution / fps changes, not on every render
+  // Re-run when resolution, fps, or camera device changes
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [width, height, fps]);
+  }, [width, height, fps, deviceId]);
 
   return stream;
 };

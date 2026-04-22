@@ -7,6 +7,8 @@ import {
   MoonOutlined,
   SoundOutlined,
   UserDeleteOutlined,
+  LockOutlined,
+  UnlockOutlined,
 } from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -122,6 +124,29 @@ export const VideoMenu = observer(
       setIsMenuOpen(false);
     };
 
+    const isForceMuted = gamesStore.isUserForceMuted(userId || "");
+
+    const onToggleForceMute = () => {
+      if (!userId || !activeGameId) return;
+
+      const shouldForceMute = !isForceMuted;
+
+      // If we are force muting, we also mute their mic
+      // If we are un-force muting, we don't automatically unmute their mic, we just remove the block
+      sendMessage(wsEvents.toggleUserMicrophone, {
+        roomId: activeGameId,
+        userId: userId,
+        participantIdentity: userId,
+        enabled: false, // Always keep mic muted when toggling force mute state
+        requesterId: myId,
+        forceMute: shouldForceMute,
+      });
+
+      // Optimistically update local store
+      gamesStore.setForceMutedUser(userId, shouldForceMute);
+      setIsMenuOpen(false);
+    };
+
     return (
       <div className={styles.menuContainer}>
         <Dropdown
@@ -170,6 +195,12 @@ export const VideoMenu = observer(
                   onClick={onToggleSleep}
                 />
               )}
+
+              <MenuItem
+                icon={isForceMuted ? <UnlockOutlined /> : <LockOutlined />}
+                label={isForceMuted ? t("videoMenu.unblockMic") : t("videoMenu.blockMic")}
+                onClick={onToggleForceMute}
+              />
 
               <MenuItem
                 icon={isUserDead ? <HeartOutlined /> : <UserDeleteOutlined />}

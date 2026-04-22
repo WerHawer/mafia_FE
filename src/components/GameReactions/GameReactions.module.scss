@@ -4,11 +4,11 @@
 // --- GameReactionsBar ---
 .bar {
   @include mixins.flex(row, center, center);
-  width: 100%;
   gap: 6px;
-  padding: 10px 16px;
+  padding: 6px 8px;
   background-color: transparent;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .reactionBtn {

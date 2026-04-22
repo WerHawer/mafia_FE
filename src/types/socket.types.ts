@@ -115,6 +115,7 @@ export interface WSSentEventData {
     participantIdentity: string;
     enabled: boolean;
     requesterId: UserId;
+    forceMute?: boolean;
   };
   [wsEvents.batchToggleMicrophones]: {
     roomId: string;
@@ -175,7 +176,7 @@ export interface WSSubscribedEventData {
   [wsEvents.vote]: { targetUserId: UserId; voterId: UserId };
   [wsEvents.shoot]: { targetUserId: UserId; shooterId: UserId; shot?: { x: number; y: number } };
   [wsEvents.userCameraStatusChanged]: { userId: UserId; enabled: boolean };
-  [wsEvents.userMicrophoneStatusChanged]: { userId: UserId; enabled: boolean };
+  [wsEvents.userMicrophoneStatusChanged]: { userId: UserId; enabled: boolean; forceMute?: boolean };
   [wsEvents.playerSleepAck]: { userId: UserId };
   [wsEvents.playerWakeAck]: { userId: UserId };
   [wsEvents.manualSleep]: { userId: UserId };

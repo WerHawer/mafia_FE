@@ -1,6 +1,8 @@
 import { useRoomContext } from "@livekit/components-react";
 import { Participant, Track } from "livekit-client";
 import { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
@@ -26,15 +28,23 @@ export const useMediaControls = ({
   roomId,
   requesterId,
 }: UseMediaControlsProps) => {
-  const { isIDead } = rootStore;
+  const { isIDead, gamesStore } = rootStore;
+  const { t } = useTranslation();
   const { socket, subscribe, sendMessage } = useSocket();
   const room = useRoomContext();
   const localParticipant = room.localParticipant;
 
-  const [mediaState, setMediaState] = useState<MediaControlsState>({
-    isCameraEnabled: false,
-    isMicrophoneEnabled: false,
-  });
+  const getInitialMediaState = () => {
+    const videoPublication = participant.getTrackPublication(Track.Source.Camera);
+    const audioPublication = participant.getTrackPublication(Track.Source.Microphone);
+
+    return {
+      isCameraEnabled: videoPublication ? !videoPublication.isMuted : true, // Default to true if not yet published
+      isMicrophoneEnabled: audioPublication ? !audioPublication.isMuted : true,
+    };
+  };
+
+  const [mediaState, setMediaState] = useState<MediaControlsState>(getInitialMediaState());
 
   // Update media state based on LiveKit track events
   useEffect(() => {
@@ -126,8 +136,31 @@ export const useMediaControls = ({
       participantIdentity: string;
       enabled: boolean;
       targetIdentity?: string;
+      forceMute?: boolean;
     }) => {
       console.log("[Media Control] Microphone status changed:", data);
+
+      // Handle forceMute logic
+      if (data.forceMute !== undefined) {
+        const wasForceMuted = gamesStore.isUserForceMuted(data.userId);
+
+        if (wasForceMuted !== data.forceMute) {
+          gamesStore.setForceMutedUser(data.userId, data.forceMute);
+          
+          if (data.userId === myId) {
+            if (data.forceMute) {
+              toast(t("mediaControls.forceMutedToast"), {
+                icon: "🔒",
+                id: "force-mute-status",
+              });
+            } else {
+              toast.success(t("mediaControls.forceUnmutedToast"), {
+                id: "force-mute-status",
+              });
+            }
+          }
+        }
+      }
 
       // Update UI state for all participants
       if (data.userId === participant.identity) {
@@ -204,7 +237,8 @@ export const useMediaControls = ({
     if (!canControl) return;
 
     try {
-      const currentlyEnabled = mediaState.isCameraEnabled;
+      const videoPub = participant.getTrackPublication(Track.Source.Camera);
+      const currentlyEnabled = videoPub ? !videoPub.isMuted : mediaState.isCameraEnabled;
       const targetUserId = participant.identity;
 
       console.log("[Media Control] Sending toggle camera command:", {
@@ -244,25 +278,43 @@ export const useMediaControls = ({
       return;
     }
 
+    const audioPub = participant.getTrackPublication(Track.Source.Microphone);
+    const currentlyEnabled = audioPub ? !audioPub.isMuted : mediaState.isMicrophoneEnabled;
+    const isTryingToUnmute = !currentlyEnabled;
+
+    if (isTryingToUnmute && isMyStream && !isIGM) {
+      const isForceMuted = gamesStore.isUserForceMuted(participant.identity);
+      if (isForceMuted) {
+        toast.error(t("mediaControls.forceMutedBlock"));
+        return;
+      }
+
+      const isNight = gamesStore.gameFlow.isNight;
+      if (isNight) {
+        toast.error(t("mediaControls.nightMutedBlock"));
+        return;
+      }
+    }
+
     const canControl = isMyStream || isIGM;
     if (!canControl) return;
 
     try {
-      const currentlyEnabled = mediaState.isMicrophoneEnabled;
       const targetUserId = participant.identity;
 
       console.log("[Media Control] Sending toggle microphone command:", {
         roomId,
         userId: targetUserId,
-        enabled: !currentlyEnabled,
+        enabled: isTryingToUnmute,
       });
 
       sendMessage(wsEvents.toggleUserMicrophone, {
         roomId,
         userId: targetUserId,
         participantIdentity: participant.identity,
-        enabled: !currentlyEnabled,
+        enabled: isTryingToUnmute,
         requesterId,
+        // Optional: when GM clicks "mute", it's a regular mute, not force mute
       });
 
       // Don't call participant.setMicrophoneEnabled here!

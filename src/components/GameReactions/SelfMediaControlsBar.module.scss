@@ -1,0 +1,148 @@
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
+
+// ── Outer wrapper ────────────────────────────────────────────────────────────
+
+.selfControls {
+  @include mixins.flex(row, center, center);
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+// ── Button group: main button + chevron side-by-side ────────────────────────
+
+.btnGroup {
+  @include mixins.flex(row, center, center);
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+// ── Base control button ──────────────────────────────────────────────────────
+
+.controlBtn {
+  @include mixins.flexCenter;
+  background: rgba(theme.$color-light-primary, 0.15);
+  border: 1px solid rgba(theme.$color-light-primary, 0.1);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 0;
+  color: theme.$color-text-primary;
+
+  &:hover {
+    background: rgba(theme.$color-light-primary, 0.28);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  // Left variant: square right corners to connect with chevron
+  &.controlBtnLeft {
+    border-radius: 22px 0 0 22px;
+    border-right: none;
+  }
+
+  // Disabled (muted)
+  &.disabled {
+    background: rgba(theme.$color-error, 0.25);
+    border-color: rgba(theme.$color-error, 0.4);
+    color: theme.$color-error;
+
+    &:hover {
+      background: rgba(theme.$color-error, 0.35);
+    }
+  }
+
+  // Speaking pulse
+  &.speaking {
+    background: rgba(theme.$color-info, 0.2);
+    border-color: rgba(theme.$color-info, 0.5);
+    animation: speakingPulse 1.2s ease-in-out infinite;
+  }
+
+  // Settings gear
+  &.settingsBtn {
+    background: rgba(theme.$color-light-primary, 0.1);
+    border-color: rgba(theme.$color-light-primary, 0.08);
+
+    &:hover {
+      background: rgba(theme.$color-light-primary, 0.22);
+    }
+  }
+}
+
+// ── Google Meet style horizontal popover ─────────────────────────────────────
+
+.meetMenu {
+  @include mixins.flex(row, flex-start, center);
+  gap: 8px;
+  padding: 8px 12px;
+  background: theme.$color-dark-secondary;
+  border-radius: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.meetSettingsBtn {
+  @include mixins.flexCenter;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(theme.$color-light-primary, 0.05);
+  background: rgba(theme.$color-light-primary, 0.1);
+  color: theme.$color-text-secondary;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(theme.$color-light-primary, 0.18);
+    color: theme.$color-text-primary;
+  }
+}
+
+// ── Chevron trigger button ──────────────────────────────────────────────────
+
+.chevron {
+  @include mixins.flexCenter;
+  width: 16px;
+  height: 44px;
+  padding: 0;
+  background: rgba(theme.$color-light-primary, 0.1);
+  border: 1px solid rgba(theme.$color-light-primary, 0.1);
+  border-left: none;
+  border-radius: 0 22px 22px 0;
+  cursor: pointer;
+  color: theme.$color-text-primary;
+  transition: background 0.18s ease, transform 0.2s ease;
+
+  &:hover {
+    background: rgba(theme.$color-light-primary, 0.25);
+  }
+
+  &.chevronActive svg {
+    transform: rotate(180deg);
+  }
+
+  svg {
+    display: block;
+    transition: transform 0.2s ease;
+  }
+}
+
+// ── Icon size ────────────────────────────────────────────────────────────────
+
+.icon {
+  font-size: 1.8rem;
+}
+
+// ── Animations ───────────────────────────────────────────────────────────────
+
+@keyframes speakingPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(theme.$color-info, 0.4); }
+  50%       { box-shadow: 0 0 0 5px rgba(theme.$color-info, 0); }
+}

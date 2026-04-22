@@ -2,7 +2,6 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-
 import {
   useAddUserToGameMutation,
   useRemoveUserFromGameMutation,
@@ -10,16 +9,15 @@ import {
 import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import { GameChat } from "@/components/GameChat";
 import { GameInfoSection } from "@/components/GameInfoSection";
-import { FloatingReactions, GameReactionsBar } from "@/components/GameReactions";
+import { FloatingReactions, GameBottomBar } from "@/components/GameReactions";
 import { GameVideoManager } from "@/components/GameVideoManager/GameVideoManager.tsx";
 import { GameVote } from "@/components/GameVote";
-import { GMMenu } from "@/components/GMMenu";
 import { LiveKitMafiaRoom } from "@/components/LiveKitMafiaRoom/LiveKitMafiaRoom.tsx";
 import { AudioProvider } from "@/components/AudioProvider/AudioProvider.tsx";
 import { useAdaptiveQuality } from "@/hooks/useAdaptiveQuality.ts";
+import { useSelectedDevices } from "@/hooks/useSelectedDevices.ts";
 import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
 import { useVideoSettings } from "@/hooks/useVideoSettings.ts";
-import { useGameReactions } from "@/hooks/useGameReactions.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
 import brokenGlassIcon from "@/assets/icons/broken_glass.png";
@@ -48,16 +46,24 @@ const GamePage = observer(() => {
   const [shouldShowVideoConfig, setShouldShowVideoConfig] = useState(false);
   const [shouldShowAudioConfig, setShouldShowAudioConfig] = useState(false);
 
-  const { sendReaction } = useGameReactions();
+  const {
+    videoDeviceId,
+    audioInputDeviceId,
+    audioOutputDeviceId,
+    setVideoDevice,
+    setAudioInputDevice,
+    setAudioOutputDevice,
+  } = useSelectedDevices();
 
   const quality = useAdaptiveQuality();
 
   const originalStream = useUserMediaStream({
-    audio: false,
+    audio: true,
     video: {
       width: { ideal: quality.settings.width },
       height: { ideal: quality.settings.height },
       frameRate: { ideal: quality.settings.fps },
+      ...(videoDeviceId ? { deviceId: { exact: videoDeviceId } } : {}),
     },
   });
 
@@ -130,11 +136,6 @@ const GamePage = observer(() => {
 
         <LiveKitMafiaRoom enabled={isJoinedToGame}>
           <div className={styles.videoSection}>
-            <GMMenu
-              onOpenVideoConfig={() => setShouldShowVideoConfig(true)}
-              onOpenAudioConfig={() => setShouldShowAudioConfig(true)}
-            />
-
             <div className={styles.videoGridWrapper}>
               <GameVideoManager
                 originalStream={originalStream}
@@ -147,7 +148,17 @@ const GamePage = observer(() => {
               />
             </div>
 
-            <GameReactionsBar sendReaction={sendReaction} />
+            <GameBottomBar
+              isJoinedToGame={isJoinedToGame}
+              videoDeviceId={videoDeviceId}
+              audioInputDeviceId={audioInputDeviceId}
+              audioOutputDeviceId={audioOutputDeviceId}
+              onSelectVideoDevice={setVideoDevice}
+              onSelectAudioInputDevice={setAudioInputDevice}
+              onSelectAudioOutputDevice={setAudioOutputDevice}
+              onOpenVideoConfig={() => setShouldShowVideoConfig(true)}
+              onOpenAudioConfig={() => setShouldShowAudioConfig(true)}
+            />
           </div>
         </LiveKitMafiaRoom>
 

@@ -1,3 +1,6 @@
+import {
+  AudioMutedOutlined,
+} from "@ant-design/icons";
 import classNames from "classnames";
 import { Participant, Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
@@ -13,6 +16,7 @@ import { MediaControls } from "@/components/MediaControls";
 import { ReactionCornerBadge } from "@/components/GameReactions";
 import { Shoot } from "@/components/Shoot";
 import { SleepIcon } from "@/components/SleepIcon";
+import { SoundIndicator } from "@/components/SoundIndicator";
 import { VoteFlow } from "@/components/VoteFlow";
 import { useGameVideo } from "@/hooks/useGameVideo.ts";
 import { useIsSpeaking } from "@/hooks/useIsSpeaking.ts";
@@ -199,16 +203,36 @@ export const GameVideo = observer(
             isSpeaking={isSpeaking}
           />
 
-          <MediaControls
-            isCameraEnabled={isCameraEnabled}
-            isMicrophoneEnabled={isMicrophoneEnabled}
-            onToggleCamera={toggleCamera}
-            onToggleMicrophone={toggleMicrophone}
-            canControl={canControl}
-            isIGM={isIGM}
-            isMyStream={isMyStream}
-            isSpeaking={isSpeaking}
-          />
+          {/* ── Universal audio overlays (all except GM viewing others) ── */}
+          {/* When isIGM && !isMyStream → MediaControls handles visual state  */}
+
+          {/* Speaking: SoundIndicator in bottom-right corner when camera ON */}
+          {isSpeaking && isCameraEnabled && !(isIGM && !isMyStream) && (
+            <div className={styles.speakingOverlay}>
+              <SoundIndicator />
+            </div>
+          )}
+
+          {/* Muted mic: crossed icon in bottom-right (skipped for GM→others, MediaControls shows it) */}
+          {!isMicrophoneEnabled && !(isIGM && !isMyStream) && (
+            <div className={styles.mutedMicOverlay}>
+              <AudioMutedOutlined className={styles.mutedMicIcon} />
+            </div>
+          )}
+
+          {/* ── GM-only toggle buttons for other players (bottom-right) ── */}
+          {isIGM && !isMyStream && (
+            <MediaControls
+              isCameraEnabled={isCameraEnabled}
+              isMicrophoneEnabled={isMicrophoneEnabled}
+              onToggleCamera={toggleCamera}
+              onToggleMicrophone={toggleMicrophone}
+              canControl={canControl}
+              isIGM={isIGM}
+              isMyStream={isMyStream}
+              isSpeaking={isSpeaking}
+            />
+          )}
 
           {currentUser && (
             <VideoUserInfo

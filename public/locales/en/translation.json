@@ -148,7 +148,9 @@
     "showDeadVideo": "Show live video",
     "hideDeadVideo": "Hide live video",
     "sleep": "Put to sleep",
-    "wake": "Wake up"
+    "wake": "Wake up",
+    "blockMic": "Block microphone",
+    "unblockMic": "Unblock microphone"
   },
 
   "nightResults": {
@@ -215,6 +217,21 @@
     "dead": "Dead"
   },
 
+  "mediaControls": {
+    "microphone": "Microphone",
+    "speaker": "Speaker",
+    "camera": "Camera",
+    "audioMenu": "Audio menu",
+    "videoMenu": "Video menu",
+    "unmuteMic": "Unmute microphone",
+    "muteMic": "Mute microphone",
+    "enableCam": "Enable camera",
+    "disableCam": "Disable camera",
+    "forceMutedToast": "Your microphone was blocked by GM",
+    "forceUnmutedToast": "Your microphone was unblocked",
+    "forceMutedBlock": "Microphone is blocked by GM",
+    "nightMutedBlock": "You cannot speak during the night"
+  },
   "gmMenu": {
     "title": "GM Menu",
     "makeMeGM": "Make me GM",

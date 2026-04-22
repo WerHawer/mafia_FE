@@ -15,6 +15,7 @@ import {
 export class GamesStore {
   _games: IGameShort[] = [];
   _activeGame: IGame | null = null;
+  forceMutedUsers: UserId[] = [];
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -49,6 +50,21 @@ export class GamesStore {
 
   removeActiveGame() {
     this._activeGame = null;
+    this.forceMutedUsers = [];
+  }
+
+  setForceMutedUser(userId: UserId, isMuted: boolean) {
+    if (isMuted) {
+      if (!this.forceMutedUsers.includes(userId)) {
+        this.forceMutedUsers.push(userId);
+      }
+    } else {
+      this.forceMutedUsers = this.forceMutedUsers.filter((id) => id !== userId);
+    }
+  }
+
+  isUserForceMuted(userId: UserId): boolean {
+    return this.forceMutedUsers.includes(userId);
   }
 
   updateGameFlow(newFlow: Partial<IGameFlow>) {

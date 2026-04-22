@@ -1,0 +1,67 @@
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
+
+.triggerBtn {
+  position: relative;
+  @include mixins.flex(row, flex-start, center);
+  background: rgba(theme.$color-light-primary, 0.08);
+  border: 1px solid transparent;
+  border-radius: 20px;
+  height: 44px;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: theme.$color-text-primary;
+  max-width: 250px;
+  min-width: 180px;
+
+  &:hover {
+    background: rgba(theme.$color-light-primary, 0.15);
+  }
+
+  &.active {
+    background: rgba(theme.$color-light-primary, 0.2);
+    border-color: rgba(theme.$color-light-primary, 0.1);
+
+    .chevron svg {
+      transform: rotate(180deg);
+    }
+  }
+
+  &:focus-within {
+    outline: 2px solid rgba(theme.$color-info, 0.5);
+    outline-offset: 1px;
+  }
+}
+
+.iconWrapper {
+  font-size: 1.3rem;
+  color: theme.$color-text-secondary;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.label {
+  flex: 1;
+  font-size: 1.4rem;
+  text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-right: 12px;
+  pointer-events: none;
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  color: theme.$color-text-secondary;
+  pointer-events: none;
+
+  svg {
+    transition: transform 0.2s ease;
+  }
+}

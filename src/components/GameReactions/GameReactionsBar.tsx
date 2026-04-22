@@ -18,6 +18,8 @@ const REACTIONS = [
   { unified: "1f914", emoji: "🤔" },
   { unified: "1f44f", emoji: "👏" },
   { unified: "2764-fe0f", emoji: "❤️" },
+  { unified: "2753", emoji: "❓" },
+  { unified: "2757", emoji: "❗" },
 ];
 
 /**

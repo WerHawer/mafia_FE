@@ -150,7 +150,9 @@
     "showDeadVideo": "Показати живе відео",
     "hideDeadVideo": "Сховати живе відео",
     "sleep": "Приспати",
-    "wake": "Розбудити"
+    "wake": "Розбудити",
+    "blockMic": "Заблокувати мікрофон",
+    "unblockMic": "Розблокувати мікрофон"
   },
 
   "nightResults": {
@@ -218,6 +220,21 @@
     "dead": "Мертвий"
   },
 
+  "mediaControls": {
+    "microphone": "Мікрофон",
+    "speaker": "Динамік",
+    "camera": "Камера",
+    "audioMenu": "Меню аудіо",
+    "videoMenu": "Меню відео",
+    "unmuteMic": "Увімкнути мікрофон",
+    "muteMic": "Вимкнути мікрофон",
+    "enableCam": "Увімкнути камеру",
+    "disableCam": "Вимкнути камеру",
+    "forceMutedToast": "Ваш мікрофон заблоковано ГМом",
+    "forceUnmutedToast": "Ваш мікрофон розблоковано",
+    "forceMutedBlock": "Мікрофон заблоковано ГМом",
+    "nightMutedBlock": "Вночі не можна розмовляти"
+  },
   "gmMenu": {
     "title": "Меню ГМ",
     "makeMeGM": "Зробити мене ГМ",

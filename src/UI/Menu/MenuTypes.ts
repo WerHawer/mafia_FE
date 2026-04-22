@@ -6,7 +6,7 @@ export enum MenuItemVariant {
 
 export interface MenuItemProps {
   icon?: React.ReactNode;
-  label: string;
+  label: string | React.ReactNode;
   onClick: () => void;
   variant?: MenuItemVariant;
   disabled?: boolean;

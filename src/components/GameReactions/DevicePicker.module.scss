@@ -1,0 +1,86 @@
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
+
+// ── Chevron trigger button ──────────────────────────────────────────────────
+
+.chevron {
+  @include mixins.flexCenter;
+  width: 16px;
+  height: 44px;
+  padding: 0;
+  background: rgba(theme.$color-light-primary, 0.1);
+  border: 1px solid rgba(theme.$color-light-primary, 0.1);
+  border-left: none;
+  border-radius: 0 12px 12px 0;
+  cursor: pointer;
+  color: theme.$color-text-primary;
+  transition: background 0.18s ease;
+
+  &:hover {
+    background: rgba(theme.$color-light-primary, 0.25);
+  }
+
+  svg {
+    display: block;
+    transition: transform 0.18s ease;
+  }
+}
+
+// ── Popover ────────────────────────────────────────────────────────────────
+
+.popover {
+  min-width: 220px;
+  max-width: 320px;
+  padding: 6px 0;
+}
+
+.popoverTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: theme.$color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 12px 6px;
+  margin: 0;
+}
+
+.deviceOption {
+  @include mixins.flex(row, flex-start, center);
+  width: 100%;
+  gap: 8px;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: theme.$color-text-primary;
+  font-size: 1.3rem;
+  text-align: left;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(theme.$color-light-primary, 0.12);
+  }
+
+  &.active {
+    color: theme.$color-accent-primary;
+  }
+}
+
+.check {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  color: theme.$color-accent-primary;
+}
+
+.checkVisible {
+  opacity: 1;
+}
+
+.deviceLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

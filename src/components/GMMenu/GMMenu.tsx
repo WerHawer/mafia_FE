@@ -12,158 +12,115 @@ import {
   VideoCameraAddOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import Tippy from "@tippyjs/react";
 import { useTranslation } from "react-i18next";
 
 import { useGMMenu } from "@/hooks/useGMMenu.ts";
-import { Dropdown, IconButton, Menu, MenuItem, MenuSeparator } from "@/UI";
-import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { Dropdown, Menu, MenuItem, MenuSeparator } from "@/UI";
 
 import styles from "./GMMenu.module.scss";
 
-type GMMenuProps = {
-  onOpenVideoConfig: () => void;
-  onOpenAudioConfig: () => void;
-};
+export const GMMenu = observer(() => {
+  const { t } = useTranslation();
+  const {
+    isMenuOpen,
+    setIsMenuOpen,
+    isIGM,
+    gameFlow,
+    onMakeMeGM,
+    onMuteAll,
+    onUnmuteAll,
+    onDisableAllCameras,
+    onEnableAllCameras,
+    onRestartGame,
+    onLeaveGame,
+  } = useGMMenu();
 
-export const GMMenu = observer(
-  ({ onOpenVideoConfig, onOpenAudioConfig }: GMMenuProps) => {
-    const { t } = useTranslation();
-    const {
-      isMenuOpen,
-      setIsMenuOpen,
-      isIGM,
-      mockStreamsEnabled,
-      gameFlow,
-      onMakeMeGM,
-      onToggleMockStreams,
-      onMuteAll,
-      onUnmuteAll,
-      onDisableAllCameras,
-      onEnableAllCameras,
-      onRestartGame,
-      onLeaveGame,
-    } = useGMMenu();
-
-    return (
-      <div className={styles.gmMenuContainer}>
-        <Dropdown
-          trigger={
-            <IconButton
-              icon={<MoreOutlined />}
+  return (
+    <div className={styles.gmMenuContainer}>
+      <Dropdown
+        trigger={
+          <Tippy content={t("gmMenu.title")} delay={[500, 0]} theme="role-tooltip">
+            <button
+              className={classNames(styles.controlBtn, {
+                [styles.active]: isMenuOpen,
+              })}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              variant={ButtonVariant.Secondary}
-              size={ButtonSize.Medium}
-              active={isMenuOpen}
-              ariaLabel={t("gmMenu.title")}
+              aria-label={t("gmMenu.title")}
+            >
+              <MoreOutlined />
+            </button>
+          </Tippy>
+        }
+        content={
+          <Menu>
+            {/*{!isIGM && (*/}
+            {/*  <MenuItem*/}
+            {/*    icon={<CrownOutlined />}*/}
+            {/*    label={t("gmMenu.makeMeGM")}*/}
+            {/*    onClick={onMakeMeGM}*/}
+            {/*  />*/}
+            {/*)}*/}
+
+            {isIGM && (
+              <>
+                <MenuItem
+                  icon={<AudioMutedOutlined />}
+                  label={t("gmMenu.muteAll")}
+                  onClick={onMuteAll}
+                />
+
+                <MenuItem
+                  icon={<AudioOutlined />}
+                  label={t("gmMenu.unmuteAll")}
+                  onClick={onUnmuteAll}
+                />
+
+                <MenuSeparator />
+
+                <MenuItem
+                  icon={<EyeInvisibleOutlined />}
+                  label={t("gmMenu.disableAllCameras")}
+                  onClick={onDisableAllCameras}
+                />
+
+                <MenuItem
+                  icon={<EyeOutlined />}
+                  label={t("gmMenu.enableAllCameras")}
+                  onClick={onEnableAllCameras}
+                />
+
+                {gameFlow.isStarted && (
+                  <>
+                    <MenuSeparator />
+
+                    <MenuItem
+                      icon={<ReloadOutlined />}
+                      label={t("gmMenu.restartGame")}
+                      onClick={onRestartGame}
+                    />
+                  </>
+                )}
+
+                <MenuSeparator />
+              </>
+            )}
+
+            <MenuItem
+              icon={<LogoutOutlined />}
+              label={t("gmMenu.leaveGame")}
+              onClick={onLeaveGame}
             />
-          }
-          content={
-            <Menu>
-              {/*{!isIGM && (*/}
-              {/*  <MenuItem*/}
-              {/*    icon={<CrownOutlined />}*/}
-              {/*    label={t("gmMenu.makeMeGM")}*/}
-              {/*    onClick={onMakeMeGM}*/}
-              {/*  />*/}
-              {/*)}*/}
-
-              {isIGM && (
-                <>
-                  <MenuItem
-                    icon={
-                      mockStreamsEnabled ? (
-                        <VideoCameraOutlined />
-                      ) : (
-                        <VideoCameraAddOutlined />
-                      )
-                    }
-                    label={
-                      mockStreamsEnabled
-                        ? t("gmMenu.disableMockStreams")
-                        : t("gmMenu.enableMockStreams")
-                    }
-                    onClick={onToggleMockStreams}
-                  />
-
-                  <MenuSeparator />
-
-                  <MenuItem
-                    icon={<AudioMutedOutlined />}
-                    label={t("gmMenu.muteAll")}
-                    onClick={onMuteAll}
-                  />
-
-                  <MenuItem
-                    icon={<AudioOutlined />}
-                    label={t("gmMenu.unmuteAll")}
-                    onClick={onUnmuteAll}
-                  />
-
-                  <MenuSeparator />
-
-                  <MenuItem
-                    icon={<EyeInvisibleOutlined />}
-                    label={t("gmMenu.disableAllCameras")}
-                    onClick={onDisableAllCameras}
-                  />
-
-                  <MenuItem
-                    icon={<EyeOutlined />}
-                    label={t("gmMenu.enableAllCameras")}
-                    onClick={onEnableAllCameras}
-                  />
-
-                  {gameFlow.isStarted && (
-                    <>
-                      <MenuSeparator />
-
-                      <MenuItem
-                        icon={<ReloadOutlined />}
-                        label={t("gmMenu.restartGame")}
-                        onClick={onRestartGame}
-                      />
-                    </>
-                  )}
-
-                  <MenuSeparator />
-                </>
-              )}
-
-              <MenuItem
-                icon={<SettingOutlined />}
-                label={t("gmMenu.videoSettings")}
-                onClick={() => {
-                  onOpenVideoConfig();
-                  setIsMenuOpen(false);
-                }}
-              />
-
-              <MenuItem
-                icon={<SoundOutlined />}
-                label={t("gmMenu.audioSettings")}
-                onClick={() => {
-                  onOpenAudioConfig();
-                  setIsMenuOpen(false);
-                }}
-              />
-
-              <MenuSeparator />
-
-              <MenuItem
-                icon={<LogoutOutlined />}
-                label={t("gmMenu.leaveGame")}
-                onClick={onLeaveGame}
-              />
-            </Menu>
-          }
-          isOpen={isMenuOpen}
-          onToggle={setIsMenuOpen}
-          placement="bottom-end"
-        />
-      </div>
-    );
-  }
-);
+          </Menu>
+        }
+        isOpen={isMenuOpen}
+        onToggle={setIsMenuOpen}
+        placement="bottom-end"
+      />
+    </div>
+  );
+});
 
 GMMenu.displayName = "GMMenu";
