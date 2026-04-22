@@ -65,7 +65,7 @@
 
 .nightOverlay {
   @include mixins.flexCenter(column);
-  @include mixins.rounded(theme.$border-radius-medium);
+  @include mixins.rounded(theme.$border-radius-small);
   position: absolute;
   top: 0;
   left: 0;

@@ -42,7 +42,7 @@
   @include mixins.flex(row, flex-start, center);
   gap: 2rem;
   background-color: theme.$color-dark-secondary;
-  border-radius: theme.$border-radius-medium;
+  border-radius: theme.$border-radius-small;
   padding: 1.5rem;
   width: 100%;
 
@@ -121,7 +121,7 @@
   flex-direction: row;
   align-items: stretch;
   background-color: theme.$color-dark-secondary;
-  border-radius: theme.$border-radius-medium;
+  border-radius: theme.$border-radius-small;
   overflow: hidden;
   transition:
     transform 0.2s ease,

@@ -4,7 +4,7 @@
 .container {
   @include mixins.flexCenter;
   position: relative;
-  border-radius: theme.$border-radius;
+  border-radius: theme.$border-radius-medium;
   border: 3px solid transparent;
   width: 100%;
   height: 100%;
@@ -13,7 +13,6 @@
 
   &.speaking {
     border-color: theme.$color-info;
-    box-shadow: 0 0 8px rgba(theme.$color-info, 0.5);
   }
 }
 
@@ -173,7 +172,9 @@
 
 .shootable {
   /* noinspection CssUnknownTarget */
-  cursor: url("/aim.svg") 16 16, crosshair !important;
+  cursor:
+    url("/aim.svg") 16 16,
+    crosshair !important;
   transition: box-shadow 0.2s;
 
   &:hover {
@@ -183,7 +184,9 @@
 
 .kissable {
   /* noinspection CssUnknownTarget */
-  cursor: url("/kiss.svg") 16 16, pointer !important;
+  cursor:
+    url("/kiss.svg") 16 16,
+    pointer !important;
   transition: box-shadow 0.2s;
 
   &:hover {
@@ -193,12 +196,16 @@
 
 .healable {
   /* noinspection CssUnknownTarget */
-  cursor: url("/syringe.svg") 16 16, pointer !important;
+  cursor:
+    url("/syringe.svg") 16 16,
+    pointer !important;
 }
 
 .checkable {
   /* noinspection CssUnknownTarget */
-  cursor: url("/question.svg") 16 16, help !important;
+  cursor:
+    url("/question.svg") 16 16,
+    help !important;
   transition: box-shadow 0.2s;
 
   &:hover {
