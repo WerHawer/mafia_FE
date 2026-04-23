@@ -48,6 +48,12 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
     (newGame: IGame | IGameShort) => {
       queryClient.setQueryData<any>([queryKeys.games], (oldData: any) => {
         if (!oldData || !oldData.data) return oldData;
+
+        // Game became inactive — remove from the active list
+        if (!newGame.isActive) {
+          return { ...oldData, data: oldData.data.filter((g: any) => g.id !== newGame.id) };
+        }
+
         const exists = oldData.data.some((g: any) => g.id === newGame.id);
         if (!exists) return { ...oldData, data: [...oldData.data, newGame] };
         return {

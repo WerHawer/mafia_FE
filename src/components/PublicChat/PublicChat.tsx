@@ -22,14 +22,19 @@ export const PublicChat = observer(() => {
   const { publicMessages, setNewLocalMessage } = messagesStore;
 
   const chatRef = useRef<HTMLDivElement>(null);
-  const isInitialRender = useRef(true);
+  // Stays true until the first batch of messages arrives from the server
+  const isInitialLoad = useRef(true);
 
   useEffect(() => {
-    chatRef.current?.scrollTo({
+    if (!chatRef.current || !publicMessages?.length) return;
+
+    const behavior = isInitialLoad.current ? "instant" : "smooth";
+    isInitialLoad.current = false;
+
+    chatRef.current.scrollTo({
       top: chatRef.current.scrollHeight,
-      behavior: isInitialRender.current ? "auto" : "smooth",
+      behavior,
     });
-    isInitialRender.current = false;
   }, [publicMessages]);
 
   useEffect(() => {
@@ -38,7 +43,7 @@ export const PublicChat = observer(() => {
     const resizeObserver = new ResizeObserver(() => {
       chatRef.current?.scrollTo({
         top: chatRef.current.scrollHeight,
-        behavior: "smooth",
+        behavior: isInitialLoad.current ? "instant" : "smooth",
       });
     });
 

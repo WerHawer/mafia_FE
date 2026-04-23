@@ -29,6 +29,9 @@ type CreateGameProps = {
   maxPlayers?: number;
   mafiaCount?: number;
   additionalRoles?: Roles[];
+  speakTime?: number;
+  votesTime?: number;
+  candidateSpeakTime?: number;
 };
 
 export const createGameObj = ({
@@ -38,6 +41,9 @@ export const createGameObj = ({
   maxPlayers = 10,
   mafiaCount = 3,
   additionalRoles = [],
+  speakTime = initialGameFlow.speakTime,
+  votesTime = initialGameFlow.votesTime,
+  candidateSpeakTime = initialGameFlow.candidateSpeakTime,
 }: CreateGameProps): IGameDTO => {
   return {
     owner,
@@ -55,6 +61,11 @@ export const createGameObj = ({
     finishTime: null,
     creatingTime: Date.now(),
     gameType,
-    gameFlow: initialGameFlow,
+    gameFlow: {
+      ...initialGameFlow,
+      speakTime,
+      votesTime,
+      candidateSpeakTime,
+    },
   };
 };

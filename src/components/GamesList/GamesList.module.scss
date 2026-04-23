@@ -136,3 +136,17 @@
   font-size: 14px;
   margin-left: 4px;
 }
+
+.inProgressBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: $color-text-secondary;
+  background: rgba($color-light-primary, 0.06);
+  border: 1px solid rgba($color-light-primary, 0.12);
+  min-width: 100px;
+  justify-content: center;
+}

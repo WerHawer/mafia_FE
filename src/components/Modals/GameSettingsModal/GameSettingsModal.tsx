@@ -1,80 +1,101 @@
-import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 
-import { useCreateGameMutation } from "@/api/game/queries.ts";
-import { createGameObj } from "@/helpers/createGameObj.ts";
-import { routes } from "@/router/routs.ts";
+import { usePatchGameMutation, useUpdateGameFlowMutation } from "@/api/game/queries.ts";
+import { ADDITIONAL_ROLES_OPTIONS } from "@/components/Modals/CreateGameModal/CreateGameModal.config.ts";
 import { modalStore } from "@/store/modalStore.ts";
-import { usersStore } from "@/store/usersStore.ts";
-import { GameType } from "@/types/game.types.ts";
+import { gamesStore } from "@/store/gamesStore.ts";
+import { Roles } from "@/types/game.types.ts";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 import { Input } from "@/UI/Input";
 import { Switcher } from "@/UI/Switcher";
 
-import {
-    ADDITIONAL_ROLES_OPTIONS,
-    DEFAULT_VALUES,
-    FormValues
-} from "./CreateGameModal.config.ts";
-import styles from "./CreateGameModal.module.scss";
+import styles from "../CreateGameModal/CreateGameModal.module.scss";
+import classNames from "classnames";
 
-export const CreateGameModal = observer(() => {
+type SettingsValues = {
+  additionalRoles: Roles[];
+  isPrivate: boolean;
+  password?: string;
+  speakTime: number;
+  votesTime: number;
+  candidateSpeakTime: number;
+};
+
+export const GameSettingsModal = observer(() => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { mutate: createGame, isPending } = useCreateGameMutation();
-  const { myId } = usersStore;
   const { closeModal } = modalStore;
+  const { gameFlow, activeGame, activeGameId } = gamesStore;
+  const { mutate: patchGame, isPending: isPatchPending } = usePatchGameMutation();
+  const { mutate: updateGameFlow, isPending: isFlowPending } = useUpdateGameFlowMutation();
+  const isPending = isPatchPending || isFlowPending;
 
-  const { control, handleSubmit, watch } =
-    useForm<FormValues>({
-      defaultValues: DEFAULT_VALUES,
-    });
+  const { control, handleSubmit, watch } = useForm<SettingsValues>({
+    defaultValues: {
+      additionalRoles: activeGame?.additionalRoles ?? [],
+      isPrivate: activeGame?.isPrivate ?? false,
+      password: "",
+      speakTime: gameFlow.speakTime ?? 60,
+      votesTime: gameFlow.votesTime ?? 15,
+      candidateSpeakTime: gameFlow.candidateSpeakTime ?? 30,
+    },
+  });
 
   const isPrivate = watch("isPrivate");
 
   const onSubmit = useCallback(
-    (data: FormValues) => {
-      if (!myId) return;
+    (data: SettingsValues) => {
+      if (!activeGameId) return;
 
-      const game = createGameObj({
-        owner: myId,
-        gameType: GameType.Standard,
-        maxPlayers: 12,
-        mafiaCount: 0,
-        additionalRoles: data.additionalRoles,
-        password: data.isPrivate ? data.password : undefined,
-        speakTime: data.speakTime,
-        votesTime: data.votesTime,
-        candidateSpeakTime: data.candidateSpeakTime,
-      });
-
-      createGame(game, {
-        onSuccess: ({ data }) => {
-          closeModal();
-          navigate(`${routes.game}/${data.id}`);
+      // Update game fields (additionalRoles, privacy)
+      patchGame({
+        gameId: activeGameId,
+        data: {
+          additionalRoles: data.additionalRoles,
+          isPrivate: data.isPrivate,
+          password: data.isPrivate ? data.password || activeGame?.password : undefined,
         },
       });
+
+      // Update gameFlow timings
+      updateGameFlow(
+        {
+          speakTime: data.speakTime,
+          votesTime: data.votesTime,
+          candidateSpeakTime: data.candidateSpeakTime,
+        },
+        { onSuccess: closeModal }
+      );
     },
-    [createGame, myId, navigate, closeModal]
+    [patchGame, updateGameFlow, activeGameId, activeGame?.password, closeModal]
+  );
+
+  const TimingControl = ({
+    field,
+    min,
+    max,
+  }: {
+    field: { value: number; onChange: (v: number) => void };
+    min: number;
+    max: number;
+  }) => (
+    <div className={styles.timingControl}>
+      <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.max(min, field.value - 5))}>−</button>
+      <span className={styles.timingValue}>{field.value}</span>
+      <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.min(max, field.value + 5))}>+</button>
+    </div>
   );
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>{t("createGame")}</h2>
+      <h2 className={styles.title}>{t("game.settings", "Налаштування гри")}</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        <div className={styles.row}>
-          <div className={styles.infoMessage}>
-            {t("maxPlayersNote", "Максимум 12 людей (з ведучим)")}
-          </div>
-        </div>
-
+        {/* Additional roles */}
         <div className={styles.row}>
           <label className={styles.label}>{t("additionalRoles")}</label>
           <div className={styles.rolesContainer}>
@@ -85,24 +106,18 @@ export const CreateGameModal = observer(() => {
                 <>
                   {ADDITIONAL_ROLES_OPTIONS.map((role) => {
                     const isSelected = field.value.includes(role.value);
-
                     return (
                       <div
                         key={role.value}
-                        className={classNames(styles.roleCheckbox, {
-                          [styles.active]: isSelected,
-                        })}
+                        className={classNames(styles.roleCheckbox, { [styles.active]: isSelected })}
                         onClick={() => {
-                          if (isSelected) {
-                            field.onChange(
-                              field.value.filter((v) => v !== role.value)
-                            );
-                          } else {
-                            field.onChange([...field.value, role.value]);
-                          }
+                          field.onChange(
+                            isSelected
+                              ? field.value.filter((v) => v !== role.value)
+                              : [...field.value, role.value]
+                          );
                         }}
                       >
-                        {/* TODO: Add icons if available */}
                         {t(`roles.${role.value}`, role.label)}
                       </div>
                     );
@@ -113,6 +128,7 @@ export const CreateGameModal = observer(() => {
           </div>
         </div>
 
+        {/* Private game toggle */}
         <div className={styles.row}>
           <div className={styles.checkboxContainer}>
             <Controller
@@ -150,20 +166,17 @@ export const CreateGameModal = observer(() => {
           )}
         </AnimatePresence>
 
+        {/* Time settings */}
         <div className={styles.row}>
-          <label className={styles.label}>{t("game.timings", "Налаштування часу")}</label>
+          <label className={styles.label}>{t("game.timings")}</label>
           <div className={styles.timingsGrid}>
             <Controller
               name="speakTime"
               control={control}
               render={({ field }) => (
                 <div className={styles.timingItem}>
-                  <span className={styles.timingLabel}>{t("game.speakTime", "Промова (сек)")}</span>
-                  <div className={styles.timingControl}>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.max(10, field.value - 5))}>−</button>
-                    <span className={styles.timingValue}>{field.value}</span>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.min(300, field.value + 5))}>+</button>
-                  </div>
+                  <span className={styles.timingLabel}>{t("game.speakTime")}</span>
+                  <TimingControl field={field} min={10} max={300} />
                 </div>
               )}
             />
@@ -172,12 +185,8 @@ export const CreateGameModal = observer(() => {
               control={control}
               render={({ field }) => (
                 <div className={styles.timingItem}>
-                  <span className={styles.timingLabel}>{t("game.votesTime", "Голосування (сек)")}</span>
-                  <div className={styles.timingControl}>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.max(5, field.value - 5))}>−</button>
-                    <span className={styles.timingValue}>{field.value}</span>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.min(120, field.value + 5))}>+</button>
-                  </div>
+                  <span className={styles.timingLabel}>{t("game.votesTime")}</span>
+                  <TimingControl field={field} min={5} max={120} />
                 </div>
               )}
             />
@@ -186,12 +195,8 @@ export const CreateGameModal = observer(() => {
               control={control}
               render={({ field }) => (
                 <div className={styles.timingItem}>
-                  <span className={styles.timingLabel}>{t("game.candidateSpeakTime", "Захист (сек)")}</span>
-                  <div className={styles.timingControl}>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.max(5, field.value - 5))}>−</button>
-                    <span className={styles.timingValue}>{field.value}</span>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.min(120, field.value + 5))}>+</button>
-                  </div>
+                  <span className={styles.timingLabel}>{t("game.candidateSpeakTime")}</span>
+                  <TimingControl field={field} min={5} max={120} />
                 </div>
               )}
             />
@@ -214,10 +219,12 @@ export const CreateGameModal = observer(() => {
             type={ButtonType.Submit}
             disabled={isPending}
           >
-            {t("create")}
+            {t("common.done")}
           </Button>
         </div>
       </form>
     </div>
   );
 });
+
+GameSettingsModal.displayName = "GameSettingsModal";

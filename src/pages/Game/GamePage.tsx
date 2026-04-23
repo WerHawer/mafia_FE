@@ -1,9 +1,10 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import {
   useAddUserToGameMutation,
+  useFetchGameWithStore,
   useRemoveUserFromGameMutation,
 } from "@/api/game/queries.ts";
 import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
@@ -18,7 +19,9 @@ import { useAdaptiveQuality } from "@/hooks/useAdaptiveQuality.ts";
 import { useSelectedDevices } from "@/hooks/useSelectedDevices.ts";
 import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
 import { useVideoSettings } from "@/hooks/useVideoSettings.ts";
+import { routes } from "@/router/routs.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { Roles } from "@/types/game.types.ts";
 
 import brokenGlassIcon from "@/assets/icons/broken_glass.png";
 import kissMarkIcon from "@/assets/icons/kiss_mark.png";
@@ -41,6 +44,25 @@ const GamePage = observer(() => {
   const { myId } = usersStore;
   const { activeGamePlayers, removeActiveGame, updateGame, gameFlow } = gamesStore;
   const { isIGM } = rootStore;
+
+  // Fetch full game data to check if it's started before joining
+  const { data: fetchedGame } = useFetchGameWithStore(id);
+
+  // Redirect if game is already started and this user has no role/is not a player
+  const isStarted = fetchedGame?.gameFlow?.isStarted;
+  const allRolePlayers: string[] = fetchedGame
+    ? [
+        ...(fetchedGame.players ?? []),
+        ...(fetchedGame.mafia ?? []),
+        ...(fetchedGame.sheriff ? [fetchedGame.sheriff] : []),
+        ...(fetchedGame.doctor ? [fetchedGame.doctor] : []),
+        ...(fetchedGame.prostitute ? [fetchedGame.prostitute] : []),
+        ...(fetchedGame.don ? [fetchedGame.don] : []),
+        fetchedGame[Roles.GM],
+      ].filter(Boolean)
+    : [];
+  const isAllowedIn = !myId || !isStarted || allRolePlayers.includes(myId);
+
   const proposedCount = gameFlow.proposed.length;
   const { mutate: addUserToGame } = useAddUserToGameMutation();
   const { mutate: removeUserFromGame } = useRemoveUserFromGameMutation();
@@ -130,6 +152,11 @@ const GamePage = observer(() => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, myId]);
+
+  // Redirect strangers who navigate directly to a started game
+  if (fetchedGame && !isAllowedIn) {
+    return <Navigate to={routes.home} replace />;
+  }
 
   return (
     <AudioProvider>

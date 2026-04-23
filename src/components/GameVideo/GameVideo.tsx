@@ -87,6 +87,7 @@ export const GameVideo = observer(
       gameFlow,
       actualSpeakTime,
       shouldShowMafiaGlow,
+      isDimmedDuringMafiaIntro,
       isVotableTarget,
       isDimmedDuringVote,
       onShootUser,
@@ -167,7 +168,7 @@ export const GameVideo = observer(
           [styles.checkable]: isInvestigateEnabled,
           [styles.mafiaGlow]: shouldShowMafiaGlow,
           [styles.votableTarget]: isVotableTarget,
-          [styles.dimmedTarget]: isDimmedDuringVote,
+          [styles.dimmedTarget]: isDimmedDuringVote || isDimmedDuringMafiaIntro,
         })}
         ref={containerRef}
         onClick={isInteractive ? handleVideoClick : undefined}

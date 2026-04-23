@@ -14,6 +14,7 @@ import {
   createGame,
   fetchActiveGames,
   fetchGame,
+  patchGame,
   removeUserFromGame,
   restartGame,
   shootUser,
@@ -155,6 +156,13 @@ export const useUpdateGameFlowMutation = () => {
         flow: { ...gameFlow, ...newFlow },
       });
     },
+  });
+};
+
+export const usePatchGameMutation = () => {
+  return useMutation({
+    mutationFn: ({ gameId, data }: { gameId: string; data: Partial<import("@/types/game.types.ts").IGame> }) =>
+      patchGame({ gameId, data }),
   });
 };
 

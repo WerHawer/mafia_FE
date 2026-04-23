@@ -85,6 +85,7 @@ export interface IGameShort {
   maxPlayers?: number;
   isPrivate: boolean;
   isActive: boolean;
+  isStarted: boolean;
   gm: UserId;
   gameType: GameType;
   creatingTime: number;

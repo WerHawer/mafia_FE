@@ -34,14 +34,20 @@ export class GamesStore {
   }
 
   updateGames(newGame: IGameShort) {
+    // If the game was explicitly deactivated (e.g. manually) — remove from list
+    if (!newGame.isActive) {
+      this._games = this._games.filter((game) => game.id !== newGame.id);
+      return;
+    }
+
     const isGameExist = this._games.some((game) => game.id === newGame.id);
 
     if (!isGameExist) {
       this._games = [...this._games, newGame];
-
       return;
     }
 
+    // Update in place — handles isStarted changes (start/restart) in real time
     this._games = this._games.map((game) =>
       game.id === newGame.id ? newGame : game
     );

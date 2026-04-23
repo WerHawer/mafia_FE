@@ -97,6 +97,11 @@
   "game": {
     "startGame": "Почати гру",
     "minPlayersNote": "Мінімум 5 людей (з ведучим)",
+    "timings": "Налаштування часу",
+    "settings": "Налаштування гри",
+    "speakTime": "Промова (сек)",
+    "votesTime": "Голосування (сек)",
+    "candidateSpeakTime": "Захист (сек)",
     "restart": "Перезапустити",
     "night": "Ніч",
     "day": "День",
@@ -104,6 +109,7 @@
     "timer_placeholder": "Таймер з'явиться тут",
     "wakeUp": "Прокидайтеся:",
     "sleepAll": "Всі сплять",
+    "inProgress": "Гра йде",
     "nightMode": {
       "title": "Настала ніч",
       "playerSubtitle": "Місто спить, але зло не дрімає...",

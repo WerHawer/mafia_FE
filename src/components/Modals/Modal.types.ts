@@ -27,13 +27,15 @@ export enum ModalNames {
   NightResultsModal = "NightResultsModal",
   CreateGameModal = "CreateGameModal",
   EnterPasswordModal = "EnterPasswordModal",
+  GameSettingsModal = "GameSettingsModal",
 }
 
 export type ModalData = {
-  [ModalNames.VoteResultModal]: object; // Assuming object for now as it was
+  [ModalNames.VoteResultModal]: object;
   [ModalNames.NightResultsModal]: NightResultsModalProps;
-  [ModalNames.CreateGameModal]: object; // No special data needed to open, maybe initial settings?
+  [ModalNames.CreateGameModal]: object;
   [ModalNames.EnterPasswordModal]: { gameId: string; onSuccess: () => void };
+  [ModalNames.GameSettingsModal]: object;
 };
 
 export type GModalData<T extends ModalNames> = ModalData[T];

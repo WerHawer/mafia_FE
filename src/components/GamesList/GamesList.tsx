@@ -112,7 +112,11 @@ export const GamesList = observer(() => {
                     </Typography>
                   </div>
 
-                  {!isFull && (
+                  {game.isStarted ? (
+                    <span className={styles.inProgressBadge}>
+                      {t("game.inProgress", "Гра йде")}
+                    </span>
+                  ) : !isFull ? (
                     <Button
                       onClick={() => handleJoinGame(game.id, game.isPrivate)}
                       variant={ButtonVariant.Outline}
@@ -121,7 +125,7 @@ export const GamesList = observer(() => {
                     >
                       {t("join")}
                     </Button>
-                  )}
+                  ) : null}
                 </div>
               );
             })}

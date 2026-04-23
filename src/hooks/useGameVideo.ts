@@ -63,6 +63,8 @@ export const useGameVideo = ({
   // Show glowing border on first night only for Mafia players viewing other Mafia members,
   // and only when there is more than 1 Mafia player (so they can identify each other).
   const shouldShowMafiaGlow = isFirstNight && mafiaCount > 1 && isIMafia && isParticipantMafia && !isMyStream;
+  // Dim non-mafia players during first-night mafia introduction (so mafia can focus on each other)
+  const isDimmedDuringMafiaIntro = isFirstNight && mafiaCount > 1 && isIMafia && !isParticipantMafia && !isMyStream;
 
   const isInvestigateEnabled =
     !isGM && !isUserDead && notFirstDay &&
@@ -166,6 +168,7 @@ export const useGameVideo = ({
     gameFlow,
     actualSpeakTime,
     shouldShowMafiaGlow,
+    isDimmedDuringMafiaIntro,
     isVotableTarget,
     isDimmedDuringVote,
     onShootUser,

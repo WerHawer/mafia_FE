@@ -10,6 +10,7 @@ import { modalStore } from "@/store/modalStore.ts";
 
 import { CreateGameModal } from "./CreateGameModal";
 import { EnterPasswordModal } from "./EnterPasswordModal";
+import { GameSettingsModal } from "./GameSettingsModal/GameSettingsModal";
 import styles from "./ModalBase.module.scss";
 import { VoteResultsModal } from "./VoteResultsModal";
 
@@ -25,6 +26,7 @@ export const ModalFabric = observer(() => {
     ),
     [ModalNames.CreateGameModal]: <CreateGameModal />,
     [ModalNames.EnterPasswordModal]: <EnterPasswordModal />,
+    [ModalNames.GameSettingsModal]: <GameSettingsModal />,
   };
 
   return (

@@ -95,6 +95,11 @@
   "game": {
     "startGame": "Start Game",
     "minPlayersNote": "Minimum 5 people (including GM)",
+    "timings": "Time Settings",
+    "settings": "Game Settings",
+    "speakTime": "Speech (sec)",
+    "votesTime": "Voting (sec)",
+    "candidateSpeakTime": "Defense (sec)",
     "restart": "Restart",
     "night": "Night",
     "day": "Day",
@@ -102,6 +107,7 @@
     "timer_placeholder": "Timer will appear here",
     "wakeUp": "Wake up:",
     "sleepAll": "All sleep",
+    "inProgress": "Game in progress",
     "nightMode": {
       "title": "Night Time",
       "playerSubtitle": "The city sleeps, but evil is awake...",

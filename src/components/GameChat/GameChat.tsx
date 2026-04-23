@@ -48,20 +48,25 @@ export const GameChat = observer(() => {
   }, [shouldLoadDeadChat, id, user?.id, sendMessage]);
 
   const chatRef = useRef<HTMLDivElement>(null);
-  const isInitialRender = useRef(true);
+  const isInitialLoad = useRef(true);
   const prevTab = useRef(activeTab);
 
+  // Reset instant-scroll flag when switching tabs
   if (prevTab.current !== activeTab) {
-    isInitialRender.current = true;
+    isInitialLoad.current = true;
     prevTab.current = activeTab;
   }
 
   useEffect(() => {
-    chatRef.current?.scrollTo({
+    if (!chatRef.current || !messages?.length) return;
+
+    const behavior = isInitialLoad.current ? "instant" : "smooth";
+    isInitialLoad.current = false;
+
+    chatRef.current.scrollTo({
       top: chatRef.current.scrollHeight,
-      behavior: isInitialRender.current ? "auto" : "smooth",
+      behavior,
     });
-    isInitialRender.current = false;
   }, [messages]);
 
   useEffect(() => {
@@ -70,7 +75,7 @@ export const GameChat = observer(() => {
     const resizeObserver = new ResizeObserver(() => {
       chatRef.current?.scrollTo({
         top: chatRef.current.scrollHeight,
-        behavior: "smooth",
+        behavior: isInitialLoad.current ? "instant" : "smooth",
       });
     });
 

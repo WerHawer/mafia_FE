@@ -14,11 +14,21 @@ const GAMES_URL = "/games";
 
 // TODO: return ?active=true after testing
 export const fetchActiveGames = async () => {
-  return axios.get<IGameShort[]>(`${GAMES_URL}`);
+  return axios.get<IGameShort[]>(`${GAMES_URL}?active=true`);
 };
 
 export const fetchGames = async () => {
   return axios.get<IGameShort[]>(GAMES_URL);
+};
+
+export const patchGame = async ({
+  gameId,
+  data,
+}: {
+  gameId: GameId;
+  data: Partial<IGame>;
+}) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}`, data);
 };
 
 export const createGame = async (game: IGameDTO) => {

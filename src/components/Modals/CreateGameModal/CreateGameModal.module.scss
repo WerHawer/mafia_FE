@@ -29,8 +29,9 @@
 }
 
 .label {
-  font-size: 1.6rem;
-  color: theme.$color-text-secondary;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: theme.$color-text-primary;
 }
 
 .infoMessage {
@@ -43,7 +44,8 @@
 .checkboxContainer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
+  width: fit-content;
 }
 
 .footer {
@@ -116,5 +118,65 @@
   
   &:hover {
     border-color: theme.$color-text-primary;
+  }
+}
+
+.timingsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+}
+
+.timingItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  border-radius: theme.$border-radius;
+  border: 1px solid theme.$color-light-secondary;
+  background-color: theme.$color-dark-secondary;
+}
+
+.timingLabel {
+  font-size: 1.3rem;
+  color: theme.$color-text-secondary;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.timingControl {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.timingValue {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: theme.$color-text-primary;
+  min-width: 3.2rem;
+  text-align: center;
+}
+
+.timingBtn {
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  border: 1px solid theme.$color-light-secondary;
+  background-color: theme.$color-dark-tertiary;
+  color: theme.$color-text-primary;
+  font-size: 1.6rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  line-height: 1;
+
+  &:hover {
+    border-color: theme.$color-accent-primary;
+    color: theme.$color-accent-primary;
+    background-color: rgba(theme.$color-accent-primary, 0.1);
   }
 }

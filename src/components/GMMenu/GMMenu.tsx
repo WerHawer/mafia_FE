@@ -18,12 +18,15 @@ import Tippy from "@tippyjs/react";
 import { useTranslation } from "react-i18next";
 
 import { useGMMenu } from "@/hooks/useGMMenu.ts";
+import { ModalNames } from "@/components/Modals/Modal.types.ts";
+import { modalStore } from "@/store/modalStore.ts";
 import { Dropdown, Menu, MenuItem, MenuSeparator } from "@/UI";
 
 import styles from "./GMMenu.module.scss";
 
 export const GMMenu = observer(() => {
   const { t } = useTranslation();
+  const { openModal } = modalStore;
   const {
     isMenuOpen,
     setIsMenuOpen,
@@ -91,6 +94,20 @@ export const GMMenu = observer(() => {
                   label={t("gmMenu.enableAllCameras")}
                   onClick={onEnableAllCameras}
                 />
+
+                {!gameFlow.isStarted && (
+                  <>
+                    <MenuSeparator />
+                    <MenuItem
+                      icon={<SettingOutlined />}
+                      label={t("game.settings", "Налаштування гри")}
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        openModal(ModalNames.GameSettingsModal, {});
+                      }}
+                    />
+                  </>
+                )}
 
                 {gameFlow.isStarted && (
                   <>
