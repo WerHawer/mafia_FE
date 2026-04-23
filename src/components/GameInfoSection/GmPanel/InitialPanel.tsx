@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import {
   useAddRolesToGameMutation,
+  usePatchGameMutation,
   useStartGameMutation,
 } from "@/api/game/queries.ts";
 import { rolesCreator } from "@/helpers/rolesCreator.ts";
@@ -18,6 +19,7 @@ export const InitialPanel = observer(() => {
   const { gamesStore } = rootStore;
   const { activeGameId, activeGamePlayersWithoutGM } = gamesStore;
   const { mutate: addRoles } = useAddRolesToGameMutation();
+  const { mutate: patchGame } = usePatchGameMutation();
   const { mutate: startGame } = useStartGameMutation();
 
   const canStartGame = activeGamePlayersWithoutGM.length >= 4;
@@ -42,6 +44,11 @@ export const InitialPanel = observer(() => {
       additionalRoles,
     });
 
+    patchGame({
+      gameId: activeGameId,
+      data: { mafiaCount },
+    });
+
     addRoles(
       {
         gameId: activeGameId,
@@ -58,6 +65,7 @@ export const InitialPanel = observer(() => {
     activeGamePlayersWithoutGM,
     addRoles,
     startGame,
+    patchGame,
     gamesStore.activeGame,
     canStartGame,
   ]);

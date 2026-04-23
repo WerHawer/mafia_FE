@@ -85,7 +85,7 @@ export const GameVideoContainer = observer(
 
     const onTimerStart = useCallback(() => {
       if (shouldShowVotingTimer) {
-        playMusic(SoundEffect.Ticking, true, 1.6);
+        playMusic(SoundEffect.Ticking, true, 1);
       }
     }, [shouldShowVotingTimer, playMusic]);
 

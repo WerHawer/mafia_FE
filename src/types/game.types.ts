@@ -76,6 +76,7 @@ export interface IGame extends IGameRoles {
   creatingTime: number;
   gameType: GameType;
   gameFlow: IGameFlow;
+  skipFirstNightIfOneMafia?: boolean;
   [Roles.GM]: UserId;
 }
 

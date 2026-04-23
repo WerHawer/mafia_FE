@@ -32,6 +32,7 @@ type CreateGameProps = {
   speakTime?: number;
   votesTime?: number;
   candidateSpeakTime?: number;
+  skipFirstNightIfOneMafia?: boolean;
 };
 
 export const createGameObj = ({
@@ -44,6 +45,7 @@ export const createGameObj = ({
   speakTime = initialGameFlow.speakTime,
   votesTime = initialGameFlow.votesTime,
   candidateSpeakTime = initialGameFlow.candidateSpeakTime,
+  skipFirstNightIfOneMafia = true,
 }: CreateGameProps): IGameDTO => {
   return {
     owner,
@@ -67,5 +69,6 @@ export const createGameObj = ({
       votesTime,
       candidateSpeakTime,
     },
+    skipFirstNightIfOneMafia,
   };
 };

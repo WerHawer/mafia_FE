@@ -225,7 +225,9 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       setLastConnectionTime(Date.now());
 
       const gameId = gamesStore.activeGameId;
-      if (gameId && myId) {
+      const isGameRoute = window.location.pathname.startsWith("/game/");
+      
+      if (gameId && myId && isGameRoute) {
         console.log(
           "Socket connected during active game. Re-joining room.",
           gameId
@@ -285,14 +287,20 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
 
     const interval = setInterval(() => {
       const gameId = gamesStore.activeGameId;
+      const isGameRoute = window.location.pathname.startsWith("/game/");
 
-      // Only emit healthCheck if socket is naturally connected.
+      // Only emit healthCheck if socket is naturally connected and user is on the game page.
       // Socket.IO Native heartbeat will handle dropping and reconnecting.
-      if (socket.connected && gameId && myId) {
+      if (socket.connected && gameId && myId && isGameRoute) {
         socket.emit(wsEvents.healthCheck, { gameId, userId: myId }, () => {
           // We just send healthCheck to let backend know we are alive
           // and backend will force socket.join(gameId) if we fell out of the room.
         });
+      } else if (!isGameRoute && gameId) {
+        // If the user has an activeGameId in store but is not on the game route,
+        // it means they navigated away without unmounting (e.g. address bar).
+        // We should clear the stale state to prevent any weird issues.
+        gamesStore.removeActiveGame();
       }
     }, 15000); // Check every 15 seconds
 

@@ -7,6 +7,7 @@ export type FormValues = {
   speakTime: number;
   votesTime: number;
   candidateSpeakTime: number;
+  skipFirstNightIfOneMafia: boolean;
 };
 
 export const ADDITIONAL_ROLES_OPTIONS = [
@@ -21,4 +22,5 @@ export const DEFAULT_VALUES: FormValues = {
   speakTime: 60,
   votesTime: 15,
   candidateSpeakTime: 30,
+  skipFirstNightIfOneMafia: true,
 };

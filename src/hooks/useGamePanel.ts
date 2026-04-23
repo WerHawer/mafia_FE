@@ -86,16 +86,21 @@ export const useGamePanel = () => {
   ]);
 
   useEffect(() => {
+    const mafiaCount = (gamesStore.activeGameRoles?.mafia ?? []).length;
+    const skipFirstNightIfOneMafia = gamesStore.activeGame?.skipFirstNightIfOneMafia ?? true;
+    const wasFirstNightSkipped = mafiaCount === 1 && skipFirstNightIfOneMafia;
+    const minDayToShowModal = wasFirstNightSkipped ? 2 : 3;
+
     if (
       !gameFlow.isNight &&
       isIGM &&
-      gameFlow.day > 2 &&
+      gameFlow.day >= minDayToShowModal &&
       isShouldShowModal.current
     ) {
       openModal(ModalNames.NightResultsModal, { nightActionLogs });
       isShouldShowModal.current = false;
     }
-  }, [gameFlow.day, gameFlow.isNight, isIGM, nightActionLogs, openModal]);
+  }, [gameFlow.day, gameFlow.isNight, isIGM, nightActionLogs, openModal, gamesStore.activeGameRoles?.mafia, gamesStore.activeGame?.skipFirstNightIfOneMafia]);
 
   return {
     gameFlow,

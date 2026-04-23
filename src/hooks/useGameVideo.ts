@@ -32,7 +32,10 @@ export const useGameVideo = ({
   );
   const isUserDead = killed.includes(userId);
   const isSleeping = sleeping.includes(userId);
-  const notFirstDay = day > 1;
+  const mafiaCount = (gamesStore.activeGameRoles?.mafia ?? []).length;
+  const skipFirstNightIfOneMafia = gamesStore.activeGame?.skipFirstNightIfOneMafia ?? true;
+  const isFirstNightSkipped = day === 1 && mafiaCount === 1 && skipFirstNightIfOneMafia;
+  const notFirstDay = day > 1 || isFirstNightSkipped;
   // Mafia can also shoot themselves
   const isShootEnabled =
     (!isGM && !isUserDead && notFirstDay) &&
@@ -53,7 +56,6 @@ export const useGameVideo = ({
 
   // Don can investigate only when woken up as Don specifically (wakeUp has only his id).
   // If Don is the sole mafia member, he's always woken alone anyway, so require shoot-first.
-  const mafiaCount = (gamesStore.activeGameRoles?.mafia ?? []).length;
   const wakeUpArr = Array.isArray(gameFlow.wakeUp) ? gameFlow.wakeUp : [gameFlow.wakeUp].filter(Boolean);
   const isWokenAsDon = isIDon && isIWakedUp && wakeUpArr.length === 1 && (mafiaCount <= 1 ? isIDidShot : true);
 

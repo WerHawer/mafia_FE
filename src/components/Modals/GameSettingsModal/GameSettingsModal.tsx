@@ -24,6 +24,7 @@ type SettingsValues = {
   speakTime: number;
   votesTime: number;
   candidateSpeakTime: number;
+  skipFirstNightIfOneMafia: boolean;
 };
 
 export const GameSettingsModal = observer(() => {
@@ -42,6 +43,7 @@ export const GameSettingsModal = observer(() => {
       speakTime: gameFlow.speakTime ?? 60,
       votesTime: gameFlow.votesTime ?? 15,
       candidateSpeakTime: gameFlow.candidateSpeakTime ?? 30,
+      skipFirstNightIfOneMafia: activeGame?.skipFirstNightIfOneMafia ?? true,
     },
   });
 
@@ -58,6 +60,7 @@ export const GameSettingsModal = observer(() => {
           additionalRoles: data.additionalRoles,
           isPrivate: data.isPrivate,
           password: data.isPrivate ? data.password || activeGame?.password : undefined,
+          skipFirstNightIfOneMafia: data.skipFirstNightIfOneMafia,
         },
       });
 
@@ -139,6 +142,20 @@ export const GameSettingsModal = observer(() => {
               )}
             />
             <label className={styles.label}>{t("privateGame")}</label>
+          </div>
+        </div>
+
+        {/* Skip first night toggle */}
+        <div className={styles.row}>
+          <div className={styles.checkboxContainer}>
+            <Controller
+              name="skipFirstNightIfOneMafia"
+              control={control}
+              render={({ field: { value, onChange } }) => (
+                <Switcher checked={value} onChange={() => onChange(!value)} />
+              )}
+            />
+            <label className={styles.label}>{t("game.skipFirstNight", "Активна перша ніч (якщо 1 мафія)")}</label>
           </div>
         </div>
 

@@ -15,6 +15,7 @@ export enum SoundEffect {
   Deal = "dealing-card.wav",
   Ticking = "ticking-clock.wav",
   Connect = "new_player_conected.wav",
+  Alarm = "alarm.mp3",
 }
 
 export const BG_MUSIC_VOLUME_MULTIPLIER = 0.1;

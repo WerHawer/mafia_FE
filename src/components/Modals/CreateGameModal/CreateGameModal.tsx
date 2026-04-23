@@ -52,6 +52,7 @@ export const CreateGameModal = observer(() => {
         speakTime: data.speakTime,
         votesTime: data.votesTime,
         candidateSpeakTime: data.candidateSpeakTime,
+        skipFirstNightIfOneMafia: data.skipFirstNightIfOneMafia,
       });
 
       createGame(game, {
@@ -123,6 +124,19 @@ export const CreateGameModal = observer(() => {
               )}
             />
             <label className={styles.label}>{t("privateGame")}</label>
+          </div>
+        </div>
+
+        <div className={styles.row}>
+          <div className={styles.checkboxContainer}>
+            <Controller
+              name="skipFirstNightIfOneMafia"
+              control={control}
+              render={({ field: { value, onChange } }) => (
+                <Switcher checked={value} onChange={() => onChange(!value)} />
+              )}
+            />
+            <label className={styles.label}>{t("game.skipFirstNight", "Активна перша ніч (якщо 1 мафія)")}</label>
           </div>
         </div>
 

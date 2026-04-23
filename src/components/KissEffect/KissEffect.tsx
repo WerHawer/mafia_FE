@@ -11,13 +11,18 @@ type KissEffectProps = {
 };
 
 export const KissEffect = observer(({ userId, clickPosition }: KissEffectProps) => {
-  const { isIProstitute, gamesStore } = rootStore;
-  const { prostituteBlock, prostituteBlockPos } = gamesStore.gameFlow;
+  const { isIProstitute, isIGM, gamesStore } = rootStore;
+  const { prostituteBlock, prostituteBlockPos, isNight } = gamesStore.gameFlow;
 
   const isBlocked = prostituteBlock === userId;
 
-  // The kiss effect only appears if someone is blocked.
-  if (!isBlocked) {
+  // Visibility logic:
+  // - Always visible during the day (!isNight)
+  // - During the night, only the GM and the Prostitute can see it
+  const canSee = !isNight || isIGM || isIProstitute;
+
+  // The kiss effect only appears if someone is blocked and the user is allowed to see it.
+  if (!isBlocked || !canSee) {
     return null;
   }
 

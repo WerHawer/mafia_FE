@@ -157,6 +157,14 @@ export const GameVideo = observer(
       isHealEnabled ||
       isInvestigateEnabled;
 
+    useEffect(() => {
+      return () => {
+        if (shouldShowSpeakerTimer && isMyStream) {
+          soundStore.stopMusic();
+        }
+      };
+    }, [shouldShowSpeakerTimer, isMyStream, soundStore]);
+
     return (
       <div
         className={classNames("videoContainer", styles.container, {
@@ -265,6 +273,8 @@ export const GameVideo = observer(
               time={actualSpeakTime}
               size={TimerSize.Large}
               resetTrigger={gameFlow.speaker}
+              onLowTime={isMyStream ? () => soundStore.playMusic(SoundEffect.Ticking, true, 1) : undefined}
+              onTimeUp={isMyStream ? () => soundStore.stopMusic() : undefined}
             />
           </div>
         )}
