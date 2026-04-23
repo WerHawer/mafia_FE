@@ -146,7 +146,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
         );
         gamesStore.removeActiveGame();
       },
-      [wsEvents.gmChanged]: ({ newGMId, reason }) => {
+      [wsEvents.gmChanged]: ({ newGMId, reason }: { newGMId: string; reason: string }) => {
         if (!newGMId || newGMId !== myId) return;
 
         if (reason === 'left_before_start') {

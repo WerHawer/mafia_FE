@@ -24,7 +24,12 @@ import { Dropdown, Menu, MenuItem, MenuSeparator } from "@/UI";
 
 import styles from "./GMMenu.module.scss";
 
-export const GMMenu = observer(() => {
+type GMMenuProps = {
+  onOpenVideoConfig: () => void;
+  onOpenAudioConfig: () => void;
+};
+
+export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenuProps) => {
   const { t } = useTranslation();
   const { openModal } = modalStore;
   const {

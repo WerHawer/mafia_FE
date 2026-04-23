@@ -59,6 +59,7 @@ export interface IGameRoles {
   [Roles.Doctor]?: UserId;
   [Roles.Maniac]?: UserId;
   [Roles.Prostitute]?: UserId;
+  [Roles.Don]?: UserId;
 }
 
 export interface IGame extends IGameRoles {

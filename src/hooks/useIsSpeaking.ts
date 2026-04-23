@@ -41,7 +41,7 @@ export const useIsSpeaking = (participant: Participant | undefined) => {
         clearTimeout(timeoutRef.current);
       }
 
-      timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = window.setTimeout(() => {
         setIsSpeaking(false);
         timeoutRef.current = null;
       }, SPEAKING_TIMEOUT);

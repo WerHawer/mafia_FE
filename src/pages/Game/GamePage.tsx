@@ -46,7 +46,7 @@ const GamePage = observer(() => {
   const { isIGM } = rootStore;
 
   // Fetch full game data to check if it's started before joining
-  const { data: fetchedGame } = useFetchGameWithStore(id);
+  const { game: fetchedGame } = useFetchGameWithStore(id);
 
   // Redirect if game is already started and this user has no role/is not a player
   const isStarted = fetchedGame?.gameFlow?.isStarted;
