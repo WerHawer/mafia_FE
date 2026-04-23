@@ -9,10 +9,24 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.2s ease-out;
 
   &.speaking {
     border-color: theme.$color-info;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.65);
+    z-index: 8; // high enough to dim video but below critical UI like vote icons
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease-in-out;
   }
 }
 
@@ -259,4 +273,34 @@
   text-transform: uppercase;
 
   z-index: 20;
+}
+
+.speakerTimerContainer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 20;
+}
+
+@keyframes votablePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 4px 1px rgba(theme.$color-text-primary, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 15px 4px rgba(theme.$color-text-primary, 0.4),
+      0 0 0 2px rgba(theme.$color-text-primary, 0.6);
+  }
+}
+
+.votableTarget {
+  animation: votablePulse 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+.dimmedTarget {
+  &::after {
+    opacity: 1;
+  }
 }

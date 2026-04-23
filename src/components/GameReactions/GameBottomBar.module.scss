@@ -3,22 +3,23 @@
 
 .bottomBar {
   @include mixins.flex(row, center, center);
-  gap: 16px;
-  padding: 10px 20px;
-  margin: 0 auto 16px auto;
+  gap: 12px;
+  padding: 6px 10px;
+  margin: 8px auto 0 auto;
   width: fit-content;
   background: rgba(theme.$color-dark-primary, 0.5);
   backdrop-filter: blur(12px);
   border-radius: 36px;
   border: 1px solid rgba(theme.$color-light-primary, 0.05);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   z-index: 10;
   flex-shrink: 0;
 
   // Animation initial state
   opacity: 0;
   transform: translateY(100px);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 
   &.bottomBarVisible {

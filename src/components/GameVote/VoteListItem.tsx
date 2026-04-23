@@ -1,4 +1,4 @@
-import { DislikeFilled, DislikeOutlined, UserOutlined } from "@ant-design/icons";
+import { DislikeFilled, DislikeOutlined, UserOutlined, SoundOutlined } from "@ant-design/icons";
 import classNames from "classnames";
 import { KeyboardEvent, memo } from "react";
 
@@ -11,6 +11,7 @@ type VoteListItemProps = {
   userName: string;
   isVotedByMe: boolean;
   isClickable: boolean;
+  isSelf: boolean;
   isVotingActive: boolean;
   voteCount: number;
   proposerName?: string;
@@ -18,6 +19,8 @@ type VoteListItemProps = {
   candidateAvatar?: string;
   votersList?: string[];
   onVote: (userId: UserId) => void;
+  isGM?: boolean;
+  onGiveSpeech?: (userId: UserId) => void;
 };
 
 const Avatar = ({ src, name }: { src?: string; name?: string }) => (
@@ -38,6 +41,7 @@ export const VoteListItem = memo(
     userName,
     isVotedByMe,
     isClickable,
+    isSelf,
     isVotingActive,
     voteCount,
     proposerName,
@@ -45,6 +49,8 @@ export const VoteListItem = memo(
     candidateAvatar,
     votersList,
     onVote,
+    isGM,
+    onGiveSpeech,
   }: VoteListItemProps) => {
     const handleClick = () => {
       if (isClickable) {
@@ -64,6 +70,7 @@ export const VoteListItem = memo(
         className={classNames(styles.listItem, {
           [styles.voted]: isVotedByMe,
           [styles.clickable]: isClickable,
+          [styles.selfItem]: isSelf,
         })}
         onClick={handleClick}
         role={isClickable ? "button" : undefined}
@@ -85,17 +92,32 @@ export const VoteListItem = memo(
             <span className={styles.candidateName}>{userName}</span>
           </span>
 
-          <span
-            className={classNames(styles.thumbIcon, {
-              [styles.thumbActive]: isVotedByMe,
-              [styles.thumbClickable]: isClickable && !isVotedByMe,
-            })}
-          >
-            {isVotedByMe ? <DislikeFilled /> : <DislikeOutlined />}
-            {voteCount > 0 && (
-              <span className={styles.voteCount}>{voteCount}</span>
+          <div className={styles.itemRight}>
+            {isGM && onGiveSpeech && (
+              <button
+                className={styles.speechBtn}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onGiveSpeech(userId);
+                }}
+                title="Дати слово"
+              >
+                <SoundOutlined />
+              </button>
             )}
-          </span>
+
+            <span
+              className={classNames(styles.thumbIcon, {
+                [styles.thumbActive]: isVotedByMe,
+                [styles.thumbClickable]: isClickable && !isVotedByMe,
+              })}
+            >
+              {isVotedByMe ? <DislikeFilled /> : <DislikeOutlined />}
+              {voteCount > 0 && (
+                <span className={styles.voteCount}>{voteCount}</span>
+              )}
+            </span>
+          </div>
         </div>
 
         {/* Voters row — names of who voted, indented under candidate */}

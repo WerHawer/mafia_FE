@@ -22,10 +22,30 @@ export const PublicChat = observer(() => {
   const { publicMessages, setNewLocalMessage } = messagesStore;
 
   const chatRef = useRef<HTMLDivElement>(null);
+  const isInitialRender = useRef(true);
 
   useEffect(() => {
-    chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
+    chatRef.current?.scrollTo({
+      top: chatRef.current.scrollHeight,
+      behavior: isInitialRender.current ? "auto" : "smooth",
+    });
+    isInitialRender.current = false;
   }, [publicMessages]);
+
+  useEffect(() => {
+    if (!chatRef.current) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      chatRef.current?.scrollTo({
+        top: chatRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+
+    resizeObserver.observe(chatRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, []);
 
   const onChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setNewMessage(e.target.value);

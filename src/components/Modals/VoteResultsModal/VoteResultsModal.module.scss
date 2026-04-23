@@ -38,6 +38,8 @@
 
 .buttonContainer {
   @include mixins.flexCenter;
+  flex-direction: column;
+  gap: 1rem;
 
   margin-top: 5rem;
 }

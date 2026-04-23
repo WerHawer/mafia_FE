@@ -7,6 +7,7 @@ import styles from "@/components/Modals/VoteResultsModal/VoteResultsModal.module
 import { Result } from "@/components/Modals/VoteResultsModal/VoteResultsModal.tsx";
 import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { gamesStore } from "@/store/gamesStore.ts";
+import { modalStore } from "@/store/modalStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
@@ -51,6 +52,8 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
       proposed: [],
       proposedBy: {},
     });
+
+    modalStore.closeModal();
   }, [gameFlow.speaker, muteSpeaker, player, unmuteSpeaker, updateGameFlow]);
 
   return (

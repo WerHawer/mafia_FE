@@ -40,6 +40,7 @@ export const VideoGrid = observer(() => {
 
     const { killed = [], proposed = [], isVote, isReVote } = gamesStore.gameFlow;
     const { activeGameGm } = gamesStore;
+    const { myId } = rootStore.usersStore;
     const isVoting = isVote || isReVote;
 
     return [...tracks].sort((a, b) => {
@@ -49,8 +50,8 @@ export const VideoGrid = observer(() => {
       const getStatusWeight = (id: string) => {
         if (killed.includes(id)) return 3;
         if (id === activeGameGm) return 2;
-        // During voting: proposed players float to the front
-        if (isVoting && proposed.includes(id)) return -1;
+        // During voting: proposed players float to the front, EXCEPT for the current user's own video
+        if (isVoting && proposed.includes(id) && id !== myId) return -1;
         return 0;
       };
 
@@ -66,6 +67,7 @@ export const VideoGrid = observer(() => {
     gamesStore.gameFlow.isVote,
     gamesStore.gameFlow.isReVote,
     gamesStore.activeGameGm,
+    rootStore.usersStore.myId,
   ]);
 
   if (filteredTracks.length === 0) {

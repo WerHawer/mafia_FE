@@ -17,11 +17,13 @@ type VotePanelProps = {
   amIVoted: boolean;
   isGM: boolean;
   isVotingActive: boolean;
+  isReVote: boolean;
   myId: UserId;
   voted: { [key: UserId]: UserId[] };
   onVoteForPlayer: (userId: UserId) => void;
   onToggleVoting: () => void;
   onResetVoting: () => void;
+  onGiveSpeech: (userId: UserId) => void;
   getUserName: (userId: UserId) => string;
   getUser: (userId: UserId) => IUser | undefined;
 };
@@ -34,55 +36,72 @@ export const VotePanel = ({
   amIVoted,
   isGM,
   isVotingActive,
+  isReVote,
   myId,
   voted,
   onVoteForPlayer,
   onToggleVoting,
   onResetVoting,
+  onGiveSpeech,
   getUserName,
   getUser,
 }: VotePanelProps) => {
   const { t } = useTranslation();
 
-  const buttonText = isVotingActive ? t("vote.gmStopVote") : t("vote.gmStartVote");
-  const buttonVariant = isVotingActive ? ButtonVariant.Tertiary : ButtonVariant.Primary;
+  let buttonText = isVotingActive ? t("vote.gmStopVote") : t("vote.gmStartVote");
+  if (!isVotingActive && isReVote) {
+    buttonText = t("vote.gmReVote");
+  }
+  
+  const buttonVariant = isVotingActive
+    ? ButtonVariant.Tertiary
+    : ButtonVariant.Primary;
 
   return (
     <>
-      <p className={styles.listTitle}>{t("vote.voteList")}</p>
+      {!isGM && <p className={styles.listTitle}>{t("vote.voteList")}</p>}
+
       <ul className={styles.list}>
-      {proposed?.map((userId) => {
-        if (!userId) return null;
+        {proposed?.map((userId) => {
+          if (!userId) return null;
 
-        const isVotedByMe = votedUserId === userId;
-        const isClickable = canVote && !amIVoted && userId !== myId;
-        const voteCount = voted?.[userId]?.length || 0;
-        const proposerId = proposedBy?.[userId];
-        const proposerName = proposerId ? getUserName(proposerId) : undefined;
-        const proposerAvatar = proposerId ? getUser(proposerId)?.avatar : undefined;
-        const candidateAvatar = getUser(userId)?.avatar;
-        const votersList = (voted?.[userId] || []).map((id) => getUserName(id));
+          const isVotedByMe = votedUserId === userId;
+          const isClickable = canVote && !amIVoted && userId !== myId;
+          const voteCount = voted?.[userId]?.length || 0;
+          const proposerId = proposedBy?.[userId];
+          const proposerName = proposerId ? getUserName(proposerId) : undefined;
+          const proposerAvatar = proposerId
+            ? getUser(proposerId)?.avatar
+            : undefined;
+          const candidateAvatar = getUser(userId)?.avatar;
+          const votersList = (voted?.[userId] || []).map((id) =>
+            getUserName(id)
+          );
 
-        return (
-          <VoteListItem
-            key={userId}
-            userId={userId}
-            userName={getUserName(userId)}
-            isVotedByMe={isVotedByMe}
-            isClickable={isClickable}
-            isVotingActive={isVotingActive}
-            voteCount={voteCount}
-            proposerName={proposerName}
-            proposerAvatar={proposerAvatar}
-            candidateAvatar={candidateAvatar}
-            votersList={votersList}
-            onVote={onVoteForPlayer}
-          />
-        );
-      })}
+          return (
+            <VoteListItem
+              key={userId}
+              userId={userId}
+              userName={getUserName(userId)}
+              isVotedByMe={isVotedByMe}
+              isClickable={isClickable}
+              isSelf={userId === myId}
+              isVotingActive={isVotingActive}
+              voteCount={voteCount}
+              proposerName={proposerName}
+              proposerAvatar={proposerAvatar}
+              candidateAvatar={candidateAvatar}
+              votersList={votersList}
+              onVote={onVoteForPlayer}
+              isGM={isGM}
+              onGiveSpeech={onGiveSpeech}
+            />
+          );
+        })}
+      </ul>
 
       {isGM && (
-        <li className={styles.gmVoteControlItem}>
+        <div className={styles.gmVoteControlContainer}>
           <Button
             onClick={onToggleVoting}
             variant={buttonVariant}
@@ -103,9 +122,8 @@ export const VotePanel = ({
           >
             <span>{t("vote.resetVoting")}</span>
           </Button>
-        </li>
+        </div>
       )}
-    </ul>
     </>
   );
 };

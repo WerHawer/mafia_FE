@@ -144,7 +144,7 @@ export const useSpeakerControl = () => {
     hasSpeaker,
     isVote: gameFlow.isVote,
     speaker: gameFlow.speaker,
-    speakTime: gameFlow.speakTime,
+    speakTime: gameFlow.isReVote ? gameFlow.candidateSpeakTime : gameFlow.speakTime,
     onStartSpeeches,
     onNextSpeaker,
     onPreviousSpeaker,

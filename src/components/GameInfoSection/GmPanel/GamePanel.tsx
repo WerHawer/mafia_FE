@@ -19,15 +19,14 @@ export const GamePanel = observer(() => {
   const { gamesStore, soundStore } = rootStore;
   const { speaker } = gamesStore;
   const { stopMusic, playMusic } = soundStore;
-  const { isNight, day, isVote, isReVote, speakTime, votesTime } = gameFlow;
+  const { isNight, day, isVote, isReVote, votesTime } = gameFlow;
 
   const phaseLabel = isNight ? t("game.night") : `${t("game.day")} ${day}`;
 
-  const hasSpeaker = Boolean(speaker);
   const isVotingActive = isVote || isReVote;
-  const shouldShowTimer = hasSpeaker || isVotingActive;
-  const timerValue = isVotingActive ? votesTime : speakTime;
-  const timerTrigger = isVotingActive ? `${isVote}-${isReVote}` : speaker;
+  const shouldShowTimer = isVotingActive;
+  const timerValue = votesTime;
+  const timerTrigger = `${isVote}-${isReVote}`;
 
   const onTimerStart = useCallback(() => {
     if (isVotingActive) {
@@ -51,17 +50,6 @@ export const GamePanel = observer(() => {
           </Typography>
         </div>
 
-        {shouldShowTimer && (
-          <div className={styles.timerWrapper}>
-            <Timer
-              time={timerValue}
-              resetTrigger={timerTrigger}
-              size={TimerSize.Medium}
-              onTimerStart={isVotingActive ? onTimerStart : undefined}
-              onTimeUp={isVotingActive ? onVoteTimeUp : undefined}
-            />
-          </div>
-        )}
       </div>
 
       {gameFlow.isNight ? <NightPanel /> : <DayPanel />}

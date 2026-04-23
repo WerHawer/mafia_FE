@@ -85,6 +85,22 @@ export const useGameVote = () => {
     [canVote, amIVoted, isVoting, activeGameId, myId, addVoted, voteForUser]
   );
 
+  const { unmuteSpeaker } = useBatchMediaControls();
+  const onGiveSpeech = useCallback((userId: UserId) => {
+    const previousSpeaker = gameFlow.speaker;
+    updateGameFlow(
+      { speaker: userId },
+      {
+        onSuccess: () => {
+          if (previousSpeaker) {
+            muteSpeaker(previousSpeaker);
+          }
+          unmuteSpeaker(userId);
+        },
+      }
+    );
+  }, [gameFlow.speaker, muteSpeaker, unmuteSpeaker, updateGameFlow]);
+
   const getPlayerName = useCallback(
     (userId: UserId): string => {
       return getUserName(userId) ?? "Unknown";
@@ -104,10 +120,12 @@ export const useGameVote = () => {
     proposed: gameFlow.proposed,
     proposedBy: gameFlow.proposedBy || {},
     voted: gameFlow.voted,
+    isReVote: gameFlow.isReVote,
     onToggle,
     onToggleVoting,
     onResetVoting,
     onVoteForPlayer,
+    onGiveSpeech,
     getUserName: getPlayerName,
     getUser,
   };

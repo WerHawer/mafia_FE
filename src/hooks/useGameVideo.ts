@@ -139,6 +139,13 @@ export const useGameVideo = ({
     requesterId: myId,
   });
 
+  const isVoting = gameFlow.isVote;
+  const amIVoted = Object.values(gameFlow.voted ?? {}).flat().includes(myId);
+  const isVoter = isVoting && !rootStore.isIDead && !isIGM && !rootStore.isIBlocked && !amIVoted;
+  const isVotableTarget = isVoter && gameFlow.proposed.includes(userId) && userId !== myId;
+  const isDimmedDuringVote = isVoter && !isVotableTarget;
+  const actualSpeakTime = gameFlow.isReVote ? gameFlow.candidateSpeakTime : gameFlow.speakTime;
+
   return {
     userId,
     currentUser,
@@ -157,7 +164,10 @@ export const useGameVideo = ({
     toggleMicrophone,
     canControl,
     gameFlow,
+    actualSpeakTime,
     shouldShowMafiaGlow,
+    isVotableTarget,
+    isDimmedDuringVote,
     onShootUser,
     onBlockUser,
     onHealUser,

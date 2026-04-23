@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useUpdateGameFlowMutation } from "@/api/game/queries.ts";
@@ -20,43 +20,69 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
   const candidates = useMemo(() => result.map((res) => res[0]), [result]);
+  
+  // Track if an action was explicitly taken, so we don't trigger the fallback on unmount
+  const actionTakenRef = useRef(false);
 
-  const onButtonClick = useCallback(() => {
-    if (gameFlow.isReVote) {
-      // Second draw — finish voting entirely, no one is eliminated today
-      updateGameFlow({
-        isVote: false,
-        isReVote: false,
-        proposed: [],
-        proposedBy: {},
-        voted: {},
-      });
+  const newProposed = useMemo(() => {
+    return gameFlow.proposed.filter((id) => candidates.includes(id));
+  }, [gameFlow.proposed, candidates]);
 
-      closeModal();
+  const onFinishVoting = useCallback(() => {
+    actionTakenRef.current = true;
+    updateGameFlow({
+      isVote: false,
+      isReVote: false,
+      proposed: [],
+      proposedBy: {},
+      voted: {},
+    });
+    closeModal();
+  }, [closeModal, updateGameFlow]);
 
-      return;
-    }
-
-    // First draw — filter to tied candidates and immediately start revote round
-    const newProposed = gameFlow.proposed.filter((id) =>
-      candidates.includes(id)
-    );
-
+  const onInstantRevote = useCallback(() => {
+    actionTakenRef.current = true;
     updateGameFlow({
       proposed: newProposed,
       voted: {},
       isReVote: true,
-      isVote: true,  // start the revote immediately
+      isVote: true, // start the revote immediately
     });
-
     closeModal();
-  }, [
-    candidates,
-    closeModal,
-    gameFlow.isReVote,
-    gameFlow.proposed,
-    updateGameFlow,
-  ]);
+  }, [closeModal, newProposed, updateGameFlow]);
+
+  const onCandidateSpeeches = useCallback(() => {
+    actionTakenRef.current = true;
+    updateGameFlow({
+      proposed: newProposed,
+      isReVote: true,
+      isVote: false, // pause voting for speeches
+    });
+    closeModal();
+  }, [closeModal, newProposed, updateGameFlow]);
+
+  // Fallback: if modal is closed (e.g., overlay click) without choosing an action
+  useEffect(() => {
+    return () => {
+      if (!actionTakenRef.current) {
+        if (gameFlow.isReVote) {
+          updateGameFlow({
+            isVote: false,
+            isReVote: false,
+            proposed: [],
+            proposedBy: {},
+            voted: {},
+          });
+        } else {
+          updateGameFlow({
+            proposed: newProposed,
+            isReVote: true,
+            isVote: false,
+          });
+        }
+      }
+    };
+  }, [gameFlow.isReVote, newProposed, updateGameFlow]);
 
   return (
     <div className={styles.container}>
@@ -85,16 +111,35 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
       )}
 
       <div className={styles.buttonContainer}>
-        <Button
-          onClick={onButtonClick}
-          variant={ButtonVariant.Secondary}
-          size={ButtonSize.Medium}
-          uppercase
-        >
-          {gameFlow.isReVote
-            ? t("voteResults.finishVoting")
-            : t("voteResults.restartVote")}
-        </Button>
+        {gameFlow.isReVote ? (
+          <Button
+            onClick={onFinishVoting}
+            variant={ButtonVariant.Secondary}
+            size={ButtonSize.Medium}
+            uppercase
+          >
+            {t("voteResults.finishVoting")}
+          </Button>
+        ) : (
+          <>
+            <Button
+              onClick={onCandidateSpeeches}
+              variant={ButtonVariant.Primary}
+              size={ButtonSize.Medium}
+              uppercase
+            >
+              {t("gm.candidateSpeeches", "Промови кандидатів")}
+            </Button>
+            <Button
+              onClick={onInstantRevote}
+              variant={ButtonVariant.Secondary}
+              size={ButtonSize.Medium}
+              uppercase
+            >
+              {t("voteResults.restartVote")}
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

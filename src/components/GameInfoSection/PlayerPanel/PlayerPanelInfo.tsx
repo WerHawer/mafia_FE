@@ -15,16 +15,14 @@ export const PlayerPanelInfo = observer(() => {
   const { gameFlow, speaker } = gamesStore;
   const { stopMusic, playMusic } = soundStore;
 
-  const { day, isNight, isVote, isReVote, speakTime, votesTime } = gameFlow;
+  const { day, isNight, isVote, isReVote, votesTime } = gameFlow;
 
   const dayNightLabel = isNight ? t("game.night") : `${t("game.day")} ${day}`;
   const roleLabel = t(`roles.${myRole}`);
-  const hasSpeaker = Boolean(speaker);
-
-  const time = isVote || isReVote ? votesTime : speakTime;
+  const time = votesTime;
   const isVotingActive = isVote || isReVote;
-  const timerTrigger = isVotingActive ? `${isVote}-${isReVote}` : speaker;
-  const shouldShowTimer = hasSpeaker || isVotingActive;
+  const timerTrigger = `${isVote}-${isReVote}`;
+  const shouldShowTimer = isVotingActive;
 
   const onTimerStart = useCallback(() => {
     if (isVotingActive) {
@@ -55,15 +53,6 @@ export const PlayerPanelInfo = observer(() => {
         </Typography>
       </div>
 
-      {shouldShowTimer ? (
-        <Timer
-          resetTrigger={timerTrigger}
-          time={time}
-          size={TimerSize.Large}
-          onTimerStart={isVotingActive ? onTimerStart : undefined}
-          onTimeUp={isVotingActive ? onVoteTimeUp : undefined}
-        />
-      ) : null}
     </div>
   );
 });

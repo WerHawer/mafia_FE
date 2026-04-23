@@ -1,13 +1,15 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
+import { Timer, TimerSize } from "@/components/SpeakerTimer/Timer.tsx";
 import { useGridLayout } from "@/hooks/useGridLayout.ts";
 import { useNightMode } from "@/hooks/useNightMode.ts";
 import { useVoteResult } from "@/hooks/useVoteResult.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { SoundEffect } from "@/store/soundStore.ts";
 
 import { NightMode } from "../NightMode";
 import styles from "./GameVideoContainer.module.scss";
@@ -23,9 +25,10 @@ export const GameVideoContainer = observer(
   ({ className }: GameVideoContainerProps) => {
     const { shouldShowVideos } = useNightMode();
     const gridLayout = useGridLayout();
-    const { isIGM } = rootStore;
-    const { activeGameAlivePlayers, gameFlow } = rootStore.gamesStore;
-    const { isVote, isReVote } = gameFlow;
+    const { isIGM, soundStore, gamesStore } = rootStore;
+    const { playMusic, stopMusic } = soundStore;
+    const { activeGameAlivePlayers, gameFlow, isUserGM } = gamesStore;
+    const { isVote, isReVote, voted, votesTime, prostituteBlock } = gameFlow;
     const { t } = useTranslation();
 
     // Called ONCE here (not in every VoteFlow instance) to prevent randomVote firing N times
@@ -65,6 +68,37 @@ export const GameVideoContainer = observer(
       }
     }, [shouldShowVideos]);
 
+    const eligibleVotersCount = useMemo(() => {
+      return activeGameAlivePlayers.filter(
+        (p) => !isUserGM(p) && p !== prostituteBlock
+      ).length;
+    }, [activeGameAlivePlayers, isUserGM, prostituteBlock]);
+
+    const votedCount = useMemo(() => {
+      return Object.values(voted ?? {}).flat().length;
+    }, [voted]);
+
+    const isVotingDone = votedCount >= eligibleVotersCount;
+    const isVotingActive = isVote;
+    const shouldShowVotingTimer = isVotingActive && !isVotingDone;
+    const timerTrigger = `${isVote}`;
+
+    const onTimerStart = useCallback(() => {
+      if (shouldShowVotingTimer) {
+        playMusic(SoundEffect.Ticking, true, 1.6);
+      }
+    }, [shouldShowVotingTimer, playMusic]);
+
+    const onVoteTimeUp = useCallback(() => {
+      stopMusic();
+    }, [stopMusic]);
+
+    useEffect(() => {
+      if (!shouldShowVotingTimer) {
+        stopMusic();
+      }
+    }, [shouldShowVotingTimer, stopMusic]);
+
     return (
       <div
         className={classNames(
@@ -81,6 +115,18 @@ export const GameVideoContainer = observer(
         <VideoGrid />
 
         {showNightMode && <NightMode isVisible={isNightModeVisible} />}
+
+        {shouldShowVotingTimer && (
+          <div className={styles.votingTimerContainer}>
+            <Timer
+              time={votesTime}
+              resetTrigger={timerTrigger}
+              size={TimerSize.XL}
+              onTimerStart={onTimerStart}
+              onTimeUp={onVoteTimeUp}
+            />
+          </div>
+        )}
       </div>
     );
   }

@@ -46,3 +46,11 @@
   transform: none !important;
   will-change: auto !important;
 }
+
+.votingTimerContainer {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}

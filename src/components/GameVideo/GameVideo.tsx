@@ -15,6 +15,7 @@ import { MediaControls } from "@/components/MediaControls";
 import { Shoot } from "@/components/Shoot";
 import { SleepIcon } from "@/components/SleepIcon";
 import { SoundIndicator } from "@/components/SoundIndicator";
+import { Timer, TimerSize } from "@/components/SpeakerTimer/Timer.tsx";
 import { VoteFlow } from "@/components/VoteFlow";
 import { useGameVideo } from "@/hooks/useGameVideo.ts";
 import { useIsSpeaking } from "@/hooks/useIsSpeaking.ts";
@@ -84,7 +85,10 @@ export const GameVideo = observer(
       toggleMicrophone,
       canControl,
       gameFlow,
+      actualSpeakTime,
       shouldShowMafiaGlow,
+      isVotableTarget,
+      isDimmedDuringVote,
       onShootUser,
       onBlockUser,
       onHealUser,
@@ -93,6 +97,8 @@ export const GameVideo = observer(
 
     const { soundStore } = rootStore;
     const isSpeaking = useIsSpeaking(participant);
+    const isSpeaker = gameFlow.speaker === userId;
+    const shouldShowSpeakerTimer = isSpeaker;
 
     useEffect(() => {
       if (!gameFlow.isNight) {
@@ -160,6 +166,8 @@ export const GameVideo = observer(
           [styles.healable]: isHealEnabled,
           [styles.checkable]: isInvestigateEnabled,
           [styles.mafiaGlow]: shouldShowMafiaGlow,
+          [styles.votableTarget]: isVotableTarget,
+          [styles.dimmedTarget]: isDimmedDuringVote,
         })}
         ref={containerRef}
         onClick={isInteractive ? handleVideoClick : undefined}
@@ -248,6 +256,16 @@ export const GameVideo = observer(
             isMyStream={isMyStream}
             isSpeaking={isSpeaking}
           />
+        )}
+
+        {shouldShowSpeakerTimer && (
+          <div className={styles.speakerTimerContainer}>
+            <Timer
+              time={actualSpeakTime}
+              size={TimerSize.Large}
+              resetTrigger={gameFlow.speaker}
+            />
+          </div>
         )}
 
         {currentUser && (

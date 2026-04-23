@@ -127,6 +127,7 @@
     "voteList": "Список голосування",
     "gmStartVote": "Почати голосування",
     "gmStopVote": "Зупинити голосування",
+    "gmReVote": "Переголосувати",
     "resetVoting": "Скинути голоси",
     "toastVoteStarted": "Голосування починається!",
     "toastRevoteStarted": "Переголосування починається!",

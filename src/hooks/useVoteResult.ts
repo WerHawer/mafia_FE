@@ -24,14 +24,18 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
   const { voted, votesTime, proposed, isVote, isReVote, prostituteBlock } =
     gameFlow;
 
-  const enabled = isVote || isReVote;
+  const enabled = isVote;
 
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
+  const proposedStr = proposed.join(',');
+  const stableProposed = useMemo(() => (proposedStr ? proposedStr.split(',') : []), [proposedStr]);
+
+  const alivePlayersStr = alivePlayers.join(',');
   // Players who are eligible to vote: alive players excluding the one blocked by prostitute.
   const eligibleVoters = useMemo(
-    () => alivePlayers.filter((player) => player !== prostituteBlock),
-    [alivePlayers, prostituteBlock]
+    () => (alivePlayersStr ? alivePlayersStr.split(',') : []).filter((player) => player !== prostituteBlock),
+    [alivePlayersStr, prostituteBlock]
   );
 
   const endVoteTime = useMemo(
@@ -55,11 +59,14 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
 
   // Prevents the auto-randomize from firing more than once per voting round.
   const hasAutoVotedRef = useRef(false);
+  // Prevents single candidate auto-vote from firing multiple times if other dependencies change.
+  const hasAutoVotedForSingleRef = useRef(false);
 
   // Reset the flag at the start of each new voting round.
   useEffect(() => {
     if (enabled) {
       hasAutoVotedRef.current = false;
+      hasAutoVotedForSingleRef.current = false;
     }
   }, [enabled, isVote, isReVote]);
 
@@ -89,9 +96,9 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
     const newVoted = { ...currentVoted };
 
     notVotedPlayers.forEach((player) => {
-      let candidateList = proposed.filter((p) => p !== player);
+      let candidateList = stableProposed.filter((p) => p !== player);
       if (candidateList.length === 0) {
-        candidateList = proposed;
+        candidateList = stableProposed;
       }
 
       const randomIndex = random(0, candidateList.length - 1);
@@ -110,20 +117,29 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
         },
       }
     );
-  }, [isIGM, proposed, updateGameFlow, openModal]);
+  }, [isIGM, stableProposed, updateGameFlow, openModal]);
 
   useEffect(() => {
     if (!enabled) return;
 
-    if (proposed.length === 1 && isIGM) {
+    if (stableProposed.length === 1 && isIGM) {
+      if (hasAutoVotedForSingleRef.current) return;
+      hasAutoVotedForSingleRef.current = true;
+
       // Single candidate — all eligible votes go to them automatically.
-      const automaticVoted = { [proposed[0]]: eligibleVoters };
+      const automaticVoted = { [stableProposed[0]]: eligibleVoters };
       updateGameFlow({ voted: automaticVoted });
       openModal(ModalNames.VoteResultModal);
       return;
     }
 
     const interval = setInterval(() => {
+      const currentVotedCount = Object.values(votedRef.current ?? {}).flat().length;
+      if (currentVotedCount >= eligibleVotersRef.current.length) {
+        clearInterval(interval);
+        return;
+      }
+
       const isTimeOver = endVoteTime <= Date.now();
       if (!isTimeOver) return;
 
@@ -156,8 +172,8 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
     endVoteTime,
     isIGM,
     openModal,
-    proposed,
-    proposed.length,
+    stableProposed,
+    stableProposed.length,
     randomVote,
     updateGameFlow,
   ]);

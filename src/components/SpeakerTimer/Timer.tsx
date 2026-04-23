@@ -9,6 +9,7 @@ export enum TimerSize {
   Small = "small",
   Medium = "medium",
   Large = "large",
+  XL = "xl",
 }
 
 type TimerProps = {

@@ -23,12 +23,14 @@ export const GameVote = observer(() => {
     proposed,
     proposedBy,
     voted,
+    isReVote,
     isGM,
     isVotingActive,
     myId,
     onVoteForPlayer,
     onToggleVoting,
     onResetVoting,
+    onGiveSpeech,
     getUserName,
     getUser,
   } = useGameVote();
@@ -39,7 +41,11 @@ export const GameVote = observer(() => {
 
   // Players always see the panel; GM must expand it manually
   const isPanelVisible = !isGM || isGMOpen;
-  const gmVoteTooltip = isVotingActive ? t("vote.gmStopVote") : t("vote.gmStartVote");
+  
+  let gmVoteTooltip = isVotingActive ? t("vote.gmStopVote") : t("vote.gmStartVote");
+  if (!isVotingActive && isReVote) {
+    gmVoteTooltip = t("gm.startReVote", "Почати переголосування"); // fallback to Ukrainian if key doesn't exist
+  }
 
   return (
     <div className={styles.voteContainer}>
@@ -91,7 +97,7 @@ export const GameVote = observer(() => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            style={{ overflow: "hidden" }}
+            style={{ overflow: "hidden", display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
           >
             <VotePanel
               proposed={proposed}
@@ -101,11 +107,13 @@ export const GameVote = observer(() => {
               amIVoted={amIVoted}
               isGM={isGM}
               isVotingActive={isVotingActive}
+              isReVote={isReVote}
               myId={myId}
               voted={voted}
               onVoteForPlayer={onVoteForPlayer}
               onToggleVoting={onToggleVoting}
               onResetVoting={onResetVoting}
+              onGiveSpeech={onGiveSpeech}
               getUserName={getUserName}
               getUser={getUser}
             />

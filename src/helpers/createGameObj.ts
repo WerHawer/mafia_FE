@@ -4,6 +4,7 @@ import { UserId } from "../types/user.types.ts";
 export const initialGameFlow: IGameFlow = {
   speaker: "",
   speakTime: 60,
+  candidateSpeakTime: 30,
   votesTime: 15,
   isStarted: false,
   isFinished: false,

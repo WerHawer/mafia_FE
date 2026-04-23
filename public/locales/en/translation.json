@@ -125,6 +125,7 @@
     "voteList": "Voting List",
     "gmStartVote": "Start Voting",
     "gmStopVote": "Stop Voting",
+    "gmReVote": "Re-vote",
     "resetVoting": "Reset votes",
     "toastVoteStarted": "Voting has started!",
     "toastRevoteStarted": "Revote has started!",

@@ -48,10 +48,36 @@ export const GameChat = observer(() => {
   }, [shouldLoadDeadChat, id, user?.id, sendMessage]);
 
   const chatRef = useRef<HTMLDivElement>(null);
+  const isInitialRender = useRef(true);
+  const prevTab = useRef(activeTab);
+
+  if (prevTab.current !== activeTab) {
+    isInitialRender.current = true;
+    prevTab.current = activeTab;
+  }
 
   useEffect(() => {
-    chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
+    chatRef.current?.scrollTo({
+      top: chatRef.current.scrollHeight,
+      behavior: isInitialRender.current ? "auto" : "smooth",
+    });
+    isInitialRender.current = false;
   }, [messages]);
+
+  useEffect(() => {
+    if (!chatRef.current) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      chatRef.current?.scrollTo({
+        top: chatRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+
+    resizeObserver.observe(chatRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, []);
 
   const handleChangeMessage = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {

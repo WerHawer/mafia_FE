@@ -202,8 +202,8 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
         </div>
       )}
 
-      {/* Vote icon — visible to all eligible voters */}
-      {shouldShowVoteIcon && (
+      {/* Vote icon — visible to eligible voters, OR if there are votes to show */}
+      {(shouldShowVoteIcon || votesForThisUser.length > 0) && (
         <div
           className={classNames(
             styles.iconContainer,
@@ -211,17 +211,20 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
           )}
         >
           <Tippy
-            content={t("vote.voteAgainst")}
+            content={shouldShowVoteIcon ? t("vote.voteAgainst") : ""}
             theme="role-tooltip"
             delay={[500, 0]}
+            disabled={!shouldShowVoteIcon}
           >
             <div>
               <VoteIcon
-                className={classNames(styles.voteIcon, styles.voteIconScaled)}
+                className={classNames(styles.voteIcon, styles.voteIconScaled, {
+                  [styles.voteIconDisabled]: !shouldShowVoteIcon,
+                })}
                 size={ButtonSize.Small}
                 variant={ButtonVariant.Secondary}
-                onClick={onVote}
-                isVoted={isVotedByThisUser}
+                onClick={shouldShowVoteIcon ? onVote : undefined}
+                isVoted={isVotedByThisUser || votesForThisUser.length > 0}
               />
             </div>
           </Tippy>
@@ -232,13 +235,13 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
         </div>
       )}
 
-      {/* Info list — proposer shown only before voting; voters shown during voting */}
-      {((!isVotingActive && !hasVotingOccurred && proposerName) || (isVotingActive && votesForThisUser.length > 0)) && (
+      {/* Info list — proposer shown only before voting; voters shown if there are any votes */}
+      {((!isVotingActive && !hasVotingOccurred && proposerName) || votesForThisUser.length > 0) && (
         <ul className={styles.voteList}>
           {!isVotingActive && !hasVotingOccurred && proposerName && (
             <li className={styles.proposerItem}>⬆️ {proposerName}</li>
           )}
-          {isVotingActive &&
+          {votesForThisUser.length > 0 &&
             votesForThisUser.map((id) => (
               <li key={id}>👎 {getUser(id)?.nikName || "Anonimus"}</li>
             ))}
