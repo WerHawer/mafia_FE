@@ -1,6 +1,11 @@
 {
   "hello": "Hello world",
   "createGame": "Create Game",
+  "gm": {
+    "youAreNewGM": "You have been appointed as the new GM!",
+    "youAreNewGMAfterRestart": "The GM left. You have been appointed as the new GM!",
+    "candidateSpeeches": "Candidate Speeches"
+  },
   "waitingForPlayers": "Waiting for players",
   "loading": "Loading",
   "usersConnected": "{{count}} users connected to chat",
@@ -186,6 +191,7 @@
   },
 
   "voteResults": {
+    "chosen": "Chosen",
     "unexpectedResult": "Unexpected result",
     "playerChosen": "<span>{{playerName}}</span> was chosen on the vote",
     "playersVotedAgainst_one": "<span>{{count}}</span> player voted against this player:",

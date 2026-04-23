@@ -37,4 +37,5 @@ export enum wsEvents {
   gameReaction = "gameReaction",
   healthCheck = "healthCheck",
   gameNotFound = "gameNotFound",
+  gmChanged = "gmChanged",
 }

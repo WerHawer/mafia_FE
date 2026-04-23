@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,7 +15,7 @@ import styles from "./VoteResultsModal.module.scss";
 
 export const Draw = observer(({ result }: { result: Result[] }) => {
   const { t } = useTranslation();
-  const { getUserName } = usersStore;
+  const { getUserName, getUser } = usersStore;
   const { gameFlow } = gamesStore;
   const { closeModal } = modalStore;
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
@@ -100,13 +101,24 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
             {t("voteResults.usersToRevote")}
           </p>
 
-          <ul className={styles.list}>
-            {candidates.map((candidate) => (
-              <li key={candidate} className={styles.listItem}>
-                {getUserName(candidate)}
-              </li>
-            ))}
-          </ul>
+          <div className={classNames(styles.votersList, { [styles.twoColumns]: candidates.length > 4 })}>
+            {candidates.map((candidate) => {
+              const user = getUser(candidate);
+              const name = getUserName(candidate);
+              return (
+                <div key={candidate} className={styles.voterItem}>
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt={name} className={styles.voterAvatar} />
+                  ) : (
+                    <div className={styles.voterAvatarPlaceholder}>
+                      {name?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className={styles.voterName}>{name}</span>
+                </div>
+              );
+            })}
+          </div>
         </>
       )}
 

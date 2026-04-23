@@ -1,6 +1,11 @@
 {
   "hello": "Привіт світ",
   "createGame": "Створити Гру",
+  "gm": {
+    "youAreNewGM": "Тебе призначено новим ГМом!",
+    "youAreNewGMAfterRestart": "ГМ покинув гру. Тебе призначено новим ГМом!",
+    "candidateSpeeches": "Промови кандидатів"
+  },
   "waitingForPlayers": "Очікування гравців",
   "loading": "Завантаження",
   "usersConnected": "{{count}} користувачів приєдналися до чату",
@@ -188,6 +193,7 @@
   },
 
   "voteResults": {
+    "chosen": "Обраний",
     "unexpectedResult": "Неочікуваний результат",
     "playerChosen": "<span>{{playerName}}</span> був обраний на голосуванні",
     "playersVotedAgainst_one": "<span>{{count}}</span> гравець проголосував проти:",

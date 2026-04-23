@@ -9,6 +9,8 @@ import {
   useState,
 } from "react";
 import { io, Socket } from "socket.io-client";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "../api/apiConstants.ts";
@@ -37,6 +39,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
     null
   );
 
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { setNewMessage, replaceMessages } = messagesStore;
@@ -142,6 +145,15 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
           `Game ${roomId} was not found on the server. Clearing local state.`
         );
         gamesStore.removeActiveGame();
+      },
+      [wsEvents.gmChanged]: ({ newGMId, reason }) => {
+        if (!newGMId || newGMId !== myId) return;
+
+        if (reason === 'left_before_start') {
+          toast(t('gm.youAreNewGM'), { icon: '👑', duration: 6000 });
+        } else if (reason === 'restarted_after_gm_left') {
+          toast(t('gm.youAreNewGMAfterRestart'), { icon: '👑', duration: 6000 });
+        }
       },
       [wsEvents.socketDisconnect]: (connectedUsers) => {
         setSocketConnectedCount(connectedUsers);

@@ -1,13 +1,72 @@
-@use "../../../styles/theme.scss";
-@use "../../../styles/mixins.scss";
+@use "../../../styles/theme.scss" as theme;
+@use "../../../styles/mixins.scss" as mixins;
 
 .container {
-  padding: 1.5rem 10rem;
-  font-size: 1.5rem;
+  padding: 2rem 4rem;
+  font-size: 1.6rem;
+  min-width: 38rem;
+}
+
+// ─── Chosen Player ───────────────────────────────────
+.chosenPlayer {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  margin-bottom: 2.4rem;
+  padding: 1.6rem 2rem;
+  border-radius: theme.$border-radius-big;
+  background: rgba(theme.$color-accent-primary, 0.08);
+  border: 1px solid rgba(theme.$color-accent-primary, 0.25);
+}
+
+.chosenAvatar,
+.chosenAvatarPlaceholder {
+  width: 6.4rem;
+  height: 6.4rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid theme.$color-accent-primary;
+  object-fit: cover;
+}
+
+.chosenAvatarPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(theme.$color-accent-primary, 0.2);
+  color: theme.$color-accent-primary;
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.chosenInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.chosenLabel {
+  font-size: 1.2rem;
+  color: theme.$color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.chosenName {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: theme.$color-accent-primary;
+}
+
+// ─── Voters Section ───────────────────────────────────
+.votersSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 
 .header {
-  font-size: 2rem;
+  font-size: 2.2rem;
   margin-bottom: 1.5rem;
   text-align: center;
 }
@@ -15,31 +74,77 @@
 .secondaryHeader {
   text-align: center;
   font-size: 1.6rem;
+  color: theme.$color-text-secondary;
+  margin: 0;
 }
 
 .accentText {
   color: theme.$color-accent-primary;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-.list {
-  margin: 1.5rem 0;
-  list-style: number;
-}
+// 2 колонки коли більше 4 гравців
+.votersList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
 
-.listItem {
-  margin-left: 2rem;
-  font-size: 1.3rem;
-
-  &:not(:last-of-type) {
-    margin-bottom: 0.3rem;
+  &.twoColumns {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
+// Простий рядок без рамки і фону
+.voterItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.4rem 0;
+}
+
+.voterAvatar,
+.voterAvatarPlaceholder {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.voterAvatarPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(theme.$color-light-primary, 0.12);
+  color: theme.$color-text-secondary;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.voterName {
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: theme.$color-text-primary;
+}
+
+// ─── Draw-specific ────────────────────────────────────
+.list {
+  margin: 1.5rem 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.listItem {
+  font-size: 1.6rem;
+}
+
+// ─── Footer ───────────────────────────────────────────
 .buttonContainer {
   @include mixins.flexCenter;
   flex-direction: column;
   gap: 1rem;
-
-  margin-top: 5rem;
+  margin-top: 2.4rem;
 }
