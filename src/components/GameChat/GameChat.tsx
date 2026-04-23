@@ -23,7 +23,7 @@ enum ChatTab {
 
 export const GameChat = observer(() => {
   const { id = "" } = useParams();
-  const { usersStore, messagesStore, isIDead, isIGM } = rootStore;
+  const { usersStore, messagesStore, gamesStore, isIDead, isIGM } = rootStore;
   const { me: user } = usersStore;
   const { getMessages, setNewLocalMessage } = messagesStore;
   const { sendMessage } = useSocket();
@@ -46,6 +46,14 @@ export const GameChat = observer(() => {
       sendMessage(wsEvents.roomConnection, [`${id}_dead`, user.id]);
     }
   }, [shouldLoadDeadChat, id, user?.id, sendMessage]);
+
+  const { isStarted } = gamesStore.gameFlow;
+
+  useEffect(() => {
+    if (!isStarted || (!shouldLoadDeadChat && activeTab === ChatTab.Dead)) {
+      setActiveTab(ChatTab.General);
+    }
+  }, [isStarted, shouldLoadDeadChat, activeTab]);
 
   const chatRef = useRef<HTMLDivElement>(null);
   const isInitialLoad = useRef(true);
