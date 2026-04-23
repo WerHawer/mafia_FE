@@ -128,7 +128,7 @@ export const GameVideo = observer(
 
       if (isKissEnabled) {
         setKissPos({ x, y });
-        onBlockUser();
+        onBlockUser(x, y);
         soundStore.playSfx(SoundEffect.Kiss);
         return;
       }

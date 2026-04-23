@@ -12,15 +12,21 @@ type KissEffectProps = {
 
 export const KissEffect = observer(({ userId, clickPosition }: KissEffectProps) => {
   const { isIProstitute, gamesStore } = rootStore;
-  const { prostituteBlock } = gamesStore.gameFlow;
+  const { prostituteBlock, prostituteBlockPos } = gamesStore.gameFlow;
 
   const isBlocked = prostituteBlock === userId;
 
-  if (!isIProstitute || !isBlocked || !clickPosition) {
+  // The kiss effect only appears if someone is blocked.
+  if (!isBlocked) {
     return null;
   }
 
-  const style = { left: `${clickPosition.x}%`, top: `${clickPosition.y}%` };
+  // Use the local click position if available (for the prostitute) to avoid flicker.
+  // Otherwise use the server-synced position. If neither is available, center it.
+  const posX = clickPosition?.x ?? prostituteBlockPos?.x ?? 50;
+  const posY = clickPosition?.y ?? prostituteBlockPos?.y ?? 50;
+
+  const style = { left: `${posX}%`, top: `${posY}%` };
 
   return (
     <div className={styles.container}>

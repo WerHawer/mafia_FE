@@ -91,9 +91,14 @@ export const useGameVideo = ({
     });
   }, [activeGameId, isIGM, isShootEnabled, myId, shootUser, userId]);
 
-  const onBlockUser = useCallback(() => {
+  const onBlockUser = useCallback((x?: number, y?: number) => {
     if (!isKissEnabled) return;
-    updateGameFlow({ prostituteBlock: userId });
+    
+    const pos = x !== undefined && y !== undefined 
+      ? { x: Math.round(x), y: Math.round(y) } 
+      : undefined;
+      
+    updateGameFlow({ prostituteBlock: userId, prostituteBlockPos: pos });
   }, [isKissEnabled, updateGameFlow, userId]);
 
   const onHealUser = useCallback(() => {

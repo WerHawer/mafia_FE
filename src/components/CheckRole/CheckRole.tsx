@@ -4,7 +4,6 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 
-import kissMarkIcon from "@/assets/icons/kiss_mark.png";
 import bulletIcon from "@/assets/icons/bullet.png";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
@@ -23,7 +22,6 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
 
   const userCheckedBySheriff = sheriffCheck === userId;
   const userCheckedByDon = donCheck === userId;
-  const userBlockedByProstitute = prostituteBlock === userId;
   const userSavedByDoctor = doctorSave === userId;
   const shotCount = shoot[userId]?.shooters?.length ?? 0;
 
@@ -55,16 +53,6 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
       {userCheckedByDon && (
         <Tippy theme="role-tooltip" content={t("checkRole.checkedByDon")}>
           <EyeOutlined className={styles.gmIcon} style={{ color: '#ffff27' }} />
-        </Tippy>
-      )}
-
-      {userBlockedByProstitute && (
-        <Tippy theme="role-tooltip" content={t("prostituteAction.blockedByProstitute")}>
-          <img
-            src={kissMarkIcon}
-            alt="kiss"
-            className={styles.gmIconImg}
-          />
         </Tippy>
       )}
 

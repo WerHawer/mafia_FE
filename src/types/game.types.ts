@@ -48,6 +48,7 @@ export interface IGameFlow {
   doctorSave?: UserId;
   donCheck?: UserId;
   prostituteBlock?: UserId;
+  prostituteBlockPos?: { x: number; y: number };
   sleeping: UserId[];
 }
 
