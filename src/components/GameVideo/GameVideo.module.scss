@@ -214,46 +214,59 @@
   z-index: 9;
 }
 
+// ── Role-action hover glow ────────────────────────────────────────────────────
+// Pure CSS transitions: smooth fade-in and fade-out on hover.
+// box-shadow and border-color are NOT clipped by overflow: hidden.
+
 .shootable {
   /* noinspection CssUnknownTarget */
-  cursor:
-    url("/aim.svg") 16 16,
-    crosshair !important;
-  transition: box-shadow 0.2s;
+  cursor: url("/aim.svg") 16 16, crosshair !important;
+  transition: box-shadow 0.45s ease-in-out, border-color 0.45s ease-in-out;
 
   &:hover {
-    box-shadow: inset 0 0 20px rgba(theme.$color-error, 0.4);
+    border-color: rgba(theme.$color-error, 0.8);
+    box-shadow:
+      0 0 18px 5px rgba(theme.$color-error, 0.45),
+      inset 0 0 20px rgba(theme.$color-error, 0.18);
   }
 }
 
 .kissable {
   /* noinspection CssUnknownTarget */
-  cursor:
-    url("/kiss.svg") 16 16,
-    pointer !important;
-  transition: box-shadow 0.2s;
+  cursor: url("/kiss.svg") 16 16, pointer !important;
+  transition: box-shadow 0.45s ease-in-out, border-color 0.45s ease-in-out;
 
   &:hover {
-    box-shadow: inset 0 0 20px rgba(theme.$color-role-prostitute, 0.4);
+    border-color: rgba(theme.$color-role-prostitute, 0.8);
+    box-shadow:
+      0 0 18px 5px rgba(theme.$color-role-prostitute, 0.45),
+      inset 0 0 20px rgba(theme.$color-role-prostitute, 0.15);
   }
 }
 
 .healable {
   /* noinspection CssUnknownTarget */
-  cursor:
-    url("/syringe.svg") 16 16,
-    pointer !important;
+  cursor: url("/syringe.svg") 16 16, pointer !important;
+  transition: box-shadow 0.45s ease-in-out, border-color 0.45s ease-in-out;
+
+  &:hover {
+    border-color: rgba(theme.$color-role-doctor, 0.8);
+    box-shadow:
+      0 0 18px 5px rgba(theme.$color-role-doctor, 0.45),
+      inset 0 0 20px rgba(theme.$color-role-doctor, 0.15);
+  }
 }
 
 .checkable {
   /* noinspection CssUnknownTarget */
-  cursor:
-    url("/question.svg") 16 16,
-    help !important;
-  transition: box-shadow 0.2s;
+  cursor: url("/question.svg") 16 16, help !important;
+  transition: box-shadow 0.45s ease-in-out, border-color 0.45s ease-in-out;
 
   &:hover {
-    box-shadow: inset 0 0 20px rgba(theme.$color-accent-secondary, 0.4);
+    border-color: rgba(theme.$color-accent-secondary, 0.8);
+    box-shadow:
+      0 0 18px 5px rgba(theme.$color-accent-secondary, 0.45),
+      inset 0 0 20px rgba(theme.$color-accent-secondary, 0.15);
   }
 }
 .statusLabelDead {
