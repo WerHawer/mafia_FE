@@ -19,6 +19,11 @@
     "deadRestriction": "Dead players can't write here",
     "gmDeadObserver": "GM can observe but not write in dead chat"
   },
+  "emptyState": {
+    "title": "WHERE IS EVERYONE?!",
+    "description": "Looks like the Don cancelled the meeting... Or we've all been set up! There are no active games right now. Wait for a new family to gather, or create your own game if you have the guts.",
+    "createGame": "CREATE YOUR OWN GAME"
+  },
   "activeGames": "Active Games",
   "owner": "Owner",
   "players": "Players",

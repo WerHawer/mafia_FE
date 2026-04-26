@@ -19,6 +19,7 @@ import { Loader } from "@/UI/Loader";
 import { Typography } from "@/UI/Typography";
 
 import styles from "./GamesList.module.scss";
+import { EmptyGamesState } from "./EmptyGamesState.tsx";
 
 const DEFAULT_MAX_PLAYERS = 11;
 
@@ -58,9 +59,11 @@ export const GamesList = observer(() => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={games?.length === 0 ? styles.containerEmpty : styles.container}>
       {!games ? (
         <Loader />
+      ) : games.length === 0 ? (
+        <EmptyGamesState />
       ) : (
         <div className={styles.gamesTable}>
           <div className={styles.tableHeader}>

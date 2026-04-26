@@ -1,53 +1,117 @@
 @use "../../../styles/theme.scss";
+@use "../../../styles/mixins.scss" as *;
 
 .container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  gap: 20px;
+  min-width: 480px;
 }
 
 .title {
-  margin-bottom: 24px;
-  font-size: 24px;
-  font-weight: 600;
-  color: theme.$color-text-primary;
+  font-family: "Oswald", sans-serif;
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: theme.$color-text-secondary;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(theme.$color-text-primary, 0.08);
 }
+
+// ── Night action log ─────────────────────────────────────────────────────────
 
 .logsContainer {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  width: 100%;
+  gap: 8px;
 }
 
-.logText {
-  font-size: 18px;
-  line-height: 1.4;
-  color: theme.$color-text-primary;
-  margin: 0;
+.logRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: theme.$border-radius;
+  background: rgba(theme.$color-dark-primary, 0.4);
+  border-left: 3px solid transparent;
 
   strong {
-    color: theme.$color-accent-secondary;
+    color: theme.$color-text-primary;
+    font-weight: 600;
   }
 }
 
-.divider {
-  width: 100%;
-  border: 0;
-  height: 1px;
-  background-color: rgba(theme.$color-text-primary, 0.2);
-  margin: 24px 0;
+.logRow_mafia {
+  border-left-color: theme.$color-error;
+}
+.logRow_prostitute {
+  border-left-color: theme.$color-role-prostitute;
+}
+.logRow_doctor {
+  border-left-color: theme.$color-role-doctor;
+}
+.logRow_sheriff {
+  border-left-color: theme.$color-info;
+}
+.logRow_don {
+  border-left-color: theme.$color-accent-tertiary;
 }
 
-.messageText {
-  font-size: 20px;
-  font-weight: 700;
-  margin: 10px 0 24px;
-  color: theme.$color-accent-tertiary;
+.logText {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  color: rgba(theme.$color-text-primary, 0.82);
+  margin: 0;
 }
 
-.playerName {
-  font-weight: bold;
-  color: theme.$color-accent-primary;
+// ── Outcome section ───────────────────────────────────────────────────────────
+
+.outcome {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: theme.$border-radius;
+  background: rgba(theme.$color-dark-primary, 0.5);
+
+  &.killed {
+    border: 1px solid rgba(theme.$color-error, 0.3);
+    background: rgba(theme.$color-error, 0.06);
+  }
+
+  &.safe {
+    border: 1px solid rgba(theme.$color-role-doctor, 0.25);
+    background: rgba(theme.$color-role-doctor, 0.05);
+  }
+
+  &.missed {
+    border: 1px solid rgba(theme.$color-text-secondary, 0.2);
+  }
+}
+
+.outcomeIcon {
+  font-size: 2.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.outcomeText {
+  font-size: 1.65rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: theme.$color-text-primary;
+
+  strong {
+    color: theme.$color-accent-primary;
+    font-weight: 700;
+  }
+}
+
+// ── Action button ─────────────────────────────────────────────────────────────
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
 }
