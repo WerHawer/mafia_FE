@@ -17,6 +17,7 @@ import {
   patchGame,
   removeUserFromGame,
   restartGame,
+  finishGame,
   shootUser,
   startDay,
   startGame,
@@ -168,6 +169,10 @@ export const usePatchGameMutation = () => {
 
 export const useRestartGameMutation = () => {
   return useMutation({ mutationFn: restartGame });
+};
+
+export const useFinishGameMutation = () => {
+  return useMutation({ mutationFn: finishGame });
 };
 
 export const useStartDayMutation = () => {

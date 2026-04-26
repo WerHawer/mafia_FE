@@ -104,7 +104,7 @@ export const NightResultsModal = observer(
                       nightActionLogs.targetedByMafia
                     ),
                   }}
-                  components={{ strong: <strong /> }}
+                  components={{ strong: <strong key="strong" /> }}
                 />
               </Typography>
             )}
@@ -116,7 +116,7 @@ export const NightResultsModal = observer(
                 values={{
                   playerName: getUserName(nightActionLogs.blockedByProstitute),
                 }}
-                components={{ strong: <strong /> }}
+                components={{ strong: <strong key="strong" /> }}
               />
             </Typography>
           )}
@@ -128,7 +128,7 @@ export const NightResultsModal = observer(
                 values={{
                   playerName: getUserName(nightActionLogs.savedByDoctor),
                 }}
-                components={{ strong: <strong /> }}
+                components={{ strong: <strong key="strong" /> }}
               />
             </Typography>
           )}
@@ -141,7 +141,7 @@ export const NightResultsModal = observer(
                   playerName: getUserName(nightActionLogs.donChecked),
                   result: getResultForDon(nightActionLogs.donChecked),
                 }}
-                components={{ strong: <strong /> }}
+                components={{ strong: <strong key="strong" /> }}
               />
             </Typography>
           )}
@@ -154,7 +154,7 @@ export const NightResultsModal = observer(
                   playerName: getUserName(nightActionLogs.sheriffChecked),
                   result: getResultForSheriff(nightActionLogs.sheriffChecked),
                 }}
-                components={{ strong: <strong /> }}
+                components={{ strong: <strong key="strong" /> }}
               />
             </Typography>
           )}
@@ -167,7 +167,7 @@ export const NightResultsModal = observer(
             <Trans
               i18nKey="nightResults.mafiaKilled"
               values={{ playerName }}
-              components={{ strong: <strong /> }}
+              components={{ strong: <strong key="strong" /> }}
             />
           </Typography>
         ) : mafiaMissReason === "savedByDoctor" ? (
@@ -177,7 +177,7 @@ export const NightResultsModal = observer(
               values={{
                 playerName: getUserName(nightActionLogs.savedByDoctor),
               }}
-              components={{ strong: <strong /> }}
+              components={{ strong: <strong key="strong" /> }}
             />
           </Typography>
         ) : mafiaMissReason === "noShots" ? (
@@ -211,7 +211,7 @@ export const NightResultsModal = observer(
             <Trans
               i18nKey="nightResults.lastSpeech"
               values={{ playerName }}
-              components={{ strong: <strong /> }}
+              components={{ strong: <strong key="strong" /> }}
             />
           </Button>
         ) : (

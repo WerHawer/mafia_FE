@@ -109,6 +109,10 @@ export const restartGame = async (gameId: GameId) => {
   return axios.patch<IGame>(`${GAMES_URL}/${gameId}/restart`);
 };
 
+export const finishGame = async (gameId: GameId) => {
+  return axios.patch<IGame>(`${GAMES_URL}/${gameId}/finish`);
+};
+
 export const startDay = async (gameId: GameId) => {
   return axios.patch<IGame>(`${GAMES_URL}/${gameId}/startDay`);
 };

@@ -2,7 +2,8 @@ import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { updateGameGM } from "@/api/game/api.ts";
-import { useRestartGameMutation } from "@/api/game/queries.ts";
+import { useFinishGameMutation, useRestartGameMutation } from "@/api/game/queries.ts";
+import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { useMockStreams } from "@/hooks/useMockStreams.ts";
 import { routes } from "@/router/routs.ts";
@@ -19,6 +20,7 @@ export const useGMMenu = () => {
 
   const { mockStreamsEnabled, handleToggleMockStreams } = useMockStreams();
   const { mutate: restartGame } = useRestartGameMutation();
+  const { mutate: finishGame } = useFinishGameMutation();
 
   const onMakeMeGM = useCallback(async () => {
     if (!activeGameId || !myId) return;
@@ -62,9 +64,18 @@ export const useGMMenu = () => {
   const onRestartGame = useCallback(() => {
     if (!activeGameId) return;
 
-    restartGame(activeGameId);
     setIsMenuOpen(false);
+    rootStore.modalStore.openModal(ModalNames.ConfirmRestartModal, {
+      onConfirm: () => restartGame(activeGameId),
+    });
   }, [activeGameId, restartGame]);
+
+  const onFinishGame = useCallback(() => {
+    if (!activeGameId) return;
+
+    finishGame(activeGameId);
+    setIsMenuOpen(false);
+  }, [activeGameId, finishGame]);
 
   const onLeaveGame = useCallback(() => {
     setIsMenuOpen(false);
@@ -84,6 +95,7 @@ export const useGMMenu = () => {
     onDisableAllCameras,
     onEnableAllCameras,
     onRestartGame,
+    onFinishGame,
     onLeaveGame,
   };
 };

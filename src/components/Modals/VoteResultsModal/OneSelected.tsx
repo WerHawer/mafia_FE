@@ -77,7 +77,7 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
             <Trans
               i18nKey={getUkrainianPluralKey(voted.length)}
               values={{ count: voted.length }}
-              components={{ span: <span className={styles.accentText} /> }}
+              components={{ span: <span key="span" className={styles.accentText} /> }}
             />
           </p>
 

@@ -23,6 +23,7 @@ import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
+import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import { Dropdown, IconButton, Menu, MenuItem, MenuSeparator } from "@/UI";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
@@ -60,8 +61,10 @@ export const VideoMenu = observer(
       if (!userId || !activeGameId) return;
       if (isCurrentUserGM) return;
 
-      updateGM({ gameId: activeGameId, userId });
       setIsMenuOpen(false);
+      rootStore.modalStore.openModal(ModalNames.ConfirmChangeGMModal, {
+        onConfirm: () => updateGM({ gameId: activeGameId, userId }),
+      });
     };
 
     const onKillOrRevive = (killed: string[]) => {

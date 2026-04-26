@@ -52,8 +52,9 @@
   @include mixins.flex(column, flex-start, center);
   gap: 4px;
   // Use CSS variables set inline to drive the dynamic animation
-  animation: floatUp var(--duration, 4s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
-             wobble 2s ease-in-out infinite alternate;
+  animation:
+    floatUp var(--duration, 4s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+    wobble 2s ease-in-out infinite alternate;
 }
 
 .emojiWrap {
@@ -110,6 +111,7 @@
   padding: 2px;
   @include mixins.flexCenter;
   animation: badgeFadeIn 0.3s ease-out forwards;
+  pointer-events: none;
 }
 
 .cornerBadgeHiding {

@@ -28,6 +28,8 @@ export enum wsEvents {
   userMicrophoneStatusChanged = "userMicrophoneStatusChanged",
   batchToggleMicrophones = "batchToggleMicrophones",
   batchToggleCameras = "batchToggleCameras",
+  batchMicrophonesStatusChanged = "batchMicrophonesStatusChanged",
+  batchCamerasStatusChanged = "batchCamerasStatusChanged",
   playerSleepConfirm = "playerSleepConfirm",
   playerSleepAck = "playerSleepAck",
   playerWakeConfirm = "playerWakeConfirm",

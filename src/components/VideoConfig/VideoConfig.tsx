@@ -113,7 +113,7 @@ export const VideoConfig = observer(
           <div className={styles.videoContainer}>
             <img
               className={classNames(styles.img, styles.displayNone)}
-              src={imageURL}
+              src={imageURL || undefined}
               alt={t("videoConfig.background")}
               ref={imgRef}
             />

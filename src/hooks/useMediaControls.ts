@@ -85,42 +85,30 @@ export const useMediaControls = ({
 
     const { myId } = rootStore.usersStore;
 
-    const handleCameraStatusChanged = async (data: {
-      userId: string;
-      participantIdentity: string;
-      enabled: boolean;
-      targetIdentity?: string;
-    }) => {
-      console.log("[Media Control] Camera status changed:", data);
-
-      // Update UI state for all participants
-      if (data.userId === participant.identity) {
+    const processCameraChange = async (userId: string, enabled: boolean, targetIdentity?: string) => {
+      if (userId === participant.identity) {
         setMediaState((prev) => ({
           ...prev,
-          isCameraEnabled: data.enabled,
+          isCameraEnabled: enabled,
         }));
       }
 
-      // Execute local action if command is for current user
       const isForMe =
-        data.targetIdentity === myId ||
-        data.targetIdentity === participant.identity ||
-        (participant.isLocal && data.userId === myId);
+        targetIdentity === myId ||
+        targetIdentity === participant.identity ||
+        (participant.isLocal && userId === myId);
 
       if (isForMe && participant.isLocal) {
         try {
-          // We use a canvas-based video track (not the native camera).
-          // setCameraEnabled() would try to open the real camera — we must NOT call it.
-          // Instead, mute/unmute the already-published track directly.
           const videoPub = localParticipant.getTrackPublication(Track.Source.Camera);
           if (videoPub?.track) {
-            if (data.enabled) {
+            if (enabled) {
               await videoPub.track.unmute();
             } else {
               await videoPub.track.mute();
             }
             console.log(
-              `[Media Control] Canvas video track ${data.enabled ? "unmuted" : "muted"}`
+              `[Media Control] Canvas video track ${enabled ? "unmuted" : "muted"}`
             );
           } else {
             console.warn("[Media Control] No local camera track found to toggle");
@@ -131,24 +119,40 @@ export const useMediaControls = ({
       }
     };
 
-    const handleMicrophoneStatusChanged = async (data: {
+    const handleCameraStatusChanged = async (data: {
       userId: string;
       participantIdentity: string;
       enabled: boolean;
       targetIdentity?: string;
-      forceMute?: boolean;
     }) => {
-      console.log("[Media Control] Microphone status changed:", data);
+      console.log("[Media Control] Camera status changed:", data);
+      await processCameraChange(data.userId, data.enabled, data.targetIdentity);
+    };
 
-      // Handle forceMute logic
-      if (data.forceMute !== undefined) {
-        const wasForceMuted = gamesStore.isUserForceMuted(data.userId);
+    const handleBatchCamerasStatusChanged = async (data: {
+      userIds: string[];
+      enabled: boolean;
+    }) => {
+      console.log("[Media Control] Batch cameras status changed:", data);
+      if (data.userIds.includes(participant.identity)) {
+        await processCameraChange(participant.identity, data.enabled, participant.identity);
+      }
+    };
 
-        if (wasForceMuted !== data.forceMute) {
-          gamesStore.setForceMutedUser(data.userId, data.forceMute);
+    const processMicrophoneChange = async (
+      userId: string,
+      enabled: boolean,
+      targetIdentity?: string,
+      forceMute?: boolean
+    ) => {
+      if (forceMute !== undefined) {
+        const wasForceMuted = gamesStore.isUserForceMuted(userId);
+
+        if (wasForceMuted !== forceMute) {
+          gamesStore.setForceMutedUser(userId, forceMute);
           
-          if (data.userId === myId) {
-            if (data.forceMute) {
+          if (userId === myId) {
+            if (forceMute) {
               toast(t("mediaControls.forceMutedToast"), {
                 icon: "🔒",
                 id: "force-mute-status",
@@ -162,40 +166,58 @@ export const useMediaControls = ({
         }
       }
 
-      // Update UI state for all participants
-      if (data.userId === participant.identity) {
+      if (userId === participant.identity) {
         setMediaState((prev) => ({
           ...prev,
-          isMicrophoneEnabled: data.enabled,
+          isMicrophoneEnabled: enabled,
         }));
       }
 
-      // Execute local action if command is for current user
       const isForMe =
-        data.targetIdentity === myId ||
-        data.targetIdentity === participant.identity ||
-        (participant.isLocal && data.userId === myId);
+        targetIdentity === myId ||
+        targetIdentity === participant.identity ||
+        (participant.isLocal && userId === myId);
 
       if (isForMe && participant.isLocal) {
         try {
-          // Use direct track muting to avoid triggering getUserMedia again.
           const audioPub = localParticipant.getTrackPublication(Track.Source.Microphone);
           if (audioPub?.track) {
-            if (data.enabled) {
+            if (enabled) {
               await audioPub.track.unmute();
             } else {
               await audioPub.track.mute();
             }
             console.log(
-              `[Media Control] Microphone track ${data.enabled ? "unmuted" : "muted"}`
+              `[Media Control] Microphone track ${enabled ? "unmuted" : "muted"}`
             );
           } else {
-            // Fallback: if no track yet (e.g. mic not yet published), let LiveKit handle it
-            await localParticipant.setMicrophoneEnabled(data.enabled);
+            await localParticipant.setMicrophoneEnabled(enabled);
           }
         } catch (error) {
           console.error("[Media Control] Error toggling microphone:", error);
         }
+      }
+    };
+
+    const handleMicrophoneStatusChanged = async (data: {
+      userId: string;
+      participantIdentity: string;
+      enabled: boolean;
+      targetIdentity?: string;
+      forceMute?: boolean;
+    }) => {
+      console.log("[Media Control] Microphone status changed:", data);
+      await processMicrophoneChange(data.userId, data.enabled, data.targetIdentity, data.forceMute);
+    };
+
+    const handleBatchMicrophonesStatusChanged = async (data: {
+      userIds: string[];
+      enabled: boolean;
+      forceMute?: boolean;
+    }) => {
+      console.log("[Media Control] Batch microphones status changed:", data);
+      if (data.userIds.includes(participant.identity)) {
+        await processMicrophoneChange(participant.identity, data.enabled, participant.identity, data.forceMute);
       }
     };
 
@@ -207,10 +229,20 @@ export const useMediaControls = ({
       wsEvents.userMicrophoneStatusChanged as any,
       handleMicrophoneStatusChanged
     );
+    const unsubscribeBatchCameras = subscribe(
+      wsEvents.batchCamerasStatusChanged as any,
+      handleBatchCamerasStatusChanged
+    );
+    const unsubscribeBatchMicrophones = subscribe(
+      wsEvents.batchMicrophonesStatusChanged as any,
+      handleBatchMicrophonesStatusChanged
+    );
 
     return () => {
       unsubscribeCamera();
       unsubscribeMicrophone();
+      unsubscribeBatchCameras();
+      unsubscribeBatchMicrophones();
     };
   }, [socket, participant, subscribe, localParticipant]);
 

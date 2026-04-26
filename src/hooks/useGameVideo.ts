@@ -73,7 +73,7 @@ export const useGameVideo = ({
     ((isISheriff && isIWakedUp && !sheriffCheck && !isMyStream) ||
      (isIDon && isWokenAsDon && !donCheck && !isMyStream));
 
-  const isCheckRoleEnabled = isIGM;
+  const isCheckRoleEnabled = isIGM || gameFlow.isPostGame;
 
   const { mutate: shootUser } = useShootUserMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
@@ -184,5 +184,6 @@ export const useGameVideo = ({
     onBlockUser,
     onHealUser,
     onInvestigateUser,
+    participantRole,
   };
 };

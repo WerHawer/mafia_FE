@@ -25,7 +25,7 @@ export const VideoUserInfo = observer(
 
     return (
       <div className={styles.userInfo}>
-        {isIGM && !isGM && <RoleIcon role={role} />}
+        {(isIGM || gamesStore.gameFlow.isPostGame) && !isGM && <RoleIcon role={role} />}
 
         <div>
           {userName} {userNumber ? `#${userNumber}` : ""}

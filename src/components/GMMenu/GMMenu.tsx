@@ -10,7 +10,7 @@ import {
   SettingOutlined,
   SoundOutlined,
   VideoCameraAddOutlined,
-  VideoCameraOutlined,
+  CheckCircleOutlined,
 } from "@ant-design/icons";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -43,6 +43,7 @@ export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenu
     onDisableAllCameras,
     onEnableAllCameras,
     onRestartGame,
+    onFinishGame,
     onLeaveGame,
   } = useGMMenu();
 
@@ -122,6 +123,12 @@ export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenu
                       icon={<ReloadOutlined />}
                       label={t("gmMenu.restartGame")}
                       onClick={onRestartGame}
+                    />
+
+                    <MenuItem
+                      icon={<CheckCircleOutlined />}
+                      label={t("gmMenu.finishGame")}
+                      onClick={onFinishGame}
                     />
                   </>
                 )}

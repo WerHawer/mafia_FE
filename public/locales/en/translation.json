@@ -259,9 +259,24 @@
     "disableAllCameras": "Disable All Cameras",
     "enableAllCameras": "Enable All Cameras",
     "restartGame": "Restart Game",
+    "finishGame": "Finish Game",
     "videoSettings": "Video Settings",
     "audioSettings": "Audio Settings",
     "leaveGame": "Leave Game"
+  },
+
+  "confirmRestartModal": {
+    "title": "Restart Game",
+    "warning": "Are you sure you want to restart the game? All roles, effects, and progress will be permanently reset. Players will be returned to the starting lobby.",
+    "confirm": "Yes, restart",
+    "cancel": "Cancel"
+  },
+
+  "confirmChangeGMModal": {
+    "title": "Transfer GM Rights",
+    "warning": "Are you sure you want to transfer GM rights to this player? You will become a regular player (if the game hasn't started) or an observer.",
+    "confirm": "Yes, transfer",
+    "cancel": "Cancel"
   },
 
   "prostituteAction": {

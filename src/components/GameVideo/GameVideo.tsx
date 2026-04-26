@@ -27,6 +27,7 @@ import { RoleIcon } from "@/UI/RoleIcon";
 import { PlayerVideo } from "../PlayerVideo";
 import styles from "./GameVideo.module.scss";
 import { VideoMenu } from "./VideoMenu.tsx";
+import { RoleCardMini } from "./RoleCardMini.tsx";
 import { VideoUserInfo } from "./VideoUserInfo.tsx";
 
 type GameVideoProps = {
@@ -93,6 +94,7 @@ export const GameVideo = observer(
       onBlockUser,
       onHealUser,
       onInvestigateUser,
+      participantRole,
     } = useGameVideo({ participant, isMyStream });
 
     const { soundStore } = rootStore;
@@ -183,6 +185,8 @@ export const GameVideo = observer(
         onClick={isInteractive ? handleVideoClick : undefined}
       >
         <VoteFlow isMyStream={isMyStream} userId={userId} />
+
+        <RoleCardMini userId={userId} role={participantRole} />
 
         {isCheckRoleEnabled ? <CheckRole userId={userId} /> : null}
 

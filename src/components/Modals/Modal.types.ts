@@ -28,6 +28,8 @@ export enum ModalNames {
   CreateGameModal = "CreateGameModal",
   EnterPasswordModal = "EnterPasswordModal",
   GameSettingsModal = "GameSettingsModal",
+  ConfirmRestartModal = "ConfirmRestartModal",
+  ConfirmChangeGMModal = "ConfirmChangeGMModal",
 }
 
 export type ModalData = {
@@ -36,6 +38,8 @@ export type ModalData = {
   [ModalNames.CreateGameModal]: object;
   [ModalNames.EnterPasswordModal]: { gameId: string; onSuccess: () => void };
   [ModalNames.GameSettingsModal]: object;
+  [ModalNames.ConfirmRestartModal]: { onConfirm: () => void };
+  [ModalNames.ConfirmChangeGMModal]: { onConfirm: () => void };
 };
 
 export type GModalData<T extends ModalNames> = ModalData[T];
