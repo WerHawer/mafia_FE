@@ -12,23 +12,37 @@ $safe-color: theme.$color-role-doctor;
 
 .resultLabel {
   position: absolute;
-  translate: -50% -120%;
-  padding: 8px 18px;
-  border-radius: 8px;
-  font-size: 1.4rem;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-size: 1.8rem;
   font-weight: 700;
   white-space: nowrap;
   pointer-events: none;
   animation: labelAppear 0.3s ease-out forwards;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 
-  background-color: rgba($safe-color, 0.9);
+  background-color: rgba($danger-color, 0.9);
   color: theme.$color-text-primary;
-  box-shadow: 0 2px 12px rgba($safe-color, 0.5);
+  box-shadow: 0 4px 16px rgba($danger-color, 0.5);
 
-  &[data-danger="true"] {
-    background-color: rgba($danger-color, 0.9);
-    box-shadow: 0 2px 12px rgba($danger-color, 0.5);
+  &[data-found="true"] {
+    background-color: rgba($safe-color, 0.9);
+    box-shadow: 0 4px 16px rgba($safe-color, 0.5);
   }
+}
+
+.roleIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(white, 0.2);
+  border-radius: 50%;
+  padding: 4px;
 }
 
 // Flashing border — safe (green)

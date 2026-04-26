@@ -1,6 +1,7 @@
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
@@ -14,6 +15,7 @@ import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
 import { ChatInput } from "../PublicChat/components/ChatInput";
 import { ChatMessages } from "../PublicChat/components/ChatMessages";
+import { ChatMessageToast } from "./ChatMessageToast";
 import styles from "./GameChat.module.scss";
 
 enum ChatTab {
@@ -26,7 +28,7 @@ export const GameChat = observer(() => {
   const { usersStore, messagesStore, gamesStore, isIDead, isIGM } = rootStore;
   const { me: user } = usersStore;
   const { getMessages, setNewLocalMessage } = messagesStore;
-  const { sendMessage } = useSocket();
+  const { sendMessage, subscribe } = useSocket();
   const { t } = useTranslation();
 
   const [activeTab, setActiveTab] = useState<ChatTab>(ChatTab.General);
@@ -50,10 +52,10 @@ export const GameChat = observer(() => {
   const { isStarted } = gamesStore.gameFlow;
 
   useEffect(() => {
-    if (!isStarted || (!shouldLoadDeadChat && activeTab === ChatTab.Dead)) {
+    if ((!isStarted && !isIGM) || (!shouldLoadDeadChat && activeTab === ChatTab.Dead)) {
       setActiveTab(ChatTab.General);
     }
-  }, [isStarted, shouldLoadDeadChat, activeTab]);
+  }, [isStarted, shouldLoadDeadChat, activeTab, isIGM]);
 
   const chatRef = useRef<HTMLDivElement>(null);
   const isInitialLoad = useRef(true);
@@ -64,6 +66,32 @@ export const GameChat = observer(() => {
     isInitialLoad.current = true;
     prevTab.current = activeTab;
   }
+
+  const [chatToasts, setChatToasts] = useState<{ id: string; msg: IMessage }[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = subscribe(wsEvents.messageSend, (msg: IMessage) => {
+      // Check if message belongs to any channel the user is subscribed to in this game
+      const isForGeneral = msg.to.id === id;
+      const isForDead = msg.to.id === `${id}_dead`;
+      const isForGame = msg.to.type === MessageTypes.All || isForGeneral || (shouldLoadDeadChat && isForDead);
+      
+      if (msg.sender?.id !== user?.id && isForGame) {
+        const toastId = `chat-msg-${msg.createdAt}-${msg.sender?.id}-${Math.random()}`;
+        
+        setChatToasts((prev) => [...prev, { id: toastId, msg }]);
+
+        // Auto-remove after 2.5 seconds
+        setTimeout(() => {
+          setChatToasts((prev) => prev.filter((t) => t.id !== toastId));
+        }, 2500);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [subscribe, id, shouldLoadDeadChat, user?.id]);
 
   useEffect(() => {
     if (!chatRef.current || !messages?.length) return;
@@ -122,6 +150,23 @@ export const GameChat = observer(() => {
 
   return (
     <div className={styles.chatContainer}>
+      <div className={styles.toasterContainer}>
+        <AnimatePresence>
+          {chatToasts.map((toast) => (
+            <motion.div
+              key={toast.id}
+              initial={{ x: 50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 50, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className={styles.toastWrapper}
+            >
+              <ChatMessageToast message={toast.msg} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
       <ChatMessages
         messages={messages || []}
         chatRef={chatRef}

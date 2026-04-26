@@ -21,6 +21,24 @@ type RoleIconProps = {
   size?: RoleIconSize;
 };
 
+const ICONS_TO_PRELOAD = [
+  mafiaIcon,
+  donIcon,
+  citizenIcon,
+  sheriffIcon,
+  doctorIcon,
+  maniacIcon,
+  prostituteIcon,
+  gmIcon,
+];
+
+if (typeof window !== "undefined") {
+  ICONS_TO_PRELOAD.forEach((src) => {
+    const img = new window.Image();
+    img.src = src;
+  });
+}
+
 export const RoleIcon = ({ role, size = "s" }: RoleIconProps) => {
   const { t } = useTranslation();
 

@@ -54,11 +54,23 @@ export class GamesStore {
   }
 
   updateGame(game: IGame) {
+    const wasStarted = this._activeGame?.gameFlow?.isStarted;
+    const isNowStarted = game.gameFlow?.isStarted;
+
+    // Detect restart: game was started but now it's not (returning to lobby)
+    if (wasStarted && !isNowStarted) {
+      this.restartGameStore();
+    }
+
     this._activeGame = game;
   }
 
   removeActiveGame() {
     this._activeGame = null;
+    this.restartGameStore();
+  }
+
+  restartGameStore() {
     this.forceMutedUsers = [];
     this.isDealingComplete = false;
     this.isRoleRevealed = false;

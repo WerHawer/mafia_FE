@@ -108,7 +108,7 @@ export const useGameVideo = ({
     updateGameFlow({ doctorSave: userId });
   }, [isHealEnabled, updateGameFlow, userId]);
 
-  const onInvestigateUser = useCallback((): { result: string; isDanger: boolean } | null => {
+  const onInvestigateUser = useCallback((): { result: string; isFound: boolean; role?: Roles } | null => {
     if (!isInvestigateEnabled) return null;
 
     const userRole = gamesStore.getUserRole(userId);
@@ -118,7 +118,8 @@ export const useGameVideo = ({
       updateGameFlow({ sheriffCheck: userId });
       return {
         result: isMafia ? t("checkRole.mafia") : t("checkRole.notMafia"),
-        isDanger: isMafia,
+        isFound: isMafia,
+        role: isMafia ? Roles.Mafia : Roles.Citizen,
       };
     }
 
@@ -127,7 +128,8 @@ export const useGameVideo = ({
       updateGameFlow({ donCheck: userId });
       return {
         result: isSheriff ? t("checkRole.sheriff") : t("checkRole.notSheriff"),
-        isDanger: isSheriff,
+        isFound: isSheriff,
+        role: isSheriff ? Roles.Sheriff : Roles.Citizen,
       };
     }
 

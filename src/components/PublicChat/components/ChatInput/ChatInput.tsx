@@ -134,9 +134,20 @@ export const ChatInput = ({
 
     const onScroll = (e: Event) => {
       const pickerEl = document.getElementById("emoji-picker-portal");
+      const target = e.target;
 
       // Ignore scroll events that originate inside the picker itself
-      if (pickerEl?.contains(e.target as Node)) return;
+      if (pickerEl?.contains(target as Node)) return;
+
+      // Only close if the scrolled element is an ancestor of our button.
+      // Scrolling unrelated elements (like chat history) shouldn't close the picker.
+      if (
+        target instanceof Node &&
+        emojiButtonRef.current &&
+        !target.contains(emojiButtonRef.current)
+      ) {
+        return;
+      }
 
       setShowEmojiPicker(false);
     };

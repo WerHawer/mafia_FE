@@ -36,8 +36,6 @@ type GameVideoProps = {
   isActive?: boolean;
 };
 
-const DEFAULT_VIDEO_POSITION = { x: 0, y: 0 };
-
 export const GameVideo = observer(
   ({
     participant,
@@ -65,6 +63,7 @@ export const GameVideo = observer(
       null
     );
     const [investigateDanger, setInvestigateDanger] = useState(false);
+    const [investigateRole, setInvestigateRole] = useState<Roles | null>(null);
     // GM-only: peek at dead player's real video instead of the dead overlay
     const [showDeadVideo, setShowDeadVideo] = useState(false);
     const {
@@ -109,6 +108,7 @@ export const GameVideo = observer(
         setInvestigatePos(null);
         setInvestigateResult(null);
         setInvestigateDanger(false);
+        setInvestigateRole(null);
       }
     }, [gameFlow.isNight]);
 
@@ -145,7 +145,8 @@ export const GameVideo = observer(
         if (res) {
           setInvestigatePos({ x, y });
           setInvestigateResult(res.result);
-          setInvestigateDanger(res.isDanger);
+          setInvestigateDanger(res.isFound);
+          setInvestigateRole(res.role ?? null);
           soundStore.playSfx(SoundEffect.Check);
         }
       }
@@ -193,7 +194,8 @@ export const GameVideo = observer(
         <InvestigateEffect
           clickPosition={investigatePos}
           result={investigateResult}
-          isDanger={investigateDanger}
+          isFound={investigateDanger}
+          role={investigateRole ?? undefined}
         />
 
         <div className={styles.gmIconContainer}>
@@ -273,7 +275,11 @@ export const GameVideo = observer(
               time={actualSpeakTime}
               size={TimerSize.Large}
               resetTrigger={gameFlow.speaker}
-              onLowTime={isMyStream ? () => soundStore.playMusic(SoundEffect.Ticking, true, 1) : undefined}
+              onLowTime={
+                isMyStream
+                  ? () => soundStore.playMusic(SoundEffect.Ticking, true, 1)
+                  : undefined
+              }
               onTimeUp={isMyStream ? () => soundStore.stopMusic() : undefined}
             />
           </div>

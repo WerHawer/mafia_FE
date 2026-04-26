@@ -1,21 +1,32 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 
+import { Roles } from "@/types/game.types.ts";
+import { RoleIcon } from "@/UI/RoleIcon";
+
 import styles from "./InvestigateEffect.module.scss";
 
 type InvestigateEffectProps = {
   clickPosition?: { x: number; y: number } | null;
   result?: string | null;
+  /** @deprecated use isFound */
   isDanger?: boolean;
+  isFound?: boolean;
+  role?: Roles;
 };
 
 export const InvestigateEffect = observer(({
   clickPosition,
   result,
   isDanger = false,
+  isFound = false,
+  role,
 }: InvestigateEffectProps) => {
   const [showFlash, setShowFlash] = useState(false);
   const [showLabel, setShowLabel] = useState(false);
+
+  // Backward compatibility or use isFound
+  const activeFound = isFound || isDanger;
 
   useEffect(() => {
     if (result && clickPosition) {
@@ -34,14 +45,9 @@ export const InvestigateEffect = observer(({
     return null;
   }
 
-  const labelStyle = {
-    left: `${clickPosition.x}%`,
-    top: `${clickPosition.y}%`,
-  };
-
-  const borderClass = isDanger
-    ? styles.borderFlashDanger
-    : styles.borderFlashSafe;
+  const borderClass = activeFound
+    ? styles.borderFlashSafe
+    : styles.borderFlashDanger;
 
   return (
     <>
@@ -50,9 +56,13 @@ export const InvestigateEffect = observer(({
         <div className={styles.container}>
           <div
             className={styles.resultLabel}
-            style={labelStyle}
-            data-danger={isDanger}
+            data-found={activeFound}
           >
+            {role && (
+              <div className={styles.roleIconWrapper}>
+                <RoleIcon role={role} size="m" />
+              </div>
+            )}
             {result}
           </div>
         </div>

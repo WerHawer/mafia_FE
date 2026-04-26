@@ -326,11 +326,14 @@ export const useMediaControls = ({
     socket,
     isMyStream,
     isIGM,
+    isIDead,
+    gamesStore,
     mediaState.isMicrophoneEnabled,
     participant.identity,
     sendMessage,
     roomId,
     requesterId,
+    t,
   ]);
 
   const canControl = isMyStream || isIGM;

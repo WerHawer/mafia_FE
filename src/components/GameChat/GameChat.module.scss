@@ -5,6 +5,25 @@
   @include mixins.flex(column, stretch, center);
   height: 100%;
   width: 100%;
+  position: relative;
+}
+
+.toasterContainer {
+  position: absolute;
+  bottom: 80px;
+  right: 8px;
+  top: auto;
+  left: auto;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.toastWrapper {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .tabs {

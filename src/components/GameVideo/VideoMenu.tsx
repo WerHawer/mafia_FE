@@ -3,12 +3,12 @@ import {
   EyeInvisibleOutlined,
   EyeOutlined,
   HeartOutlined,
-  MoreOutlined,
-  MoonOutlined,
-  SoundOutlined,
-  UserDeleteOutlined,
   LockOutlined,
+  MoonOutlined,
+  MoreOutlined,
+  SoundOutlined,
   UnlockOutlined,
+  UserDeleteOutlined,
 } from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -23,13 +23,7 @@ import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
-import {
-  Dropdown,
-  IconButton,
-  Menu,
-  MenuItem,
-  MenuSeparator,
-} from "@/UI";
+import { Dropdown, IconButton, Menu, MenuItem, MenuSeparator } from "@/UI";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
 import styles from "./GameVideo.module.scss";
@@ -44,7 +38,14 @@ type VideoMenuProps = {
 };
 
 export const VideoMenu = observer(
-  ({ userId, isCurrentUserGM, isUserDead = false, isSleeping = false, showDeadVideo = false, onToggleDeadVideo }: VideoMenuProps) => {
+  ({
+    userId,
+    isCurrentUserGM,
+    isUserDead = false,
+    isSleeping = false,
+    showDeadVideo = false,
+    onToggleDeadVideo,
+  }: VideoMenuProps) => {
     const { t } = useTranslation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { mutate: updateGM } = useUpdateGameGMMutation();
@@ -162,12 +163,14 @@ export const VideoMenu = observer(
           }
           content={
             <Menu>
-              <MenuItem
-                icon={<CrownOutlined />}
-                label={t("videoMenu.doGM")}
-                onClick={onUpdateGM}
-                disabled={isCurrentUserGM}
-              />
+              {!gameFlow.isStarted && (
+                <MenuItem
+                  icon={<CrownOutlined />}
+                  label={t("videoMenu.doGM")}
+                  onClick={onUpdateGM}
+                  disabled={isCurrentUserGM}
+                />
+              )}
 
               <MenuItem
                 icon={<SoundOutlined />}
@@ -177,8 +180,14 @@ export const VideoMenu = observer(
 
               {isUserDead && (
                 <MenuItem
-                  icon={showDeadVideo ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-                  label={showDeadVideo ? t("videoMenu.hideDeadVideo") : t("videoMenu.showDeadVideo")}
+                  icon={
+                    showDeadVideo ? <EyeInvisibleOutlined /> : <EyeOutlined />
+                  }
+                  label={
+                    showDeadVideo
+                      ? t("videoMenu.hideDeadVideo")
+                      : t("videoMenu.showDeadVideo")
+                  }
                   onClick={() => {
                     onToggleDeadVideo?.();
                     setIsMenuOpen(false);
@@ -191,14 +200,20 @@ export const VideoMenu = observer(
               {gameFlow.isNight && (
                 <MenuItem
                   icon={<MoonOutlined />}
-                  label={isSleeping ? t("videoMenu.wake") : t("videoMenu.sleep")}
+                  label={
+                    isSleeping ? t("videoMenu.wake") : t("videoMenu.sleep")
+                  }
                   onClick={onToggleSleep}
                 />
               )}
 
               <MenuItem
                 icon={isForceMuted ? <UnlockOutlined /> : <LockOutlined />}
-                label={isForceMuted ? t("videoMenu.unblockMic") : t("videoMenu.blockMic")}
+                label={
+                  isForceMuted
+                    ? t("videoMenu.unblockMic")
+                    : t("videoMenu.blockMic")
+                }
                 onClick={onToggleForceMute}
               />
 
