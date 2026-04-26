@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { modalStore } from "@/store/modalStore.ts";
 import { Button } from "@/UI/Button";
+import { ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
 import styles from "../ConfirmRestartModal/ConfirmRestartModal.module.scss";
 
@@ -23,7 +24,7 @@ export const ConfirmChangeGMModal = observer(() => {
       <p className={styles.warning}>{t("confirmChangeGMModal.warning")}</p>
 
       <div className={styles.footer}>
-        <Button variant="secondary" onClick={closeModal} fullWidth>
+        <Button variant={ButtonVariant.Secondary} onClick={closeModal} fullWidth>
           {t("confirmChangeGMModal.cancel")}
         </Button>
         <Button onClick={handleConfirm} fullWidth>

@@ -1,23 +1,20 @@
 import classNames from "classnames";
 import { memo, useCallback, useMemo, useState } from "react";
 
-import { getAvatarUrl, getAvatarSrcSet } from "@/helpers/getAvatarUrl.ts";
-import { AvatarSize, IAvatar, IAvatarItem } from "@/types/user.types.ts";
+import { getAvatarUrl } from "@/helpers/getAvatarUrl.ts";
+import { AvatarSize } from "@/types/user.types.ts";
 
 import styles from "./UserAvatar.module.scss";
 
 type UserAvatarProps = {
-  /** avatar can be an IAvatar object or a direct string URL (for legacy places) */
-  avatar?: IAvatar | IAvatarItem[] | string;
+  avatar?: string;
   name: string;
   size?: AvatarSize;
   className?: string;
-  /** Pixel size for srcSet `sizes` hint (e.g. "60px", "96px") */
-  sizesHint?: string;
   onClick?: () => void;
 };
 
-export const UserAvatar = memo(({ avatar, name, size = "sm", className, sizesHint, onClick }: UserAvatarProps) => {
+export const UserAvatar = memo(({ avatar, name, size = "sm", className, onClick }: UserAvatarProps) => {
   const [hasError, setHasError] = useState(false);
 
   const handleImageError = useCallback(() => {
@@ -31,12 +28,8 @@ export const UserAvatar = memo(({ avatar, name, size = "sm", className, sizesHin
     }
   }, [onClick]);
 
-  const isStringAvatar = typeof avatar === "string";
-
   const showInitial = useMemo(() => {
-    if (hasError) return true;
-    if (!avatar) return true;
-    if (Array.isArray(avatar) && avatar.length === 0) return true;
+    if (hasError || !avatar) return true;
     return false;
   }, [avatar, hasError]);
 
@@ -44,14 +37,11 @@ export const UserAvatar = memo(({ avatar, name, size = "sm", className, sizesHin
     if (!fullName) return "?";
     const parts = fullName.trim().split(/\s+/);
     if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? "?";
-    return (parts[0][0] + parts[1][0]).toUpperCase();
+    return (parts[0][0] + (parts[1]?.[0] || "")).toUpperCase();
   }, []);
 
   const initials = getInitials(name);
-
-  // If avatar is a plain string URL we will use it directly, otherwise use helper
-  const src = isStringAvatar ? (avatar as string) : getAvatarUrl(avatar as IAvatar | IAvatarItem[] | undefined, size);
-  const srcSet = isStringAvatar ? undefined : getAvatarSrcSet(avatar as IAvatar | IAvatarItem[] | undefined);
+  const src = getAvatarUrl(avatar);
 
   return (
     <span
@@ -69,8 +59,6 @@ export const UserAvatar = memo(({ avatar, name, size = "sm", className, sizesHin
       ) : (
         <img
           src={src}
-          srcSet={srcSet}
-          sizes={sizesHint}
           alt={name}
           className={styles.img}
           onError={handleImageError}
@@ -81,5 +69,3 @@ export const UserAvatar = memo(({ avatar, name, size = "sm", className, sizesHin
 });
 
 UserAvatar.displayName = "UserAvatar";
-
-

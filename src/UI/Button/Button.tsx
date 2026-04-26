@@ -20,6 +20,7 @@ type ButtonProps = Omit<HTMLProps<HTMLButtonElement>, "size"> &
     rounded?: boolean;
     className?: string;
     type?: ButtonType;
+    fullWidth?: boolean;
   }>;
 
 //TODO: Add loading state
@@ -34,6 +35,7 @@ export const Button = ({
   rounded = false,
   className,
   type = ButtonType.Button,
+  fullWidth = false,
   ...rest
 }: ButtonProps) => {
   return (
@@ -48,6 +50,7 @@ export const Button = ({
           [styles.disabled]: disabled,
           [styles.uppercase]: uppercase,
           [styles.rounded]: rounded,
+          [styles.fullWidth]: fullWidth,
         },
         className
       )}

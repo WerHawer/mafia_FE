@@ -72,8 +72,9 @@ export const GameChat = observer(() => {
   useEffect(() => {
     const unsubscribe = subscribe(wsEvents.messageSend, (msg: IMessage) => {
       // Check if message belongs to any channel the user is subscribed to in this game
-      const isForGeneral = msg.to.id === id;
-      const isForDead = msg.to.id === `${id}_dead`;
+      const toId = "id" in msg.to ? msg.to.id : undefined;
+      const isForGeneral = toId === id;
+      const isForDead = toId === `${id}_dead`;
       const isForGame = msg.to.type === MessageTypes.All || isForGeneral || (shouldLoadDeadChat && isForDead);
       
       if (msg.sender?.id !== user?.id && isForGame) {

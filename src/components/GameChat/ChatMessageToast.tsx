@@ -15,7 +15,7 @@ export const ChatMessageToast = ({ message }: ChatMessageToastProps) => {
   const { nikName, avatar } = sender;
 
   const segments = parseMessageToSegments(text);
-  const isDeadChat = to.id.endsWith("_dead");
+  const isDeadChat = "id" in to && to.id.endsWith("_dead");
 
   return (
     <div className={classNames(styles.toast, { [styles.dead]: isDeadChat })}>

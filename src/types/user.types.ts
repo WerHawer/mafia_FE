@@ -1,6 +1,8 @@
 export type UserId = string;
 export type UserStreamId = string;
 
+export type AvatarSize = "sm" | "md" | "lg";
+
 export type UserVideoSettings = {
   withBlur: boolean;
   imageURL: string;
