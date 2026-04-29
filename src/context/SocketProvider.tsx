@@ -45,7 +45,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   const { setNewMessage, replaceMessages } = messagesStore;
   const { updateGame, updateGames, setToProposed, addVoted, addShoot } =
     gamesStore;
-  const { setSocketConnectedCount, myId } = usersStore;
+  const { setSocketConnectedCount, updateOnlineUsers, myId } = usersStore;
 
   const updateRQGamesCache = useCallback(
     (newGame: IGame | IGameShort) => {
@@ -91,9 +91,10 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
         console.log("Error connecting to WebSocket server:", err.message);
         setConnectionAttempts((prev) => prev + 1);
       },
-      [wsEvents.connection]: ({ message, connectedUsers }) => {
+      [wsEvents.connection]: ({ message, connectedUsers, onlineUsers }) => {
         console.log(message);
         setSocketConnectedCount(connectedUsers);
+        if (onlineUsers) updateOnlineUsers(onlineUsers);
         setConnectionAttempts(0); // Reset attempts on successful connection
         setLastConnectionTime(Date.now());
       },
@@ -155,8 +156,10 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
           toast(t('gm.youAreNewGMAfterRestart'), { icon: '👑', duration: 6000 });
         }
       },
-      [wsEvents.socketDisconnect]: (connectedUsers) => {
+      [wsEvents.socketDisconnect]: (data) => {
+        const { connectedUsers, onlineUsers } = typeof data === 'object' ? data : { connectedUsers: data, onlineUsers: [] };
         setSocketConnectedCount(connectedUsers);
+        if (onlineUsers) updateOnlineUsers(onlineUsers);
       },
       [wsEvents.addToProposed]: ({ userId, proposerId }) => {
         setToProposed(userId, proposerId);

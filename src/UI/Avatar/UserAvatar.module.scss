@@ -1,0 +1,51 @@
+@use "../../styles/theme.scss";
+@use "../../styles/mixins.scss";
+
+.avatar {
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: inline-block;
+  background-color: rgba(theme.$color-light-primary, 0.15);
+  border: 1px solid rgba(theme.$color-light-primary, 0.25);
+  @include mixins.flexCenter;
+
+  &.sm {
+    @include mixins.size(32px);
+  }
+
+  &.md {
+    @include mixins.size(48px);
+  }
+
+  &.lg {
+    @include mixins.size(96px);
+  }
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.initial {
+  color: theme.$color-text-primary;
+  user-select: none;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  .sm & {
+    font-size: 1.2rem;
+  }
+
+  .md & {
+    font-size: 1.8rem;
+  }
+
+  .lg & {
+    font-size: 3.2rem;
+  }
+}

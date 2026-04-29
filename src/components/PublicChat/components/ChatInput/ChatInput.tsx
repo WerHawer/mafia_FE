@@ -1,10 +1,13 @@
 import { SendOutlined } from "@ant-design/icons";
+import Tippy from "@tippyjs/react";
+import classNames from "classnames";
 import EmojiPicker, {
   Emoji,
   EmojiClickData,
   EmojiStyle,
   Theme,
 } from "emoji-picker-react";
+import { observer } from "mobx-react-lite";
 import {
   ChangeEvent,
   FormEvent,
@@ -63,6 +66,24 @@ export const ChatInput = ({
 
   const [caretPosition, setCaretPosition] = useState<number | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isMoving, setIsMoving] = useState(false);
+  const movingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (caretPosition === null) return;
+    
+    setIsMoving(true);
+    
+    if (movingTimeoutRef.current) clearTimeout(movingTimeoutRef.current);
+    
+    movingTimeoutRef.current = setTimeout(() => {
+      setIsMoving(false);
+    }, 250);
+
+    return () => {
+      if (movingTimeoutRef.current) clearTimeout(movingTimeoutRef.current);
+    };
+  }, [caretPosition, value]); // Trigger on both cursor move and text change
 
   // Sync the mirror's scroll position with the textarea so Apple emojis
   // stay aligned when the user scrolls a long message (content > 120px).
@@ -200,11 +221,19 @@ export const ChatInput = ({
 
     setTimeout(() => {
       ref.focus();
-      ref.setSelectionRange(
-        start + emojiData.emoji.length,
-        start + emojiData.emoji.length
-      );
+      const newPos = start + emojiData.emoji.length;
+      ref.setSelectionRange(newPos, newPos);
       updateCaret();
+
+      // Ensure the cursor is visible after inserting emojis
+      const lineHeight = 19 * 1.5; // font-size * line-height
+      const currentScrollTop = ref.scrollTop;
+      const offsetTop = ref.scrollHeight * (newPos / value.length || 0);
+
+      // Simple heuristic: if the cursor might be below the visible area, scroll to it
+      if (offsetTop > currentScrollTop + 100) {
+        ref.scrollTop = offsetTop - 60;
+      }
     }, 0);
   };
 
@@ -223,8 +252,11 @@ export const ChatInput = ({
     onChange(e);
 
     if (textareaRef.current) {
+      const scrollPos = textareaRef.current.scrollTop;
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+      // Restore scroll position after height change to prevent jumping to top
+      textareaRef.current.scrollTop = scrollPos;
     }
   };
 
@@ -265,7 +297,13 @@ export const ChatInput = ({
               )
             )}
 
-            {showFakeCaret && <span className={styles.fakeCaret} />}
+            {showFakeCaret && (
+              <span
+                className={classNames(styles.fakeCaret, {
+                  [styles.moving]: isMoving,
+                })}
+              />
+            )}
 
             {caretPosition !== null &&
               afterSegments.map((segment, i) =>

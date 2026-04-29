@@ -10,6 +10,7 @@ import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { gamesStore } from "@/store/gamesStore.ts";
 import { modalStore } from "@/store/modalStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
+import { UserAvatar } from "@/UI/Avatar/UserAvatar.tsx";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
@@ -53,17 +54,12 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
     <div className={styles.container}>
       {/* Chosen player card */}
       <div className={styles.chosenPlayer}>
-        {playerUser?.avatar ? (
-          <img
-            src={playerUser.avatar}
-            alt={playerName}
-            className={styles.chosenAvatar}
-          />
-        ) : (
-          <div className={styles.chosenAvatarPlaceholder}>
-            {playerName?.charAt(0).toUpperCase()}
-          </div>
-        )}
+        <UserAvatar
+          avatar={playerUser?.avatar}
+          name={playerName}
+          customSize={64}
+          className={styles.chosenAvatar}
+        />
         <div className={styles.chosenInfo}>
           <span className={styles.chosenLabel}>{t("voteResults.chosen", "Обраний")}</span>
           <span className={styles.chosenName}>{playerName}</span>
@@ -87,11 +83,12 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
               const voterName = getUserName(voterId);
               return (
                 <div key={voterId} className={styles.voterItem}>
-                  {voterUser?.avatar ? (
-                    <img src={voterUser.avatar} alt={voterName} className={styles.voterAvatar} />
-                  ) : (
-                    <div className={styles.voterAvatarPlaceholder}>{voterName?.charAt(0).toUpperCase()}</div>
-                  )}
+                  <UserAvatar
+                    avatar={voterUser?.avatar}
+                    name={voterName}
+                    customSize={32}
+                    className={styles.voterAvatar}
+                  />
                   <span className={styles.voterName}>{voterName}</span>
                 </div>
               );

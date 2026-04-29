@@ -3,10 +3,10 @@ import { EmojiStyle } from "emoji-picker-react";
 import classNames from "classnames";
 import { memo } from "react";
 
-import noAvatar from "@/assets/images/noAvatar.jpg";
 import { getEmojiVariant, EmojiVariant } from "@/helpers/getEmojiVariant.ts";
 import { parseMessageToSegments } from "@/helpers/parseMessageToSegments.ts";
 import { IMessage } from "@/types/message.types";
+import { UserAvatar } from "@/UI/Avatar/UserAvatar.tsx";
 import { Typography } from "@/UI/Typography";
 
 import styles from "../../PublicChat.module.scss";
@@ -65,7 +65,7 @@ export const ChatMessage = ({ message, isMyMessage }: ChatMessageProps) => {
         [styles.myMessage]: isMyMessage,
       })}
     >
-      <img src={avatar || noAvatar} alt={userName} className={styles.avatar} />
+      <UserAvatar avatar={avatar} name={userName} className={styles.avatar} />
       <div
         className={classNames(styles.messageText, {
           [styles.emojiSingle]: emojiVariant === "single",

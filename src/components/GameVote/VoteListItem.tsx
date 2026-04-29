@@ -1,8 +1,9 @@
-import { DislikeFilled, DislikeOutlined, UserOutlined, SoundOutlined } from "@ant-design/icons";
+import { DislikeFilled, DislikeOutlined, SoundOutlined } from "@ant-design/icons";
 import classNames from "classnames";
 import { KeyboardEvent, memo } from "react";
 
 import { UserId } from "@/types/user.types.ts";
+import { UserAvatar } from "@/UI/Avatar/UserAvatar.tsx";
 
 import styles from "./GameVote.module.scss";
 
@@ -22,18 +23,6 @@ type VoteListItemProps = {
   isGM?: boolean;
   onGiveSpeech?: (userId: UserId) => void;
 };
-
-const Avatar = ({ src, name }: { src?: string; name?: string }) => (
-  <span className={styles.avatar}>
-    {src ? (
-      <img src={src} alt={name || ""} className={styles.avatarImg} />
-    ) : (
-      <span className={styles.avatarFallback}>
-        {name ? name[0].toUpperCase() : <UserOutlined />}
-      </span>
-    )}
-  </span>
-);
 
 export const VoteListItem = memo(
   ({
@@ -83,12 +72,12 @@ export const VoteListItem = memo(
             {/* Show proposer only when voting hasn't started yet */}
             {!isVotingActive && proposerName && (
               <>
-                <Avatar src={proposerAvatar} name={proposerName} />
+                <UserAvatar avatar={proposerAvatar} name={proposerName} customSize={20} className={styles.avatar} />
                 <span className={styles.proposerName}>{proposerName}</span>
                 <span className={styles.arrow}>→</span>
               </>
             )}
-            <Avatar src={candidateAvatar} name={userName} />
+            <UserAvatar avatar={candidateAvatar} name={userName} customSize={20} className={styles.avatar} />
             <span className={styles.candidateName}>{userName}</span>
           </span>
 

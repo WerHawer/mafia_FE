@@ -1,3 +1,5 @@
+import { InfoCircleOutlined } from "@ant-design/icons";
+import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
@@ -67,14 +69,18 @@ export const CreateGameModal = observer(() => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>{t("createGame")}</h2>
+      <div className={styles.header}>
+        <h2 className={styles.title}>{t("createGame")}</h2>
+        <Tippy
+          content={t("maxPlayersNote", "Максимум 12 людей (з ведучим)")}
+          theme="nav-tooltip"
+          placement="top"
+        >
+          <InfoCircleOutlined className={styles.infoIcon} />
+        </Tippy>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        <div className={styles.row}>
-          <div className={styles.infoMessage}>
-            {t("maxPlayersNote", "Максимум 12 людей (з ведучим)")}
-          </div>
-        </div>
 
         <div className={styles.row}>
           <label className={styles.label}>{t("additionalRoles")}</label>

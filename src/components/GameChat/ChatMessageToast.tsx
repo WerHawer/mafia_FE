@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { Emoji, EmojiStyle } from "emoji-picker-react";
-import noAvatar from "@/assets/images/noAvatar.jpg";
 import { parseMessageToSegments } from "@/helpers/parseMessageToSegments.ts";
 import { IMessage } from "@/types/message.types.ts";
+import { UserAvatar } from "@/UI/Avatar/UserAvatar.tsx";
 
 import styles from "./ChatMessageToast.module.scss";
 
@@ -19,9 +19,9 @@ export const ChatMessageToast = ({ message }: ChatMessageToastProps) => {
 
   return (
     <div className={classNames(styles.toast, { [styles.dead]: isDeadChat })}>
-      <img
-        src={avatar || noAvatar}
-        alt={nikName}
+      <UserAvatar
+        avatar={avatar}
+        name={nikName}
         className={styles.avatar}
       />
       <div className={styles.content}>

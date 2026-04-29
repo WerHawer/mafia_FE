@@ -48,6 +48,25 @@ export class UsersStore {
     this._socketConnectedCount = count;
   };
 
+  updateOnlineUsers = (onlineUsers: IUser[]) => {
+    // 1. Mark all currently known users as offline first
+    Object.values(this._users).forEach((user) => {
+      user.isOnline = false;
+    });
+
+    // 2. Update status for online users and add them if missing
+    onlineUsers.forEach((user) => {
+      if (this._users[user.id]) {
+        this._users[user.id].isOnline = true;
+        // Also update avatar/nikname just in case
+        this._users[user.id].nikName = user.nikName;
+        this._users[user.id].avatar = user.avatar;
+      } else {
+        this._users[user.id] = { ...user, isOnline: true };
+      }
+    });
+  };
+
   removeToken = () => {
     this._token = "";
   };

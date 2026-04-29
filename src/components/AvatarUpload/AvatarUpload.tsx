@@ -9,6 +9,7 @@ import { getCroppedImage } from "@/helpers/getCroppedImage.ts";
 import { usersStore } from "@/store/usersStore.ts";
 import { Button } from "@/UI/Button/Button.tsx";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { UserAvatar } from "@/UI/Avatar/UserAvatar.tsx";
 import { Typography } from "@/UI/Typography";
 
 import styles from "./AvatarUpload.module.scss";
@@ -113,19 +114,12 @@ export const AvatarUpload = () => {
           aria-label={t("avatar.changeAvatar")}
           tabIndex={0}
         >
-          {me?.avatar ? (
-            <img
-              src={me.avatar}
-              alt={me.nikName}
-              className={styles.avatarImage}
-            />
-          ) : (
-            <div className={styles.avatarPlaceholder}>
-              <Typography variant="subtitle" className={styles.avatarInitial}>
-                {me?.nikName?.[0]?.toUpperCase() ?? "?"}
-              </Typography>
-            </div>
-          )}
+          <UserAvatar
+            avatar={me?.avatar}
+            name={me?.nikName}
+            size="lg"
+            className={styles.avatarImage}
+          />
           <div className={styles.avatarOverlay}>
             <Typography variant="caption" className={styles.avatarOverlayText}>
               {t("avatar.change")}

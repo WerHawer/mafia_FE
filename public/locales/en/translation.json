@@ -110,6 +110,7 @@
     "speakTime": "Speech (sec)",
     "votesTime": "Voting (sec)",
     "candidateSpeakTime": "Defense (sec)",
+    "skipFirstNight": "Active first night (if 1 mafia)",
     "restart": "Restart",
     "night": "Night",
     "day": "Day",

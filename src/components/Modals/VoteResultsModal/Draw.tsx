@@ -8,6 +8,7 @@ import { Result } from "@/components/Modals/VoteResultsModal/VoteResultsModal.ts
 import { gamesStore } from "@/store/gamesStore.ts";
 import { modalStore } from "@/store/modalStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
+import { UserAvatar } from "@/UI/Avatar/UserAvatar.tsx";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
@@ -107,13 +108,12 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
               const name = getUserName(candidate);
               return (
                 <div key={candidate} className={styles.voterItem}>
-                  {user?.avatar ? (
-                    <img src={user.avatar} alt={name} className={styles.voterAvatar} />
-                  ) : (
-                    <div className={styles.voterAvatarPlaceholder}>
-                      {name?.charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                  <UserAvatar
+                    avatar={user?.avatar}
+                    name={name}
+                    customSize={32}
+                    className={styles.voterAvatar}
+                  />
                   <span className={styles.voterName}>{name}</span>
                 </div>
               );

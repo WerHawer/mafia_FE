@@ -1,20 +1,21 @@
 import classNames from "classnames";
 import { memo, useCallback, useMemo, useState } from "react";
 
-import { getAvatarUrl } from "@/helpers/getAvatarUrl.ts";
+
 import { AvatarSize } from "@/types/user.types.ts";
 
 import styles from "./UserAvatar.module.scss";
 
 type UserAvatarProps = {
-  avatar?: string;
-  name: string;
+  avatar?: string | null;
+  name?: string;
   size?: AvatarSize;
+  customSize?: number | string; // Prop to override standard sizes
   className?: string;
   onClick?: () => void;
 };
 
-export const UserAvatar = memo(({ avatar, name, size = "sm", className, onClick }: UserAvatarProps) => {
+export const UserAvatar = memo(({ avatar, name, size = "sm", customSize, className, onClick }: UserAvatarProps) => {
   const [hasError, setHasError] = useState(false);
 
   const handleImageError = useCallback(() => {
@@ -33,7 +34,7 @@ export const UserAvatar = memo(({ avatar, name, size = "sm", className, onClick 
     return false;
   }, [avatar, hasError]);
 
-  const getInitials = useCallback((fullName: string) => {
+  const getInitials = useCallback((fullName?: string) => {
     if (!fullName) return "?";
     const parts = fullName.trim().split(/\s+/);
     if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? "?";
@@ -41,25 +42,28 @@ export const UserAvatar = memo(({ avatar, name, size = "sm", className, onClick 
   }, []);
 
   const initials = getInitials(name);
-  const src = getAvatarUrl(avatar);
+  
+  // Custom styles for size override
+  const customStyles = customSize ? { width: customSize, height: customSize } : undefined;
 
   return (
     <span
-      className={classNames(styles.avatar, styles[size], className)}
+      className={classNames(styles.avatar, { [styles[size]]: !customSize }, className)}
+      style={customStyles}
       role={onClick ? "button" : "img"}
       tabIndex={onClick ? 0 : undefined}
-      aria-label={name}
+      aria-label={name ?? "User avatar"}
       onClick={onClick}
       onKeyDown={onKeyDown}
     >
       {showInitial ? (
-        <span className={styles.initial} aria-hidden={false}>
+        <span className={styles.initial} aria-hidden={false} style={customSize ? { fontSize: `calc(${typeof customSize === 'number' ? customSize + 'px' : customSize} / 2.5)` } : undefined}>
           {initials}
         </span>
       ) : (
         <img
-          src={src}
-          alt={name}
+          src={avatar!}
+          alt={name ?? "User avatar"}
           className={styles.img}
           onError={handleImageError}
         />

@@ -6,13 +6,13 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
-import noAvatar from "@/assets/images/noAvatar.jpg";
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import { formatDate } from "@/helpers/formatDate.ts";
 import { routes } from "@/router/routs.ts";
 import { gamesStore } from "@/store/gamesStore.ts";
 import { modalStore } from "@/store/modalStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
+import { UserAvatar } from "@/UI/Avatar/UserAvatar.tsx";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 import { Loader } from "@/UI/Loader";
@@ -54,7 +54,7 @@ export const GamesList = observer(() => {
     const owner = users[ownerId];
     return {
       nickName: owner?.nikName || "Unknown",
-      avatar: owner?.avatar || noAvatar,
+      avatar: owner?.avatar,
     };
   };
 
@@ -91,10 +91,10 @@ export const GamesList = observer(() => {
                 <div key={game.id} className={styles.gameRow}>
                   <div className={styles.gameInfo}>
                     <div className={styles.ownerBlock}>
-                      <img
-                        src={getOwnerData(game.owner).avatar}
-                        alt={getOwnerData(game.owner).nickName}
-                        className={styles.avatar}
+                      <UserAvatar
+                        avatar={getOwnerData(game.owner).avatar}
+                        name={getOwnerData(game.owner).nickName}
+                        customSize={40}
                       />
                       <Typography variant="span" className={styles.ownerName}>
                         {getOwnerData(game.owner).nickName === "Unknown"

@@ -2,9 +2,9 @@ import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-import noAvatar from "@/assets/images/noAvatar.jpg";
 import { routes } from "@/router/routs.ts";
 import { usersStore } from "@/store/usersStore.ts";
+import { UserAvatar } from "@/UI/Avatar/UserAvatar.tsx";
 
 import styles from "./UserInfo.module.scss";
 
@@ -22,9 +22,7 @@ export const UserHeaderInfo = observer(() => {
 
   return (
     <div className={styles.container} onClick={navigateToSettings}>
-      <div className={styles.avatar}>
-        <img src={avatar ?? noAvatar} alt={nikName} width="60" height="60" />
-      </div>
+      <UserAvatar avatar={avatar} name={nikName} customSize={60} />
 
       <span className={styles.name}>{nikName}</span>
     </div>

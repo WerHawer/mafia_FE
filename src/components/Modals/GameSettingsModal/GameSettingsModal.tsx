@@ -1,3 +1,5 @@
+import { InfoCircleOutlined } from "@ant-design/icons";
+import Tippy from "@tippyjs/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
@@ -95,7 +97,16 @@ export const GameSettingsModal = observer(() => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>{t("game.settings", "Налаштування гри")}</h2>
+      <div className={styles.header}>
+        <h2 className={styles.title}>{t("game.settings", "Налаштування гри")}</h2>
+        <Tippy
+          content={t("maxPlayersNote", "Максимум 12 людей (з ведучим)")}
+          theme="nav-tooltip"
+          placement="top"
+        >
+          <InfoCircleOutlined className={styles.infoIcon} />
+        </Tippy>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         {/* Additional roles */}

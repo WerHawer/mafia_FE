@@ -112,6 +112,7 @@
     "speakTime": "Промова (сек)",
     "votesTime": "Голосування (сек)",
     "candidateSpeakTime": "Захист (сек)",
+    "skipFirstNight": "Активна перша ніч (якщо 1 мафія)",
     "restart": "Перезапустити",
     "night": "Ніч",
     "day": "День",
