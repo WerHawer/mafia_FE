@@ -17,6 +17,11 @@ import styles from "./GamePage.module.scss";
 import { useGameAccess } from "./hooks/useGameAccess.ts";
 import { useGameMediaSetup } from "./hooks/useGameMediaSetup.ts";
 import { useGameSession } from "./hooks/useGameSession.ts";
+import { useSocketContext } from "@/context/SocketProvider.tsx";
+import { modalStore } from "@/store/modalStore.ts";
+import { ModalNames } from "@/components/Modals/Modal.types.ts";
+import { useEffect } from "react";
+import { wsEvents } from "@/config/wsEvents.ts";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
@@ -45,6 +50,23 @@ const GamePage = observer(() => {
   } = useGameMediaSetup(id);
 
   useGetUsersWithAddToStore(activeGamePlayers);
+
+  const { socket } = useSocketContext();
+  const myId = rootStore.usersStore.myId;
+  const isKilled = gamesStore.activeGameKilledPlayers.includes(myId || "");
+  const isMeObserver = gamesStore.isMeObserver;
+
+  useEffect(() => {
+    if (isKilled && !isMeObserver && !modalStore.isModalOpen) {
+      modalStore.openModal(ModalNames.GhostModeModal, {
+        onConfirm: () => {
+          if (socket && id && myId) {
+            socket.emit(wsEvents.setObserverMode, { gameId: id, userId: myId });
+          }
+        },
+      });
+    }
+  }, [isKilled, isMeObserver, socket, id, myId]);
 
   // Wait for the query to resolve before making any redirect decision
   if (isLoading) return null;

@@ -18,6 +18,7 @@ export const VideoPlaceholder = memo(
         <UserAvatar
           avatar={avatar}
           name={userName}
+          size="lg"
           className={classNames(styles.avatar, {
             [styles.speaking]: isSpeaking,
           })}

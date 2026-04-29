@@ -40,4 +40,5 @@ export enum wsEvents {
   healthCheck = "healthCheck",
   gameNotFound = "gameNotFound",
   gmChanged = "gmChanged",
+  setObserverMode = "setObserverMode",
 }

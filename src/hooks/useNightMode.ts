@@ -26,7 +26,8 @@ export const useNightMode = () => {
   // Вночі показуємо відео для:
   // 1. GM (завжди бачить все)
   // 2. Тих, хто прокинувся (в масиві wakeUp)
-  const shouldShowVideos = !isNight || isGM || isAwake;
+  // 3. Духів (спостерігачів)
+  const shouldShowVideos = !isNight || isGM || isAwake || gamesStore.isMeObserver;
 
   // Чи показувати відео інших гравців
   const shouldShowPlayerVideo = useCallback(
@@ -37,8 +38,8 @@ export const useNightMode = () => {
       // Вдень - показуємо всі відео
       if (!isNight) return true;
 
-      // Вночі для GM - показуємо всі відео
-      if (isGM) return true;
+      // Вночі для GM та Духів - показуємо всі відео
+      if (isGM || gamesStore.isMeObserver) return true;
 
       // Вночі для тих, хто прокинувся - показуємо всі відео
       if (isAwake) return true;
@@ -46,7 +47,7 @@ export const useNightMode = () => {
       // Вночі для сплячих - не показуємо відео
       return false;
     },
-    [isNight, isGM, isAwake, isUserGM]
+    [isNight, isGM, isAwake, isUserGM, gamesStore.isMeObserver]
   );
 
   // Звичайний гравець бачить своє відео за тими ж правилами, що й інші (вночі не бачить, якщо спить)

@@ -79,9 +79,19 @@
 
 .secondaryHeader {
   text-align: center;
-  font-size: 1.6rem;
+  font-size: 2rem;
+  font-weight: 500;
   color: theme.$color-text-secondary;
-  margin: 0;
+  margin-bottom: 1.6rem;
+}
+
+.warningHeader {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: theme.$color-accent-primary;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 15px rgba(theme.$color-accent-primary, 0.3);
 }
 
 .accentText {
@@ -92,27 +102,24 @@
 // 2 колонки коли більше 4 гравців
 .votersList {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.6rem;
-  margin-top: 0.4rem;
-
-  &.twoColumns {
-    grid-template-columns: 1fr 1fr;
-  }
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+  justify-items: center;
 }
 
 // Простий рядок без рамки і фону
 .voterItem {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.4rem 0;
+  gap: 1.4rem;
+  padding: 0.8rem 0;
 }
 
 .voterAvatar,
 .voterAvatarPlaceholder {
-  width: 3.2rem;
-  height: 3.2rem;
+  width: 4.8rem;
+  height: 4.8rem;
   border-radius: 50%;
   flex-shrink: 0;
   object-fit: cover;
@@ -124,13 +131,13 @@
   justify-content: center;
   background: rgba(theme.$color-light-primary, 0.12);
   color: theme.$color-text-secondary;
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   font-weight: 600;
 }
 
 .voterName {
-  font-size: 1.8rem;
-  font-weight: 500;
+  font-size: 2.0rem;
+  font-weight: 600;
   color: theme.$color-text-primary;
 }
 
@@ -144,13 +151,22 @@
 }
 
 .listItem {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
 }
 
 // ─── Footer ───────────────────────────────────────────
 .buttonContainer {
-  @include mixins.flexCenter;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 2.4rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-top: 3.2rem;
+  width: 100%;
+
+  button {
+    flex: 1;
+    max-width: 180px;
+    height: 42px;
+    font-size: 1.4rem;
+  }
 }

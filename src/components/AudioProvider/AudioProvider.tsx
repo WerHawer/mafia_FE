@@ -105,25 +105,28 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
         sheriffCheck: gamesStore.gameFlow.sheriffCheck,
         donCheck: gamesStore.gameFlow.donCheck,
         gameId: gamesStore.activeGameId,
+        isMeObserver: gamesStore.isMeObserver,
       }),
       (actions, prev) => {
         if (!actions.gameId) return;
 
-        // Play sounds only for GM (players hear their own actions locally in GameVideo)
-        if (actions.block && actions.block !== prev?.block && isIGM) {
+        // Play sounds only for GM and Observers (players hear their own actions locally in GameVideo)
+        const shouldHearAll = isIGM || actions.isMeObserver;
+
+        if (actions.block && actions.block !== prev?.block && shouldHearAll) {
           soundStore.playSfx(SoundEffect.Kiss);
         }
-        if (actions.save && actions.save !== prev?.save && isIGM) {
+        if (actions.save && actions.save !== prev?.save && shouldHearAll) {
           soundStore.playSfx(SoundEffect.Heal);
         }
         if (
           actions.sheriffCheck &&
           actions.sheriffCheck !== prev?.sheriffCheck &&
-          isIGM
+          shouldHearAll
         ) {
           soundStore.playSfx(SoundEffect.Check);
         }
-        if (actions.donCheck && actions.donCheck !== prev?.donCheck && isIGM) {
+        if (actions.donCheck && actions.donCheck !== prev?.donCheck && shouldHearAll) {
           soundStore.playSfx(SoundEffect.Check);
         }
       }
@@ -136,7 +139,7 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
       disposeActions();
       soundStore.stopMusic();
     };
-  }, [gamesStore, soundStore, isIGM]);
+  }, [gamesStore, soundStore, isIGM, gamesStore.isMeObserver]);
 
   return <>{children}</>;
 };

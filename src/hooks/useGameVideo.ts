@@ -73,7 +73,7 @@ export const useGameVideo = ({
     ((isISheriff && isIWakedUp && !sheriffCheck && !isMyStream) ||
      (isIDon && isWokenAsDon && !donCheck && !isMyStream));
 
-  const isCheckRoleEnabled = isIGM || gameFlow.isPostGame;
+  const isCheckRoleEnabled = isIGM || gamesStore.isMeObserver || gameFlow.isPostGame;
 
   const { mutate: shootUser } = useShootUserMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();

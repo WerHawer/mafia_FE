@@ -6,6 +6,12 @@ import { Timer, TimerSize } from "@/components/SpeakerTimer/Timer.tsx";
 import { rootStore } from "@/store/rootStore";
 import { SoundEffect } from "@/store/soundStore.ts";
 import { Typography } from "@/UI/Typography";
+import { useSocketContext } from "@/context/SocketProvider.tsx";
+import { ModalNames } from "@/components/Modals/Modal.types.ts";
+import { modalStore } from "@/store/modalStore.ts";
+import { wsEvents } from "@/config/wsEvents.ts";
+import { Button } from "@/UI/Button";
+import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 
 import styles from "./PlayerPanel.module.scss";
 
@@ -36,6 +42,10 @@ export const PlayerPanelInfo = observer(() => {
     }
   }, [isVotingActive, stopMusic]);
 
+  const { socket } = useSocketContext();
+  const myId = rootStore.usersStore.myId;
+  const gameId = gamesStore.activeGameId;
+
   return (
     <div className={styles.infoContainer}>
       <div className={styles.dayNightSection}>
@@ -52,6 +62,35 @@ export const PlayerPanelInfo = observer(() => {
           {roleLabel}
         </Typography>
       </div>
+
+      {gamesStore.activeGameKilledPlayers.includes(myId || "") && (
+        <div className={styles.ghostModeSection}>
+          {gamesStore.isMeObserver ? (
+            <div className={styles.ghostActive}>
+              <Typography variant="span" className={styles.ghostIcon}>👻</Typography>
+              <Typography variant="body" className={styles.ghostText}>
+                {t("ghostMode.activeIndicator", "Ghost Mode Active")}
+              </Typography>
+            </div>
+          ) : (
+            <Button
+              variant={ButtonVariant.Primary}
+              size={ButtonSize.Small}
+              onClick={() => {
+                modalStore.openModal(ModalNames.GhostModeModal, {
+                  onConfirm: () => {
+                    if (socket && gameId && myId) {
+                      socket.emit(wsEvents.setObserverMode, { gameId, userId: myId });
+                    }
+                  }
+                })
+              }}
+            >
+              {t("ghostMode.openEyes", "Open Eyes")}
+            </Button>
+          )}
+        </div>
+      )}
 
     </div>
   );

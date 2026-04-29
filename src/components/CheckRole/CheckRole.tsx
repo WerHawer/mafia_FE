@@ -25,7 +25,7 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
   const userSavedByDoctor = doctorSave === userId;
   const shotCount = shoot[userId]?.shooters?.length ?? 0;
 
-  if (!isIGM) return null;
+  if (!isIGM && !gamesStore.isMeObserver) return null;
 
   return (
     <div className={classNames(styles.gmIconsRow, { [styles.night]: gameFlow.isNight })}>

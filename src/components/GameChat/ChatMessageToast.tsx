@@ -19,14 +19,17 @@ export const ChatMessageToast = ({ message }: ChatMessageToastProps) => {
 
   return (
     <div className={classNames(styles.toast, { [styles.dead]: isDeadChat })}>
-      <UserAvatar
-        avatar={avatar}
-        name={nikName}
-        className={styles.avatar}
-      />
       <div className={styles.content}>
         <div className={styles.header}>
-          <span className={styles.senderName}>{nikName}</span>
+          <div className={styles.senderInfo}>
+            <UserAvatar
+              avatar={avatar}
+              name={nikName}
+              className={styles.avatar}
+              customSize={24}
+            />
+            <span className={styles.senderName}>{nikName}</span>
+          </div>
           {isDeadChat && <span className={styles.deadIcon}>☠</span>}
         </div>
         <div className={styles.messageText}>

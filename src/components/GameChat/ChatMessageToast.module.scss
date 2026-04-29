@@ -3,18 +3,16 @@
 
 .toast {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  min-width: 280px;
-  max-width: 420px;
-  padding: 16px 22px;
-  background: rgba(#1a1a2e, 0.96);
+  flex-direction: column;
+  gap: 8px;
+  min-width: 240px;
+  max-width: 380px;
+  padding: 12px 16px;
+  background: rgba(#12121f, 0.96);
   border: 1px solid rgba(theme.$color-accent-secondary, 0.3);
-  border-radius: 20px;
-  box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(theme.$color-accent-secondary, 0.1);
-  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
   pointer-events: none;
   overflow: hidden;
   position: relative;
@@ -24,30 +22,29 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;
+    width: 3px;
     height: 100%;
     background: linear-gradient(
       180deg,
       theme.$color-accent-secondary,
       rgba(theme.$color-accent-secondary, 0.3)
     );
-    border-radius: 20px 0 0 20px;
   }
 }
 
 .avatar {
   flex-shrink: 0;
-  width: 52px;
-  height: 52px;
+  width: 2.4rem;
+  height: 2.4rem;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(theme.$color-accent-secondary, 0.5);
+  border: 1px solid rgba(theme.$color-accent-secondary, 0.4);
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   min-width: 0;
   flex: 1;
 }
@@ -57,35 +54,44 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  margin-bottom: 0;
+}
+
+.senderInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
 }
 
 .senderName {
-  font-size: 1.7rem;
-  font-weight: 800;
+  font-size: 1.4rem;
+  font-weight: 700;
   color: theme.$color-accent-secondary;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
 .deadIcon {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   color: theme.$color-error;
-  text-shadow: 0 0 8px rgba(theme.$color-error, 0.4);
+  text-shadow: 0 0 8px rgba(theme.$color-error, 0.3);
 }
 
 .messageText {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 
-  font-size: 2.2rem;
-  color: #fff;
-  line-height: 1.2;
+  padding-left: 3.6rem;
+  font-size: 1.6rem;
+  color: rgba(#fff, 0.95);
+  line-height: 1.35;
   word-break: break-word;
   font-weight: 500;
 

@@ -79,6 +79,7 @@ export interface IGame extends IGameRoles {
   gameType: GameType;
   gameFlow: IGameFlow;
   skipFirstNightIfOneMafia?: boolean;
+  observers: UserId[];
   [Roles.GM]: UserId;
 }
 
@@ -95,6 +96,7 @@ export interface IGameShort {
   creatingTime: number;
   mafiaCount?: number;
   additionalRoles?: Roles[];
+  observers?: UserId[];
 }
 
 export interface IRoomConnectInfo {

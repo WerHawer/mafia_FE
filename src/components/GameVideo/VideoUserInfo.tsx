@@ -1,5 +1,7 @@
+import Tippy from "@tippyjs/react";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import { rootStore } from "@/store/rootStore.ts";
 import { RoleIcon } from "@/UI/RoleIcon";
@@ -13,6 +15,7 @@ type VideoUserInfoProps = {
 
 export const VideoUserInfo = observer(
   ({ userName, userId }: VideoUserInfoProps) => {
+    const { t } = useTranslation();
     const { gamesStore, isIGM } = rootStore;
     const { getUserRole, activeGamePlayersWithoutGM, isUserGM } = gamesStore;
     const role = getUserRole(userId);
@@ -25,10 +28,22 @@ export const VideoUserInfo = observer(
 
     return (
       <div className={styles.userInfo}>
-        {(isIGM || gamesStore.gameFlow.isPostGame) && !isGM && <RoleIcon role={role} />}
+        {(isIGM || gamesStore.isMeObserver || gamesStore.gameFlow.isPostGame) && !isGM && <RoleIcon role={role} />}
 
-        <div>
+        <div className={styles.userNameContainer}>
           {userName} {userNumber ? `#${userNumber}` : ""}
+          {isIGM && gamesStore.observers.includes(userId) && (
+            <Tippy
+              content={t("game.ghostModeActive", "Ghost Mode Active")}
+              theme="role-tooltip"
+              animation="scale"
+              duration={[200, 150]}
+              delay={[200, 0]}
+              placement="top"
+            >
+              <span className={styles.ghostBadgeLarge}>👻</span>
+            </Tippy>
+          )}
         </div>
       </div>
     );

@@ -71,13 +71,17 @@ export const GameChat = observer(() => {
 
   useEffect(() => {
     const unsubscribe = subscribe(wsEvents.messageSend, (msg: IMessage) => {
-      // Check if message belongs to any channel the user is subscribed to in this game
       const toId = "id" in msg.to ? msg.to.id : undefined;
-      const isForGeneral = toId === id;
-      const isForDead = toId === `${id}_dead`;
-      const isForGame = msg.to.type === MessageTypes.All || isForGeneral || (shouldLoadDeadChat && isForDead);
       
-      if (msg.sender?.id !== user?.id && isForGame) {
+      // Determine message destination
+      const isForGeneral = toId === id;
+      const isForDead = toId?.endsWith("_dead") && toId.includes(id);
+      
+      // Check if user has access and if the message is from another tab
+      const canSeeMessage = msg.to.type === MessageTypes.All || isForGeneral || ((isIDead || isIGM) && isForDead);
+      const isNotCurrentTab = toId !== currentRoomId;
+
+      if (msg.sender?.id !== user?.id && canSeeMessage && isNotCurrentTab) {
         const toastId = `chat-msg-${msg.createdAt}-${msg.sender?.id}-${Math.random()}`;
         
         setChatToasts((prev) => [...prev, { id: toastId, msg }]);
@@ -92,7 +96,7 @@ export const GameChat = observer(() => {
     return () => {
       unsubscribe();
     };
-  }, [subscribe, id, shouldLoadDeadChat, user?.id]);
+  }, [subscribe, id, isIDead, isIGM, user?.id, currentRoomId]);
 
   useEffect(() => {
     if (!chatRef.current || !messages?.length) return;

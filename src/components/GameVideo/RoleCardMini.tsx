@@ -29,7 +29,7 @@ export const RoleCardMini = observer(({ userId, role }: RoleCardMiniProps) => {
   const { gameFlow } = gamesStore;
 
   // Determine if the card should be visible to the current user
-  const isVisible = gameFlow.isPostGame;
+  const isVisible = gameFlow.isPostGame || gamesStore.isMeObserver;
 
   // Stable index for character variation (citizens/mafia)
   const cardIndex = useMemo(() => {

@@ -63,6 +63,7 @@ export const createGameObj = ({
     startTime: null,
     finishTime: null,
     creatingTime: Date.now(),
+    observers: [],
     gameType,
     gameFlow: {
       ...initialGameFlow,

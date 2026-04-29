@@ -75,3 +75,30 @@
     1px 1px 1px rgba(0, 0, 0, 0.6),
     0 0 4px rgba(0, 0, 0, 0.4);
 }
+
+.ghostModeSection {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.ghostActive {
+  @include mixins.flex(row, start, center);
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(155, 89, 182, 0.15); // Subtle purple for ghosts
+  border: 1px solid rgba(155, 89, 182, 0.4);
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  width: fit-content;
+}
+
+.ghostIcon {
+  font-size: 1.6rem;
+}
+
+.ghostText {
+  font-weight: 600;
+  color: #c39bd3; // Light purple
+  font-size: 1.3rem;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}

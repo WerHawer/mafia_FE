@@ -1,7 +1,7 @@
 import { wsEvents } from "../config/wsEvents.ts";
 import { GameId, IGame, IGameShort, IRoomConnectInfo } from "./game.types.ts";
 import { IMessage, IMessageDTO } from "./message.types.ts";
-import { UserId, UserStreamId } from "./user.types.ts";
+import { IUser, UserId, UserStreamId } from "./user.types.ts";
 
 export type OffParams = "self" | "other";
 
@@ -136,6 +136,7 @@ export interface WSSentEventData {
   [wsEvents.manualSleep]: { gameId: GameId; userId: UserId; gm: UserId };
   [wsEvents.manualWake]: { gameId: GameId; userId: UserId; gm: UserId };
   [wsEvents.gameReaction]: { gameId: GameId; userId: UserId; emoji: string };
+  [wsEvents.setObserverMode]: { gameId: GameId; userId: UserId };
 }
 
 export type SendMessageFunction = <T extends keyof WSSentEventData>(
@@ -166,9 +167,9 @@ export interface WSSubscribedEventData {
     streamId: UserStreamId;
     streams: StreamsArr;
   };
-  [wsEvents.connection]: { message: string; connectedUsers: number };
+  [wsEvents.connection]: { message: string; connectedUsers: number; onlineUsers: IUser[] };
   [wsEvents.disconnect]: string;
-  [wsEvents.socketDisconnect]: number;
+  [wsEvents.socketDisconnect]: { connectedUsers: number; onlineUsers: IUser[] };
   [wsEvents.connectionError]: Error;
   [wsEvents.userStreamStatus]: StreamsArr;
   [wsEvents.gamesUpdate]: IGameShort;

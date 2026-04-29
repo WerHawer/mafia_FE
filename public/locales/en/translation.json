@@ -125,7 +125,8 @@
       "info1": "Videos are hidden during the night",
       "info2": "Only GM can see and control the game",
       "info3": "Wait for the morning to continue"
-    }
+    },
+    "ghostModeActive": "Ghost Mode Active"
   },
 
   "speaker": {
@@ -356,5 +357,15 @@
       "4": "Pay attention to the GM at night — the wake-up order gives hints.",
       "5": "Town only wins together — build trust and collaborate."
     }
+  },
+  "ghostMode": {
+    "title": "Become a Ghost? 👻",
+    "description": "You can now see the roles of all players and their night actions. This knowledge is only for you!",
+    "rule1": "See all roles and night actions",
+    "rule2": "Living players won't see your reactions",
+    "rule3": "You cannot go back to normal death mode",
+    "confirm": "Open Eyes",
+    "activeIndicator": "Ghost Mode Active",
+    "openEyes": "Open Eyes"
   }
 }

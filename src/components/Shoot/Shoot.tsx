@@ -22,7 +22,7 @@ export const Shoot = observer(({ userId, clickPosition }: ShootProps) => {
   const { playSfx } = soundStore;
 
   const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
-  const canHearShot = isIMafia || isIGM;
+  const canHearShot = isIMafia || isIGM || gamesStore.isMeObserver;
   const myId = usersStore.myId;
   const entry = shoot[userId];
   const serverShooters: UserId[] = entry?.shooters ?? [];

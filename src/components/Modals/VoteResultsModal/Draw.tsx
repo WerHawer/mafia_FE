@@ -95,7 +95,7 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
       </h4>
 
       {gameFlow.isReVote ? (
-        <p className={styles.secondaryHeader}>{t("voteResults.noDecision")}</p>
+        <p className={styles.warningHeader}>{t("voteResults.noDecision")}</p>
       ) : (
         <>
           <p className={styles.secondaryHeader}>
@@ -111,7 +111,7 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
                   <UserAvatar
                     avatar={user?.avatar}
                     name={name}
-                    customSize={32}
+                    customSize={48}
                     className={styles.voterAvatar}
                   />
                   <span className={styles.voterName}>{name}</span>

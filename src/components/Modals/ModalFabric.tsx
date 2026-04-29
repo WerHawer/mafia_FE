@@ -15,6 +15,7 @@ import { ConfirmRestartModal } from "./ConfirmRestartModal";
 import { ConfirmChangeGMModal } from "./ConfirmChangeGMModal";
 import styles from "./ModalBase.module.scss";
 import { VoteResultsModal } from "./VoteResultsModal";
+import { GhostModeModal } from "./GhostModeModal/GhostModeModal";
 
 ReactModal.setAppElement("#root");
 
@@ -31,6 +32,7 @@ export const ModalFabric = observer(() => {
     [ModalNames.GameSettingsModal]: <GameSettingsModal />,
     [ModalNames.ConfirmRestartModal]: <ConfirmRestartModal />,
     [ModalNames.ConfirmChangeGMModal]: <ConfirmChangeGMModal />,
+    [ModalNames.GhostModeModal]: <GhostModeModal />,
   };
 
   return (

@@ -1,0 +1,75 @@
+@use "../../../styles/theme.scss";
+@use "../../../styles/mixins.scss";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 520px;
+}
+
+.title {
+  color: theme.$color-accent-primary;
+  font-size: 3.2rem;
+  font-weight: 900;
+  margin-bottom: 1.2rem;
+  text-shadow: 0 0 20px rgba(theme.$color-accent-primary, 0.4);
+  letter-spacing: -0.5px;
+}
+
+.content {
+  width: 100%;
+  margin-bottom: 2.8rem;
+}
+
+.description {
+  font-size: 1.8rem;
+  line-height: 1.6;
+  color: theme.$color-text-secondary;
+  margin-bottom: 2.4rem;
+  opacity: 0.9;
+}
+
+.rules {
+  background: rgba(theme.$color-light-primary, 0.05);
+  border: 1px solid rgba(theme.$color-light-primary, 0.1);
+  padding: 2.4rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  width: 100%;
+}
+
+.ruleItem {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: theme.$color-text-primary;
+  text-align: left;
+
+  span {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 1.2rem;
+  width: 100%;
+  
+  button {
+    flex: 1;
+    max-width: 140px;
+    height: 42px;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+}

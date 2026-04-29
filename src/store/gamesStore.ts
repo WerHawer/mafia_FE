@@ -2,6 +2,7 @@ import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 
 import { UserId } from "@/types/user.types.ts";
+import { usersStore } from "./usersStore.ts";
 
 import { initialGameFlow } from "../helpers/createGameObj.ts";
 import {
@@ -251,6 +252,16 @@ export class GamesStore {
     return nightRoles.sort(
       (a, b) => nightRoleOrder.indexOf(a as NightRoles) - nightRoleOrder.indexOf(b as NightRoles)
     ) as NightRoles[];
+  }
+  
+  get observers(): UserId[] {
+    return toJS(this.activeGame?.observers) ?? [];
+  }
+
+  get isMeObserver(): boolean {
+    const myId = usersStore.myId;
+    if (!myId) return false;
+    return this.observers.includes(myId);
   }
 
   get gameFlow() {
