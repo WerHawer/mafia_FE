@@ -15,10 +15,10 @@ import { router } from "./router/router.tsx";
 
 // Control PostHog initialization with env var VITE_ENABLE_ANALYTICS and hostname
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getEnv = (name: string) => (typeof import.meta !== "undefined" ? (import.meta as any).env?.[name] : undefined);
 
-const rawEnable = getEnv("VITE_ENABLE_ANALYTICS");
-const analyticsEnabled = rawEnable === true || rawEnable === "true" || rawEnable === "1";
+const rawEnable = projectEnv.isTrackingEnabled;
+const analyticsEnabled =
+  rawEnable === true || rawEnable === "true" || rawEnable === "1";
 const hostname = typeof window !== "undefined" ? window.location.hostname : "";
 const isLocalhost = ["localhost", "127.0.0.1", "::1"].includes(hostname);
 
@@ -48,12 +48,12 @@ const app = (
         position="top-center"
         toastOptions={{
           style: {
-            background: 'rgba(28, 28, 30, 0.95)',
-            color: '#fff',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '12px',
-            fontSize: '1.4rem',
+            background: "rgba(28, 28, 30, 0.95)",
+            color: "#fff",
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderRadius: "12px",
+            fontSize: "1.4rem",
           },
         }}
       />
@@ -62,5 +62,9 @@ const app = (
 );
 
 createRoot(document.getElementById("root")!).render(
-  enablePostHog ? <PostHogProvider client={posthog}>{app}</PostHogProvider> : app
+  enablePostHog ? (
+    <PostHogProvider client={posthog}>{app}</PostHogProvider>
+  ) : (
+    app
+  )
 );

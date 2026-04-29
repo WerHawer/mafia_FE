@@ -12,4 +12,5 @@ export const projectEnv = {
   liveKitSecret: import.meta.env.VITE_LIVEKIT_SECRET,
   postHogKey: import.meta.env.VITE_POSTHOG_KEY as string,
   postHogHost: import.meta.env.VITE_POSTHOG_HOST as string,
+  isTrackingEnabled: import.meta.env.VITE_ENABLE_ANALYTICS,
 };
