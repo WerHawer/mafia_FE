@@ -10,4 +10,6 @@ export const projectEnv = {
   liveKitUrl: import.meta.env.VITE_LIVEKIT_URL,
   liveKitKey: import.meta.env.VITE_LIVEKIT_KEY,
   liveKitSecret: import.meta.env.VITE_LIVEKIT_SECRET,
+  postHogKey: import.meta.env.VITE_POSTHOG_KEY as string,
+  postHogHost: import.meta.env.VITE_POSTHOG_HOST as string,
 };

@@ -43,6 +43,7 @@
     "mobx": "^6.12.1",
     "mobx-persist-store": "^1.1.4",
     "mobx-react-lite": "^4.0.6",
+    "posthog-js": "^1.372.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-draggable": "^4.4.6",

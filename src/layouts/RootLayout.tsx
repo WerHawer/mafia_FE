@@ -6,12 +6,14 @@ import { Header } from "@/components/Header";
 import { MainContainer } from "@/components/MainContainer";
 import { ModalFabric } from "@/components/Modals";
 
+import { usePostHogPageView } from "../hooks/usePostHogPageView.ts";
 import { usersStore } from "../store/usersStore.ts";
 import styles from "./layout.module.scss";
 
 export const RootLayout = observer(() => {
   const { me } = usersStore;
   const location = useLocation();
+  usePostHogPageView();
   const isGamePage = location.pathname.includes("/game/");
 
   return (
