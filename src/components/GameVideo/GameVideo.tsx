@@ -139,7 +139,7 @@ export const GameVideo = observer(
       if (isHealEnabled) {
         setHealPos({ x, y });
         onHealUser();
-        soundStore.playSfx(SoundEffect.Heal);
+        soundStore.playSfx(SoundEffect.Heal, 0.7);
         return;
       }
 

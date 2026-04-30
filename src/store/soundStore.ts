@@ -138,7 +138,8 @@ export class SoundStore {
   playSfx(
     effect: SoundEffect | string,
     volumeMultiplier = 1,
-    durationMs?: number
+    durationMs?: number,
+    fadeOutMs?: number
   ) {
     if (this.isMuted) return;
 
@@ -154,15 +155,86 @@ export class SoundStore {
 
       // We need to clone the audio node if we want to play the same sound overlapping
       const sfx = audio.cloneNode() as HTMLAudioElement;
-      sfx.volume = this.effectiveSfxVolume * volumeMultiplier;
+      const baseVolume = this.effectiveSfxVolume * volumeMultiplier;
+      sfx.volume = baseVolume;
       sfx.play().catch((e) => console.warn(`Failed to play SFX: ${effect}`, e));
 
-      // If duration is specified, stop the audio after that time
-      if (durationMs) {
-        setTimeout(() => {
-          sfx.pause();
-          sfx.currentTime = 0;
-        }, durationMs);
+      let fadeRaf = 0;
+      let scheduledTimeouts: ReturnType<typeof setTimeout>[] = [];
+
+      const clearScheduled = () => {
+        scheduledTimeouts.forEach(clearTimeout);
+        scheduledTimeouts = [];
+        if (fadeRaf) cancelAnimationFrame(fadeRaf);
+        fadeRaf = 0;
+      };
+
+      const stopSfx = () => {
+        clearScheduled();
+        sfx.pause();
+        sfx.currentTime = 0;
+      };
+
+      const scheduleLinearFade = (fadeMs: number, delayMs: number) => {
+        const startFade = () => {
+          const fadeStartTime = performance.now();
+
+          const step = () => {
+            const elapsed = performance.now() - fadeStartTime;
+            const t = Math.min(1, elapsed / fadeMs);
+
+            sfx.volume = baseVolume * (1 - t);
+
+            if (t < 1) {
+              fadeRaf = requestAnimationFrame(step);
+
+              return;
+            }
+
+            fadeRaf = 0;
+            sfx.pause();
+            sfx.currentTime = 0;
+          };
+
+          fadeRaf = requestAnimationFrame(step);
+        };
+
+        scheduledTimeouts.push(setTimeout(startFade, delayMs));
+      };
+
+      if (durationMs != null && fadeOutMs != null && fadeOutMs > 0) {
+        const fadeLen = Math.min(fadeOutMs, durationMs);
+        const fadeStartDelay = Math.max(0, durationMs - fadeLen);
+
+        scheduleLinearFade(fadeLen, fadeStartDelay);
+        scheduledTimeouts.push(
+          setTimeout(stopSfx, durationMs + 80)
+        );
+      } else if (durationMs != null) {
+        scheduledTimeouts.push(setTimeout(stopSfx, durationMs));
+      } else if (fadeOutMs != null && fadeOutMs > 0) {
+        const runFadeAtEnd = () => {
+          const dur = sfx.duration;
+
+          if (!Number.isFinite(dur) || dur <= 0) {
+            stopSfx();
+
+            return;
+          }
+
+          const delay = Math.max(0, dur * 1000 - fadeOutMs);
+
+          scheduleLinearFade(fadeOutMs, delay);
+          scheduledTimeouts.push(
+            setTimeout(stopSfx, dur * 1000 + 80)
+          );
+        };
+
+        if (sfx.readyState >= HTMLMediaElement.HAVE_METADATA) {
+          runFadeAtEnd();
+        } else {
+          sfx.addEventListener("loadedmetadata", runFadeAtEnd, { once: true });
+        }
       }
     } catch (e) {
       console.error(`Error playing SFX: ${effect}`, e);

@@ -1,11 +1,14 @@
 import { reaction } from "mobx";
 import { ReactNode, useEffect } from "react";
 
+import { useNightAtmosphereAudio } from "@/hooks/useNightAtmosphereAudio.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { SoundEffect } from "@/store/soundStore.ts";
 
 export const AudioProvider = ({ children }: { children: ReactNode }) => {
   const { gamesStore, soundStore, isIGM, usersStore } = rootStore;
+
+  useNightAtmosphereAudio();
 
   useEffect(() => {
     const dayTracks = ["day_bg.mp3", "day_bg_1.mp3", "day_bg_2.mp3"];
@@ -45,11 +48,8 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
 
         if (nightToggled) {
           if (isNight) {
-            soundStore.playSfx(SoundEffect.NightStart, 0.75, 3000);
-            setTimeout(
-              () => soundStore.playBgMusic(nightTracks, true),
-              1000
-            );
+            soundStore.playSfx(SoundEffect.NightStart, 0.75, 3000, 700);
+            setTimeout(() => soundStore.playBgMusic(nightTracks, true), 1000);
           } else if (isStarted) {
             // Only play day music if game is actually running (not after restart)
             soundStore.playSfx(SoundEffect.DayStart);
@@ -76,7 +76,7 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
 
         // Death (only during active game)
         if (current.killed > prevKilledCount && current.isStarted) {
-          soundStore.playSfx(SoundEffect.Killed);
+          soundStore.playSfx(SoundEffect.Killed, 1, 3000, 700);
         }
         prevKilledCount = current.killed;
 
@@ -117,7 +117,7 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
           soundStore.playSfx(SoundEffect.Kiss);
         }
         if (actions.save && actions.save !== prev?.save && shouldHearAll) {
-          soundStore.playSfx(SoundEffect.Heal);
+          soundStore.playSfx(SoundEffect.Heal, 0.7);
         }
         if (
           actions.sheriffCheck &&
@@ -126,7 +126,11 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
         ) {
           soundStore.playSfx(SoundEffect.Check);
         }
-        if (actions.donCheck && actions.donCheck !== prev?.donCheck && shouldHearAll) {
+        if (
+          actions.donCheck &&
+          actions.donCheck !== prev?.donCheck &&
+          shouldHearAll
+        ) {
           soundStore.playSfx(SoundEffect.Check);
         }
       }
