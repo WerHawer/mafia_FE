@@ -33,7 +33,7 @@ export const useGameVideo = ({
     rootStore;
   const { getUser, me, myId } = usersStore;
   const { isUserGM, isMeObserver, gameFlow, activeGameId } = gamesStore;
-  const { shoot = {}, killed = [], sleeping = [], day, isStarted, prostituteBlock, doctorSave, sheriffCheck, donCheck } = gameFlow;
+  const { shoot = {}, killed = [], sleeping = [], day, isStarted, prostituteBlock, doctorSave, doctorSelfHealUsed, sheriffCheck, donCheck } = gameFlow;
   const { t } = useTranslation();
 
   const userId = participant.identity;
@@ -63,7 +63,8 @@ export const useGameVideo = ({
 
   const isHealEnabled =
     (!isGM && !isUserDead && notFirstDay) &&
-    isIDoctor && isIWakedUp && !doctorSave;
+    isIDoctor && isIWakedUp && !doctorSave &&
+    (userId !== myId || !doctorSelfHealUsed);
 
   const isISheriff = myRole === Roles.Sheriff;
   const isIDon = myRole === Roles.Don;
@@ -196,8 +197,15 @@ export const useGameVideo = ({
 
   const onHealUser = useCallback(() => {
     if (!isHealEnabled) return;
+
+    if (userId === myId) {
+      updateGameFlow({ doctorSave: userId, doctorSelfHealUsed: true });
+
+      return;
+    }
+
     updateGameFlow({ doctorSave: userId });
-  }, [isHealEnabled, updateGameFlow, userId]);
+  }, [isHealEnabled, myId, updateGameFlow, userId]);
 
   const onInvestigateUser = useCallback((): { result: string; isFound: boolean; role?: Roles } | null => {
     if (!isInvestigateEnabled) return null;

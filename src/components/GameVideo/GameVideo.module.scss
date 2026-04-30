@@ -303,8 +303,9 @@
 
 .healable {
   /* noinspection CssUnknownTarget */
+  /* Windows та інші ОС: кастомний cursor зазвичай лише до ~32×32; повне зображення — doctor_icon.png */
   cursor:
-    url("/syringe.svg") 16 16,
+    url("/doctor_cursor.png") 16 16,
     pointer !important;
   transition:
     box-shadow 0.45s ease-in-out,

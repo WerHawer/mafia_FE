@@ -46,6 +46,7 @@ export interface IGameFlow {
   shoot: { [key: UserId]: { shooters: UserId[]; shots: { x: number; y: number }[] } };
   killed: UserId[];
   sheriffCheck?: UserId;
+  doctorSelfHealUsed?: boolean;
   doctorSave?: UserId;
   donCheck?: UserId;
   prostituteBlock?: UserId;

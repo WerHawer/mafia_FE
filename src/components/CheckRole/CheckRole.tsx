@@ -1,4 +1,4 @@
-import { EyeOutlined, PlusCircleFilled } from "@ant-design/icons";
+import { EyeOutlined } from "@ant-design/icons";
 import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -58,7 +58,11 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
 
       {gameFlow.isNight && userSavedByDoctor && (
         <Tippy theme="role-tooltip" content={t("checkRole.doctorSavedGM")}>
-          <PlusCircleFilled className={styles.gmIcon} style={{ color: '#52c41a' }} />
+          <img
+            src="/doctor_icon.png"
+            alt=""
+            className={styles.gmIconImg}
+          />
         </Tippy>
       )}
     </div>
