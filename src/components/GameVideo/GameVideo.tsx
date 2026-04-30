@@ -95,6 +95,7 @@ export const GameVideo = observer(
       onHealUser,
       onInvestigateUser,
       participantRole,
+      sightedNightFlash,
     } = useGameVideo({ participant, isMyStream });
 
     const { soundStore } = rootStore;
@@ -180,6 +181,10 @@ export const GameVideo = observer(
           [styles.mafiaGlow]: shouldShowMafiaGlow,
           [styles.votableTarget]: isVotableTarget,
           [styles.dimmedTarget]: isDimmedDuringVote || isDimmedDuringMafiaIntro,
+          [styles.sightedNightShoot]: sightedNightFlash === "shoot",
+          [styles.sightedNightKiss]: sightedNightFlash === "kiss",
+          [styles.sightedNightHeal]: sightedNightFlash === "heal",
+          [styles.sightedNightCheck]: sightedNightFlash === "check",
         })}
         ref={containerRef}
         onClick={isInteractive ? handleVideoClick : undefined}

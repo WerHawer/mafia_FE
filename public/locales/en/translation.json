@@ -125,8 +125,7 @@
       "info1": "Videos are hidden during the night",
       "info2": "Only GM can see and control the game",
       "info3": "Wait for the morning to continue"
-    },
-    "ghostModeActive": "Ghost Mode Active"
+    }
   },
 
   "speaker": {
@@ -364,8 +363,8 @@
     "rule1": "See all roles and night actions",
     "rule2": "Living players won't see your reactions",
     "rule3": "You cannot go back to normal death mode",
-    "confirm": "Open Eyes",
+    "confirm": "Become a Ghost",
     "activeIndicator": "Ghost Mode Active",
-    "openEyes": "Open Eyes"
+    "openEyes": "Become a Ghost"
   }
 }

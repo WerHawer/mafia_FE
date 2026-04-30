@@ -1,0 +1,48 @@
+---
+description: React/TS/UI — реалізація, стилі, доступність, імпорти (copilot-aligned)
+alwaysApply: true
+---
+
+# React, TS і UI (узгоджено з copilot-instructions)
+
+## Стиль коду
+
+- Ранні `return`; **порожній рядок перед `return`** у функціях.
+- `const` і стрілкові функції; явні типи для публічних функцій і пропсів.
+- Обробники подій: префікс **`on`** (`onClick`, `onSubmit`), не `handle*` (виняток — проп з іншою назвою).
+
+## Імпорти та store
+
+- Не `React.useState` — імпортуй `import { useState, ... } from "react"`.
+- Кілька звернень до одного store / `rootStore` — деструктуризація (`const { myId } = usersStore`). Детальніше: правило `destructuring.mdc`.
+
+## Компоненти
+
+- Перед новим UI: глянь `src/UI/`, потім `src/components/` — перевикористовуй ісходне.
+- Композиція, один фокус відповідальності; коректний cleanup підписок.
+- Де доречно: Suspense, error boundaries, зрозумілі стани завантаження / помилки.
+
+## Доступність
+
+- Інтерактив: клавіатура (`onKeyDown` де треба), `tabIndex={0}` коли логічно, `aria-label` для не-тексту, осмислені ARIA-ролі.
+- Курсори: pointer для клікабельного, default для пасивного.
+
+## SCSS modules
+
+- `ComponentName.module.scss` поруч із компонентом.
+- Тема й міксини з `src/styles`.
+- Імена класів відображають призначення; дотримуйся наявних патернів.
+
+## classnames
+
+```tsx
+import classNames from "classnames";
+
+className={classNames(styles.container, styles[variant], { [styles.active]: isActive })}
+```
+
+Уникай сирих шаблонних рядків для складних комбінацій класів.
+
+## Інтерактив
+
+- Для складних контролів: `useCallback`, мемоізація за потреби; refs для dropdown/tooltip; клік поза елементом де прийнято в проєкті.

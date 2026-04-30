@@ -69,7 +69,7 @@ export const PlayerPanelInfo = observer(() => {
             <div className={styles.ghostActive}>
               <Typography variant="span" className={styles.ghostIcon}>👻</Typography>
               <Typography variant="body" className={styles.ghostText}>
-                {t("ghostMode.activeIndicator", "Ghost Mode Active")}
+                {t("ghostMode.activeIndicator")}
               </Typography>
             </div>
           ) : (
@@ -86,7 +86,7 @@ export const PlayerPanelInfo = observer(() => {
                 })
               }}
             >
-              {t("ghostMode.openEyes", "Open Eyes")}
+              {t("ghostMode.openEyes")}
             </Button>
           )}
         </div>

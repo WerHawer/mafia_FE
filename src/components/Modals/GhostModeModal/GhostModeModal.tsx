@@ -22,23 +22,23 @@ export const GhostModeModal = observer(() => {
   return (
     <div className={styles.container}>
       <Typography variant="h2" className={styles.title}>
-        {t("ghostMode.title", "Become a Ghost? 👻")}
+        {t("ghostMode.title")}
       </Typography>
       
       <div className={styles.content}>
         <Typography variant="p" className={styles.description}>
-          {t("ghostMode.description", "You can now see the roles of all players and their night actions. This knowledge is only for you!")}
+          {t("ghostMode.description")}
         </Typography>
         
         <div className={styles.rules}>
           <Typography variant="span" className={styles.ruleItem}>
-            <span>✅</span> {t("ghostMode.rule1", "See all roles and night actions")}
+            <span>✅</span> {t("ghostMode.rule1")}
           </Typography>
           <Typography variant="span" className={styles.ruleItem}>
-            <span>🚫</span> {t("ghostMode.rule2", "Living players won't see your reactions")}
+            <span>🚫</span> {t("ghostMode.rule2")}
           </Typography>
           <Typography variant="span" className={styles.ruleItem}>
-            <span>🚫</span> {t("ghostMode.rule3", "You cannot go back to normal death mode")}
+            <span>🚫</span> {t("ghostMode.rule3")}
           </Typography>
         </div>
       </div>
@@ -56,7 +56,7 @@ export const GhostModeModal = observer(() => {
           size={ButtonSize.Medium}
           onClick={handleConfirm}
         >
-          {t("ghostMode.confirm", "Open Eyes")}
+          {t("ghostMode.confirm")}
         </Button>
       </div>
     </div>

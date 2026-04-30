@@ -1,0 +1,23 @@
+---
+description: Деструктуризація з об’єктів (store, context, props) на початку модуля
+alwaysApply: true
+---
+
+# Деструктуризація
+
+Коли з одного об’єкта зчитуєш кілька полів (`rootStore`, `gamesStore`, контекст, великий props), **деструктуризуй на початку** функції / хука / компонента замість розкиданих звернень `obj.field` у новій або зміненій логіці.
+
+```typescript
+// ❌ Гірше: розкидані звернення
+const { gamesStore } = rootStore;
+if (gamesStore.isMeObserver && gamesStore.gameFlow.isNight) { ... }
+
+// ✅ Краще
+const { gamesStore, isIGM } = rootStore;
+const { isMeObserver, gameFlow } = gamesStore;
+if (isMeObserver && gameFlow.isNight) { ... }
+```
+
+- Нові залежності від store/context додавай через деструктуризацію в тому ж блоці, що й інші поля цього джерела.
+- Не змішуй без потреби: `const x = store.a; const y = store.b;` якщо достатньо `const { a: x, b: y } = store`.
+- Типовий виняток — **вибірковий доступ** у рідких гілках або коли імена конфліктують (тоді перейменування при деструктуризації).

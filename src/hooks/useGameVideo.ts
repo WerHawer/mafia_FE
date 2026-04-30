@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Participant } from "livekit-client";
 
@@ -12,6 +12,19 @@ type UseGameVideoParams = {
   isMyStream: boolean;
 };
 
+/** Короткий flash обводки для ГМ/духів при нічній дії на цьому тайлі. */
+export type SightedNightFlash = "shoot" | "kiss" | "heal" | "check";
+
+const SIGHTED_NIGHT_OUTLINE_MS = 1500;
+
+type NightActionSnap = {
+  shotCount: number;
+  prostituteBlock: string | undefined;
+  doctorSave: string | undefined;
+  sheriffCheck: string | undefined;
+  donCheck: string | undefined;
+};
+
 export const useGameVideo = ({
   participant,
   isMyStream,
@@ -19,11 +32,12 @@ export const useGameVideo = ({
   const { usersStore, gamesStore, isIGM, myRole, isIWakedUp, isICanCheck, isIProstitute } =
     rootStore;
   const { getUser, me, myId } = usersStore;
-  const { isUserGM, gameFlow, activeGameId } = gamesStore;
+  const { isUserGM, isMeObserver, gameFlow, activeGameId } = gamesStore;
   const { shoot = {}, killed = [], sleeping = [], day, isStarted, prostituteBlock, doctorSave, sheriffCheck, donCheck } = gameFlow;
   const { t } = useTranslation();
 
   const userId = participant.identity;
+  const nightShotCount = shoot[userId]?.shooters?.length ?? 0;
   const currentUser = isMyStream ? me : getUser(userId);
   const isGM = isUserGM(userId);
   const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
@@ -73,7 +87,84 @@ export const useGameVideo = ({
     ((isISheriff && isIWakedUp && !sheriffCheck && !isMyStream) ||
      (isIDon && isWokenAsDon && !donCheck && !isMyStream));
 
-  const isCheckRoleEnabled = isIGM || gamesStore.isMeObserver || gameFlow.isPostGame;
+  const isCheckRoleEnabled = isIGM || isMeObserver || gameFlow.isPostGame;
+
+  const [sightedNightFlash, setSightedNightFlash] = useState<SightedNightFlash | null>(null);
+  const prevNightSnapRef = useRef<NightActionSnap | null>(null);
+  const sightedFlashTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const clearFlashTimer = () => {
+      if (sightedFlashTimeoutRef.current) {
+        clearTimeout(sightedFlashTimeoutRef.current);
+        sightedFlashTimeoutRef.current = null;
+      }
+    };
+
+    const isSightedNight = (isIGM || isMeObserver) && gameFlow.isNight;
+
+    if (!isSightedNight) {
+      prevNightSnapRef.current = null;
+      setSightedNightFlash(null);
+      clearFlashTimer();
+
+      return;
+    }
+
+    const shotCount = shoot[userId]?.shooters?.length ?? 0;
+    const nextSnap: NightActionSnap = {
+      shotCount,
+      prostituteBlock,
+      doctorSave,
+      sheriffCheck,
+      donCheck,
+    };
+
+    const prevSnap = prevNightSnapRef.current;
+    prevNightSnapRef.current = nextSnap;
+
+    if (!prevSnap) {
+      return;
+    }
+
+    let flash: SightedNightFlash | null = null;
+
+    if (shotCount > prevSnap.shotCount) {
+      flash = "shoot";
+    } else if (prostituteBlock === userId && prevSnap.prostituteBlock !== userId) {
+      flash = "kiss";
+    } else if (doctorSave === userId && prevSnap.doctorSave !== userId) {
+      flash = "heal";
+    } else if (
+      (sheriffCheck === userId && prevSnap.sheriffCheck !== userId) ||
+      (donCheck === userId && prevSnap.donCheck !== userId)
+    ) {
+      flash = "check";
+    }
+
+    if (!flash) {
+      return;
+    }
+
+    clearFlashTimer();
+    setSightedNightFlash(flash);
+    sightedFlashTimeoutRef.current = setTimeout(() => {
+      sightedFlashTimeoutRef.current = null;
+      setSightedNightFlash(null);
+    }, SIGHTED_NIGHT_OUTLINE_MS);
+
+    return clearFlashTimer;
+  }, [
+    isIGM,
+    isMeObserver,
+    gameFlow.isNight,
+    userId,
+    nightShotCount,
+    prostituteBlock,
+    doctorSave,
+    sheriffCheck,
+    donCheck,
+  ]);
 
   const { mutate: shootUser } = useShootUserMutation();
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
@@ -185,5 +276,6 @@ export const useGameVideo = ({
     onHealUser,
     onInvestigateUser,
     participantRole,
+    sightedNightFlash,
   };
 };

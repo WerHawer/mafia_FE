@@ -34,7 +34,7 @@ export const VideoUserInfo = observer(
           {userName} {userNumber ? `#${userNumber}` : ""}
           {isIGM && gamesStore.observers.includes(userId) && (
             <Tippy
-              content={t("game.ghostModeActive", "Ghost Mode Active")}
+              content={t("ghostMode.activeIndicator")}
               theme="role-tooltip"
               animation="scale"
               duration={[200, 150]}

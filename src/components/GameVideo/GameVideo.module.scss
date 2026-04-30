@@ -245,6 +245,34 @@
 // Pure CSS transitions: smooth fade-in and fade-out on hover.
 // box-shadow and border-color are NOT clipped by overflow: hidden.
 
+@mixin role-action-glow-shoot {
+  border-color: rgba(theme.$color-error, 0.8);
+  box-shadow:
+    0 0 18px 5px rgba(theme.$color-error, 0.45),
+    inset 0 0 20px rgba(theme.$color-error, 0.18);
+}
+
+@mixin role-action-glow-kiss {
+  border-color: rgba(theme.$color-role-prostitute, 0.8);
+  box-shadow:
+    0 0 18px 5px rgba(theme.$color-role-prostitute, 0.45),
+    inset 0 0 20px rgba(theme.$color-role-prostitute, 0.15);
+}
+
+@mixin role-action-glow-heal {
+  border-color: rgba(theme.$color-role-doctor, 0.8);
+  box-shadow:
+    0 0 18px 5px rgba(theme.$color-role-doctor, 0.45),
+    inset 0 0 20px rgba(theme.$color-role-doctor, 0.15);
+}
+
+@mixin role-action-glow-check {
+  border-color: rgba(theme.$color-accent-secondary, 0.8);
+  box-shadow:
+    0 0 18px 5px rgba(theme.$color-accent-secondary, 0.45),
+    inset 0 0 20px rgba(theme.$color-accent-secondary, 0.15);
+}
+
 .shootable {
   /* noinspection CssUnknownTarget */
   cursor:
@@ -255,10 +283,7 @@
     border-color 0.45s ease-in-out;
 
   &:hover {
-    border-color: rgba(theme.$color-error, 0.8);
-    box-shadow:
-      0 0 18px 5px rgba(theme.$color-error, 0.45),
-      inset 0 0 20px rgba(theme.$color-error, 0.18);
+    @include role-action-glow-shoot;
   }
 }
 
@@ -272,10 +297,7 @@
     border-color 0.45s ease-in-out;
 
   &:hover {
-    border-color: rgba(theme.$color-role-prostitute, 0.8);
-    box-shadow:
-      0 0 18px 5px rgba(theme.$color-role-prostitute, 0.45),
-      inset 0 0 20px rgba(theme.$color-role-prostitute, 0.15);
+    @include role-action-glow-kiss;
   }
 }
 
@@ -289,10 +311,7 @@
     border-color 0.45s ease-in-out;
 
   &:hover {
-    border-color: rgba(theme.$color-role-doctor, 0.8);
-    box-shadow:
-      0 0 18px 5px rgba(theme.$color-role-doctor, 0.45),
-      inset 0 0 20px rgba(theme.$color-role-doctor, 0.15);
+    @include role-action-glow-heal;
   }
 }
 
@@ -306,11 +325,34 @@
     border-color 0.45s ease-in-out;
 
   &:hover {
-    border-color: rgba(theme.$color-accent-secondary, 0.8);
-    box-shadow:
-      0 0 18px 5px rgba(theme.$color-accent-secondary, 0.45),
-      inset 0 0 20px rgba(theme.$color-accent-secondary, 0.15);
+    @include role-action-glow-check;
   }
+}
+
+// GM / observers: короткий flash тієї ж обводки після нічної дії на цілі
+.sightedNightShoot,
+.sightedNightKiss,
+.sightedNightHeal,
+.sightedNightCheck {
+  transition:
+    box-shadow 0.45s ease-in-out,
+    border-color 0.45s ease-in-out;
+}
+
+.sightedNightShoot {
+  @include role-action-glow-shoot;
+}
+
+.sightedNightKiss {
+  @include role-action-glow-kiss;
+}
+
+.sightedNightHeal {
+  @include role-action-glow-heal;
+}
+
+.sightedNightCheck {
+  @include role-action-glow-check;
 }
 .statusLabelDead {
   @include mixins.flexCenter;
