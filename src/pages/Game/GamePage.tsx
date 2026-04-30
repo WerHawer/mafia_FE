@@ -6,7 +6,7 @@ import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
 import { AudioProvider } from "@/components/AudioProvider/AudioProvider.tsx";
 import { GameChat } from "@/components/GameChat";
 import { GameInfoSection } from "@/components/GameInfoSection";
-import { FloatingReactions, GameBottomBar } from "@/components/GameReactions";
+import { GameBottomBar, ReactionsCanvas } from "@/components/GameReactions";
 import { GameVideoManager } from "@/components/GameVideoManager/GameVideoManager.tsx";
 import { GameVote } from "@/components/GameVote";
 import { LiveKitMafiaRoom } from "@/components/LiveKitMafiaRoom/LiveKitMafiaRoom.tsx";
@@ -85,7 +85,7 @@ const GamePage = observer(() => {
   return (
     <AudioProvider>
       <div className={styles.pageContainer}>
-        <FloatingReactions />
+        <ReactionsCanvas />
 
         <LiveKitMafiaRoom enabled={isJoinedToGame}>
           <div className={styles.videoSection}>

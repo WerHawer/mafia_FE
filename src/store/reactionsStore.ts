@@ -5,12 +5,20 @@ export interface ActiveReaction {
   userId: string;
   userName: string;
   emoji: string;
-  /** left position in px — randomized per reaction */
-  x: number;
-  /** flight duration in ms — randomized 3500–5500 */
+  /** Horizontal start position as a fraction of the canvas width (0..1) */
+  xFraction: number;
+  /** Flight duration in ms — randomized */
   duration: number;
-  /** wobble amplitude in px — randomized 20–50 */
+  /** Wobble amplitude in px — randomized */
   wobble: number;
+  /** Base emoji size in CSS px — randomized so reactions vary visually */
+  size: number;
+  /** Vertical end position as a fraction of canvas height counted from bottom (0..1) */
+  endYFraction: number;
+  /** Time when the reaction was queued (used for diagnostics / safety TTL) */
+  addedAt: number;
+  /** Time when the animation actually started (set after the PNG is ready). Null = waiting for image. */
+  startedAt: number | null;
 }
 
 interface LatestReaction {
@@ -18,14 +26,24 @@ interface LatestReaction {
   timerId: ReturnType<typeof setTimeout>;
 }
 
-const CORNER_BADGE_TTL = 5000; // ms before the corner badge disappears
-const MIN_DURATION = 3500;
-const MAX_DURATION = 5500;
-const MAX_X_FRACTION = 0.28; // max 28% of viewport width for start x
+const CORNER_BADGE_TTL = 5000;
+const MIN_DURATION = 3000;
+const MAX_DURATION = 6500;
+const MIN_X_FRACTION = 0.04;
+const MAX_X_FRACTION = 0.92;
+const MIN_WOBBLE = 3;
+const MAX_WOBBLE = 10;
+const MIN_SIZE = 32;
+const MAX_SIZE = 42;
+const MIN_END_Y_FRACTION = 0.55;
+const MAX_END_Y_FRACTION = 0.9;
+const ANIMATION_TAIL_MS = 300;
+/** Hard timeout for reactions whose PNG never loads (CDN failure etc.) */
+const STALE_REACTION_TTL_MS = 10000;
+/** Cap concurrent reactions to keep canvas work bounded */
+const MAX_CONCURRENT_REACTIONS = 40;
 
-function randomBetween(min: number, max: number) {
-  return Math.random() * (max - min) + min;
-}
+const randomBetween = (min: number, max: number) => Math.random() * (max - min) + min;
 
 class ReactionsStore {
   reactions: ActiveReaction[] = [];
@@ -36,28 +54,70 @@ class ReactionsStore {
   }
 
   addReaction(userId: string, userName: string, emoji: string) {
-    // Basic flood protection: don't render more than 40 reactions at once
-    if (this.reactions.length > 40) return;
+    if (this.reactions.length >= MAX_CONCURRENT_REACTIONS) return;
 
     const id = `${userId}-${Date.now()}-${Math.random()}`;
-    const x = Math.floor(randomBetween(16, window.innerWidth * MAX_X_FRACTION));
-    const duration = Math.floor(randomBetween(MIN_DURATION, MAX_DURATION));
-    const wobble = Math.floor(randomBetween(20, 50));
+    const now = Date.now();
 
-    const reaction: ActiveReaction = { id, userId, userName, emoji, x, duration, wobble };
+    const reaction: ActiveReaction = {
+      id,
+      userId,
+      userName,
+      emoji,
+      xFraction: randomBetween(MIN_X_FRACTION, MAX_X_FRACTION),
+      duration: Math.floor(randomBetween(MIN_DURATION, MAX_DURATION)),
+      wobble: Math.floor(randomBetween(MIN_WOBBLE, MAX_WOBBLE)),
+      size: Math.floor(randomBetween(MIN_SIZE, MAX_SIZE + 1)),
+      endYFraction: randomBetween(MIN_END_Y_FRACTION, MAX_END_Y_FRACTION),
+      addedAt: now,
+      startedAt: null,
+    };
 
     runInAction(() => {
       this.reactions.push(reaction);
     });
 
-    // Remove from floating list after animation ends
+    setTimeout(() => {
+      runInAction(() => {
+        this.reactions = this.reactions.filter(
+          (r) => r.id !== id || r.startedAt !== null
+        );
+      });
+    }, STALE_REACTION_TTL_MS);
+
+    this.updateCornerBadge(userId, emoji);
+  }
+
+  /**
+   * Marks a reaction as started; the canvas calls this once the emoji image is ready.
+   * Schedules removal after the animation (plus a small tail) has finished.
+   */
+  markStarted(id: string, startedAt: number) {
+    const target = this.reactions.find((r) => r.id === id);
+    if (!target || target.startedAt !== null) return;
+
+    runInAction(() => {
+      target.startedAt = startedAt;
+    });
+
     setTimeout(() => {
       runInAction(() => {
         this.reactions = this.reactions.filter((r) => r.id !== id);
       });
-    }, duration + 300); // small buffer after animation
+    }, target.duration + ANIMATION_TAIL_MS);
+  }
 
-    // Update corner badge — reset TTL if same user sends again
+  clearUserReaction(userId: string) {
+    const existing = this.latestPerUser.get(userId);
+    if (existing) {
+      clearTimeout(existing.timerId);
+      runInAction(() => {
+        this.latestPerUser.delete(userId);
+      });
+    }
+  }
+
+  private updateCornerBadge(userId: string, emoji: string) {
     const existing = this.latestPerUser.get(userId);
     if (existing) clearTimeout(existing.timerId);
 
@@ -70,16 +130,6 @@ class ReactionsStore {
     runInAction(() => {
       this.latestPerUser.set(userId, { emoji, timerId });
     });
-  }
-
-  clearUserReaction(userId: string) {
-    const existing = this.latestPerUser.get(userId);
-    if (existing) {
-      clearTimeout(existing.timerId);
-      runInAction(() => {
-        this.latestPerUser.delete(userId);
-      });
-    }
   }
 }
 

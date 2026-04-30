@@ -31,7 +31,7 @@ export const useGameReactions = () => {
       throttle((emoji: string) => {
         if (!gameId || !myId) return;
         sendMessage(wsEvents.gameReaction, { gameId, userId: myId, emoji });
-      }, 300), // Max ~3.3 reactions per second
+      }, 100), // Max ~10 reactions per second
     [gameId, myId, sendMessage]
   );
 

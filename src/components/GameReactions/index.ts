@@ -1,3 +1,3 @@
 export { GameBottomBar } from "./GameBottomBar";
-export { FloatingReactions } from "./FloatingReactions";
+export { ReactionsCanvas } from "./ReactionsCanvas";
 export { ReactionCornerBadge } from "./ReactionCornerBadge";

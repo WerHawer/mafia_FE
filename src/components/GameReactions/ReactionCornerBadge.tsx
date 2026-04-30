@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 
 import { reactionsStore } from "@/store/reactionsStore.ts";
+import { getUnified } from "@/utils/getUnified.ts";
 
 import styles from "./GameReactions.module.scss";
 
@@ -44,15 +45,3 @@ export const ReactionCornerBadge = observer(
 );
 
 ReactionCornerBadge.displayName = "ReactionCornerBadge";
-
-function getUnified(emoji: string): string {
-  if (!emoji) return ""; // fallback
-
-  try {
-    return [...emoji]
-      .map((c) => c.codePointAt(0)!.toString(16).padStart(4, "0"))
-      .join("-");
-  } catch {
-    return "";
-  }
-}
