@@ -19,6 +19,7 @@ export const MenuItem = ({
   variant = MenuItemVariant.Default,
   disabled = false,
   className,
+  title,
 }: MenuItemProps) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if ((e.key === "Enter" || e.key === " ") && !disabled) {
@@ -42,6 +43,7 @@ export const MenuItem = ({
       onKeyDown={handleKeyDown}
       disabled={disabled}
       tabIndex={disabled ? -1 : 0}
+      title={title}
     >
       {icon && <span className={styles.menuItemIcon}>{icon}</span>}
       <span className={styles.menuItemText}>{label}</span>

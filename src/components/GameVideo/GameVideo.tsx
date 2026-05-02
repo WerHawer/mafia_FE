@@ -9,6 +9,7 @@ import deadBg from "@/assets/images/dead_bg.avif";
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
 import { ReactionCornerBadge } from "@/components/GameReactions";
 import { HealEffect } from "@/components/HealEffect";
+import { ImmunityBadge } from "@/components/ImmunityBadge/ImmunityBadge.tsx";
 import { InvestigateEffect } from "@/components/InvestigateEffect";
 import { KissEffect } from "@/components/KissEffect";
 import { MediaControls } from "@/components/MediaControls";
@@ -200,6 +201,7 @@ export const GameVideo = observer(
         <Shoot userId={userId} clickPosition={localClickPos} />
         <KissEffect userId={userId} clickPosition={kissPos} />
         <HealEffect userId={userId} clickPosition={healPos} />
+        <ImmunityBadge userId={userId} />
         <InvestigateEffect
           clickPosition={investigatePos}
           result={investigateResult}

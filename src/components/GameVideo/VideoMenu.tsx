@@ -6,6 +6,8 @@ import {
   LockOutlined,
   MoonOutlined,
   MoreOutlined,
+  SafetyCertificateOutlined,
+  SafetyOutlined,
   SoundOutlined,
   UnlockOutlined,
   UserDeleteOutlined,
@@ -53,7 +55,10 @@ export const VideoMenu = observer(
     const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
     const { gamesStore, usersStore } = rootStore;
     const { myId } = usersStore;
-    const { activeGameId, gameFlow } = gamesStore;
+    const { activeGameId, gameFlow, activeGameImmunePlayer, isAnyoneImmune } =
+      gamesStore;
+    const isImmune = !!userId && activeGameImmunePlayer === userId;
+    const isImmunityTakenByOther = isAnyoneImmune && !isImmune;
     const { unmuteSpeaker, muteSpeaker } = useBatchMediaControls();
     const { sendMessage } = useSocket();
 
@@ -125,6 +130,13 @@ export const VideoMenu = observer(
       }
 
       updateGameFlow({ wakeUp: currentWakeUp });
+      setIsMenuOpen(false);
+    };
+
+    const onToggleImmunity = () => {
+      if (!userId || isImmunityTakenByOther) return;
+
+      updateGameFlow({ immunePlayer: isImmune ? null : userId });
       setIsMenuOpen(false);
     };
 
@@ -219,6 +231,30 @@ export const VideoMenu = observer(
                 }
                 onClick={onToggleForceMute}
               />
+
+              {gameFlow.isStarted && !isUserDead && (
+                <MenuItem
+                  icon={
+                    isImmune ? (
+                      <SafetyOutlined />
+                    ) : (
+                      <SafetyCertificateOutlined />
+                    )
+                  }
+                  label={
+                    isImmune
+                      ? t("videoMenu.removeImmunity")
+                      : t("videoMenu.giveImmunity")
+                  }
+                  onClick={onToggleImmunity}
+                  disabled={isImmunityTakenByOther}
+                  title={
+                    isImmunityTakenByOther
+                      ? t("videoMenu.immunityTaken")
+                      : undefined
+                  }
+                />
+              )}
 
               <MenuItem
                 icon={isUserDead ? <HeartOutlined /> : <UserDeleteOutlined />}

@@ -174,7 +174,10 @@
     "sleep": "Приспати",
     "wake": "Розбудити",
     "blockMic": "Заблокувати мікрофон",
-    "unblockMic": "Розблокувати мікрофон"
+    "unblockMic": "Розблокувати мікрофон",
+    "giveImmunity": "Дати імунітет",
+    "removeImmunity": "Зняти імунітет",
+    "immunityTaken": "Імунітет уже наданий іншому гравцю"
   },
 
   "nightResults": {
@@ -240,7 +243,9 @@
   },
 
   "gameVideo": {
-    "dead": "Мертвий"
+    "dead": "Мертвий",
+    "immunityBadge": "Імунітет",
+    "immunityBadgeDescription": "Цього гравця не можна вбити мафією вночі та виставити на голосування"
   },
 
   "mediaControls": {

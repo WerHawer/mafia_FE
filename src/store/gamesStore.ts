@@ -6,6 +6,10 @@ import { usersStore } from "./usersStore.ts";
 
 import { initialGameFlow } from "../helpers/createGameObj.ts";
 import {
+  isFirstNightActive,
+  isImmunityPhaseActive,
+} from "../helpers/immunity.ts";
+import {
   IGame,
   IGameFlow,
   IGameShort,
@@ -197,6 +201,31 @@ export class GamesStore {
 
   get activeGameKilledPlayers() {
     return toJS(this.gameFlow.killed) ?? [];
+  }
+
+  get activeGameImmunePlayer(): UserId | null {
+    const id = this.gameFlow.immunePlayer ?? null;
+
+    if (!id) return null;
+
+    // FE-fallback: якщо BE ще не встиг скинути поле на перехідній фазі,
+    // "derived" перевірка робить гравця не-імунним автоматично.
+    const phaseOk = isImmunityPhaseActive(
+      this.gameFlow,
+      isFirstNightActive(this.activeGame)
+    );
+
+    return phaseOk ? id : null;
+  }
+
+  get isAnyoneImmune(): boolean {
+    return !!this.activeGameImmunePlayer;
+  }
+
+  isUserImmune(userId?: UserId): boolean {
+    if (!userId) return false;
+
+    return this.activeGameImmunePlayer === userId;
   }
 
   get activeGameAlivePlayers() {

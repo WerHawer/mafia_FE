@@ -37,6 +37,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   } = gamesStore;
   const { isVote, isReVote, proposed, voted, isExtraSpeech } = gameFlow;
   const isVotingActive = isVote || isReVote;
+  const isImmune = gamesStore.isUserImmune(userId);
   const { isIBlocked } = rootStore;
   const { playSfx } = soundStore;
   const { mutate: voteForUser, isPending: isVoting } = useVoteForUserMutation();
@@ -92,6 +93,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     !isCurrentUserGM &&
     !isExtraSpeech &&
     !isIDead &&
+    !isImmune &&
     !speakerAlreadyProposed &&
     !isThisUserProposed &&
     gameFlow.day > 1;
@@ -123,6 +125,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
       isThisUserProposed ||
       speakerAlreadyProposed ||
       isAddingToProposed ||
+      isImmune ||
       gameFlow.day <= 1
     )
       return;
@@ -135,6 +138,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     isThisUserProposed,
     speakerAlreadyProposed,
     isAddingToProposed,
+    isImmune,
     isUserGM,
     myId,
     setToProposed,

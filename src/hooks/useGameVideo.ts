@@ -46,13 +46,14 @@ export const useGameVideo = ({
   );
   const isUserDead = killed.includes(userId);
   const isSleeping = sleeping.includes(userId);
+  const isImmune = gamesStore.isUserImmune(userId);
   const mafiaCount = (gamesStore.activeGameRoles?.mafia ?? []).length;
   const skipFirstNightIfOneMafia = gamesStore.activeGame?.skipFirstNightIfOneMafia ?? true;
   const isFirstNightSkipped = day === 1 && mafiaCount === 1 && skipFirstNightIfOneMafia;
   const notFirstDay = day > 1 || isFirstNightSkipped;
   // Mafia can also shoot themselves
   const isShootEnabled =
-    (!isGM && !isUserDead && notFirstDay) &&
+    (!isGM && !isUserDead && !isImmune && notFirstDay) &&
     (isIGM || (isIMafia && isIWakedUp && !isIDidShot));
 
   const isIDoctor = myRole === Roles.Doctor;

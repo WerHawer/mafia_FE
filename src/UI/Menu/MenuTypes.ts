@@ -11,6 +11,7 @@ export interface MenuItemProps {
   variant?: MenuItemVariant;
   disabled?: boolean;
   className?: string;
+  title?: string;
 }
 
 export interface MenuSeparatorProps {

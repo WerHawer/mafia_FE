@@ -172,7 +172,10 @@
     "sleep": "Put to sleep",
     "wake": "Wake up",
     "blockMic": "Block microphone",
-    "unblockMic": "Unblock microphone"
+    "unblockMic": "Unblock microphone",
+    "giveImmunity": "Grant immunity",
+    "removeImmunity": "Remove immunity",
+    "immunityTaken": "Immunity is already granted to another player"
   },
 
   "nightResults": {
@@ -237,7 +240,9 @@
   },
 
   "gameVideo": {
-    "dead": "Dead"
+    "dead": "Dead",
+    "immunityBadge": "Immunity",
+    "immunityBadgeDescription": "This player cannot be killed by mafia at night and cannot be put up for voting"
   },
 
   "mediaControls": {

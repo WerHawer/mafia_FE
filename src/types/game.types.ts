@@ -52,6 +52,7 @@ export interface IGameFlow {
   prostituteBlock?: UserId;
   prostituteBlockPos?: { x: number; y: number };
   sleeping: UserId[];
+  immunePlayer: UserId | null;
 }
 
 export interface IGameRoles {

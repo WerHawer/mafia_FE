@@ -1,0 +1,26 @@
+.badge {
+  position: absolute;
+  top: 8px;
+  right: 48px;
+  width: 32px;
+  height: 32px;
+
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55));
+
+  animation: immunityPop 180ms ease-out forwards;
+
+  z-index: 11;
+}
+
+@keyframes immunityPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

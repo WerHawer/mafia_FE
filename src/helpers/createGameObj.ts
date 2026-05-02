@@ -22,6 +22,7 @@ export const initialGameFlow: IGameFlow = {
   wakeUp: [],
   sleeping: [],
   doctorSelfHealUsed: false,
+  immunePlayer: null,
 };
 
 type CreateGameProps = {
