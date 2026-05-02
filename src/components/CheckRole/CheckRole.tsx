@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 
 import bulletIcon from "@/assets/icons/bullet.png";
+import doctorIconUrl from "@/assets/icons/doctor_icon.png";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
 
@@ -59,7 +60,7 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
       {gameFlow.isNight && userSavedByDoctor && (
         <Tippy theme="role-tooltip" content={t("checkRole.doctorSavedGM")}>
           <img
-            src="/doctor_icon.png"
+            src={doctorIconUrl}
             alt=""
             className={styles.gmIconImg}
           />

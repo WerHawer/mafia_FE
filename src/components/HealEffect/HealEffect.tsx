@@ -1,10 +1,9 @@
 import { observer } from "mobx-react-lite";
 
+import tapeImageUrl from "@/assets/icons/tape.png";
 import { rootStore } from "@/store/rootStore.ts";
 
 import styles from "./HealEffect.module.scss";
-
-const TAPE_IMAGE_SRC = "/tape.png";
 
 type HealEffectProps = {
   userId: string;
@@ -29,7 +28,7 @@ export const HealEffect = observer(({ userId, clickPosition }: HealEffectProps) 
       <div className={styles.healPoint} style={style}>
         <div className={styles.tapeShell}>
           <img
-            src={TAPE_IMAGE_SRC}
+            src={tapeImageUrl}
             alt=""
             className={styles.tapeImg}
           />

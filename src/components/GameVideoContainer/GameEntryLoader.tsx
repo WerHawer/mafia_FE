@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next";
-import classNames from "classnames";
+
+import aimIconUrl from "@/assets/cursors/aim.svg?url";
+
 import styles from "./GameEntryLoader.module.scss";
 
 export const GameEntryLoader = () => {
@@ -10,7 +12,7 @@ export const GameEntryLoader = () => {
       <div className={styles.loaderGroup}>
         {/* Animated outer ring / aim */}
         <div className={styles.aimWrapper}>
-          <img src="/aim.svg" alt="Loading..." className={styles.aimIcon} />
+          <img src={aimIconUrl} alt="Loading..." className={styles.aimIcon} />
         </div>
 
         {/* Pulsing inner dot representing a bullet/bullet hole */}

@@ -8,6 +8,7 @@ import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router-dom";
 
+import faviconHref from "@/assets/icons/favicon.webp";
 import { projectEnv } from "./config/projectEnv.ts";
 import { SocketProvider } from "./context/SocketProvider.tsx";
 import { setupAxiosInterceptors } from "./helpers/setupAxiosInterceptors.ts";
@@ -15,6 +16,20 @@ import { router } from "./router/router.tsx";
 
 // Control PostHog initialization with env var VITE_ENABLE_ANALYTICS and hostname
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+const faviconLink =
+  document.querySelector<HTMLLinkElement>("link[rel~='icon']") ??
+  (() => {
+    const link = document.createElement("link");
+
+    link.rel = "icon";
+    document.head.appendChild(link);
+
+    return link;
+  })();
+
+faviconLink.type = "image/webp";
+faviconLink.href = faviconHref;
 
 const rawEnable = projectEnv.isTrackingEnabled;
 const analyticsEnabled =

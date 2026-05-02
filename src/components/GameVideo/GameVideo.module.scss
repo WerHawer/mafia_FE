@@ -276,7 +276,7 @@
 .shootable {
   /* noinspection CssUnknownTarget */
   cursor:
-    url("/aim.svg") 16 16,
+    url("../../assets/cursors/aim.svg") 16 16,
     crosshair !important;
   transition:
     box-shadow 0.45s ease-in-out,
@@ -290,7 +290,7 @@
 .kissable {
   /* noinspection CssUnknownTarget */
   cursor:
-    url("/kiss.svg") 16 16,
+    url("../../assets/cursors/kiss.svg") 16 16,
     pointer !important;
   transition:
     box-shadow 0.45s ease-in-out,
@@ -305,7 +305,7 @@
   /* noinspection CssUnknownTarget */
   /* Windows та інші ОС: кастомний cursor зазвичай лише до ~32×32; повне зображення — doctor_icon.png */
   cursor:
-    url("/doctor_cursor.png") 16 16,
+    url("../../assets/cursors/doctor_cursor.png") 16 16,
     pointer !important;
   transition:
     box-shadow 0.45s ease-in-out,
@@ -319,7 +319,7 @@
 .checkable {
   /* noinspection CssUnknownTarget */
   cursor:
-    url("/question.svg") 16 16,
+    url("../../assets/cursors/question.svg") 16 16,
     help !important;
   transition:
     box-shadow 0.45s ease-in-out,

@@ -4,16 +4,20 @@ import { useSelectedDevices } from "@/hooks/useSelectedDevices.ts";
 import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
 import { useVideoSettings } from "@/hooks/useVideoSettings.ts";
 
+import aimCursorUrl from "@/assets/cursors/aim.svg?url";
+import kissCursorUrl from "@/assets/cursors/kiss.svg?url";
+import questionCursorUrl from "@/assets/cursors/question.svg?url";
+import syringeCursorUrl from "@/assets/cursors/syringe.svg?url";
 import brokenGlassIcon from "@/assets/icons/broken_glass.png";
 import kissMarkIcon from "@/assets/icons/kiss_mark.png";
 
 const PRELOAD_ASSETS = [
   brokenGlassIcon,
   kissMarkIcon,
-  "/aim.svg",
-  "/kiss.svg",
-  "/syringe.svg",
-  "/question.svg",
+  aimCursorUrl,
+  kissCursorUrl,
+  syringeCursorUrl,
+  questionCursorUrl,
 ];
 
 export const useGameMediaSetup = (gameId: string) => {
