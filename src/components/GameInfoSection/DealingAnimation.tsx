@@ -1,12 +1,17 @@
-import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 import { rootStore } from "@/store/rootStore.ts";
 import { SoundEffect } from "@/store/soundStore.ts";
 import { Roles } from "@/types/game.types";
 
 import { RoleCard } from "../RoleCard/RoleCard";
-import { CARDS_COUNT, CARDS_DELAY, INITIAL_DELAY, getFakeCardAnimation } from "./config";
+import {
+  CARDS_COUNT,
+  CARDS_DELAY,
+  INITIAL_DELAY,
+  getFakeCardAnimation,
+} from "./config";
 import styles from "./GameInfoSection.module.scss";
 
 export const DealingAnimation = () => {

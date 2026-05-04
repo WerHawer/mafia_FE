@@ -1,23 +1,37 @@
 @use "../../../styles/mixins.scss";
 
 .playerPanel {
-  @include mixins.flex(row, space-between, center);
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  align-items: stretch;
   height: 100%;
   width: 100%;
-  gap: 10px;
+  min-height: 0;
+  gap: 6px;
 }
 
 .roleCardContainer {
-  position: fixed;
+  align-self: start;
+  width: 84px;
+  height: 150px;
+  margin-top: -20px;
+}
+
+.panelContent {
+  @include mixins.flex(column, flex-start, stretch);
+  min-width: 0;
+  min-height: 0;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeIn 0.4s ease-in-out 0.2s forwards;
 }
 
 .infoContainer {
-  @include mixins.flex(column, center, start);
-  gap: 6px;
-  margin-left: 105px;
-
-  opacity: 0;
-  animation: fadeIn 0.4s ease-in-out 0.2s forwards;
+  @include mixins.flex(row, space-between, center);
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+  flex-shrink: 0;
 }
 
 @keyframes fadeIn {
@@ -31,6 +45,12 @@
 
 .dayNightSection {
   @include mixins.flex(row, center, center);
+  gap: 6px;
+}
+
+.phaseIcon {
+  color: #ffa657;
+  font-size: 1.6rem;
 }
 
 .dayNightText {
@@ -44,11 +64,12 @@
 
 .roleSection {
   @include mixins.flex(row, center, center);
-  gap: 12px;
+  gap: 6px;
 }
 
 .roleLabel {
   font-weight: 600;
+  font-size: 1.25rem;
   text-shadow:
     1px 1px 2px rgba(0, 0, 0, 0.7),
     0 0 5px rgba(0, 0, 0, 0.5);
@@ -56,6 +77,7 @@
 
 .roleValue {
   font-weight: 700;
+  font-size: 1.25rem;
   text-transform: capitalize;
   text-shadow:
     1px 1px 2px rgba(0, 0, 0, 0.8),

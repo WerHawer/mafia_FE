@@ -25,7 +25,6 @@
   position: relative;
 }
 
-
 .rightContainer {
   @include mixins.flex(column, flex-start, center);
   gap: 12px;

@@ -1,24 +1,25 @@
+import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Timer, TimerSize } from "@/components/SpeakerTimer/Timer.tsx";
+import { ModalNames } from "@/components/Modals/Modal.types.ts";
+import { wsEvents } from "@/config/wsEvents.ts";
+import { useSocketContext } from "@/context/SocketProvider.tsx";
+import { modalStore } from "@/store/modalStore.ts";
 import { rootStore } from "@/store/rootStore";
 import { SoundEffect } from "@/store/soundStore.ts";
-import { Typography } from "@/UI/Typography";
-import { useSocketContext } from "@/context/SocketProvider.tsx";
-import { ModalNames } from "@/components/Modals/Modal.types.ts";
-import { modalStore } from "@/store/modalStore.ts";
-import { wsEvents } from "@/config/wsEvents.ts";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { Typography } from "@/UI/Typography";
 
 import styles from "./PlayerPanel.module.scss";
 
 export const PlayerPanelInfo = observer(() => {
   const { t } = useTranslation();
-  const { gamesStore, soundStore, myRole } = rootStore;
+  const { gamesStore, soundStore, usersStore, myRole } = rootStore;
   const { gameFlow, speaker } = gamesStore;
+  const { myId } = usersStore;
   const { stopMusic, playMusic } = soundStore;
 
   const { day, isNight, isVote, isReVote, votesTime } = gameFlow;
@@ -43,13 +44,17 @@ export const PlayerPanelInfo = observer(() => {
   }, [isVotingActive, stopMusic]);
 
   const { socket } = useSocketContext();
-  const myId = rootStore.usersStore.myId;
   const gameId = gamesStore.activeGameId;
 
   return (
     <div className={styles.infoContainer}>
       <div className={styles.dayNightSection}>
-        <Typography variant="h3" className={styles.dayNightText}>
+        {isNight ? (
+          <MoonOutlined className={styles.phaseIcon} />
+        ) : (
+          <SunOutlined className={styles.phaseIcon} />
+        )}
+        <Typography variant="body" className={styles.dayNightText}>
           {dayNightLabel}
         </Typography>
       </div>
@@ -67,7 +72,9 @@ export const PlayerPanelInfo = observer(() => {
         <div className={styles.ghostModeSection}>
           {gamesStore.isMeObserver ? (
             <div className={styles.ghostActive}>
-              <Typography variant="span" className={styles.ghostIcon}>👻</Typography>
+              <Typography variant="span" className={styles.ghostIcon}>
+                👻
+              </Typography>
               <Typography variant="body" className={styles.ghostText}>
                 {t("ghostMode.activeIndicator")}
               </Typography>
@@ -80,10 +87,13 @@ export const PlayerPanelInfo = observer(() => {
                 modalStore.openModal(ModalNames.GhostModeModal, {
                   onConfirm: () => {
                     if (socket && gameId && myId) {
-                      socket.emit(wsEvents.setObserverMode, { gameId, userId: myId });
+                      socket.emit(wsEvents.setObserverMode, {
+                        gameId,
+                        userId: myId,
+                      });
                     }
-                  }
-                })
+                  },
+                });
               }}
             >
               {t("ghostMode.openEyes")}
@@ -91,7 +101,6 @@ export const PlayerPanelInfo = observer(() => {
           )}
         </div>
       )}
-
     </div>
   );
 });

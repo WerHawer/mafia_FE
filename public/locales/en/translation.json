@@ -115,6 +115,8 @@
     "night": "Night",
     "day": "Day",
     "role": "Role",
+    "collapsePlayerList": "Collapse list",
+    "expandPlayerList": "Expand list",
     "timer_placeholder": "Timer will appear here",
     "wakeUp": "Wake up:",
     "sleepAll": "All sleep",

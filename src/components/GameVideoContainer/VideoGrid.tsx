@@ -1,5 +1,4 @@
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 
@@ -38,7 +37,12 @@ export const VideoGrid = observer(() => {
       );
     });
 
-    const { killed = [], proposed = [], isVote, isReVote } = gamesStore.gameFlow;
+    const {
+      killed = [],
+      proposed = [],
+      isVote,
+      isReVote,
+    } = gamesStore.gameFlow;
     const { activeGameGm } = gamesStore;
     const { myId } = rootStore.usersStore;
     const isVoting = isVote || isReVote;
@@ -90,9 +94,7 @@ export const VideoGrid = observer(() => {
               layout={true}
               className={styles.gridCell}
               style={
-                isActive
-                  ? { gridColumn: "2 / 5", gridRow: "1 / 3" }
-                  : undefined
+                isActive ? { gridColumn: "2 / 5", gridRow: "1 / 3" } : undefined
               }
               transition={VIDEO_TRANSITION}
               initial={{ opacity: 0, scale: 0.95 }}

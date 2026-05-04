@@ -13,23 +13,20 @@ import { LiveKitMafiaRoom } from "@/components/LiveKitMafiaRoom/LiveKitMafiaRoom
 import { routes } from "@/router/routs.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
+import { ModalNames } from "@/components/Modals/Modal.types.ts";
+import { wsEvents } from "@/config/wsEvents.ts";
+import { useSocketContext } from "@/context/SocketProvider.tsx";
+import { modalStore } from "@/store/modalStore.ts";
+import { useEffect } from "react";
 import styles from "./GamePage.module.scss";
 import { useGameAccess } from "./hooks/useGameAccess.ts";
 import { useGameMediaSetup } from "./hooks/useGameMediaSetup.ts";
 import { useGameSession } from "./hooks/useGameSession.ts";
-import { useSocketContext } from "@/context/SocketProvider.tsx";
-import { modalStore } from "@/store/modalStore.ts";
-import { ModalNames } from "@/components/Modals/Modal.types.ts";
-import { useEffect } from "react";
-import { wsEvents } from "@/config/wsEvents.ts";
 
 const GamePage = observer(() => {
   const { id = "" } = useParams();
   const { gamesStore } = rootStore;
-  const { activeGamePlayers, gameFlow } = gamesStore;
-  const { isIGM } = rootStore;
-
-  const proposedCount = gameFlow.proposed.length;
+  const { activeGamePlayers } = gamesStore;
 
   const { fetchedGame, isLoading, isAllowedIn, isNotFound, isInactive } =
     useGameAccess(id);
@@ -116,16 +113,12 @@ const GamePage = observer(() => {
         </LiveKitMafiaRoom>
 
         <aside className={styles.rightContainer}>
-          {/* personalInfo: always for GM, for players only when no vote active */}
-          {(isIGM || proposedCount === 0) && (
-            <section
-              className={classNames(styles.asideSection, styles.personalInfo)}
-            >
-              <GameInfoSection />
-            </section>
-          )}
+          <section
+            className={classNames(styles.asideSection, styles.personalInfo)}
+          >
+            <GameInfoSection />
+          </section>
 
-          {/* Vote panel: inline in flow, replaces personalInfo for players */}
           <GameVote />
 
           <section className={styles.chatSection}>

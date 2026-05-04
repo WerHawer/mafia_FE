@@ -1,7 +1,7 @@
 import { UsergroupDeleteOutlined } from "@ant-design/icons";
 import Tippy from "@tippyjs/react";
-import { AnimatePresence, motion } from "framer-motion";
 import classNames from "classnames";
+import { AnimatePresence, motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -37,12 +37,13 @@ export const GameVote = observer(() => {
 
   const [isGMOpen, setIsGMOpen] = useState(false);
 
-  if (proposedCount === 0) return null;
+  if (proposedCount === 0 || !isGM) return null;
 
-  // Players always see the panel; GM must expand it manually
-  const isPanelVisible = !isGM || isGMOpen;
-  
-  let gmVoteTooltip = isVotingActive ? t("vote.gmStopVote") : t("vote.gmStartVote");
+  const isPanelVisible = isGMOpen;
+
+  let gmVoteTooltip = isVotingActive
+    ? t("vote.gmStopVote")
+    : t("vote.gmStartVote");
   if (!isVotingActive && isReVote) {
     gmVoteTooltip = t("gm.startReVote", "Почати переголосування"); // fallback to Ukrainian if key doesn't exist
   }
@@ -78,7 +79,9 @@ export const GameVote = observer(() => {
                 icon={<UsergroupDeleteOutlined />}
                 onClick={onToggleVoting}
                 variant={
-                  isVotingActive ? ButtonVariant.Tertiary : ButtonVariant.Primary
+                  isVotingActive
+                    ? ButtonVariant.Tertiary
+                    : ButtonVariant.Primary
                 }
                 size={ButtonSize.Small}
                 ariaLabel={gmVoteTooltip}
@@ -97,7 +100,13 @@ export const GameVote = observer(() => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            style={{ overflow: "hidden", display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
+            style={{
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              minHeight: 0,
+            }}
           >
             <VotePanel
               proposed={proposed}

@@ -12,16 +12,18 @@ type HealEffectProps = {
 
 export const HealEffect = observer(({ userId, clickPosition }: HealEffectProps) => {
   const { isIDoctor, gamesStore } = rootStore;
-  const { doctorSave } = gamesStore.gameFlow;
+  const { doctorSave, isNight } = gamesStore.gameFlow;
 
   const isSaved = doctorSave === userId;
 
-  if (!isIDoctor || !isSaved || !clickPosition) {
+  if (!isIDoctor || !isNight || !isSaved) {
 
     return null;
   }
 
-  const style = { left: `${clickPosition.x}%`, top: `${clickPosition.y}%` };
+  const posX = clickPosition?.x ?? 50;
+  const posY = clickPosition?.y ?? 50;
+  const style = { left: `${posX}%`, top: `${posY}%` };
 
   return (
     <div className={styles.container}>

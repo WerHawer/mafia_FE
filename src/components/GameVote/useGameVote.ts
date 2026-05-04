@@ -10,7 +10,8 @@ import { UserId } from "@/types/user.types.ts";
 
 export const useGameVote = () => {
   const { gamesStore, usersStore, isIGM, isIDead } = rootStore;
-  const { gameFlow, activeGameId, addVoted } = gamesStore;
+  const { gameFlow, activeGameId, activeGameKilledPlayers, addVoted } =
+    gamesStore;
   const { getUserName, getUser, myId } = usersStore;
   const [isOpen, setIsOpen] = useState(false);
   const { mutate: voteForUser, isPending: isVoting } = useVoteForUserMutation();
@@ -73,7 +74,17 @@ export const useGameVote = () => {
 
   const onVoteForPlayer = useCallback(
     (userId: UserId) => {
-      if (!canVote || amIVoted || isVoting || !activeGameId || userId === myId) return;
+      const isTargetDead = activeGameKilledPlayers.includes(userId);
+
+      if (
+        !canVote ||
+        amIVoted ||
+        isVoting ||
+        !activeGameId ||
+        userId === myId ||
+        isTargetDead
+      )
+        return;
 
       addVoted({ targetUserId: userId, voterId: myId });
       voteForUser({
@@ -82,7 +93,16 @@ export const useGameVote = () => {
         voterId: myId,
       });
     },
-    [canVote, amIVoted, isVoting, activeGameId, myId, addVoted, voteForUser]
+    [
+      canVote,
+      amIVoted,
+      isVoting,
+      activeGameId,
+      myId,
+      activeGameKilledPlayers,
+      addVoted,
+      voteForUser,
+    ]
   );
 
   const { unmuteSpeaker } = useBatchMediaControls();
@@ -120,6 +140,7 @@ export const useGameVote = () => {
     proposed: gameFlow.proposed,
     proposedBy: gameFlow.proposedBy || {},
     voted: gameFlow.voted,
+    activeGameKilledPlayers,
     isReVote: gameFlow.isReVote,
     onToggle,
     onToggleVoting,

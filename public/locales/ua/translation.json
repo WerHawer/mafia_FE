@@ -117,6 +117,8 @@
     "night": "Ніч",
     "day": "День",
     "role": "Роль",
+    "collapsePlayerList": "Згорнути список",
+    "expandPlayerList": "Розгорнути список",
     "timer_placeholder": "Таймер з'явиться тут",
     "wakeUp": "Прокидайтеся:",
     "sleepAll": "Всі сплять",

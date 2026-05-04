@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo } from "react";
 
 import { PlayerPanelInfo } from "@/components/GameInfoSection/PlayerPanel/PlayerPanelInfo.tsx";
+import { PlayerDashboardGrid } from "@/components/GameInfoSection/PlayerPanel/PlayerDashboardGrid.tsx";
 import { rootStore } from "@/store/rootStore.ts";
 import { Roles } from "@/types/game.types.ts";
 
@@ -13,8 +14,9 @@ import styles from "./PlayerPanel.module.scss";
 
 export const PlayerPanel = observer(() => {
   const { gamesStore, usersStore, myRole } = rootStore;
-  const { gameFlow, activeGameRoles, isDealingComplete, isRoleRevealed } = gamesStore;
-  const { isStarted, isNight } = gameFlow;
+  const { gameFlow, activeGameRoles, isDealingComplete, isRoleRevealed } =
+    gamesStore;
+  const { isStarted } = gameFlow;
   const { myId } = usersStore;
 
   useEffect(() => {
@@ -73,7 +75,12 @@ export const PlayerPanel = observer(() => {
 
       {isStarted && !isDealingComplete ? <DealingAnimation /> : null}
 
-      {isStarted && isRoleRevealed ? <PlayerPanelInfo /> : null}
+      {isStarted && isRoleRevealed ? (
+        <div className={styles.panelContent}>
+          <PlayerPanelInfo />
+          <PlayerDashboardGrid />
+        </div>
+      ) : null}
     </div>
   );
 });

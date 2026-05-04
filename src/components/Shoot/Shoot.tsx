@@ -3,9 +3,9 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useRef } from "react";
 
 import brokenGlassIcon from "@/assets/icons/broken_glass.png";
+import { canSeeMafiaShot, isMafiaRole } from "@/helpers/mafiaShot.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { SoundEffect } from "@/store/soundStore.ts";
-import { Roles } from "@/types/game.types.ts";
 import { UserId } from "@/types/user.types.ts";
 
 import styles from "./Shoot.module.scss";
@@ -21,7 +21,7 @@ export const Shoot = observer(({ userId, clickPosition }: ShootProps) => {
   const { shoot = {} } = gameFlow;
   const { playSfx } = soundStore;
 
-  const isIMafia = myRole === Roles.Mafia || myRole === Roles.Don;
+  const isIMafia = isMafiaRole(myRole);
   const canHearShot = isIMafia || isIGM || gamesStore.isMeObserver;
   const myId = usersStore.myId;
   const entry = shoot[userId];
@@ -50,7 +50,7 @@ export const Shoot = observer(({ userId, clickPosition }: ShootProps) => {
     }
   }, [clickPosition, playSfx, canHearShot]);
 
-  const shouldSeeShot = isIMafia && gameFlow.isNight;
+  const shouldSeeShot = canSeeMafiaShot({ role: myRole, gameFlow });
   const hasAnything = !!clickPosition || serverShooters.length > 0;
 
   if (!shouldSeeShot || !hasAnything) return null;
@@ -82,7 +82,7 @@ export const Shoot = observer(({ userId, clickPosition }: ShootProps) => {
 
       {/* Other shooters — from server data, skip my own id */}
       {serverShooters.map((shooterId, index) => {
-        if (shooterId === myId) return null; // handled above
+        if (shooterId === myId && clickPosition) return null; // handled above
 
         const coords = serverShots[index];
         const style = coords ? { left: `${coords.x}%`, top: `${coords.y}%` } : {};

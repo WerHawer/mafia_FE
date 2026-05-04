@@ -1,0 +1,407 @@
+@use "../../../styles/theme.scss";
+@use "../../../styles/mixins.scss";
+
+@mixin role-action-glow-shoot {
+  border-color: rgba(theme.$color-error, 0.8);
+  box-shadow:
+    0 0 12px 3px rgba(theme.$color-error, 0.36),
+    inset 0 0 12px rgba(theme.$color-error, 0.16);
+}
+
+@mixin role-action-glow-kiss {
+  border-color: rgba(theme.$color-role-prostitute, 0.8);
+  box-shadow:
+    0 0 12px 3px rgba(theme.$color-role-prostitute, 0.36),
+    inset 0 0 12px rgba(theme.$color-role-prostitute, 0.14);
+}
+
+@mixin role-action-glow-heal {
+  border-color: rgba(theme.$color-role-doctor, 0.8);
+  box-shadow:
+    0 0 12px 3px rgba(theme.$color-role-doctor, 0.36),
+    inset 0 0 12px rgba(theme.$color-role-doctor, 0.14);
+}
+
+@mixin role-action-glow-check {
+  border-color: rgba(theme.$color-accent-secondary, 0.8);
+  box-shadow:
+    0 0 12px 3px rgba(theme.$color-accent-secondary, 0.36),
+    inset 0 0 12px rgba(theme.$color-accent-secondary, 0.14);
+}
+
+$player-dashboard-compact-grid-max-height: 105px; /* sync: PLAYER_LIST_COMPACT_MAX_HEIGHT_PX */
+
+.gridRoot {
+  @include mixins.flex(column, flex-start, stretch);
+  min-height: 0;
+  width: 100%;
+  gap: 4px;
+}
+
+.gridOuterWithCornerToggle {
+  position: relative;
+
+  .compactHeightToggle {
+    top: -1px;
+    right: -1px;
+    left: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.18s ease,
+      background 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  &:hover .compactHeightToggle,
+  &:focus-within .compactHeightToggle {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .compactHeightToggle:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.compactHeightToggle {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 19px;
+  height: 19px;
+  padding: 0;
+  margin: 0;
+  color: rgba(theme.$color-light-primary, 0.88);
+  cursor: pointer;
+  background: rgba(theme.$color-dark-primary, 0.78);
+  border: 1px solid rgba(theme.$color-light-primary, 0.18);
+  border-radius: 3px;
+
+  &:hover {
+    background: rgba(theme.$color-dark-primary, 0.9);
+    border-color: rgba(theme.$color-light-primary, 0.26);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(theme.$color-accent-tertiary, 0.55);
+    outline-offset: 1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gridOuterWithCornerToggle .compactHeightToggle {
+    transition:
+      opacity 0.08s ease,
+      background 0.12s ease,
+      border-color 0.12s ease;
+  }
+}
+
+.compactHeightToggleIcon {
+  font-size: 10px;
+}
+
+.gridOuter {
+  width: 100%;
+  min-height: 0;
+}
+
+.gridOuterShell {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  overflow: visible;
+}
+
+.gridListScrollViewport {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  @include mixins.customScrollbar();
+}
+
+.gridOuterShellMotion {
+  transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gridOuterShellMotion {
+    transition: none;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding-top: 4px;
+  list-style: none;
+}
+
+.gridScrollLocal {
+  @include mixins.customScrollbar();
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.gridInAnimatedShell {
+  overflow-x: visible;
+  overflow-y: visible;
+}
+
+.withBottomMargin {
+  margin-bottom: 16px;
+}
+
+.playerItem {
+  @include mixins.flex(column, flex-start, stretch);
+  @include mixins.rounded(theme.$border-radius);
+  position: relative;
+  gap: 2px;
+  min-width: 0;
+  padding: 5px 6px;
+  background: rgba(theme.$color-light-primary, 0.04);
+  border: 1px solid rgba(theme.$color-light-primary, 0.06);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease,
+    transform 0.15s ease;
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(theme.$color-light-primary, 0.09);
+      border-color: rgba(theme.$color-light-primary, 0.12);
+      transform: translateY(-1px);
+    }
+  }
+
+  &.unavailable {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(theme.$color-light-primary, 0.02);
+    border: 1px dashed rgba(theme.$color-light-primary, 0.15);
+  }
+
+  &.dead {
+    filter: grayscale(0.85);
+
+    .playerName {
+      text-decoration: line-through;
+    }
+  }
+
+  &.speaker {
+    border-color: rgba(theme.$color-accent-tertiary, 0.6);
+    animation: speakerPulse 1.8s ease-in-out infinite;
+  }
+
+  &.voted {
+    border-color: rgba(theme.$color-accent-tertiary, 0.35);
+    background: rgba(theme.$color-accent-tertiary, 0.07);
+  }
+
+  &.shootable {
+    /* noinspection CssUnknownTarget */
+    cursor:
+      url("../../../assets/cursors/aim_small.svg") 10 10,
+      crosshair !important;
+
+    &:hover {
+      @include role-action-glow-shoot;
+    }
+  }
+
+  &.kissable {
+    /* noinspection CssUnknownTarget */
+    cursor:
+      url("../../../assets/cursors/kiss.svg") 16 16,
+      pointer !important;
+
+    &:hover {
+      @include role-action-glow-kiss;
+    }
+  }
+
+  &.healable {
+    /* noinspection CssUnknownTarget */
+    cursor:
+      url("../../../assets/cursors/doctor_small.svg") 10 10,
+      pointer !important;
+
+    &:hover {
+      @include role-action-glow-heal;
+    }
+  }
+
+  &.checkable {
+    /* noinspection CssUnknownTarget */
+    cursor:
+      url("../../../assets/cursors/question.svg") 16 16,
+      help !important;
+
+    &:hover {
+      @include role-action-glow-check;
+    }
+  }
+}
+
+.playerMain {
+  @include mixins.flex(row, space-between, center);
+  gap: 6px;
+  min-width: 0;
+}
+
+.playerIdentity {
+  @include mixins.flex(row, flex-start, center);
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.playerNumber {
+  flex-shrink: 0;
+  color: theme.$color-accent-tertiary;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.playerName,
+.candidateName,
+.proposerName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playerName {
+  flex: 1;
+  min-width: 0;
+  color: theme.$color-text-primary;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.ghostIcon {
+  flex-shrink: 0;
+  color: #c39bd3;
+  font-size: 1.2rem;
+  line-height: 1;
+  filter: none;
+}
+
+.actionState {
+  @include mixins.flex(row, flex-end, center);
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.shotIconWrapper {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.shotIcon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.55;
+}
+
+.shotIconActive {
+  opacity: 1;
+}
+
+.shotCount {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: theme.$color-error;
+  color: theme.$color-text-primary;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px;
+}
+
+.voteIcon {
+  @include mixins.flex(row, center, center);
+  gap: 2px;
+  color: theme.$color-text-secondary;
+  font-size: 1.35rem;
+}
+
+.voteIconActive {
+  color: theme.$color-accent-tertiary;
+}
+
+.voteIconClickable {
+  color: theme.$color-light-secondary;
+}
+
+.voteCount {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.proposeFlow {
+  @include mixins.flex(row, flex-start, center);
+  gap: 3px;
+  min-width: 0;
+  color: theme.$color-text-secondary;
+  font-size: 1.05rem;
+}
+
+.proposerName {
+  max-width: 100%;
+  color: theme.$color-accent-tertiary;
+  font-weight: 600;
+}
+
+.candidateName {
+  color: theme.$color-text-primary;
+  font-weight: 600;
+}
+
+.votersRow {
+  color: theme.$color-text-secondary;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+.investigateResult {
+  color: theme.$color-light-primary;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+@keyframes speakerPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(theme.$color-accent-tertiary, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 12px rgba(theme.$color-accent-tertiary, 0.35);
+  }
+}

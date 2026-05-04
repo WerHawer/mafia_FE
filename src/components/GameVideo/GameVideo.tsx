@@ -100,6 +100,9 @@ export const GameVideo = observer(
     } = useGameVideo({ participant, isMyStream });
 
     const { soundStore } = rootStore;
+    const investigatePreview = rootStore.investigatePreview;
+    const sharedInvestigatePreview =
+      investigatePreview?.targetUserId === userId ? investigatePreview : null;
     const isSpeaking = useIsSpeaking(participant);
     const isSpeaker = gameFlow.speaker === userId;
     const shouldShowSpeakerTimer = isSpeaker;
@@ -113,6 +116,7 @@ export const GameVideo = observer(
         setInvestigateResult(null);
         setInvestigateDanger(false);
         setInvestigateRole(null);
+        rootStore.clearInvestigatePreview();
       }
     }, [gameFlow.isNight]);
 
@@ -147,10 +151,13 @@ export const GameVideo = observer(
       if (isInvestigateEnabled) {
         const res = onInvestigateUser();
         if (res) {
-          setInvestigatePos({ x, y });
-          setInvestigateResult(res.result);
-          setInvestigateDanger(res.isFound);
-          setInvestigateRole(res.role ?? null);
+          rootStore.showInvestigatePreview({
+            targetUserId: userId,
+            clickPosition: { x, y },
+            result: res.result,
+            isFound: res.isFound,
+            role: res.role,
+          });
           soundStore.playSfx(SoundEffect.Check);
         }
       }
@@ -203,10 +210,13 @@ export const GameVideo = observer(
         <HealEffect userId={userId} clickPosition={healPos} />
         <ImmunityBadge userId={userId} />
         <InvestigateEffect
-          clickPosition={investigatePos}
-          result={investigateResult}
-          isFound={investigateDanger}
-          role={investigateRole ?? undefined}
+          key={sharedInvestigatePreview?.nonce}
+          clickPosition={
+            sharedInvestigatePreview?.clickPosition ?? investigatePos
+          }
+          result={sharedInvestigatePreview?.result ?? investigateResult}
+          isFound={sharedInvestigatePreview?.isFound ?? investigateDanger}
+          role={sharedInvestigatePreview?.role ?? investigateRole ?? undefined}
         />
 
         <div className={styles.gmIconContainer}>

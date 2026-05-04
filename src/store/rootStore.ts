@@ -7,6 +7,16 @@ import { StreamStore, streamStore } from "@/store/streamsStore.ts";
 import { UsersStore, usersStore } from "@/store/usersStore.ts";
 import { SoundStore, soundStore } from "@/store/soundStore.ts";
 import { Roles } from "@/types/game.types.ts";
+import { UserId } from "@/types/user.types.ts";
+
+type InvestigatePreview = {
+  targetUserId: UserId;
+  clickPosition: { x: number; y: number };
+  result: string;
+  isFound: boolean;
+  role?: Roles;
+  nonce: number;
+};
 
 class RootStore {
   _usersStore: UsersStore;
@@ -15,6 +25,7 @@ class RootStore {
   _modalStore: ModalStore;
   _streamsStore: StreamStore;
   _soundStore: SoundStore;
+  investigatePreview: InvestigatePreview | null = null;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -98,6 +109,17 @@ class RootStore {
 
   get isIDoctor() {
     return toJS(this.myRole === Roles.Doctor);
+  }
+
+  showInvestigatePreview(preview: Omit<InvestigatePreview, "nonce">) {
+    this.investigatePreview = {
+      ...preview,
+      nonce: Date.now(),
+    };
+  }
+
+  clearInvestigatePreview() {
+    this.investigatePreview = null;
   }
 }
 

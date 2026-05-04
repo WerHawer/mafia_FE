@@ -5,9 +5,9 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
-  useAddUserToProposedMutation,
   useVoteForUserMutation,
 } from "@/api/game/queries.ts";
+import { useSpeechProposePlayer } from "@/hooks/useSpeechProposePlayer.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { SoundEffect } from "@/store/soundStore.ts";
 import { UserId } from "@/types/user.types.ts";
@@ -23,26 +23,18 @@ type VoteFlowProps = {
 
 export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   const { t } = useTranslation();
-  const { usersStore, gamesStore, isIGM, isIDead, isISpeaker, soundStore } =
-    rootStore;
+  const { usersStore, gamesStore, isIGM, isIDead, soundStore } = rootStore;
   const { myId, getUser } = usersStore;
-  const {
-    isUserGM,
-    speaker,
-    gameFlow,
-    activeGameAlivePlayers,
-    activeGameId,
-    setToProposed,
-    addVoted,
-  } = gamesStore;
-  const { isVote, isReVote, proposed, voted, isExtraSpeech } = gameFlow;
+  const { gameFlow, activeGameId, addVoted } = gamesStore;
+  const { isVote, isReVote, proposed, voted } = gameFlow;
   const isVotingActive = isVote || isReVote;
-  const isImmune = gamesStore.isUserImmune(userId);
+  const isTargetDead = gamesStore.activeGameKilledPlayers.includes(userId);
   const { isIBlocked } = rootStore;
   const { playSfx } = soundStore;
   const { mutate: voteForUser, isPending: isVoting } = useVoteForUserMutation();
-  const { mutate: addUserToProposed, isPending: isAddingToProposed } =
-    useAddUserToProposedMutation();
+  const { canPropose, onPropose } = useSpeechProposePlayer({
+    userId,
+  });
 
   const votesForThisUser = useMemo(
     () => voted?.[userId] ?? [],
@@ -60,10 +52,6 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     [proposed, userId]
   );
 
-  const isThisUserProposed = useMemo(() => {
-    return proposed.includes(userId);
-  }, [proposed, userId]);
-
   const isVotedByThisUser = useMemo(() => {
     return amIVoted && votesForThisUser.includes(myId);
   }, [amIVoted, votesForThisUser, myId]);
@@ -74,29 +62,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     ? getUser(proposerId)?.nikName || "Anonimus"
     : undefined;
 
-  const isCurrentUserGM = isUserGM(userId);
-
-  // The current speaker already used their "propose" quota this round
-  const speakerAlreadyProposed = Object.values(
-    gameFlow.proposedBy || {}
-  ).includes(speaker);
-
-  /**
-   * INTERACTIVE propose button: visible ONLY to the current speaker or GM,
-   * and ONLY when no one has been proposed yet for this speech.
-   * Once the quota is used OR this specific player is already proposed → hidden.
-   */
-  const shouldShowInteractiveProposeBtn =
-    !!speaker &&
-    (isISpeaker || isIGM) &&
-    userId !== speaker &&
-    !isCurrentUserGM &&
-    !isExtraSpeech &&
-    !isIDead &&
-    !isImmune &&
-    !speakerAlreadyProposed &&
-    !isThisUserProposed &&
-    gameFlow.day > 1;
+  const shouldShowInteractiveProposeBtn = canPropose;
 
   /**
    * STATIC proposed badge: visible to ALL users once this player has been proposed,
@@ -114,42 +80,12 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     userId !== myId &&
     !isIGM &&
     !isIDead &&
+    !isTargetDead &&
     !isIBlocked;
-
-  const onPropose = useCallback(() => {
-    // Block even if GM clicks, when speaker quota is already used
-    if (
-      (myId !== speaker && !isUserGM(myId)) ||
-      !userId ||
-      !activeGameId ||
-      isThisUserProposed ||
-      speakerAlreadyProposed ||
-      isAddingToProposed ||
-      isImmune ||
-      gameFlow.day <= 1
-    )
-      return;
-
-    setToProposed(userId, speaker);
-    addUserToProposed({ gameId: activeGameId, userId, proposerId: speaker });
-  }, [
-    activeGameId,
-    addUserToProposed,
-    isThisUserProposed,
-    speakerAlreadyProposed,
-    isAddingToProposed,
-    isImmune,
-    isUserGM,
-    myId,
-    setToProposed,
-    speaker,
-    userId,
-    gameFlow.day,
-  ]);
 
   const onVote = useCallback(() => {
     if (!userId || !myId || !activeGameId || userId === myId) return;
-    if (amIVoted || isIGM || isIBlocked || isVoting) return;
+    if (amIVoted || isIGM || isIBlocked || isVoting || isTargetDead) return;
 
     addVoted({ targetUserId: userId, voterId: myId });
     voteForUser({
@@ -166,6 +102,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     isIGM,
     isIBlocked,
     isVoting,
+    isTargetDead,
     addVoted,
     voteForUser,
     playSfx,
@@ -240,7 +177,8 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
       )}
 
       {/* Info list — proposer shown only before voting; voters shown if there are any votes */}
-      {((!isVotingActive && !hasVotingOccurred && proposerName) || votesForThisUser.length > 0) && (
+      {((!isVotingActive && !hasVotingOccurred && proposerName) ||
+        votesForThisUser.length > 0) && (
         <ul className={styles.voteList}>
           {!isVotingActive && !hasVotingOccurred && proposerName && (
             <li className={styles.proposerItem}>⬆️ {proposerName}</li>
