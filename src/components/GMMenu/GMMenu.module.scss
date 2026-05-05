@@ -1,5 +1,4 @@
 @use "../../styles/theme.scss" as theme;
-
 @use "../../styles/mixins.scss";
 
 .gmMenuContainer {
@@ -27,5 +26,48 @@
 
   &:active {
     transform: scale(0.95);
+  }
+}
+
+// TODO: remove — temporary test-users count picker
+.testUsersSection {
+  padding: 0.8rem 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.testUsersLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.4rem;
+  color: theme.$color-text-secondary;
+  white-space: nowrap;
+}
+
+.testUsersCountRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.testUsersCountBtn {
+  flex: 1;
+  padding: 0.5rem 0;
+  background: rgba(theme.$color-light-primary, 0.08);
+  border: 1px solid rgba(theme.$color-light-primary, 0.15);
+  border-radius: theme.$border-radius;
+  color: theme.$color-text-primary;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(theme.$color-light-primary, 0.18);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
   }
 }

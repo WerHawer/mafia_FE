@@ -28,6 +28,12 @@
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(3, 1fr);
   }
+
+  // >10 players + active speaker: small row / big speaker / small row
+  &.sandwichGrid {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+  }
 }
 
 // Explicit class for motion.div grid cells — avoids bleeding into fixed-position videos

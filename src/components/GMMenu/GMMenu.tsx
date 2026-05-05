@@ -1,35 +1,30 @@
 import {
   AudioMutedOutlined,
   AudioOutlined,
-  CrownOutlined,
+  CheckCircleOutlined,
+  ExperimentOutlined,
   EyeInvisibleOutlined,
   EyeOutlined,
   LogoutOutlined,
   MoreOutlined,
   ReloadOutlined,
   SettingOutlined,
-  SoundOutlined,
-  VideoCameraAddOutlined,
-  CheckCircleOutlined,
 } from "@ant-design/icons";
+import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Tippy from "@tippyjs/react";
 import { useTranslation } from "react-i18next";
 
-import { useGMMenu } from "@/hooks/useGMMenu.ts";
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
+import { useGMMenu } from "@/hooks/useGMMenu.ts";
 import { modalStore } from "@/store/modalStore.ts";
 import { Dropdown, Menu, MenuItem, MenuSeparator } from "@/UI";
 
 import styles from "./GMMenu.module.scss";
 
-type GMMenuProps = {
-  onOpenVideoConfig: () => void;
-  onOpenAudioConfig: () => void;
-};
+const TEST_USER_PRESETS = [3, 5, 7, 9, 11] as const;
 
-export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenuProps) => {
+export const GMMenu = observer(() => {
   const { t } = useTranslation();
   const { openModal } = modalStore;
   const {
@@ -37,7 +32,6 @@ export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenu
     setIsMenuOpen,
     isIGM,
     gameFlow,
-    onMakeMeGM,
     onMuteAll,
     onUnmuteAll,
     onDisableAllCameras,
@@ -45,13 +39,20 @@ export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenu
     onRestartGame,
     onFinishGame,
     onLeaveGame,
+    // TODO: remove — temporary for layout stress-testing
+    onAddTestUsers,
+    isAddingTestUsers,
   } = useGMMenu();
 
   return (
     <div className={styles.gmMenuContainer}>
       <Dropdown
         trigger={
-          <Tippy content={t("gmMenu.title")} delay={[500, 0]} theme="role-tooltip">
+          <Tippy
+            content={t("gmMenu.title")}
+            delay={[500, 0]}
+            theme="role-tooltip"
+          >
             <button
               className={classNames(styles.controlBtn, {
                 [styles.active]: isMenuOpen,
@@ -65,14 +66,6 @@ export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenu
         }
         content={
           <Menu>
-            {/*{!isIGM && (*/}
-            {/*  <MenuItem*/}
-            {/*    icon={<CrownOutlined />}*/}
-            {/*    label={t("gmMenu.makeMeGM")}*/}
-            {/*    onClick={onMakeMeGM}*/}
-            {/*  />*/}
-            {/*)}*/}
-
             {isIGM && (
               <>
                 <MenuItem
@@ -106,7 +99,7 @@ export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenu
                     <MenuSeparator />
                     <MenuItem
                       icon={<SettingOutlined />}
-                      label={t("game.settings", "Налаштування гри")}
+                      label={t("game.settings")}
                       onClick={() => {
                         setIsMenuOpen(false);
                         openModal(ModalNames.GameSettingsModal, {});
@@ -136,6 +129,34 @@ export const GMMenu = observer(({ onOpenVideoConfig, onOpenAudioConfig }: GMMenu
                 <MenuSeparator />
               </>
             )}
+
+            {/* TODO: remove — temporary layout stress test */}
+            {/* <div className={styles.testUsersSection}>
+              <span className={styles.testUsersLabel}>
+                <ExperimentOutlined />
+                {isAddingTestUsers
+                  ? t("gmMenu.addTestUsersLoading")
+                  : t("gmMenu.addTestUsers")}
+              </span>
+              <div className={styles.testUsersCountRow}>
+                {TEST_USER_PRESETS.map((count) => (
+                  <button
+                    key={count}
+                    className={styles.testUsersCountBtn}
+                    onClick={() => {
+                      onAddTestUsers(count);
+                      setIsMenuOpen(false);
+                    }}
+                    disabled={isAddingTestUsers}
+                    aria-label={`Add ${count} test players`}
+                  >
+                    {count}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <MenuSeparator /> */}
 
             <MenuItem
               icon={<LogoutOutlined />}

@@ -12,9 +12,9 @@ import { useMockStreams } from "@/hooks/useMockStreams.ts";
 import { routes } from "@/router/routs.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
+import styles from "./GameBottomBar.module.scss";
 import { GameReactionsBar } from "./GameReactionsBar";
 import { SelfMediaControlsBar } from "./SelfMediaControlsBar";
-import styles from "./GameBottomBar.module.scss";
 
 type GameBottomBarProps = {
   isJoinedToGame: boolean;
@@ -58,7 +58,11 @@ export const GameBottomBar = observer(
     }, [isJoinedToGame, allTracks.length, isNight, isIGM]);
 
     return (
-      <div className={classNames(styles.bottomBar, { [styles.bottomBarVisible]: isVisible })}>
+      <div
+        className={classNames(styles.bottomBar, {
+          [styles.bottomBarVisible]: isVisible,
+        })}
+      >
         <SelfMediaControlsBar
           videoDeviceId={videoDeviceId}
           audioInputDeviceId={audioInputDeviceId}
@@ -77,12 +81,13 @@ export const GameBottomBar = observer(
         <div className={styles.divider} />
 
         {isIGM ? (
-          <GMMenu
-            onOpenVideoConfig={onOpenVideoConfig}
-            onOpenAudioConfig={onOpenAudioConfig}
-          />
+          <GMMenu />
         ) : (
-          <Tippy content={t("gmMenu.leaveGame")} delay={[500, 0]} theme="role-tooltip">
+          <Tippy
+            content={t("gmMenu.leaveGame")}
+            delay={[500, 0]}
+            theme="role-tooltip"
+          >
             <button
               className={classNames(styles.controlBtn, styles.danger)}
               onClick={() => navigate(routes.home)}

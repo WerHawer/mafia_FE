@@ -1,6 +1,6 @@
 import { useTracks } from "@livekit/components-react";
 import { Participant, Track } from "livekit-client";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
@@ -38,9 +38,8 @@ const createMockParticipant = (identity: string, name: string): Participant => {
 export const useMockStreams = () => {
   const { usersStore, gamesStore } = rootStore;
   const { myId, getUser } = usersStore;
-  const { activeGamePlayers } = gamesStore;
+  const { activeGamePlayers, mockStreamsEnabled, setMockStreamsEnabled } = gamesStore;
   const tracks = useTracks([Track.Source.Camera]);
-  const [mockStreamsEnabled, setMockStreamsEnabled] = useState(false);
 
   // Find my current track for cloning
   const myTrack = useMemo(() => {
@@ -48,9 +47,12 @@ export const useMockStreams = () => {
       ?.track;
   }, [tracks]);
 
-  // Create mock participants based on activeGamePlayers
+  // Create mock participants based on activeGamePlayers.
+  // myTrack is used when available (clones local camera to all containers),
+  // but is no longer required — omitting it renders avatar/name placeholders
+  // which is sufficient for layout stress-testing.
   const mockTracks = useMemo(() => {
-    if (!mockStreamsEnabled || !myTrack || !activeGamePlayers.length) {
+    if (!mockStreamsEnabled || !activeGamePlayers.length) {
       return [];
     }
 
@@ -67,13 +69,18 @@ export const useMockStreams = () => {
 
         return {
           participant: mockParticipant,
-          publication: {
-            track: myTrack, // Use my video track for all mock streams
-            source: Track.Source.Camera,
-            kind: Track.Kind.Video,
-            trackSid: `mock_${playerId}_track`,
-            trackName: `mock_${playerId}_camera`,
-          },
+          // When myTrack exists, clone the local stream into every container.
+          // When it is undefined the publication resolves to null and GameVideo
+          // falls back to an avatar/name placeholder — fine for layout testing.
+          publication: myTrack
+            ? {
+                track: myTrack,
+                source: Track.Source.Camera,
+                kind: Track.Kind.Video,
+                trackSid: `mock_${playerId}_track`,
+                trackName: `mock_${playerId}_camera`,
+              }
+            : null,
           source: Track.Source.Camera,
         };
       });
@@ -99,7 +106,7 @@ export const useMockStreams = () => {
         : "Disabled mock streams"
     );
     console.log("Active players:", activeGamePlayers);
-  }, [activeGamePlayers, mockStreamsEnabled]);
+  }, [activeGamePlayers, mockStreamsEnabled, setMockStreamsEnabled]);
 
   return {
     mockStreamsEnabled,

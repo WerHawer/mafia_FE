@@ -276,7 +276,9 @@
     "finishGame": "Finish Game",
     "videoSettings": "Video Settings",
     "audioSettings": "Audio Settings",
-    "leaveGame": "Leave Game"
+    "leaveGame": "Leave Game",
+    "addTestUsers": "Add Test Users",
+    "addTestUsersLoading": "Adding test users…"
   },
 
   "confirmRestartModal": {

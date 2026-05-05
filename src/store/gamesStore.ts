@@ -24,6 +24,8 @@ export class GamesStore {
   // Persisted UI state — survives component unmount/remount during voting
   isDealingComplete: boolean = false;
   isRoleRevealed: boolean = false;
+  // TODO: remove — shared flag for layout stress-test mock streams
+  mockStreamsEnabled: boolean = false;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -79,6 +81,12 @@ export class GamesStore {
     this.forceMutedUsers = [];
     this.isDealingComplete = false;
     this.isRoleRevealed = false;
+    this.mockStreamsEnabled = false;
+  }
+
+  // TODO: remove — toggled by the test users feature for layout stress-testing
+  setMockStreamsEnabled(enabled: boolean) {
+    this.mockStreamsEnabled = enabled;
   }
 
   setForceMutedUser(userId: UserId, isMuted: boolean) {

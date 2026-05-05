@@ -108,6 +108,7 @@ export const GameVideoContainer = observer(
             [styles.threeGrid]: gridLayout.three,
             [styles.fourGrid]: gridLayout.four,
             [styles.fiveGrid]: gridLayout.five,
+            [styles.sandwichGrid]: gridLayout.sandwich,
           },
           className
         )}

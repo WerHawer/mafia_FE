@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { updateGameGM } from "@/api/game/api.ts";
 import { useFinishGameMutation, useRestartGameMutation } from "@/api/game/queries.ts";
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
+import { useAddTestUsers } from "@/hooks/useAddTestUsers.ts";
 import { useBatchMediaControls } from "@/hooks/useBatchMediaControls.ts";
 import { useMockStreams } from "@/hooks/useMockStreams.ts";
 import { routes } from "@/router/routs.ts";
@@ -21,6 +22,8 @@ export const useGMMenu = () => {
   const { mockStreamsEnabled, handleToggleMockStreams } = useMockStreams();
   const { mutate: restartGame } = useRestartGameMutation();
   const { mutate: finishGame } = useFinishGameMutation();
+  // TODO: remove — temporary for layout stress-testing
+  const { onAddTestUsers, isAddingTestUsers } = useAddTestUsers();
 
   const onMakeMeGM = useCallback(async () => {
     if (!activeGameId || !myId) return;
@@ -97,5 +100,8 @@ export const useGMMenu = () => {
     onRestartGame,
     onFinishGame,
     onLeaveGame,
+    // TODO: remove — temporary for layout stress-testing
+    onAddTestUsers,
+    isAddingTestUsers,
   };
 };

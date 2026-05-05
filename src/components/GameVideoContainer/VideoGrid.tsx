@@ -2,6 +2,7 @@ import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 
+import { useGridLayout } from "@/hooks/useGridLayout.ts";
 import { useMockStreams } from "@/hooks/useMockStreams";
 import { useNightMode } from "@/hooks/useNightMode.ts";
 import { rootStore } from "@/store/rootStore.ts";
@@ -18,6 +19,7 @@ export const VideoGrid = observer(() => {
   const { speaker } = gamesStore;
   const { shouldShowMyVideo, shouldShowPlayerVideo } = useNightMode();
   const { allTracks } = useMockStreams();
+  const { sandwich } = useGridLayout();
 
   const isGameStarted = gamesStore.gameFlow.isStarted;
 
@@ -94,7 +96,13 @@ export const VideoGrid = observer(() => {
               layout={true}
               className={styles.gridCell}
               style={
-                isActive ? { gridColumn: "2 / 5", gridRow: "1 / 3" } : undefined
+                isActive
+                  ? {
+                      gridColumn: "2 / 5",
+                      // sandwich: speaker spans rows 2–3 (2 rows tall) in a 4-row grid
+                      gridRow: sandwich ? "2 / 4" : "1 / 3",
+                    }
+                  : undefined
               }
               transition={VIDEO_TRANSITION}
               initial={{ opacity: 0, scale: 0.95 }}
