@@ -63,11 +63,20 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
     closeModal();
   }, [closeModal, newProposed, updateGameFlow]);
 
+  // We use refs to read the latest state in the cleanup function without
+  // adding them to useEffect dependencies. This prevents the cleanup from
+  // executing prematurely when newProposed recalculates during game updates.
+  const isReVoteRef = useRef(gameFlow.isReVote);
+  isReVoteRef.current = gameFlow.isReVote;
+
+  const newProposedRef = useRef(newProposed);
+  newProposedRef.current = newProposed;
+
   // Fallback: if modal is closed (e.g., overlay click) without choosing an action
   useEffect(() => {
     return () => {
       if (!actionTakenRef.current) {
-        if (gameFlow.isReVote) {
+        if (isReVoteRef.current) {
           updateGameFlow({
             isVote: false,
             isReVote: false,
@@ -77,14 +86,14 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
           });
         } else {
           updateGameFlow({
-            proposed: newProposed,
+            proposed: newProposedRef.current,
             isReVote: true,
             isVote: false,
           });
         }
       }
     };
-  }, [gameFlow.isReVote, newProposed, updateGameFlow]);
+  }, [updateGameFlow]);
 
   return (
     <div className={styles.container}>

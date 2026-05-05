@@ -165,7 +165,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
                 size={ButtonSize.Small}
                 variant={ButtonVariant.Secondary}
                 onClick={shouldShowVoteIcon ? onVote : undefined}
-                isVoted={isVotedByThisUser || votesForThisUser.length > 0}
+                isVoted={isVotedByThisUser}
               />
             </div>
           </Tippy>

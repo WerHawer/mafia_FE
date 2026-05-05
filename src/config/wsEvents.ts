@@ -41,4 +41,5 @@ export enum wsEvents {
   gameNotFound = "gameNotFound",
   gmChanged = "gmChanged",
   setObserverMode = "setObserverMode",
+  voteTimerExpired = "voteTimerExpired",
 }

@@ -31,8 +31,8 @@ export const GameVideoContainer = observer(
     const { isVote, isReVote, voted, votesTime, prostituteBlock } = gameFlow;
     const { t } = useTranslation();
 
-    // Called ONCE here (not in every VoteFlow instance) to prevent randomVote firing N times
-    useVoteResult({ alivePlayers: activeGameAlivePlayers, isIGM });
+    // Called ONCE here (not in every VoteFlow instance) so the WS subscription is registered once.
+    useVoteResult();
 
     // Show toast when voting round starts (isVote: false → true)
     const prevIsVoteRef = useRef(isVote);

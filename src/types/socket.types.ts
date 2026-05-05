@@ -184,6 +184,8 @@ export interface WSSubscribedEventData {
   [wsEvents.manualWake]: { userId: UserId };
   [wsEvents.gameReaction]: { userId: UserId; userName: string; emoji: string };
   [wsEvents.gameNotFound]: { roomId: GameId };
+  [wsEvents.voteTimerExpired]: { gameId: GameId; finalVoted: { [candidateId: string]: string[] } };
+  [wsEvents.gmChanged]: { newGMId: UserId; reason: string };
 }
 
 export type SubscribeEvent = keyof WSSubscribedEventData;
