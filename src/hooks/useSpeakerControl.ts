@@ -17,6 +17,7 @@ export const useSpeakerControl = () => {
   const { getUserName } = usersStore;
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
   const previousSpeakerRef = useRef<UserId | null>(null);
+  const speechRoundFirstSpeakerRef = useRef<UserId | null>(null);
 
   const { muteAllExceptSpeaker, muteSpeaker, unmuteSpeaker } =
     useBatchMediaControls();
@@ -86,8 +87,9 @@ export const useSpeakerControl = () => {
       attempts++;
     }
 
-    const speaker = activeGamePlayersWithoutGM[index];
-    updateSpeaker(speaker, true); // true - це перший спікер
+    const speakerUserId = activeGamePlayersWithoutGM[index];
+    speechRoundFirstSpeakerRef.current = speakerUserId;
+    updateSpeaker(speakerUserId, true); // true - це перший спікер
   }, [
     hasSpeaker,
     activeGamePlayersWithoutGM,
@@ -100,18 +102,36 @@ export const useSpeakerControl = () => {
   const onNextSpeaker = useCallback(() => {
     if (!hasSpeaker || eligiblePlayers.length === 0) return;
 
+    const n = eligiblePlayers.length;
+    if (n <= 1) return;
+
     const currentSpeakerIndex = eligiblePlayers.findIndex(
       (player) => player === gameFlow.speaker
     );
 
-    // If current speaker is not in eligibleList (e.g. was just blocked), we start from 0
-    const nextIndex = currentSpeakerIndex === -1 ? 0 : currentSpeakerIndex + 1;
-    const speaker = nextIndex >= eligiblePlayers.length
-        ? eligiblePlayers[0]
-        : eligiblePlayers[nextIndex];
+    const nextIndex =
+      currentSpeakerIndex === -1 ? 0 : (currentSpeakerIndex + 1) % n;
 
-    updateSpeaker(speaker);
-  }, [eligiblePlayers, gameFlow.speaker, hasSpeaker, updateSpeaker]);
+    const firstRoundSpeakerId = speechRoundFirstSpeakerRef.current;
+    const restrictRoundAdvance =
+      !gameFlow.isExtraSpeech &&
+      Boolean(firstRoundSpeakerId) &&
+      currentSpeakerIndex !== -1;
+
+    if (restrictRoundAdvance && firstRoundSpeakerId) {
+      const firstIdxInRound = eligiblePlayers.indexOf(firstRoundSpeakerId);
+
+      if (firstIdxInRound !== -1 && nextIndex === firstIdxInRound) return;
+    }
+
+    updateSpeaker(eligiblePlayers[nextIndex]);
+  }, [
+    eligiblePlayers,
+    gameFlow.isExtraSpeech,
+    gameFlow.speaker,
+    hasSpeaker,
+    updateSpeaker,
+  ]);
 
   const onPreviousSpeaker = useCallback(() => {
     if (!hasSpeaker || eligiblePlayers.length === 0) return;
@@ -130,6 +150,8 @@ export const useSpeakerControl = () => {
   }, [eligiblePlayers, gameFlow.speaker, hasSpeaker, updateSpeaker]);
 
   const onStopSpeeches = useCallback(() => {
+    speechRoundFirstSpeakerRef.current = null;
+
     updateGameFlow({
       speaker: "",
       isExtraSpeech: false,
@@ -139,12 +161,36 @@ export const useSpeakerControl = () => {
     previousSpeakerRef.current = null;
   }, [updateGameFlow, muteSpeaker]);
 
+  const firstRoundSpeakerId = speechRoundFirstSpeakerRef.current;
+
+  let canGoNextSpeaker = hasSpeaker && eligiblePlayers.length > 0;
+
+  if (canGoNextSpeaker) {
+    const n = eligiblePlayers.length;
+
+    if (n <= 1) {
+      canGoNextSpeaker = false;
+    } else if (!gameFlow.isExtraSpeech && firstRoundSpeakerId) {
+      const currentIdx = eligiblePlayers.indexOf(gameFlow.speaker);
+      const firstIdx = eligiblePlayers.indexOf(firstRoundSpeakerId);
+
+      if (currentIdx !== -1 && firstIdx !== -1) {
+        const nextIdx = (currentIdx + 1) % n;
+
+        if (nextIdx === firstIdx) {
+          canGoNextSpeaker = false;
+        }
+      }
+    }
+  }
+
   return {
     speakerName,
     hasSpeaker,
     isVote: gameFlow.isVote,
     speaker: gameFlow.speaker,
     speakTime: gameFlow.isReVote ? gameFlow.candidateSpeakTime : gameFlow.speakTime,
+    canGoNextSpeaker,
     onStartSpeeches,
     onNextSpeaker,
     onPreviousSpeaker,

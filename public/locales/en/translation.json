@@ -135,7 +135,8 @@
     "startSpeeches": "Start speeches",
     "stopSpeeches": "Stop speeches",
     "nextSpeaker": "Next speaker",
-    "previousSpeaker": "Previous speaker"
+    "previousSpeaker": "Previous speaker",
+    "noNextSpeakerRoundComplete": "All living players have already spoken in this circle; there is no next speaker"
   },
 
   "vote": {

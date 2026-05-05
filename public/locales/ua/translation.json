@@ -137,7 +137,8 @@
     "startSpeeches": "Почати промови",
     "stopSpeeches": "Зупинити промови",
     "nextSpeaker": "Наступний спікер",
-    "previousSpeaker": "Попередній спікер"
+    "previousSpeaker": "Попередній спікер",
+    "noNextSpeakerRoundComplete": "Усі живі гравці вже мали слово в цьому колі; наступного спікера немає"
   },
 
   "vote": {

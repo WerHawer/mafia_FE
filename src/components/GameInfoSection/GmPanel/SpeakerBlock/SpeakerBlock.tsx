@@ -21,6 +21,7 @@ export const SpeakerBlock = observer(() => {
     speakerName,
     hasSpeaker,
     isVote,
+    canGoNextSpeaker,
     onStartSpeeches,
     onNextSpeaker,
     onPreviousSpeaker,
@@ -47,7 +48,13 @@ export const SpeakerBlock = observer(() => {
     return () => resizeObserver.disconnect();
   }, [speakerName]);
 
-  if (isVote) return null;
+  if (isVote) {
+
+    return null;
+  }
+
+  const isNextSpeakerDisabled = !hasSpeaker || !canGoNextSpeaker;
+  const showNextSpeakerRoundCompleteHint = hasSpeaker && !canGoNextSpeaker;
 
   const onToggleSpeeches = () => {
     if (hasSpeaker) {
@@ -80,12 +87,28 @@ export const SpeakerBlock = observer(() => {
           active={hasSpeaker}
         />
 
-        <IconButton
-          icon={<StepForwardOutlined />}
-          onClick={onNextSpeaker}
-          disabled={!hasSpeaker}
-          ariaLabel={t("speaker.nextSpeaker")}
-        />
+        <Tippy
+          content={t("speaker.noNextSpeakerRoundComplete")}
+          disabled={!showNextSpeakerRoundCompleteHint}
+          placement="top"
+          theme="role-tooltip"
+          animation="scale"
+          duration={[200, 150]}
+          delay={[500, 0]}
+        >
+          <span className={styles.nextSpeakerButtonAnchor}>
+            <IconButton
+              icon={<StepForwardOutlined />}
+              onClick={onNextSpeaker}
+              disabled={isNextSpeakerDisabled}
+              ariaLabel={
+                showNextSpeakerRoundCompleteHint
+                  ? t("speaker.noNextSpeakerRoundComplete")
+                  : t("speaker.nextSpeaker")
+              }
+            />
+          </span>
+        </Tippy>
       </div>
 
       {speakerName && (
