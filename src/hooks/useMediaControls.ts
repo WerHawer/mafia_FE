@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
 import { wsEvents } from "@/config/wsEvents.ts";
+import { projectEnv } from "@/config/projectEnv.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
@@ -20,6 +21,18 @@ type MediaControlsState = {
   isCameraEnabled: boolean;
   isMicrophoneEnabled: boolean;
 };
+
+const logMedia = projectEnv.isDev
+  ? (...args: Parameters<typeof console.log>) => console.log(...args)
+  : () => {};
+
+const warnMedia = projectEnv.isDev
+  ? (...args: Parameters<typeof console.warn>) => console.warn(...args)
+  : () => {};
+
+const errorMedia = projectEnv.isDev
+  ? (...args: Parameters<typeof console.error>) => console.error(...args)
+  : () => {};
 
 export const useMediaControls = ({
   participant,
@@ -107,14 +120,12 @@ export const useMediaControls = ({
             } else {
               await videoPub.track.mute();
             }
-            console.log(
-              `[Media Control] Canvas video track ${enabled ? "unmuted" : "muted"}`
-            );
+            logMedia(`[Media Control] Canvas video track ${enabled ? "unmuted" : "muted"}`);
           } else {
-            console.warn("[Media Control] No local camera track found to toggle");
+            warnMedia("[Media Control] No local camera track found to toggle");
           }
         } catch (error) {
-          console.error("[Media Control] Error toggling camera:", error);
+          errorMedia("[Media Control] Error toggling camera:", error);
         }
       }
     };
@@ -125,7 +136,7 @@ export const useMediaControls = ({
       enabled: boolean;
       targetIdentity?: string;
     }) => {
-      console.log("[Media Control] Camera status changed:", data);
+      logMedia("[Media Control] Camera status changed:", data);
       await processCameraChange(data.userId, data.enabled, data.targetIdentity);
     };
 
@@ -133,7 +144,7 @@ export const useMediaControls = ({
       userIds: string[];
       enabled: boolean;
     }) => {
-      console.log("[Media Control] Batch cameras status changed:", data);
+      logMedia("[Media Control] Batch cameras status changed:", data);
       if (data.userIds.includes(participant.identity)) {
         await processCameraChange(participant.identity, data.enabled, participant.identity);
       }
@@ -187,14 +198,12 @@ export const useMediaControls = ({
             } else {
               await audioPub.track.mute();
             }
-            console.log(
-              `[Media Control] Microphone track ${enabled ? "unmuted" : "muted"}`
-            );
+            logMedia(`[Media Control] Microphone track ${enabled ? "unmuted" : "muted"}`);
           } else {
             await localParticipant.setMicrophoneEnabled(enabled);
           }
         } catch (error) {
-          console.error("[Media Control] Error toggling microphone:", error);
+          errorMedia("[Media Control] Error toggling microphone:", error);
         }
       }
     };
@@ -206,7 +215,7 @@ export const useMediaControls = ({
       targetIdentity?: string;
       forceMute?: boolean;
     }) => {
-      console.log("[Media Control] Microphone status changed:", data);
+      logMedia("[Media Control] Microphone status changed:", data);
       await processMicrophoneChange(data.userId, data.enabled, data.targetIdentity, data.forceMute);
     };
 
@@ -215,7 +224,7 @@ export const useMediaControls = ({
       enabled: boolean;
       forceMute?: boolean;
     }) => {
-      console.log("[Media Control] Batch microphones status changed:", data);
+      logMedia("[Media Control] Batch microphones status changed:", data);
       if (data.userIds.includes(participant.identity)) {
         await processMicrophoneChange(participant.identity, data.enabled, participant.identity, data.forceMute);
       }
@@ -249,8 +258,8 @@ export const useMediaControls = ({
   // Handle automatic microphone turn-off when player dies
   useEffect(() => {
     if (isMyStream && isIDead && mediaState.isMicrophoneEnabled && socket) {
-      console.log("[Media Control] Auto-disabling microphone for dead player");
-      
+      logMedia("[Media Control] Auto-disabling microphone for dead player");
+
       const targetUserId = participant.identity;
       sendMessage(wsEvents.toggleUserMicrophone, {
         roomId,
@@ -273,7 +282,7 @@ export const useMediaControls = ({
       const currentlyEnabled = videoPub ? !videoPub.isMuted : mediaState.isCameraEnabled;
       const targetUserId = participant.identity;
 
-      console.log("[Media Control] Sending toggle camera command:", {
+      logMedia("[Media Control] Sending toggle camera command:", {
         roomId,
         userId: targetUserId,
         enabled: !currentlyEnabled,
@@ -290,7 +299,7 @@ export const useMediaControls = ({
       // Don't call participant.setCameraEnabled here!
       // It will be executed via WebSocket event handler
     } catch (error) {
-      console.error("useMediaControls: Error toggling camera:", error);
+      errorMedia("useMediaControls: Error toggling camera:", error);
     }
   }, [
     socket,
@@ -306,7 +315,7 @@ export const useMediaControls = ({
   const toggleMicrophone = useCallback(() => {
     if (!socket) return;
     if (isIDead && isMyStream) {
-      console.log("[Media Control] Cannot toggle microphone: player is dead");
+      logMedia("[Media Control] Cannot toggle microphone: player is dead");
       return;
     }
 
@@ -334,7 +343,7 @@ export const useMediaControls = ({
     try {
       const targetUserId = participant.identity;
 
-      console.log("[Media Control] Sending toggle microphone command:", {
+      logMedia("[Media Control] Sending toggle microphone command:", {
         roomId,
         userId: targetUserId,
         enabled: isTryingToUnmute,
@@ -352,7 +361,7 @@ export const useMediaControls = ({
       // Don't call participant.setMicrophoneEnabled here!
       // It will be executed via WebSocket event handler
     } catch (error) {
-      console.error("useMediaControls: Error toggling microphone:", error);
+      errorMedia("useMediaControls: Error toggling microphone:", error);
     }
   }, [
     socket,

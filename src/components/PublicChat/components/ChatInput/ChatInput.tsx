@@ -71,11 +71,11 @@ export const ChatInput = ({
 
   useEffect(() => {
     if (caretPosition === null) return;
-    
+
     setIsMoving(true);
-    
+
     if (movingTimeoutRef.current) clearTimeout(movingTimeoutRef.current);
-    
+
     movingTimeoutRef.current = setTimeout(() => {
       setIsMoving(false);
     }, 250);
@@ -351,7 +351,6 @@ export const ChatInput = ({
             className={styles.emojiButton}
             disabled={disabled}
             onClick={onToggleEmojiPicker}
-            title={t("emoji_smile", "Emoji")}
           >
             <Emoji unified="1f600" emojiStyle={EmojiStyle.APPLE} size={22} />
           </button>
