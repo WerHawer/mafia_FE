@@ -13,7 +13,7 @@ type VoteResult = {
   isIGM: boolean;
 };
 
-// How long to wait after stopping voting before reading final state and randomizing.
+// How long to wait after the timer fires before reading final state and randomizing.
 // Gives any last-second in-flight manual votes time to arrive.
 const VOTE_SETTLE_DELAY_MS = 800;
 
@@ -49,13 +49,18 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
     [voted, isReVote, isVote]
   );
 
-  // Ref so randomVote always reads the freshest voted state without recreating on every vote.
+  // Refs so randomVote always reads the freshest state without recreating on every change.
   const votedRef = useRef(voted);
   votedRef.current = voted;
 
-  // Ref so eligibleVoters is always fresh inside the setTimeout callback.
   const eligibleVotersRef = useRef(eligibleVoters);
   eligibleVotersRef.current = eligibleVoters;
+
+  // Keeps a fresh copy of proposed so randomVote uses the correct candidates
+  // even if a WS event updates (or resets) proposed between the timer firing
+  // and the settle-delay callback executing.
+  const proposedRef = useRef(stableProposed);
+  proposedRef.current = stableProposed;
 
   // Prevents the auto-randomize from firing more than once per voting round.
   const hasAutoVotedRef = useRef(false);
@@ -72,33 +77,44 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
 
   /**
    * Assigns random candidates to every eligible voter who hasn't voted yet,
-   * then opens the result modal.
+   * then sends a SINGLE atomic update: { isVote: false, voted: newVoted }.
    *
-   * Called AFTER a settle delay, so votedRef.current reflects any last-second
-   * manual votes that were in-flight when the timer fired.
+   * Combining both fields in one request eliminates the race condition that
+   * occurred with the previous two-step approach:
+   *   Step 1: updateGameFlow({ isVote: false })
+   *   Step 2: updateGameFlow({ voted: newVoted })  ← could read a WS-reset store
+   *
+   * The BE was broadcasting a WS event after step 1 that could reset proposed/voted
+   * before step 2's mutation read gamesStore.gameFlow, causing VoteResultsModal to
+   * see voted:{} + proposed:[] and render "unexpected result".
    */
   const randomVote = useCallback(() => {
     if (!isIGM) return;
 
     const currentVoted = votedRef.current;
     const currentEligible = eligibleVotersRef.current;
+    const currentProposed = proposedRef.current;
 
     const notVotedPlayers = currentEligible.filter(
       (player) => !Object.values(currentVoted).flat().includes(player)
     );
 
     if (notVotedPlayers.length === 0) {
-      // Everyone voted manually in the grace period — just open the modal.
-      openModal(ModalNames.VoteResultModal);
+      // Everyone voted manually in the grace period — just close voting and open the modal.
+      updateGameFlow(
+        { isVote: false },
+        { onSuccess: () => openModal(ModalNames.VoteResultModal) }
+      );
+
       return;
     }
 
     const newVoted = { ...currentVoted };
 
     notVotedPlayers.forEach((player) => {
-      let candidateList = stableProposed.filter((p) => p !== player);
+      let candidateList = currentProposed.filter((p) => p !== player);
       if (candidateList.length === 0) {
-        candidateList = stableProposed;
+        candidateList = currentProposed;
       }
 
       const randomIndex = random(0, candidateList.length - 1);
@@ -109,15 +125,18 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
       ];
     });
 
+    // Single atomic update — stops voting AND persists randomized votes together.
+    // This prevents a WS broadcast from the isVote:false step overwriting the
+    // store before the voted:newVoted step can run.
     updateGameFlow(
-      { voted: newVoted },
+      { isVote: false, voted: newVoted },
       {
         onSuccess: () => {
           openModal(ModalNames.VoteResultModal);
         },
       }
     );
-  }, [isIGM, stableProposed, updateGameFlow, openModal]);
+  }, [isIGM, updateGameFlow, openModal]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -148,18 +167,14 @@ export const useVoteResult = ({ alivePlayers }: VoteResult) => {
       if (!isIGM || hasAutoVotedRef.current) return;
       hasAutoVotedRef.current = true;
 
-      // Step 1: Stop voting on ALL clients immediately so no new manual votes can be cast.
-      updateGameFlow(
-        { isVote: false },
-        {
-          onSuccess: () => {
-            // Step 2: Wait for any last-second in-flight manual votes to arrive.
-            setTimeout(() => {
-              randomVote();
-            }, VOTE_SETTLE_DELAY_MS);
-          },
-        }
-      );
+      // Wait for any last-second in-flight manual votes to arrive, then
+      // atomically randomize missing votes AND stop voting in a single call.
+      // Previously we called updateGameFlow({ isVote: false }) here first,
+      // which caused a race: the BE's WS broadcast could reset proposed/voted
+      // before the randomVote mutation ran, producing "unexpected result".
+      setTimeout(() => {
+        randomVote();
+      }, VOTE_SETTLE_DELAY_MS);
     }, 1000);
 
     return () => {
