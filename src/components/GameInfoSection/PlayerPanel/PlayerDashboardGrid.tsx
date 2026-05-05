@@ -9,6 +9,7 @@ import { observer } from "mobx-react-lite";
 import {
   KeyboardEvent,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -17,6 +18,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 import bulletIcon from "@/assets/icons/bullet.png";
+import { InvestigateEffect } from "@/components/InvestigateEffect";
 import { useGameVote } from "@/components/GameVote/useGameVote.ts";
 import { canSeeMafiaShot } from "@/helpers/mafiaShot.ts";
 import { useNightTargetAction } from "@/hooks/useNightTargetAction.ts";
@@ -30,7 +32,7 @@ import Tippy from "@tippyjs/react";
 import styles from "./PlayerDashboardGrid.module.scss";
 
 const CENTER_ACTION_POSITION = 50;
-const INVESTIGATE_RESULT_VISIBLE_MS = 2500;
+const INVESTIGATE_RESULT_LINE_VISIBLE_MS = 2500;
 
 const NIGHT_ACTION_ROLES = [
   Roles.Mafia,
@@ -114,9 +116,23 @@ const PlayerDashboardGridItem = observer(
     onVoteForPlayer,
   }: PlayerDashboardGridItemProps) => {
     const { t } = useTranslation();
-    const [investigateResult, setInvestigateResult] = useState<string | null>(
-      null
-    );
+    const [investigateResultLine, setInvestigateResultLine] = useState<
+      string | null
+    >(null);
+    const investigateResultTimeoutReference = useRef<ReturnType<
+      typeof setTimeout
+    > | null>(null);
+
+    useEffect(() => {
+      return (): void => {
+        const timerIdentifier = investigateResultTimeoutReference.current;
+
+        if (timerIdentifier !== null) {
+          clearTimeout(timerIdentifier);
+        }
+      };
+    }, []);
+
     const { gamesStore, soundStore, myRole, isIDead, isISpeaker, isIGM } =
       rootStore;
     const { getUser, getUserName } = rootStore.usersStore;
@@ -237,25 +253,30 @@ const PlayerDashboardGridItem = observer(
       }
 
       if (isInvestigateEnabled) {
-        const result = onInvestigateUser();
+        const investigateOutcome = onInvestigateUser();
 
-        if (result) {
-          setInvestigateResult(result.result);
+        if (investigateOutcome) {
+          if (investigateResultTimeoutReference.current !== null) {
+            clearTimeout(investigateResultTimeoutReference.current);
+          }
+
+          setInvestigateResultLine(investigateOutcome.result);
+          investigateResultTimeoutReference.current = setTimeout(() => {
+            setInvestigateResultLine(null);
+            investigateResultTimeoutReference.current = null;
+          }, INVESTIGATE_RESULT_LINE_VISIBLE_MS);
+
           rootStore.showInvestigatePreview({
             targetUserId: userId,
             clickPosition: {
               x: CENTER_ACTION_POSITION,
               y: CENTER_ACTION_POSITION,
             },
-            result: result.result,
-            isFound: result.isFound,
-            role: result.role,
+            result: investigateOutcome.result,
+            isFound: investigateOutcome.isFound,
+            role: investigateOutcome.role,
           });
           soundStore.playSfx(SoundEffect.Check);
-          window.setTimeout(
-            () => setInvestigateResult(null),
-            INVESTIGATE_RESULT_VISIBLE_MS
-          );
         }
       }
     }, [
@@ -287,6 +308,11 @@ const PlayerDashboardGridItem = observer(
       },
       [canInteract, onActivate]
     );
+
+    const investigatePreviewForCell =
+      rootStore.investigatePreview?.targetUserId === userId
+        ? rootStore.investigatePreview
+        : null;
 
     return (
       <li
@@ -387,8 +413,19 @@ const PlayerDashboardGridItem = observer(
           <div className={styles.votersRow}>{votersList.join(", ")}</div>
         ) : null}
 
-        {investigateResult ? (
-          <div className={styles.investigateResult}>{investigateResult}</div>
+        {investigateResultLine ? (
+          <div className={styles.investigateResult}>{investigateResultLine}</div>
+        ) : null}
+
+        {investigatePreviewForCell ? (
+          <InvestigateEffect
+            key={investigatePreviewForCell.nonce}
+            clickPosition={investigatePreviewForCell.clickPosition}
+            result={investigatePreviewForCell.result}
+            isFound={investigatePreviewForCell.isFound}
+            role={investigatePreviewForCell.role}
+            showCenterLabel={false}
+          />
         ) : null}
       </li>
     );

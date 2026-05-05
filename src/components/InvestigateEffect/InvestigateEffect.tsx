@@ -13,6 +13,8 @@ type InvestigateEffectProps = {
   isDanger?: boolean;
   isFound?: boolean;
   role?: Roles;
+  /** Великий центрований текст + іконка ролі (відеоплитки). Якщо false — лише миготлива рамка. */
+  showCenterLabel?: boolean;
 };
 
 export const InvestigateEffect = observer(({
@@ -21,6 +23,7 @@ export const InvestigateEffect = observer(({
   isDanger = false,
   isFound = false,
   role,
+  showCenterLabel = true,
 }: InvestigateEffectProps) => {
   const [showFlash, setShowFlash] = useState(false);
   const [showLabel, setShowLabel] = useState(false);
@@ -31,15 +34,20 @@ export const InvestigateEffect = observer(({
   useEffect(() => {
     if (result && clickPosition) {
       setShowFlash(true);
-      setShowLabel(true);
+      setShowLabel(showCenterLabel);
       const flashTimer = setTimeout(() => setShowFlash(false), 1200);
-      const labelTimer = setTimeout(() => setShowLabel(false), 3000);
-      return () => {
+      const labelTimer = showCenterLabel
+        ? setTimeout(() => setShowLabel(false), 3000)
+        : undefined;
+
+      return (): void => {
         clearTimeout(flashTimer);
-        clearTimeout(labelTimer);
+        if (labelTimer !== undefined) clearTimeout(labelTimer);
       };
     }
-  }, [result, clickPosition]);
+
+    return undefined;
+  }, [result, clickPosition, showCenterLabel]);
 
   if (!result || !clickPosition) {
     return null;
@@ -52,7 +60,7 @@ export const InvestigateEffect = observer(({
   return (
     <>
       {showFlash && <div className={borderClass} />}
-      {showLabel && (
+      {showCenterLabel && showLabel ? (
         <div className={styles.container}>
           <div
             className={styles.resultLabel}
@@ -66,7 +74,7 @@ export const InvestigateEffect = observer(({
             {result}
           </div>
         </div>
-      )}
+      ) : null}
     </>
   );
 });
