@@ -42,4 +42,5 @@ export enum wsEvents {
   gmChanged = "gmChanged",
   setObserverMode = "setObserverMode",
   voteTimerExpired = "voteTimerExpired",
+  videoRepublishRequired = "videoRepublishRequired",
 }

@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
 import { Timer, TimerSize } from "@/components/SpeakerTimer/Timer.tsx";
+import { getVoteTimerServerEndMs } from "@/helpers/gameFlowTimer.ts";
 import { useGridLayout } from "@/hooks/useGridLayout.ts";
 import { useNightMode } from "@/hooks/useNightMode.ts";
 import { useVoteResult } from "@/hooks/useVoteResult.ts";
@@ -28,7 +29,7 @@ export const GameVideoContainer = observer(
     const { isIGM, soundStore, gamesStore } = rootStore;
     const { playMusic, stopMusic } = soundStore;
     const { activeGameAlivePlayers, gameFlow, isUserGM } = gamesStore;
-    const { isVote, isReVote, voted, votesTime, prostituteBlock } = gameFlow;
+    const { isVote, isReVote, voted, votesTime, prostituteBlock, timerStartedAt } = gameFlow;
     const { t } = useTranslation();
 
     // Called ONCE here (not in every VoteFlow instance) so the WS subscription is registered once.
@@ -81,7 +82,9 @@ export const GameVideoContainer = observer(
     const isVotingDone = votedCount >= eligibleVotersCount;
     const isVotingActive = isVote;
     const shouldShowVotingTimer = isVotingActive && !isVotingDone;
-    const timerTrigger = `${isVote}`;
+    const timerTrigger = `${isVote}-${timerStartedAt ?? ""}`;
+
+    const voteServerEndTime = getVoteTimerServerEndMs(gameFlow);
 
     const onTimerStart = useCallback(() => {
       if (shouldShowVotingTimer) {
@@ -121,6 +124,7 @@ export const GameVideoContainer = observer(
           <div className={styles.votingTimerContainer}>
             <Timer
               time={votesTime}
+              serverEndTime={voteServerEndTime}
               resetTrigger={timerTrigger}
               size={TimerSize.XL}
               onTimerStart={onTimerStart}

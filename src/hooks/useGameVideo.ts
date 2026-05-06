@@ -1,6 +1,7 @@
 import { Participant } from "livekit-client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { getSpeakerTimerServerEndMs } from "@/helpers/gameFlowTimer.ts";
 import { useMediaControls } from "@/hooks/useMediaControls.ts";
 import { useNightTargetAction } from "@/hooks/useNightTargetAction.ts";
 import { rootStore } from "@/store/rootStore.ts";
@@ -202,9 +203,14 @@ export const useGameVideo = ({
     userId !== myId &&
     !isUserDead;
   const isDimmedDuringVote = isVoter && !isVotableTarget;
-  const actualSpeakTime = gameFlow.isReVote
-    ? gameFlow.candidateSpeakTime
-    : gameFlow.speakTime;
+
+  // During re-vote or extra-speech, candidate speak time applies.
+  const actualSpeakTime =
+    gameFlow.isReVote || gameFlow.isExtraSpeech
+      ? gameFlow.candidateSpeakTime
+      : gameFlow.speakTime;
+
+  const speakerServerEndTime = getSpeakerTimerServerEndMs(gameFlow);
 
   return {
     userId,
@@ -225,6 +231,7 @@ export const useGameVideo = ({
     canControl,
     gameFlow,
     actualSpeakTime,
+    speakerServerEndTime,
     shouldShowMafiaGlow,
     isDimmedDuringMafiaIntro,
     isVotableTarget,

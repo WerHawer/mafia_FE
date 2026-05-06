@@ -39,6 +39,12 @@ export interface IGameFlow {
   isReVote: boolean;
   isExtraSpeech: boolean;
   day: number;
+  /**
+   * Unix ms when the active countdown started (server clock).
+   * Set when `speaker` changes, `isVote` becomes true, or `isExtraSpeech` becomes true;
+   * cleared when day/night phase changes. Paired duration: speak vs candidate vs vote time.
+   */
+  timerStartedAt?: number | null;
   proposed: UserId[];
   proposedBy: Record<UserId, UserId>;
   voted: { [key: UserId]: UserId[] };

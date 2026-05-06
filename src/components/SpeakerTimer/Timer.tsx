@@ -16,6 +16,13 @@ export enum TimerSize {
 
 type TimerProps = {
   time?: number;
+  /**
+   * Optional absolute server-stamped end time (Unix ms). When provided the
+   * timer counts down to this fixed moment so all clients stay in sync,
+   * regardless of when they received the WebSocket event.
+   * Falls back to `time`-based countdown when absent or null.
+   */
+  serverEndTime?: number | null;
   resetTrigger?: boolean | string;
   size?: TimerSize;
   onTimerStart?: () => void;
@@ -31,7 +38,7 @@ const formatTime = (seconds: number): string => {
 };
 
 export const Timer = memo(
-  ({ time = 60, resetTrigger, size = TimerSize.Medium, onTimerStart, onLowTime, onTimeUp }: TimerProps) => {
+  ({ time = 60, serverEndTime, resetTrigger, size = TimerSize.Medium, onTimerStart, onLowTime, onTimeUp }: TimerProps) => {
     const [diff, setDiff] = useState<number>(time);
     const [reset, setReset] = useState<boolean>(false);
     const [hasCalledTimeUp, setHasCalledTimeUp] = useState<boolean>(false);
@@ -39,15 +46,36 @@ export const Timer = memo(
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const startTime = useMemo(() => Date.now(), [reset]);
-    const endTime = useMemo(() => time * 1000 + startTime, [startTime, time]);
+
+    // When serverEndTime is provided we use it as the absolute end-point so that
+    // all clients count down to the same moment, regardless of network lag.
+    const endTime = useMemo(
+      () => (serverEndTime != null ? serverEndTime : time * 1000 + startTime),
+      [startTime, time, serverEndTime]
+    );
 
     const resetTime = useCallback(() => {
       setReset((prev) => !prev);
-      setDiff(time);
+      // Derive initial seconds from server end-time when available so the
+      // timer starts at the correct remaining value (not the full duration).
+      const initialDiff =
+        serverEndTime != null
+          ? Math.ceil(Math.max(0, serverEndTime - Date.now()) / 1000)
+          : time;
+      setDiff(initialDiff);
       setHasCalledTimeUp(false);
       setHasCalledLowTime(false);
       onTimerStart?.();
-    }, [time, onTimerStart]);
+    }, [time, serverEndTime, onTimerStart]);
+
+    useEffect(() => {
+      if (serverEndTime == null) {
+
+        return;
+      }
+
+      setDiff(Math.ceil(Math.max(0, serverEndTime - Date.now()) / 1000));
+    }, [serverEndTime]);
 
     useEffect(() => {
       resetTime();

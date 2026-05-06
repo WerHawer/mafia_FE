@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { projectEnv } from "@/config/projectEnv.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
+import { setLocalCameraIntentionalMute } from "@/hooks/usePublishVideoTrack.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
 type UseMediaControlsProps = {
@@ -112,6 +113,8 @@ export const useMediaControls = ({
         (participant.isLocal && userId === myId);
 
       if (isForMe && participant.isLocal) {
+        // Track intentional mute/unmute so republish logic doesn't fight user intent
+        setLocalCameraIntentionalMute(!enabled);
         try {
           const videoPub = localParticipant.getTrackPublication(Track.Source.Camera);
           if (videoPub?.track) {
@@ -130,7 +133,7 @@ export const useMediaControls = ({
       }
     };
 
-    const handleCameraStatusChanged = async (data: {
+    const onCameraStatusChanged = async (data: {
       userId: string;
       participantIdentity: string;
       enabled: boolean;
@@ -140,7 +143,7 @@ export const useMediaControls = ({
       await processCameraChange(data.userId, data.enabled, data.targetIdentity);
     };
 
-    const handleBatchCamerasStatusChanged = async (data: {
+    const onBatchCamerasStatusChanged = async (data: {
       userIds: string[];
       enabled: boolean;
     }) => {
@@ -208,7 +211,7 @@ export const useMediaControls = ({
       }
     };
 
-    const handleMicrophoneStatusChanged = async (data: {
+    const onMicrophoneStatusChanged = async (data: {
       userId: string;
       participantIdentity: string;
       enabled: boolean;
@@ -219,7 +222,7 @@ export const useMediaControls = ({
       await processMicrophoneChange(data.userId, data.enabled, data.targetIdentity, data.forceMute);
     };
 
-    const handleBatchMicrophonesStatusChanged = async (data: {
+    const onBatchMicrophonesStatusChanged = async (data: {
       userIds: string[];
       enabled: boolean;
       forceMute?: boolean;
@@ -232,19 +235,19 @@ export const useMediaControls = ({
 
     const unsubscribeCamera = subscribe(
       wsEvents.userCameraStatusChanged as any,
-      handleCameraStatusChanged
+      onCameraStatusChanged
     );
     const unsubscribeMicrophone = subscribe(
       wsEvents.userMicrophoneStatusChanged as any,
-      handleMicrophoneStatusChanged
+      onMicrophoneStatusChanged
     );
     const unsubscribeBatchCameras = subscribe(
       wsEvents.batchCamerasStatusChanged as any,
-      handleBatchCamerasStatusChanged
+      onBatchCamerasStatusChanged
     );
     const unsubscribeBatchMicrophones = subscribe(
       wsEvents.batchMicrophonesStatusChanged as any,
-      handleBatchMicrophonesStatusChanged
+      onBatchMicrophonesStatusChanged
     );
 
     return () => {
@@ -314,8 +317,10 @@ export const useMediaControls = ({
 
   const toggleMicrophone = useCallback(() => {
     if (!socket) return;
+
     if (isIDead && isMyStream) {
       logMedia("[Media Control] Cannot toggle microphone: player is dead");
+
       return;
     }
 
@@ -327,12 +332,14 @@ export const useMediaControls = ({
       const isForceMuted = gamesStore.isUserForceMuted(participant.identity);
       if (isForceMuted) {
         toast.error(t("mediaControls.forceMutedBlock"));
+
         return;
       }
 
       const isNight = gamesStore.gameFlow.isNight;
       if (isNight) {
         toast.error(t("mediaControls.nightMutedBlock"));
+
         return;
       }
     }

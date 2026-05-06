@@ -87,6 +87,7 @@ export const GameVideo = observer(
       canControl,
       gameFlow,
       actualSpeakTime,
+      speakerServerEndTime,
       shouldShowMafiaGlow,
       isDimmedDuringMafiaIntro,
       isVotableTarget,
@@ -294,8 +295,9 @@ export const GameVideo = observer(
           <div className={styles.speakerTimerContainer}>
             <Timer
               time={actualSpeakTime}
+              serverEndTime={speakerServerEndTime}
               size={TimerSize.Large}
-              resetTrigger={gameFlow.speaker}
+              resetTrigger={`${gameFlow.speaker}-${gameFlow.timerStartedAt ?? ""}`}
               onLowTime={
                 isMyStream
                   ? () => soundStore.playMusic(SoundEffect.Ticking, true, 1)

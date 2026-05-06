@@ -14,6 +14,7 @@ export const initialGameFlow: IGameFlow = {
   isReVote: false,
   isExtraSpeech: false,
   day: 0,
+  timerStartedAt: null,
   proposed: [],
   proposedBy: {},
   voted: {},

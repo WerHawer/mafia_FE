@@ -15,6 +15,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "../api/apiConstants.ts";
 import { SERVER } from "../api/apiConstants.ts";
+import { fetchGame } from "../api/game/api.ts";
 import { wsEvents } from "../config/wsEvents.ts";
 import { gamesStore } from "../store/gamesStore.ts";
 import { messagesStore } from "../store/messagesStore.ts";
@@ -222,20 +223,41 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
     });
 
     // Connection event handlers
-    existingSocket.on("connect", () => {
+    existingSocket.on("connect", async () => {
       console.log("Socket connected successfully");
       setConnectionAttempts(0);
       setLastConnectionTime(Date.now());
 
       const gameId = gamesStore.activeGameId;
       const isGameRoute = window.location.pathname.startsWith("/game/");
-      
+
       if (gameId && myId && isGameRoute) {
         console.log(
           "Socket connected during active game. Re-joining room.",
           gameId
         );
         existingSocket.emit(wsEvents.roomConnection, [gameId, myId]);
+      }
+
+      // socket.recovered is true only when Socket.io Connection State Recovery
+      // successfully replayed all missed events — no manual refetch needed in that case.
+      if (existingSocket.recovered) {
+        console.log("[Socket] Reconnected with state recovery — no refetch needed");
+        return;
+      }
+
+      // Recovery failed (disconnect too long, hard reload, etc.) — fetch latest game state.
+      if (!gameId || !isGameRoute) return;
+
+      console.log("[Socket] Reconnected without recovery — fetching fresh game state");
+
+      try {
+        const { data: freshGame } = await fetchGame(gameId);
+        updateGame(freshGame);
+        updateRQGamesCache(freshGame);
+        updateRQSingleGameCache(freshGame);
+      } catch (err) {
+        console.error("[Socket] Failed to refetch game state after reconnect:", err);
       }
     });
 

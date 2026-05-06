@@ -1,6 +1,5 @@
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { observer } from "mobx-react-lite";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
@@ -8,7 +7,6 @@ import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocketContext } from "@/context/SocketProvider.tsx";
 import { modalStore } from "@/store/modalStore.ts";
 import { rootStore } from "@/store/rootStore";
-import { SoundEffect } from "@/store/soundStore.ts";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 import { Typography } from "@/UI/Typography";
@@ -17,34 +15,17 @@ import styles from "./PlayerPanel.module.scss";
 
 export const PlayerPanelInfo = observer(() => {
   const { t } = useTranslation();
-  const { gamesStore, soundStore, usersStore, myRole } = rootStore;
-  const { gameFlow, speaker } = gamesStore;
+  const { gamesStore, usersStore, myRole } = rootStore;
+  const { gameFlow } = gamesStore;
   const { myId } = usersStore;
-  const { stopMusic, playMusic } = soundStore;
 
-  const { day, isNight, isVote, isReVote, votesTime } = gameFlow;
+  const { day, isNight } = gameFlow;
 
   const dayNightLabel = isNight ? t("game.night") : `${t("game.day")} ${day}`;
   const roleLabel = t(`roles.${myRole}`);
-  const time = votesTime;
-  const isVotingActive = isVote || isReVote;
-  const timerTrigger = `${isVote}-${isReVote}`;
-  const shouldShowTimer = isVotingActive;
-
-  const onTimerStart = useCallback(() => {
-    if (isVotingActive) {
-      playMusic(SoundEffect.Ticking, true, 1);
-    }
-  }, [isVotingActive, playMusic]);
-
-  const onVoteTimeUp = useCallback(() => {
-    if (isVotingActive) {
-      stopMusic();
-    }
-  }, [isVotingActive, stopMusic]);
+  const gameId = gamesStore.activeGameId;
 
   const { socket } = useSocketContext();
-  const gameId = gamesStore.activeGameId;
 
   return (
     <div className={styles.infoContainer}>
