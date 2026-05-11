@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import anna from "@/assets/images/cards/anna.webp";
 import doctor from "@/assets/images/cards/doctor.webp";
@@ -13,9 +14,9 @@ import prostitute from "@/assets/images/cards/prostitute.webp";
 import sheriff from "@/assets/images/cards/sheriff.webp";
 import taras from "@/assets/images/cards/taras.webp";
 import vasyl from "@/assets/images/cards/vasyl.webp";
-
 import { rootStore } from "@/store/rootStore.ts";
 import { Roles } from "@/types/game.types.ts";
+import { Typography } from "@/UI/Typography";
 
 import styles from "./GameVideo.module.scss";
 
@@ -27,6 +28,7 @@ type RoleCardMiniProps = {
 export const RoleCardMini = observer(({ userId, role }: RoleCardMiniProps) => {
   const { gamesStore, isIGM } = rootStore;
   const { gameFlow } = gamesStore;
+  const { t } = useTranslation();
 
   // Determine if the card should be visible to the current user
   const isVisible = gameFlow.isPostGame || gamesStore.isMeObserver;
@@ -54,11 +56,15 @@ export const RoleCardMini = observer(({ userId, role }: RoleCardMiniProps) => {
 
   const image = roleImages[role];
 
-  if (!isVisible || !image || role === Roles.GM || role === Roles.Unknown) return null;
+  if (!isVisible || !image || role === Roles.GM || role === Roles.Unknown)
+    return null;
 
   return (
     <div className={styles.roleCardContainer}>
       <img src={image} alt={role} />
+      <Typography variant="subtitle" className={styles.roleNameMini}>
+        {t(`roles.${role}`)}
+      </Typography>
     </div>
   );
 });

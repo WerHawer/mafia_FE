@@ -7,6 +7,7 @@ import { AudioProvider } from "@/components/AudioProvider/AudioProvider.tsx";
 import { GameChat } from "@/components/GameChat";
 import { GameInfoSection } from "@/components/GameInfoSection";
 import { GameBottomBar, ReactionsCanvas } from "@/components/GameReactions";
+import { VideoGridHealthMonitor } from "@/components/GameVideoContainer/VideoGridHealthMonitor.tsx";
 import { GameVideoManager } from "@/components/GameVideoManager/GameVideoManager.tsx";
 import { GameVote } from "@/components/GameVote";
 import { LiveKitMafiaRoom } from "@/components/LiveKitMafiaRoom/LiveKitMafiaRoom.tsx";
@@ -85,6 +86,7 @@ const GamePage = observer(() => {
         <ReactionsCanvas />
 
         <LiveKitMafiaRoom enabled={isJoinedToGame}>
+          {isJoinedToGame ? <VideoGridHealthMonitor /> : null}
           <div className={styles.videoSection}>
             <div className={styles.videoGridWrapper}>
               <GameVideoManager

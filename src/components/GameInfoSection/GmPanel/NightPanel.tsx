@@ -16,7 +16,7 @@ type RoleSelection = NightRoles | typeof SLEEP_ALL;
 export const NightPanel = observer(() => {
   const { t } = useTranslation();
   const { gamesStore } = rootStore;
-  const { activeGameRoles, nightRoles } = gamesStore;
+  const { activeGameRoles, nightRoles, activeGameKilledPlayers } = gamesStore;
   const [selectedRole, setSelectedRole] = useState<RoleSelection>(SLEEP_ALL);
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
@@ -63,6 +63,11 @@ export const NightPanel = observer(() => {
 
       {nightRoles.map((role) => {
         const isActive = role === selectedRole;
+        const roleUsers = activeGameRoles?.[role];
+        const isDead = Array.isArray(roleUsers)
+          ? roleUsers.length > 0 &&
+            roleUsers.every((id) => activeGameKilledPlayers.includes(id))
+          : !!roleUsers && activeGameKilledPlayers.includes(roleUsers);
 
         return (
           <button
@@ -79,6 +84,7 @@ export const NightPanel = observer(() => {
               <EyeInvisibleOutlined className={styles.eyeIcon} />
             )}
             {t(`roles.${role.toLowerCase()}`)}
+            {isDead && " 👻"}
           </button>
         );
       })}

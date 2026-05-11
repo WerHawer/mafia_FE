@@ -233,20 +233,22 @@ export const useNightAtmosphereAudio = () => {
 
     // ── Flush: fire all remaining unplayed sounds quickly ────────────────────
 
-    const flushPhase = () => {
+    const flushPhase = (cancelOnly = false) => {
       const phase = phaseRef.current;
       if (!phase) return;
 
       phase.timers.forEach(clearTimeout);
       phase.timers.length = 0;
 
-      const remaining = phase.total - phase.played;
+      if (!cancelOnly) {
+        const remaining = phase.total - phase.played;
 
-      for (let i = 0; i < remaining; i++) {
-        const { sound, volume, isRoleAlive } = phase;
-        setTimeout(() => {
-          playFakeSound(sound, volume, isRoleAlive);
-        }, i * FLUSH_INTER_SOUND_GAP_MS);
+        for (let i = 0; i < remaining; i++) {
+          const { sound, volume, isRoleAlive } = phase;
+          setTimeout(() => {
+            playFakeSound(sound, volume, isRoleAlive);
+          }, i * FLUSH_INTER_SOUND_GAP_MS);
+        }
       }
 
       phaseRef.current = null;
@@ -434,7 +436,7 @@ export const useNightAtmosphereAudio = () => {
 
     return () => {
       dispose();
-      flushPhase();
+      flushPhase(true);
     };
     // isIGM is a computed value that lives on rootStore and is stable per game session
     // eslint-disable-next-line react-hooks/exhaustive-deps

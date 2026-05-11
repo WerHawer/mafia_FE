@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from "react";
 
 import { QualitySettings, QUALITY_PRESETS } from "@/config/video.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
+import { setVideoRecoveryRepublish } from "@/helpers/videoRecoveryBridge.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
@@ -27,6 +28,9 @@ let isLocalCameraIntentionallyMuted = false;
 export const setLocalCameraIntentionalMute = (muted: boolean): void => {
   isLocalCameraIntentionallyMuted = muted;
 };
+
+export const getLocalCameraIntentionallyMuted = (): boolean =>
+  isLocalCameraIntentionallyMuted;
 
 export const usePublishVideoTrack = (qualitySettings?: QualitySettings) => {
   const room = useRoomContext();
@@ -64,6 +68,8 @@ export const usePublishVideoTrack = (qualitySettings?: QualitySettings) => {
       retryCountRef.current = 0;
       pendingCanvasRef.current = null;
 
+      let localVideoTrack: LocalVideoTrack | undefined;
+
       try {
         const fps = qualitySettings?.fps ?? DEFAULT_ENCODING.fps;
         const maxBitrate = qualitySettings?.maxBitrate ?? DEFAULT_ENCODING.maxBitrate;
@@ -75,7 +81,7 @@ export const usePublishVideoTrack = (qualitySettings?: QualitySettings) => {
           return;
         }
 
-        const localVideoTrack = new LocalVideoTrack(canvasVideoTrack);
+        localVideoTrack = new LocalVideoTrack(canvasVideoTrack);
 
         const existingVideoTracks = Array.from(
           room.localParticipant.trackPublications.values()
@@ -98,6 +104,7 @@ export const usePublishVideoTrack = (qualitySettings?: QualitySettings) => {
           await Promise.all(
             existingVideoTracks.map(async (pub) => {
               if (pub.track) {
+                pub.track.stop(); // Fix memory leak: Stop the old track to release captureStream resources
                 await room.localParticipant.unpublishTrack(pub.track);
               }
             })
@@ -114,11 +121,15 @@ export const usePublishVideoTrack = (qualitySettings?: QualitySettings) => {
 
         // Remember the canvas so we can republish after reconnection
         lastPublishedCanvasRef.current = canvasElement;
+        localVideoTrack = undefined;
       } catch (error) {
         console.error(
           "[usePublishVideoTrack] Failed to publish video track:",
           error
         );
+        // Fix memory leak: If publish fails, stop the track so we don't leak the captureStream
+        localVideoTrack?.stop();
+        localVideoTrack = undefined;
       }
     },
     [room]
@@ -199,6 +210,14 @@ export const usePublishVideoTrack = (qualitySettings?: QualitySettings) => {
       void republishAllTracks();
     }, REPUBLISH_DEBOUNCE_MS);
   }, [republishAllTracks]);
+
+  useEffect(() => {
+    setVideoRecoveryRepublish(debouncedRepublish);
+
+    return () => {
+      setVideoRecoveryRepublish(null);
+    };
+  }, [debouncedRepublish]);
 
   useEffect(() => {
     if (!room) return;

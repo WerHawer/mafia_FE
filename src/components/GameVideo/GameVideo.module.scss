@@ -409,11 +409,19 @@
   left: 10px;
   bottom: 55px; // Above the user name badge
   z-index: 15;
-  pointer-events: none;
+  cursor: pointer;
   
   width: 55px;
   height: 80px;
   perspective: 1000px;
+
+  transition: transform 0.3s ease-out, z-index 0.3s ease-out;
+  transform-origin: bottom left;
+
+  &:hover {
+    transform: scale(2);
+    z-index: 100;
+  }
   
   img {
     width: 100%;
@@ -435,4 +443,23 @@
   50% {
     transform: translateY(-4px) rotate(1deg);
   }
+}
+
+.roleNameMini {
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+
+  color: #fff;
+  font-weight: 500;
+  text-align: center;
+  font-size: 0.6rem;
+  line-height: 1;
+
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 }

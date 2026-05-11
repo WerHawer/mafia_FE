@@ -13,6 +13,12 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const dayTracks = ["day_bg.mp3", "day_bg_1.mp3", "day_bg_2.mp3"];
     const nightTracks = ["night_bg.mp3", "night_bg_2.mp3", "night_bg_3.mp3"];
+    let transitionTimers: ReturnType<typeof setTimeout>[] = [];
+
+    const clearTransitionTimers = () => {
+      transitionTimers.forEach(clearTimeout);
+      transitionTimers = [];
+    };
 
     // 1. Reaction: Day/Night music — only fires when state actually changes
     //    (no fireImmediately, so no sound on game entry)
@@ -25,6 +31,7 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
       ({ isNight, isStarted, gameId }, prev) => {
         // Don't play anything if there's no active game
         if (!gameId) {
+          clearTransitionTimers();
           soundStore.stopMusic();
           return;
         }
@@ -32,6 +39,7 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
         // Stop music when game is restarted (isStarted becomes false)
         const gameStopped = !isStarted && prev?.isStarted;
         if (gameStopped) {
+          clearTransitionTimers();
           soundStore.stopMusic();
           return;
         }
@@ -41,19 +49,21 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
         const gameJustStarted = isStarted && !prev?.isStarted;
 
         if (gameJustStarted) {
+          clearTransitionTimers();
           // On first start only — play current phase music without transition sfx
           soundStore.playBgMusic(isNight ? nightTracks : dayTracks, true);
           return;
         }
 
         if (nightToggled) {
+          clearTransitionTimers();
           if (isNight) {
             soundStore.playSfx(SoundEffect.NightStart, 0.75, 3000, 700);
-            setTimeout(() => soundStore.playBgMusic(nightTracks, true), 1000);
+            transitionTimers.push(setTimeout(() => soundStore.playBgMusic(nightTracks, true), 1000));
           } else if (isStarted) {
             // Only play day music if game is actually running (not after restart)
             soundStore.playSfx(SoundEffect.DayStart);
-            setTimeout(() => soundStore.playBgMusic(dayTracks, true), 1000);
+            transitionTimers.push(setTimeout(() => soundStore.playBgMusic(dayTracks, true), 1000));
           }
         }
       }
@@ -138,6 +148,7 @@ export const AudioProvider = ({ children }: { children: ReactNode }) => {
 
     // Cleanup: stop all audio when leaving the game page
     return () => {
+      clearTransitionTimers();
       disposeMusic();
       disposeGameEvents();
       disposeActions();

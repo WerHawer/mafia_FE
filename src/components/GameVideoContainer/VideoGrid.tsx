@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { useGridLayout } from "@/hooks/useGridLayout.ts";
 import { useMockStreams } from "@/hooks/useMockStreams";
 import { useNightMode } from "@/hooks/useNightMode.ts";
+import { getExpectedCameraIdentities } from "@/helpers/expectedVideoParticipants.ts";
 import { rootStore } from "@/store/rootStore.ts";
 
 import { GameVideo } from "../GameVideo";
@@ -23,6 +24,28 @@ export const VideoGrid = observer(() => {
 
   const isGameStarted = gamesStore.gameFlow.isStarted;
 
+  const { expectLocalCamera, expectedRemoteIds } = useMemo(
+    () =>
+      getExpectedCameraIdentities({
+        myId: rootStore.usersStore.myId,
+        isGameStarted,
+        shouldShowMyVideo,
+        shouldShowPlayerVideo,
+        activeGamePlayers: gamesStore.activeGamePlayers,
+        activeGameGm: gamesStore.activeGameGm,
+        mockStreamsEnabled: gamesStore.mockStreamsEnabled,
+      }),
+    [
+      isGameStarted,
+      shouldShowMyVideo,
+      shouldShowPlayerVideo,
+      gamesStore.activeGamePlayers,
+      gamesStore.activeGameGm,
+      gamesStore.mockStreamsEnabled,
+      rootStore.usersStore.myId,
+    ]
+  );
+
   const filteredTracks = useMemo(() => {
     if (!allTracks || allTracks.length === 0) return [];
 
@@ -30,13 +53,20 @@ export const VideoGrid = observer(() => {
       const isMy = trackRef.participant?.isLocal ?? false;
       const participantId = trackRef.participant?.identity || "";
 
-      // Before game starts — always show everyone
+      if (gamesStore.mockStreamsEnabled) {
+        if (!isGameStarted) return true;
+
+        return (
+          (isMy && shouldShowMyVideo) ||
+          (!isMy && shouldShowPlayerVideo(participantId))
+        );
+      }
+
       if (!isGameStarted) return true;
 
-      return (
-        (isMy && shouldShowMyVideo) ||
-        (!isMy && shouldShowPlayerVideo(participantId))
-      );
+      if (isMy) return expectLocalCamera;
+
+      return expectedRemoteIds.has(participantId);
     });
 
     const {
@@ -66,6 +96,9 @@ export const VideoGrid = observer(() => {
   }, [
     allTracks,
     isGameStarted,
+    expectLocalCamera,
+    expectedRemoteIds,
+    gamesStore.mockStreamsEnabled,
     shouldShowMyVideo,
     shouldShowPlayerVideo,
     gamesStore.gameFlow.killed,

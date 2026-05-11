@@ -102,11 +102,11 @@ export const useTrackConnection = ({
       try {
         if (videoTrack && videoElement) {
           console.log("PlayerVideo: Detaching video track");
-          videoTrack.detach();
+          videoTrack.detach(videoElement);
         }
         if (audioTrack && audioElement) {
           console.log("PlayerVideo: Detaching audio track");
-          audioTrack.detach();
+          audioTrack.detach(audioElement);
         }
       } catch (error) {
         console.error("PlayerVideo: Error during cleanup:", error);
