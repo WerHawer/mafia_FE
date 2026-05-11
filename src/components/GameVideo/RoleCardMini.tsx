@@ -26,14 +26,13 @@ type RoleCardMiniProps = {
 };
 
 export const RoleCardMini = observer(({ userId, role }: RoleCardMiniProps) => {
-  const { gamesStore, isIGM, isIDead } = rootStore;
+  const { gamesStore } = rootStore;
   const { gameFlow } = gamesStore;
   const { t } = useTranslation();
 
   // Determine if the card should be visible to the current user
   // Visible if: game ended, current user is observer, current user is GM, or current user is dead (spirit)
-  const isVisible =
-    gameFlow.isPostGame || gamesStore.isMeObserver || isIGM || isIDead;
+  const isVisible = gameFlow.isPostGame || gamesStore.isMeObserver;
 
   // Derive index for character variation (citizens/mafia) from game roles state
   const cardIndex = useMemo(() => {
