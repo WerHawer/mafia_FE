@@ -416,3 +416,23 @@
   text-align: center;
   padding: 8px 0;
 }
+
+.charCounterWrapper {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 4px;
+  padding-right: 58px; // align with the edge of the input wrapper, considering send button space
+}
+
+.charCounter {
+  font-size: 1.2rem;
+  color: rgba($color-text-primary, 0.7);
+  transition: color 0.2s;
+  cursor: default;
+
+  &.limitExceeded {
+    color: $color-error;
+    font-weight: bold;
+  }
+}

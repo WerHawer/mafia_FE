@@ -197,7 +197,9 @@ export const VideoConfig = observer(
                           >
                             {QUALITY_PRESETS[t_].label}
                             {t_ === quality.detectedTier && (
-                              <span className={styles.autoTag}>авто</span>
+                              <span className={styles.autoTag}>
+                                {t("videoConfig.auto")}
+                              </span>
                             )}
                           </button>
                         ))}
@@ -216,7 +218,7 @@ export const VideoConfig = observer(
                   >
                     <div
                       className={styles.qualityBadge}
-                      title={t("videoConfig.qualityTitle", "Якість відео")}
+                      title={t("videoConfig.qualityTitle")}
                     >
                       {quality.settings.height}p
                     </div>

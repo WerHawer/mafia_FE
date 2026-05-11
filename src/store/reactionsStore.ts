@@ -27,12 +27,12 @@ interface LatestReaction {
 }
 
 const CORNER_BADGE_TTL = 5000;
-const MIN_DURATION = 3000;
-const MAX_DURATION = 6500;
+const MIN_DURATION = 2000;
+const MAX_DURATION = 2400;
 const MIN_X_FRACTION = 0.04;
 const MAX_X_FRACTION = 0.92;
-const MIN_WOBBLE = 3;
-const MAX_WOBBLE = 10;
+const MIN_WOBBLE = 1;
+const MAX_WOBBLE = 4;
 const MIN_SIZE = 32;
 const MAX_SIZE = 42;
 const MIN_END_Y_FRACTION = 0.55;

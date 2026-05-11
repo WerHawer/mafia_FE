@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import classNames from "classnames";
+import { useEffect, useState } from "react";
 
 import styles from "./SleepIcon.module.scss";
 
@@ -8,8 +8,8 @@ type SleepIconProps = {
 };
 
 /**
- * SleepIcon — відображає анімований місяць та зірки.
- * Показується тільки ГМ поверх відео гравця, який підтвердив сон.
+ * SleepIcon — відображає анімований текст Zzz.
+ * Показується всім (крім самого гравця) поверх відео гравця, який підтвердив сон.
  */
 export const SleepIcon = ({ isVisible }: SleepIconProps) => {
   const [shouldRender, setShouldRender] = useState(isVisible);
@@ -23,7 +23,7 @@ export const SleepIcon = ({ isVisible }: SleepIconProps) => {
       setIsHiding(true);
       const timer = setTimeout(() => {
         setShouldRender(false);
-      }, 400); // Час анімації sleepFadeOut (0.4s)
+      }, 300); // Час анімації sleepFadeOut (0.4s)
       return () => clearTimeout(timer);
     }
   }, [isVisible]);
@@ -32,12 +32,9 @@ export const SleepIcon = ({ isVisible }: SleepIconProps) => {
 
   return (
     <div className={classNames(styles.overlay, { [styles.hiding]: isHiding })}>
-      <span className={styles.moon}>🌙</span>
-      <div className={styles.stars}>
-        <span className={styles.star}>✦</span>
-        <span className={styles.star}>✦</span>
-        <span className={styles.star}>✦</span>
-      </div>
+      <span className={styles.z}>z</span>
+      <span className={styles.z}>z</span>
+      <span className={styles.z}>Z</span>
     </div>
   );
 };

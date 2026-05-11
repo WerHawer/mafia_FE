@@ -1,5 +1,4 @@
-import { Emoji } from "emoji-picker-react";
-import { EmojiStyle } from "emoji-picker-react";
+const APPLE_CDN = "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/";
 import classNames from "classnames";
 import { memo } from "react";
 
@@ -32,12 +31,14 @@ const MessageText = memo(({ text, emojiSize }: { text: string; emojiSize: number
     <span className={styles.messageContent}>
       {segments.map((segment, i) =>
         segment.type === "emoji" ? (
-          <Emoji
+          <img
             key={i}
-            unified={segment.unified}
-            emojiStyle={EmojiStyle.APPLE}
-            size={emojiSize}
-            lazyLoad
+            src={`${APPLE_CDN}${segment.unified}.png`}
+            alt={segment.value}
+            width={emojiSize}
+            height={emojiSize}
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <span key={i}>{segment.value}</span>

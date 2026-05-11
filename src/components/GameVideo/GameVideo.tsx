@@ -235,7 +235,7 @@ export const GameVideo = observer(
           />
         )}
 
-        {isIGM && !isMyStream && <SleepIcon isVisible={isSleeping} />}
+        {!isMyStream && <SleepIcon isVisible={isSleeping} />}
 
         {isIGM && !isMyStream && currentUser && (
           <VideoMenu

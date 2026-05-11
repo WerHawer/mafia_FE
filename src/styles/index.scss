@@ -137,3 +137,40 @@ a {
     color: theme.$color-dark-secondary;
   }
 }
+
+// Tippy custom styles for info tooltips
+.tippy-box[data-theme~="info-tooltip"] {
+  background-color: theme.$color-dark-secondary;
+  border: 1px solid rgba(theme.$color-light-secondary, 0.2);
+  border-radius: theme.$border-radius;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+  .tippy-content {
+    padding: 6px 12px;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: theme.$color-text-primary;
+  }
+
+  .tippy-arrow {
+    color: theme.$color-dark-secondary;
+  }
+}
+
+// Tippy custom styles for error tooltips
+.tippy-box[data-theme~="error-tooltip"] {
+  background-color: theme.$color-error;
+  border-radius: theme.$border-radius;
+  box-shadow: 0 4px 12px rgba(theme.$color-error, 0.4);
+
+  .tippy-content {
+    padding: 6px 12px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .tippy-arrow {
+    color: theme.$color-error;
+  }
+}

@@ -18,7 +18,8 @@
     "general": "Загальний",
     "dead": "Для мертвих",
     "deadRestriction": "Мертві не пишуть у загальний чат",
-    "gmDeadObserver": "ГМ може спостерігати, але не писати у чат мертвих"
+    "gmDeadObserver": "ГМ може спостерігати, але не писати у чат мертвих",
+    "limitExceeded": "Перевищено ліміт символів (макс. 300)"
   },
   "emptyState": {
     "title": "ДЕ ВСІ?!",
@@ -163,7 +164,9 @@
     "download": "Завантажити зображення",
     "fileTooLarge": "Файл занадто великий. Максимальний розмір — 1 МБ.",
     "effectsTitle": "Ефекти",
-    "backgroundsTitle": "Фони"
+    "backgroundsTitle": "Фони",
+    "auto": "авто",
+    "qualityTitle": "Якість відео"
   },
 
   "videoMenu": {

@@ -19,7 +19,11 @@
   width: 44px;
   height: 44px;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.2s ease;
+  will-change: transform;
   padding: 0;
   margin: 0;
 

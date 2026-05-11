@@ -1,7 +1,8 @@
-import { Emoji, EmojiStyle } from "emoji-picker-react";
 import { observer } from "mobx-react-lite";
 
 import styles from "./GameReactions.module.scss";
+
+const APPLE_CDN = "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/";
 
 interface GameReactionsBarProps {
   sendReaction: (emoji: string) => void;
@@ -35,7 +36,14 @@ export const GameReactionsBar = observer(({ sendReaction }: GameReactionsBarProp
           className={styles.reactionBtn}
           onClick={() => sendReaction(emoji)}
         >
-          <Emoji unified={unified} emojiStyle={EmojiStyle.APPLE} size={26} />
+          <img
+            src={`${APPLE_CDN}${unified}.png`}
+            alt={emoji}
+            width={26}
+            height={26}
+            loading="eager"
+            decoding="async"
+          />
         </button>
       ))}
     </div>

@@ -17,7 +17,8 @@
     "general": "General",
     "dead": "Dead Chat",
     "deadRestriction": "Dead players can't write here",
-    "gmDeadObserver": "GM can observe but not write in dead chat"
+    "gmDeadObserver": "GM can observe but not write in dead chat",
+    "limitExceeded": "Character limit exceeded (max 300)"
   },
   "emptyState": {
     "title": "WHERE IS EVERYONE?!",
@@ -161,7 +162,9 @@
     "download": "Upload image",
     "fileTooLarge": "File is too large. Maximum size is 1MB.",
     "effectsTitle": "Effects",
-    "backgroundsTitle": "Backgrounds"
+    "backgroundsTitle": "Backgrounds",
+    "auto": "Auto",
+    "qualityTitle": "Video Quality"
   },
 
   "videoMenu": {

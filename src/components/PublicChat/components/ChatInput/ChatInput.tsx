@@ -2,11 +2,12 @@ import { SendOutlined } from "@ant-design/icons";
 import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import EmojiPicker, {
-  Emoji,
   EmojiClickData,
   EmojiStyle,
   Theme,
 } from "emoji-picker-react";
+
+const APPLE_CDN = "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/";
 import { observer } from "mobx-react-lite";
 import {
   ChangeEvent,
@@ -140,12 +141,12 @@ export const ChatInput = ({
     calculatePosition();
 
     const onClose = (e: MouseEvent) => {
-      const target = e.target as Node;
+      const path = e.composedPath();
       const pickerEl = document.getElementById("emoji-picker-portal");
 
       if (
-        emojiButtonRef.current?.contains(target) ||
-        pickerEl?.contains(target)
+        (emojiButtonRef.current && path.includes(emojiButtonRef.current)) ||
+        (pickerEl && path.includes(pickerEl))
       ) {
         return;
       }
@@ -198,7 +199,13 @@ export const ChatInput = ({
     [afterText]
   );
 
-  const handleEmojiClick = (emojiData: EmojiClickData) => {
+  const stateRef = useRef({ value, onChange, updateCaret });
+  useEffect(() => {
+    stateRef.current = { value, onChange, updateCaret };
+  });
+
+  const handleEmojiClick = useCallback((emojiData: EmojiClickData) => {
+    const { value, onChange, updateCaret } = stateRef.current;
     const ref = textareaRef.current;
 
     if (!ref) {
@@ -226,19 +233,20 @@ export const ChatInput = ({
       updateCaret();
 
       // Ensure the cursor is visible after inserting emojis
-      const lineHeight = 19 * 1.5; // font-size * line-height
       const currentScrollTop = ref.scrollTop;
-      const offsetTop = ref.scrollHeight * (newPos / value.length || 0);
+      const offsetTop = ref.scrollHeight * (newPos / newValue.length || 0);
 
       // Simple heuristic: if the cursor might be below the visible area, scroll to it
       if (offsetTop > currentScrollTop + 100) {
         ref.scrollTop = offsetTop - 60;
       }
     }, 0);
-  };
+  }, []);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+
+    if (disabled || value.length > 300) return;
 
     setShowEmojiPicker(false);
     onSubmit();
@@ -286,11 +294,14 @@ export const ChatInput = ({
           >
             {beforeSegments.map((segment, i) =>
               segment.type === "emoji" ? (
-                <Emoji
+                <img
                   key={i}
-                  unified={segment.unified}
-                  emojiStyle={EmojiStyle.APPLE}
-                  size={INPUT_EMOJI_SIZE}
+                  src={`${APPLE_CDN}${segment.unified}.png`}
+                  alt={segment.value}
+                  width={INPUT_EMOJI_SIZE}
+                  height={INPUT_EMOJI_SIZE}
+                  loading="eager"
+                  decoding="async"
                 />
               ) : (
                 <span key={i}>{segment.value}</span>
@@ -308,11 +319,14 @@ export const ChatInput = ({
             {caretPosition !== null &&
               afterSegments.map((segment, i) =>
                 segment.type === "emoji" ? (
-                  <Emoji
+                  <img
                     key={i}
-                    unified={segment.unified}
-                    emojiStyle={EmojiStyle.APPLE}
-                    size={INPUT_EMOJI_SIZE}
+                    src={`${APPLE_CDN}${segment.unified}.png`}
+                    alt={segment.value}
+                    width={INPUT_EMOJI_SIZE}
+                    height={INPUT_EMOJI_SIZE}
+                    loading="eager"
+                    decoding="async"
                   />
                 ) : (
                   <span key={i}>{segment.value}</span>
@@ -352,13 +366,20 @@ export const ChatInput = ({
             disabled={disabled}
             onClick={onToggleEmojiPicker}
           >
-            <Emoji unified="1f600" emojiStyle={EmojiStyle.APPLE} size={22} />
+            <img
+              src={`${APPLE_CDN}1f600.png`}
+              alt="😀"
+              width={22}
+              height={22}
+              loading="eager"
+              decoding="async"
+            />
           </button>
         </div>
 
         <Button
           size={ButtonSize.Small}
-          disabled={!value || disabled}
+          disabled={!value || disabled || value.length > 300}
           type={ButtonType.Submit}
           variant={ButtonVariant.Outline}
           title={t("send")}
@@ -370,26 +391,49 @@ export const ChatInput = ({
         </Button>
       </form>
 
-      {showEmojiPicker &&
-        createPortal(
-          <div
-            id="emoji-picker-portal"
-            style={{
-              position: "fixed",
-              top: pickerPosition.top,
-              left: pickerPosition.left,
-              zIndex: 9999,
-            }}
+      {value.length >= 200 && (
+        <div className={styles.charCounterWrapper}>
+          <Tippy
+            content={t("chat.limitExceeded")}
+            disabled={value.length <= 300}
+            placement="top"
+            theme="info-tooltip"
           >
-            <EmojiPicker
-              onEmojiClick={handleEmojiClick}
-              theme={Theme.DARK}
-              lazyLoadEmojis
-              emojiStyle={EmojiStyle.APPLE}
-            />
-          </div>,
-          document.body
-        )}
+            <span
+              className={classNames(styles.charCounter, {
+                [styles.limitExceeded]: value.length > 300,
+              })}
+            >
+              {value.length} / 300
+            </span>
+          </Tippy>
+        </div>
+      )}
+
+      {createPortal(
+        <div
+          id="emoji-picker-portal"
+          style={{
+            position: "fixed",
+            top: showEmojiPicker ? pickerPosition.top : -9999,
+            left: showEmojiPicker ? pickerPosition.left : -9999,
+            zIndex: 9999,
+            opacity: showEmojiPicker ? 1 : 0,
+            pointerEvents: showEmojiPicker ? "auto" : "none",
+            visibility: showEmojiPicker ? "visible" : "hidden",
+            transition: "opacity 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+          }}
+          aria-hidden={!showEmojiPicker}
+        >
+          <EmojiPicker
+            onEmojiClick={handleEmojiClick}
+            theme={Theme.DARK}
+            lazyLoadEmojis
+            emojiStyle={EmojiStyle.APPLE}
+          />
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
