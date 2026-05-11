@@ -127,8 +127,13 @@
 }
 
 @keyframes ghostFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 .menuContainer {
@@ -410,19 +415,21 @@
   bottom: 55px; // Above the user name badge
   z-index: 15;
   cursor: pointer;
-  
+
   width: 55px;
   height: 80px;
   perspective: 1000px;
 
-  transition: transform 0.3s ease-out, z-index 0.3s ease-out;
-  transform-origin: bottom left;
+  transition:
+    transform 0.3s ease-out,
+    z-index 0.3s ease-out;
+  transform-origin: left;
 
   &:hover {
     transform: scale(2);
     z-index: 100;
   }
-  
+
   img {
     width: 100%;
     height: 100%;
@@ -430,18 +437,6 @@
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    
-    // Subtle float animation (limited to 5 times)
-    animation: cardFloat 3s ease-in-out 5;
-  }
-}
-
-@keyframes cardFloat {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-4px) rotate(1deg);
   }
 }
 
@@ -451,15 +446,13 @@
   left: 0;
   right: 0;
 
-  color: #fff;
-  font-weight: 500;
+  color: theme.$color-text-primary;
+  font-weight: 400;
   text-align: center;
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   line-height: 1;
 
   text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
+    0 1px 4px rgba(0, 0, 0, 1),
+    0 0 2px rgba(0, 0, 0, 0.8);
 }

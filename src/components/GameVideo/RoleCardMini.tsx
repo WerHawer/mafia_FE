@@ -26,21 +26,28 @@ type RoleCardMiniProps = {
 };
 
 export const RoleCardMini = observer(({ userId, role }: RoleCardMiniProps) => {
-  const { gamesStore, isIGM } = rootStore;
+  const { gamesStore, isIGM, isIDead } = rootStore;
   const { gameFlow } = gamesStore;
   const { t } = useTranslation();
 
   // Determine if the card should be visible to the current user
-  const isVisible = gameFlow.isPostGame || gamesStore.isMeObserver;
+  // Visible if: game ended, current user is observer, current user is GM, or current user is dead (spirit)
+  const isVisible =
+    gameFlow.isPostGame || gamesStore.isMeObserver || isIGM || isIDead;
 
-  // Stable index for character variation (citizens/mafia)
+  // Derive index for character variation (citizens/mafia) from game roles state
   const cardIndex = useMemo(() => {
-    let hash = 0;
-    for (let i = 0; i < userId.length; i++) {
-      hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+    const roles = gamesStore.activeGameRoles;
+    if (!roles) return 0;
+
+    if (role === Roles.Citizen) {
+      return roles.citizens?.indexOf(userId) ?? 0;
     }
-    return Math.abs(hash);
-  }, [userId]);
+    if (role === Roles.Mafia) {
+      return roles.mafia?.indexOf(userId) ?? 0;
+    }
+    return 0;
+  }, [gamesStore.activeGameRoles, role, userId]);
 
   const mafiaImages = [don, mafia_1, mafia_2];
   const citizenImages = [anna, janna, kate, ken, taras, vasyl];

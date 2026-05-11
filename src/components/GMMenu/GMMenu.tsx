@@ -131,7 +131,7 @@ export const GMMenu = observer(() => {
             )}
 
             {/* TODO: remove — temporary layout stress test */}
-            {/* <div className={styles.testUsersSection}>
+            <div className={styles.testUsersSection}>
               <span className={styles.testUsersLabel}>
                 <ExperimentOutlined />
                 {isAddingTestUsers
@@ -156,7 +156,7 @@ export const GMMenu = observer(() => {
               </div>
             </div>
 
-            <MenuSeparator /> */}
+            <MenuSeparator />
 
             <MenuItem
               icon={<LogoutOutlined />}
