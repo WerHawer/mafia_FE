@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   useStartDayMutation,
@@ -56,7 +56,7 @@ export const useGamePanel = () => {
          killedPlayerId = uniqueTargets[0];
       }
 
-      setNightActionLogs({
+      const logs: NightActionLogs = {
         targetedByMafia: uniqueTargets,
         savedByDoctor: doctorSave,
         blockedByProstitute: prostituteBlock,
@@ -65,8 +65,11 @@ export const useGamePanel = () => {
         mafiaMissReason,
         killedPlayer: killedPlayerId,
         totalShots,
-        aliveMafiaCount
-      });
+        aliveMafiaCount,
+      };
+
+      setNightActionLogs(logs);
+      gamesStore.setLastNightActionLogs(logs);
 
       startDay(activeGameId);
       isShouldShowModal.current = true;

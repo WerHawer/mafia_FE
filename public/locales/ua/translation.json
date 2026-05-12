@@ -284,7 +284,8 @@
     "audioSettings": "Налаштування звуку",
     "leaveGame": "Вийти з гри",
     "addTestUsers": "Тестові користувачі",
-    "addTestUsersLoading": "Додаємо тестових гравців…"
+    "addTestUsersLoading": "Додаємо тестових гравців…",
+    "viewNightResults": "Результати ночі"
   },
 
   "confirmRestartModal": {

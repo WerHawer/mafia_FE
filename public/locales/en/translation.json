@@ -281,7 +281,8 @@
     "audioSettings": "Audio Settings",
     "leaveGame": "Leave Game",
     "addTestUsers": "Add Test Users",
-    "addTestUsersLoading": "Adding test users…"
+    "addTestUsersLoading": "Adding test users…",
+    "viewNightResults": "View Night Results"
   },
 
   "confirmRestartModal": {

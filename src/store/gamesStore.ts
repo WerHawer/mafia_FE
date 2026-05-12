@@ -1,6 +1,7 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 
+import { NightActionLogs } from "@/components/Modals/Modal.types.ts";
 import { UserId } from "@/types/user.types.ts";
 import { usersStore } from "./usersStore.ts";
 
@@ -26,6 +27,8 @@ export class GamesStore {
   isRoleRevealed: boolean = false;
   // TODO: remove — shared flag for layout stress-test mock streams
   mockStreamsEnabled: boolean = false;
+  // Stores the last night's action logs so the GM can reopen the modal during the day
+  lastNightActionLogs: NightActionLogs | null = null;
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -82,11 +85,16 @@ export class GamesStore {
     this.isDealingComplete = false;
     this.isRoleRevealed = false;
     this.mockStreamsEnabled = false;
+    this.lastNightActionLogs = null;
   }
 
   // TODO: remove — toggled by the test users feature for layout stress-testing
   setMockStreamsEnabled(enabled: boolean) {
     this.mockStreamsEnabled = enabled;
+  }
+
+  setLastNightActionLogs(logs: NightActionLogs) {
+    this.lastNightActionLogs = logs;
   }
 
   setForceMutedUser(userId: UserId, isMuted: boolean) {
