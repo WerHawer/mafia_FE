@@ -149,12 +149,15 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
         gamesStore.removeActiveGame();
       },
       [wsEvents.gmChanged]: ({ newGMId, reason }: { newGMId: string; reason: string }) => {
+        console.log('[Socket] gmChanged event received:', { newGMId, reason, myId });
         if (!newGMId || newGMId !== myId) return;
 
         if (reason === 'left_before_start') {
           toast(t('gm.youAreNewGM'), { icon: '👑', duration: 6000 });
         } else if (reason === 'restarted_after_gm_left') {
           toast(t('gm.youAreNewGMAfterRestart'), { icon: '👑', duration: 6000 });
+        } else if (reason === 'joined_empty_game') {
+          toast(t('gm.youAreNewGMJoinedEmpty'), { icon: '👑', duration: 6000 });
         }
       },
       [wsEvents.socketDisconnect]: (data) => {
@@ -183,6 +186,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
     };
   }, [
     socket,
+    myId,
     setSocketConnectedCount,
     connectionAttempts,
     setNewMessage,

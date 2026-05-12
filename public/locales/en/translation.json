@@ -4,6 +4,7 @@
   "gm": {
     "youAreNewGM": "You have been appointed as the new GM!",
     "youAreNewGMAfterRestart": "The GM left. You have been appointed as the new GM!",
+    "youAreNewGMJoinedEmpty": "You became the GM because the game was empty.",
     "candidateSpeeches": "Candidate Speeches"
   },
   "waitingForPlayers": "Waiting for players",

@@ -4,6 +4,7 @@
   "gm": {
     "youAreNewGM": "Тебе призначено новим ГМом!",
     "youAreNewGMAfterRestart": "ГМ покинув гру. Тебе призначено новим ГМом!",
+    "youAreNewGMJoinedEmpty": "Ви стали ГМом, оскільки в грі не було інших гравців.",
     "candidateSpeeches": "Промови кандидатів"
   },
   "waitingForPlayers": "Очікування гравців",
