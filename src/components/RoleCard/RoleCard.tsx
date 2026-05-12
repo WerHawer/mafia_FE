@@ -1,6 +1,6 @@
 import { InfoCircleOutlined } from "@ant-design/icons";
 import classNames from "classnames";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { rootStore } from "@/store/rootStore.ts";
@@ -22,6 +22,7 @@ import vasyl from "@/assets/images/cards/vasyl.webp";
 
 import { Roles } from "@/types/game.types";
 import { Typography } from "@/UI/Typography";
+import { shuffleArrayWithSeed } from "@/helpers/roleCards.ts";
 
 import styles from "./RoleCard.module.scss";
 import { RoleInfoModal } from "./RoleInfoModal.tsx";
@@ -52,12 +53,18 @@ export const RoleCard = ({
   const mafia = [don, mafia_1, mafia_2];
   const citizens = [anna, janna, kate, ken, taras, vasyl];
 
+  const seed = `${rootStore.gamesStore.activeGameId}-${rootStore.gamesStore.activeGame?.startTime ?? 0}`;
+  const shuffledCitizens = useMemo(
+    () => shuffleArrayWithSeed(citizens, seed),
+    [citizens, seed]
+  );
+
   const roleImages = {
     [Roles.Don]: don,
     [Roles.Sheriff]: sheriff,
     [Roles.Doctor]: doctor,
     [Roles.Mafia]: mafia[index ?? 0],
-    [Roles.Citizen]: citizens[index ?? 0],
+    [Roles.Citizen]: shuffledCitizens[index ?? 0],
     [Roles.Prostitute]: prostitute,
   };
 

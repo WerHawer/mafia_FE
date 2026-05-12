@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { rootStore } from "@/store/rootStore.ts";
 import { SoundEffect } from "@/store/soundStore.ts";
@@ -30,6 +30,12 @@ export const DealingAnimation = () => {
     return () => timers.forEach(clearTimeout);
   }, []);
 
+  // Generate random indices for the animation deck once when mounting
+  const randomIndices = useMemo(
+    () => Array.from({ length: CARDS_COUNT }, () => Math.floor(Math.random() * 6)),
+    []
+  );
+
   return (
     <>
       {Array.from({ length: CARDS_COUNT }).map((_, index) => {
@@ -43,7 +49,12 @@ export const DealingAnimation = () => {
             className={styles.fakeCard}
             {...getFakeCardAnimation(index, targetX, targetY, rotation)}
           >
-            <RoleCard role={Roles.Citizen} width={100} height={150} index={0} />
+            <RoleCard
+              role={Roles.Citizen}
+              width={100}
+              height={150}
+              index={randomIndices[index]}
+            />
           </motion.div>
         );
       })}

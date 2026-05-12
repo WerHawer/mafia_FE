@@ -17,6 +17,7 @@ import vasyl from "@/assets/images/cards/vasyl.webp";
 import { rootStore } from "@/store/rootStore.ts";
 import { Roles } from "@/types/game.types.ts";
 import { Typography } from "@/UI/Typography";
+import { shuffleArrayWithSeed } from "@/helpers/roleCards.ts";
 
 import styles from "./GameVideo.module.scss";
 
@@ -51,12 +52,18 @@ export const RoleCardMini = observer(({ userId, role }: RoleCardMiniProps) => {
   const mafiaImages = [don, mafia_1, mafia_2];
   const citizenImages = [anna, janna, kate, ken, taras, vasyl];
 
+  const seed = `${gamesStore.activeGameId}-${gamesStore.activeGame?.startTime ?? 0}`;
+  const shuffledCitizens = useMemo(
+    () => shuffleArrayWithSeed(citizenImages, seed),
+    [citizenImages, seed]
+  );
+
   const roleImages: Record<string, string> = {
     [Roles.Don]: don,
     [Roles.Sheriff]: sheriff,
     [Roles.Doctor]: doctor,
     [Roles.Mafia]: mafiaImages[cardIndex % mafiaImages.length],
-    [Roles.Citizen]: citizenImages[cardIndex % citizenImages.length],
+    [Roles.Citizen]: shuffledCitizens[cardIndex % shuffledCitizens.length],
     [Roles.Prostitute]: prostitute,
   };
 
