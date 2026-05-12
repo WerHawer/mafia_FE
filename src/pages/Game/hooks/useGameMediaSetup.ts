@@ -8,8 +8,8 @@ import aimCursorUrl from "@/assets/cursors/aim.svg?url";
 import kissCursorUrl from "@/assets/cursors/kiss.svg?url";
 import questionCursorUrl from "@/assets/cursors/question.svg?url";
 import syringeCursorUrl from "@/assets/cursors/syringe.svg?url";
-import brokenGlassIcon from "@/assets/icons/broken_glass.png";
-import kissMarkIcon from "@/assets/icons/kiss_mark.png";
+import brokenGlassIcon from "@/assets/icons/broken_glass.webp";
+import kissMarkIcon from "@/assets/icons/kiss_mark.webp";
 
 const PRELOAD_ASSETS = [
   brokenGlassIcon,

@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 
-import kissMarkIcon from "@/assets/icons/kiss_mark.png";
+import kissMarkIcon from "@/assets/icons/kiss_mark.webp";
 import { rootStore } from "@/store/rootStore.ts";
 
 import styles from "./KissEffect.module.scss";

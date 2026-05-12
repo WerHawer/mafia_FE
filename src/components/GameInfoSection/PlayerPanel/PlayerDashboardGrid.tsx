@@ -17,7 +17,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 
-import bulletIcon from "@/assets/icons/bullet.png";
+import bulletIcon from "@/assets/icons/bullet.webp";
 import { InvestigateEffect } from "@/components/InvestigateEffect";
 import { useGameVote } from "@/components/GameVote/useGameVote.ts";
 import { canSeeMafiaShot } from "@/helpers/mafiaShot.ts";

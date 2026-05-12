@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef } from "react";
 
-import brokenGlassIcon from "@/assets/icons/broken_glass.png";
+import brokenGlassIcon from "@/assets/icons/broken_glass.webp";
 import { canSeeMafiaShot, isMafiaRole } from "@/helpers/mafiaShot.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { SoundEffect } from "@/store/soundStore.ts";

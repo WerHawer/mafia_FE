@@ -2,14 +2,14 @@ import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import { useTranslation } from "react-i18next";
 
-import citizenIcon from "@/assets/icons/citizen.png";
+import citizenIcon from "@/assets/icons/citizen.webp";
 import doctorIcon from "@/assets/icons/doctor.webp";
-import gmIcon from "@/assets/icons/gm.png";
+import gmIcon from "@/assets/icons/gm.webp";
 import mafiaIcon from "@/assets/icons/mafia.webp";
 import donIcon from "@/assets/icons/mafia_boss.webp";
 import maniacIcon from "@/assets/icons/maniac.webp";
 import prostituteIcon from "@/assets/icons/prostitute.webp";
-import sheriffIcon from "@/assets/icons/sheriff.png";
+import sheriffIcon from "@/assets/icons/sheriff.webp";
 import { Roles } from "@/types/game.types.ts";
 
 import styles from "./RoleIcon.module.scss";

@@ -4,8 +4,8 @@ import { observer } from "mobx-react-lite";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import blurIcon from "@/assets/icons/blur.png";
-import removeIcon from "@/assets/icons/remove.png";
+import blurIcon from "@/assets/icons/blur.webp";
+import removeIcon from "@/assets/icons/remove.webp";
 import { BackgroundImageList } from "@/components/VideoConfig/BackgroundImageList.tsx";
 import { useCustomVideo } from "@/hooks/useCustomVideo.ts";
 import { useVideoSettings } from "@/hooks/useVideoSettings.ts";

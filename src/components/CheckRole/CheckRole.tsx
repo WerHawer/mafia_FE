@@ -4,8 +4,8 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 
-import bulletIcon from "@/assets/icons/bullet.png";
-import doctorIconUrl from "@/assets/icons/doctor_icon.png";
+import bulletIcon from "@/assets/icons/bullet.webp";
+import doctorIconUrl from "@/assets/icons/doctor_icon.webp";
 import { rootStore } from "@/store/rootStore.ts";
 import { UserId } from "@/types/user.types.ts";
 

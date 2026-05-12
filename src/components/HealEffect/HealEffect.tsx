@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 
-import tapeImageUrl from "@/assets/icons/tape.png";
+import tapeImageUrl from "@/assets/icons/tape.webp";
 import { rootStore } from "@/store/rootStore.ts";
 
 import styles from "./HealEffect.module.scss";
