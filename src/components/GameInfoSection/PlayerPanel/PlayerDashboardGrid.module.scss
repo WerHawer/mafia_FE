@@ -282,7 +282,8 @@ $player-dashboard-compact-grid-max-height: 105px; /* sync: PLAYER_LIST_COMPACT_M
 
 .playerName,
 .candidateName,
-.proposerName {
+.proposerName,
+.votersRow {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -387,6 +388,9 @@ $player-dashboard-compact-grid-max-height: 105px; /* sync: PLAYER_LIST_COMPACT_M
   color: theme.$color-text-secondary;
   font-size: 1.05rem;
   line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .investigateResult {

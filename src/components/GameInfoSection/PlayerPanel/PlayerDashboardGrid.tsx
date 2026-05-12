@@ -453,7 +453,7 @@ export const PlayerDashboardGrid = observer(
       myId,
       onVoteForPlayer,
     } = useGameVote();
-    const { activeGamePlayersWithoutGM } = gamesStore;
+    const { activeGamePlayersWithoutGM, activeGameKilledPlayers } = gamesStore;
     const players = activeGamePlayersWithoutGM.map((userId) => ({ id: userId }));
 
     const stablePlayerNumberById = useMemo(() => {
@@ -468,12 +468,20 @@ export const PlayerDashboardGrid = observer(
     }, [players]);
 
     const orderedPlayers = [...players].sort((firstPlayer, secondPlayer) => {
+      const firstIsDead = activeGameKilledPlayers.includes(firstPlayer.id);
+      const secondIsDead = activeGameKilledPlayers.includes(secondPlayer.id);
+
+      if (firstIsDead !== secondIsDead) return firstIsDead ? 1 : -1;
+
       const firstIsProposed = proposed.includes(firstPlayer.id);
       const secondIsProposed = proposed.includes(secondPlayer.id);
 
-      if (firstIsProposed === secondIsProposed) return 0;
+      if (firstIsProposed !== secondIsProposed) return firstIsProposed ? -1 : 1;
 
-      return firstIsProposed ? -1 : 1;
+      return (
+        stablePlayerNumberById[firstPlayer.id] -
+        stablePlayerNumberById[secondPlayer.id]
+      );
     });
 
     const orderedPlayerIdsKey = useMemo(
