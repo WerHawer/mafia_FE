@@ -3,9 +3,11 @@ import Tippy from "@tippyjs/react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher/LanguageSwitcher.tsx";
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
+import { userLogout } from "@/api/auth/api.ts";
 import { removeTokenFromAxios } from "@/helpers/removeTokenFromAxios.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { routes } from "@/router/routs.ts";
@@ -23,6 +25,7 @@ export const Header = () => {
   const { logout } = usersStore;
   const { openModal } = modalStore;
   const { disconnect } = useSocket();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -30,12 +33,23 @@ export const Header = () => {
     openModal(ModalNames.CreateGameModal);
   }, [openModal]);
 
-  const onLogout = useCallback(() => {
+  const onLogout = useCallback(async () => {
+    try {
+      // Call the BE logout endpoint first while the token is still in Axios.
+      // This allows the BE to explicitly disconnect the socket and skip the 30s grace period.
+      await userLogout();
+    } catch (error) {
+      console.error("Failed to notify backend about logout:", error);
+    }
+
     logout();
     removeTokenFromAxios();
+    // Clear all TanStack Query cache to prevent stale user/online-status data
+    // from leaking into the next user's session.
+    queryClient.clear();
     disconnect();
     navigate(routes.login);
-  }, [disconnect, logout, navigate]);
+  }, [disconnect, logout, navigate, queryClient]);
 
   return (
     <header className={styles.header}>

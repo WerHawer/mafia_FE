@@ -46,7 +46,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   const { setNewMessage, replaceMessages } = messagesStore;
   const { updateGame, updateGames, setToProposed, addVoted, addShoot } =
     gamesStore;
-  const { setSocketConnectedCount, updateOnlineUsers, myId } = usersStore;
+  const { setSocketConnectedCount, updateOnlineUsers, updateUserOnlineStatus, myId } = usersStore;
 
   const updateRQGamesCache = useCallback(
     (newGame: IGame | IGameShort) => {
@@ -176,6 +176,9 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       },
       [wsEvents.userMicrophoneStatusChanged]: (data) => {
         console.log("Microphone status changed:", data);
+      },
+      [wsEvents.userOnlineStatusChanged]: ({ userId, isOnline }) => {
+        updateUserOnlineStatus(userId, isOnline);
       },
     };
   }, [

@@ -24,3 +24,7 @@ export const refreshTokenRequest = async (refreshToken: string) => {
     refreshToken,
   });
 };
+
+export const userLogout = async () => {
+  return axios.post(`/logout`);
+};

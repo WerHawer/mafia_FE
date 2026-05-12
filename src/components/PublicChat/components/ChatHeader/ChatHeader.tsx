@@ -11,10 +11,6 @@ import { Typography } from "@/UI/Typography";
 
 import styles from "../../PublicChat.module.scss";
 
-interface ChatHeaderProps {
-  socketConnected: number;
-}
-
 const OnlineUsersList = observer(() => {
   const { users } = usersStore;
   const onlineUsers = Object.values(users).filter((u) => u.isOnline);
@@ -35,9 +31,11 @@ const OnlineUsersList = observer(() => {
   );
 });
 
-export const ChatHeader = observer(({ socketConnected }: ChatHeaderProps) => {
+export const ChatHeader = observer(() => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const { users } = usersStore;
+  const onlineCount = Object.values(users).filter((u) => u.isOnline).length;
 
   return (
     <Tippy
@@ -53,7 +51,7 @@ export const ChatHeader = observer(({ socketConnected }: ChatHeaderProps) => {
       <Typography variant="span" className={styles.chatHeader}>
         <div className={styles.onlineIndicatorWrapper}>
           <span className={styles.onlineIndicator} />
-          {socketConnected} {t("online")}
+          {onlineCount} {t("online")}
           <DownOutlined className={classNames(styles.chevron, { [styles.chevronOpen]: isOpen })} />
         </div>
       </Typography>

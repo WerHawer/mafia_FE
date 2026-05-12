@@ -27,7 +27,9 @@ export class UsersStore {
     for (const user of users) {
       if (this._users[user.id]) continue;
 
-      this._users[user.id] = user;
+      // isOnline is managed exclusively by WebSocket events (updateOnlineUsers / updateUserOnlineStatus).
+      // REST API responses carry a stale snapshot from the DB — never trust isOnline from them.
+      this._users[user.id] = { ...user, isOnline: false };
     }
   };
 
@@ -65,6 +67,12 @@ export class UsersStore {
         this._users[user.id] = { ...user, isOnline: true };
       }
     });
+  };
+
+  updateUserOnlineStatus = (userId: string, isOnline: boolean) => {
+    if (!this._users[userId]) return;
+
+    this._users[userId].isOnline = isOnline;
   };
 
   removeToken = () => {

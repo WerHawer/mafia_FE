@@ -76,7 +76,7 @@ export const PublicChat = observer(() => {
 
   return (
     <div className={styles.chatContainer}>
-      <ChatHeader socketConnected={socketConnected} />
+      <ChatHeader />
 
       <ChatMessages
         messages={publicMessages}
