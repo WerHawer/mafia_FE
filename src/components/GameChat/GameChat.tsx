@@ -24,6 +24,8 @@ enum ChatTab {
   Dead = "dead",
 }
 
+const TOAST_DURATION_MS = 2500;
+
 export const GameChat = observer(() => {
   const { id = "" } = useParams();
   const { usersStore, messagesStore, gamesStore, isIDead, isIGM, soundStore } = rootStore;
@@ -73,11 +75,11 @@ export const GameChat = observer(() => {
   useEffect(() => {
     const unsubscribe = subscribe(wsEvents.messageSend, (msg: IMessage) => {
       const toId = "id" in msg.to ? msg.to.id : undefined;
-      
+
       // Determine message destination
       const isForGeneral = toId === id;
       const isForDead = toId?.endsWith("_dead") && toId.includes(id);
-      
+
       // Check if user has access and if the message is from another tab
       const canSeeMessage = msg.to.type === MessageTypes.All || isForGeneral || ((isIDead || isIGM) && isForDead);
       const isNotCurrentTab = toId !== currentRoomId;
@@ -85,21 +87,30 @@ export const GameChat = observer(() => {
       const isGeneralChat = msg.to.type === MessageTypes.All;
       if (msg.sender?.id !== user?.id && canSeeMessage && isNotCurrentTab && !isGeneralChat) {
         const toastId = `chat-msg-${msg.createdAt}-${msg.sender?.id}-${Math.random()}`;
-        
-        setChatToasts((prev) => [...prev, { id: toastId, msg }]);
-        soundStore.playSfx(SoundEffect.Notification);
 
-        // Auto-remove after 2.5 seconds
+        setChatToasts((prev) => {
+          const next = [...prev, { id: toastId, msg }];
+          if (next.length > 3) {
+            return next.slice(1);
+          }
+          return next;
+        });
+
+        if (!soundStore.isChatNotificationMuted) {
+          soundStore.playSfx(SoundEffect.Notification);
+        }
+
+        // Auto-remove after the toast's lifetime
         setTimeout(() => {
-          setChatToasts((prev) => prev.filter((t) => t.id !== toastId));
-        }, 2500);
+          setChatToasts((prev) => prev.filter((toast) => toast.id !== toastId));
+        }, TOAST_DURATION_MS);
       }
     });
 
     return () => {
       unsubscribe();
     };
-  }, [subscribe, id, isIDead, isIGM, user?.id, currentRoomId]);
+  }, [subscribe, id, isIDead, isIGM, user?.id, currentRoomId, soundStore]);
 
   useEffect(() => {
     if (!chatRef.current || !messages?.length) return;
@@ -154,6 +165,10 @@ export const GameChat = observer(() => {
     sendMessage(wsEvents.messageSend, messageDTO);
   }, [message, user, currentRoomId, setNewLocalMessage, sendMessage]);
 
+  const dismissToast = useCallback((toastId: string) => {
+    setChatToasts((prev) => prev.filter((toast) => toast.id !== toastId));
+  }, []);
+
   const isGeneralRestricted = activeTab === ChatTab.General && isIDead;
 
   return (
@@ -169,7 +184,13 @@ export const GameChat = observer(() => {
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
               className={styles.toastWrapper}
             >
-              <ChatMessageToast message={toast.msg} />
+              <ChatMessageToast
+                message={toast.msg}
+                duration={TOAST_DURATION_MS}
+                sfxMuted={soundStore.isChatNotificationMuted}
+                onToggleSfx={() => soundStore.toggleChatNotificationMute()}
+                onDismiss={() => dismissToast(toast.id)}
+              />
             </motion.div>
           ))}
         </AnimatePresence>

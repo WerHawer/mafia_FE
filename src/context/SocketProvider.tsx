@@ -9,10 +9,10 @@ import {
   useState,
 } from "react";
 import { io, Socket } from "socket.io-client";
-import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 
+import { showToast } from "@/UI/Toast/showToast";
 import { queryKeys } from "../api/apiConstants.ts";
 import { SERVER } from "../api/apiConstants.ts";
 import { fetchGame } from "../api/game/api.ts";
@@ -153,11 +153,11 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
         if (!newGMId || newGMId !== myId) return;
 
         if (reason === 'left_before_start') {
-          toast(t('gm.youAreNewGM'), { icon: '👑', duration: 6000 });
+          showToast("gm", t("gm.youAreNewGM"), { duration: 6000 });
         } else if (reason === 'restarted_after_gm_left') {
-          toast(t('gm.youAreNewGMAfterRestart'), { icon: '👑', duration: 6000 });
+          showToast("gm", t("gm.youAreNewGMAfterRestart"), { duration: 6000 });
         } else if (reason === 'joined_empty_game') {
-          toast(t('gm.youAreNewGMJoinedEmpty'), { icon: '👑', duration: 6000 });
+          showToast("gm", t("gm.youAreNewGMJoinedEmpty"), { duration: 6000 });
         }
       },
       [wsEvents.socketDisconnect]: (data) => {

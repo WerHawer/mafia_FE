@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import {
   useAddUserToGameMutation,
@@ -7,6 +6,7 @@ import {
 } from "@/api/game/queries.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { Roles } from "@/types/game.types.ts";
+import { showToast } from "@/UI/Toast/showToast";
 
 export const useGameSession = (gameId: string) => {
   const { myId } = rootStore.usersStore;
@@ -35,7 +35,7 @@ export const useGameSession = (gameId: string) => {
             game.players.length === 1 &&
             game[Roles.GM] === myId
           ) {
-            toast(t('gm.youAreNewGMJoinedEmpty'), { icon: '👑', duration: 6000 });
+            showToast("gm", t("gm.youAreNewGMJoinedEmpty"), { duration: 6000 });
           }
         },
         onError: () => {

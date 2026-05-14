@@ -25,6 +25,7 @@ export class SoundStore {
   musicVolume = 0.3;
   sfxVolume = 0.2;
   isMuted = false;
+  isChatNotificationMuted = false;
   isPlayingMusic = false;
 
   private activeMusicObject: HTMLAudioElement | null = null;
@@ -37,7 +38,7 @@ export class SoundStore {
     makeAutoObservable(this, {}, { autoBind: true });
     void makePersistable(this, {
       name: "Mafia_SoundStore",
-      properties: ["musicVolume", "sfxVolume", "isMuted"],
+      properties: ["musicVolume", "sfxVolume", "isMuted", "isChatNotificationMuted"],
       storage: localStorage,
     });
 
@@ -111,6 +112,10 @@ export class SoundStore {
     if (this.activeMusicObject) {
       this.activeMusicObject.muted = this.isMuted;
     }
+  }
+
+  toggleChatNotificationMute() {
+    this.isChatNotificationMuted = !this.isChatNotificationMuted;
   }
 
   get effectiveMusicVolume() {

@@ -10,10 +10,10 @@
 
 .toasterContainer {
   position: absolute;
-  bottom: 80px;
+  top: 8px;
   right: 8px;
-  top: auto;
-  left: auto;
+  left: 8px;
+  bottom: auto;
   display: flex;
   flex-direction: column-reverse;
   gap: 8px;
@@ -24,6 +24,8 @@
 .toastWrapper {
   display: flex;
   justify-content: flex-end;
+  // The toast itself takes pointer events; the container above ignores them.
+  pointer-events: auto;
 }
 
 .tabs {

@@ -33,7 +33,7 @@ export const NightMode = observer(({ isVisible = true }: NightModeProps) => {
   }, [isVisible]);
 
   useEffect(() => {
-    if (!activeGameId || !myId || isIGM) return;
+    if (!activeGameId || !myId || isIGM || rootStore.isIDead) return;
 
     // Звітуємо серверу, що екран ночі змонтовано
     sendMessage(wsEvents.playerSleepConfirm, { gameId: activeGameId, userId: myId });
@@ -43,7 +43,7 @@ export const NightMode = observer(({ isVisible = true }: NightModeProps) => {
       sendMessage(wsEvents.playerWakeConfirm, { gameId: activeGameId, userId: myId });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeGameId, myId, isIGM]);
+  }, [activeGameId, myId, isIGM, rootStore.isIDead]);
 
   return (
     <div

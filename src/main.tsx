@@ -59,18 +59,15 @@ const app = (
 
     <SocketProvider>
       <RouterProvider router={router} />
+      {/*
+        Visual styling lives entirely in CustomToast.module.scss — the wrapper
+        renders via toast.custom(). We only set position + gutter + the default
+        per-toast duration here.
+      */}
       <Toaster
         position="top-center"
-        toastOptions={{
-          style: {
-            background: "rgba(28, 28, 30, 0.95)",
-            color: "#fff",
-            backdropFilter: "blur(10px)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            borderRadius: "12px",
-            fontSize: "1.4rem",
-          },
-        }}
+        gutter={10}
+        toastOptions={{ duration: 4000 }}
       />
     </SocketProvider>
   </QueryClientProvider>

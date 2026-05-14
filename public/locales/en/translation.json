@@ -19,7 +19,9 @@
     "dead": "Dead Chat",
     "deadRestriction": "Dead players can't write here",
     "gmDeadObserver": "GM can observe but not write in dead chat",
-    "limitExceeded": "Character limit exceeded (max 300)"
+    "limitExceeded": "Character limit exceeded (max 300)",
+    "muteNotifications": "Mute notification sound",
+    "unmuteNotifications": "Unmute notification sound"
   },
   "emptyState": {
     "title": "WHERE IS EVERYONE?!",

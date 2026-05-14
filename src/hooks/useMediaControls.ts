@@ -1,7 +1,6 @@
 import { useRoomContext } from "@livekit/components-react";
 import { Participant, Track } from "livekit-client";
 import { useCallback, useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
 import { wsEvents } from "@/config/wsEvents.ts";
@@ -9,6 +8,7 @@ import { projectEnv } from "@/config/projectEnv.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { setLocalCameraIntentionalMute } from "@/hooks/usePublishVideoTrack.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { showToast } from "@/UI/Toast/showToast";
 
 type UseMediaControlsProps = {
   participant: Participant;
@@ -167,12 +167,11 @@ export const useMediaControls = ({
           
           if (userId === myId) {
             if (forceMute) {
-              toast(t("mediaControls.forceMutedToast"), {
-                icon: "🔒",
+              showToast("warning", t("mediaControls.forceMutedToast"), {
                 id: "force-mute-status",
               });
             } else {
-              toast.success(t("mediaControls.forceUnmutedToast"), {
+              showToast("success", t("mediaControls.forceUnmutedToast"), {
                 id: "force-mute-status",
               });
             }
@@ -331,14 +330,14 @@ export const useMediaControls = ({
     if (isTryingToUnmute && isMyStream && !isIGM) {
       const isForceMuted = gamesStore.isUserForceMuted(participant.identity);
       if (isForceMuted) {
-        toast.error(t("mediaControls.forceMutedBlock"));
+        showToast("error", t("mediaControls.forceMutedBlock"));
 
         return;
       }
 
       const isNight = gamesStore.gameFlow.isNight;
       if (isNight) {
-        toast.error(t("mediaControls.nightMutedBlock"));
+        showToast("error", t("mediaControls.nightMutedBlock"));
 
         return;
       }

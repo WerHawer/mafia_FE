@@ -1,0 +1,150 @@
+@use "../../styles/theme.scss";
+
+$radius: 14px;
+
+.toast {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  padding: 11px 13px 11px 16px;
+
+  background: rgba(#12121c, 0.96);
+  border: 1px solid rgba(#fff, 0.1);
+  border-radius: $radius;
+  box-shadow: 0 14px 32px -8px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+
+  color: theme.$color-text-primary;
+  font-family: "Nunito", system-ui, sans-serif;
+
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+
+  &:active { cursor: grabbing; }
+}
+
+.accentBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 2px;
+  width: 3px;
+  pointer-events: none;
+}
+
+.iconBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-family: "Oswald", "Nunito", sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.message {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(#fff, 0.94);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 22px;
+  height: 22px;
+  padding: 0;
+
+  background: rgba(#fff, 0.05);
+  border: 1px solid rgba(#fff, 0.08);
+  border-radius: 6px;
+  color: rgba(#fff, 0.65);
+  cursor: pointer;
+
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: rgba(#fff, 0.12);
+    color: rgba(#fff, 0.9);
+    border-color: rgba(#fff, 0.18);
+  }
+}
+
+.lifetime {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  opacity: 0.55;
+  transform-origin: left center;
+  animation: customToastLifetime var(--toast-duration, 4000ms) linear forwards;
+  pointer-events: none;
+}
+
+@keyframes customToastLifetime {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+// ── Tone mixin ────────────────────────────────────────────────
+@mixin tone($accent) {
+  border-color: rgba($accent, 0.4);
+  .accentBar { background: linear-gradient(180deg, $accent, rgba($accent, 0.25)); }
+  .iconBox   {
+    background: rgba($accent, 0.1);
+    border: 1px solid rgba($accent, 0.55);
+    color: $accent;
+  }
+  .title     { color: $accent; }
+  .lifetime  { background: $accent; }
+}
+
+.info     { @include tone(theme.$color-accent-secondary); }
+.gm       { @include tone(theme.$color-accent-primary);  }
+.warning  { @include tone(theme.$color-accent-tertiary); }
+.success  { @include tone(theme.$color-success);          }
+.error    { @include tone(theme.$color-error);            }
+
+// ── Entry / exit motion ───────────────────────────────────────
+.entering {
+  animation: customToastIn 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+.leaving {
+  animation: customToastOut 0.2s ease-in forwards;
+}
+
+@keyframes customToastIn {
+  from { transform: translateY(-16px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+@keyframes customToastOut {
+  from { transform: translateY(0);     opacity: 1; }
+  to   { transform: translateY(-16px); opacity: 0; }
+}

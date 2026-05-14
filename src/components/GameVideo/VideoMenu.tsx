@@ -212,7 +212,7 @@ export const VideoMenu = observer(
 
               <MenuSeparator />
 
-              {gameFlow.isNight && (
+              {gameFlow.isNight && !isUserDead && (
                 <MenuItem
                   icon={<MoonOutlined />}
                   label={

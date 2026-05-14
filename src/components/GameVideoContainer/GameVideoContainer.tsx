@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
 import { Timer, TimerSize } from "@/components/SpeakerTimer/Timer.tsx";
@@ -11,6 +10,7 @@ import { useNightMode } from "@/hooks/useNightMode.ts";
 import { useVoteResult } from "@/hooks/useVoteResult.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { SoundEffect } from "@/store/soundStore.ts";
+import { showToast } from "@/UI/Toast/showToast";
 
 import { NightMode } from "../NightMode";
 import styles from "./GameVideoContainer.module.scss";
@@ -43,9 +43,15 @@ export const GameVideoContainer = observer(
 
       if (!wasVote && isVote) {
         if (isReVote) {
-          toast(t("vote.toastRevoteStarted"), { icon: "🔄", duration: 4000 });
+          showToast("info", t("vote.toastRevoteStarted"), {
+            title: "REVOTE",
+            duration: 4000,
+          });
         } else {
-          toast(t("vote.toastVoteStarted"), { icon: "🗳️", duration: 4000 });
+          showToast("info", t("vote.toastVoteStarted"), {
+            title: "VOTING",
+            duration: 4000,
+          });
         }
       }
     }, [isVote, isReVote, t]);
