@@ -9,13 +9,14 @@ export enum SoundEffect {
   Heal = "heal.wav",
   Check = "night_check.mp3",
   Vote = "vote_click.wav",
-  Killed = "night_switch.wav", // Using transition sound for death as placeholder or keep as is
+  Killed = "death.mp3",
   NightStart = "night_switch.wav",
   DayStart = "day_switch.wav",
   Deal = "dealing-card.wav",
-  Ticking = "ticking-clock.wav",
+  Ticking = "ticking-clock.mp3",
   Connect = "new_player_conected.wav",
   Alarm = "alarm.mp3",
+  Notification = "notification.mp3",
 }
 
 export const BG_MUSIC_VOLUME_MULTIPLIER = 0.1;

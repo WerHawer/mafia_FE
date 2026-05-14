@@ -9,6 +9,7 @@ import { useGetMessagesQueryWithStore } from "@/api/messages/queries.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { SoundEffect } from "@/store/soundStore.ts";
 import { IMessage, IMessageDTO, MessageTypes } from "@/types/message.types.ts";
 import { Button } from "@/UI/Button/Button.tsx";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
@@ -25,7 +26,7 @@ enum ChatTab {
 
 export const GameChat = observer(() => {
   const { id = "" } = useParams();
-  const { usersStore, messagesStore, gamesStore, isIDead, isIGM } = rootStore;
+  const { usersStore, messagesStore, gamesStore, isIDead, isIGM, soundStore } = rootStore;
   const { me: user } = usersStore;
   const { getMessages, setNewLocalMessage } = messagesStore;
   const { sendMessage, subscribe } = useSocket();
@@ -81,10 +82,12 @@ export const GameChat = observer(() => {
       const canSeeMessage = msg.to.type === MessageTypes.All || isForGeneral || ((isIDead || isIGM) && isForDead);
       const isNotCurrentTab = toId !== currentRoomId;
 
-      if (msg.sender?.id !== user?.id && canSeeMessage && isNotCurrentTab) {
+      const isGeneralChat = msg.to.type === MessageTypes.All;
+      if (msg.sender?.id !== user?.id && canSeeMessage && isNotCurrentTab && !isGeneralChat) {
         const toastId = `chat-msg-${msg.createdAt}-${msg.sender?.id}-${Math.random()}`;
         
         setChatToasts((prev) => [...prev, { id: toastId, msg }]);
+        soundStore.playSfx(SoundEffect.Notification);
 
         // Auto-remove after 2.5 seconds
         setTimeout(() => {
