@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
 
-import annaCard from "@/assets/images/cards/anna.webp";
+import annaCard from "@/assets/images/cards/barista.webp";
 import cardBack from "@/assets/images/cards/card_back.webp";
 import doctorCard from "@/assets/images/cards/doctor.webp";
+import mafiaDon from "@/assets/images/cards/don.webp";
 import mafia1 from "@/assets/images/cards/mafia_1.webp";
-import mafiaDon from "@/assets/images/cards/mafia_don.webp";
 import prostituteCard from "@/assets/images/cards/prostitute.webp";
 import sheriffCard from "@/assets/images/cards/sheriff.webp";
 import { Typography } from "@/UI/Typography";
@@ -91,11 +91,31 @@ const ROLES: RoleCardData[] = [
 ];
 
 const FLOW_STEPS: FlowStep[] = [
-  { emoji: "🌙", titleKey: "rules.flow.step1.title", textKey: "rules.flow.step1.text" },
-  { emoji: "☀️", titleKey: "rules.flow.step2.title", textKey: "rules.flow.step2.text" },
-  { emoji: "🌙", titleKey: "rules.flow.step3.title", textKey: "rules.flow.step3.text" },
-  { emoji: "🌅", titleKey: "rules.flow.step4.title", textKey: "rules.flow.step4.text" },
-  { emoji: "🏆", titleKey: "rules.flow.step5.title", textKey: "rules.flow.step5.text" },
+  {
+    emoji: "🌙",
+    titleKey: "rules.flow.step1.title",
+    textKey: "rules.flow.step1.text",
+  },
+  {
+    emoji: "☀️",
+    titleKey: "rules.flow.step2.title",
+    textKey: "rules.flow.step2.text",
+  },
+  {
+    emoji: "🌙",
+    titleKey: "rules.flow.step3.title",
+    textKey: "rules.flow.step3.text",
+  },
+  {
+    emoji: "🌅",
+    titleKey: "rules.flow.step4.title",
+    textKey: "rules.flow.step4.text",
+  },
+  {
+    emoji: "🏆",
+    titleKey: "rules.flow.step5.title",
+    textKey: "rules.flow.step5.text",
+  },
 ];
 
 const TIPS_KEYS = [
@@ -116,7 +136,15 @@ type RoleCardProps = {
   tip: string;
 };
 
-const RuleRoleCard = ({ image, name, color, tagline, night, goal, tip }: RoleCardProps) => {
+const RuleRoleCard = ({
+  image,
+  name,
+  color,
+  tagline,
+  night,
+  goal,
+  tip,
+}: RoleCardProps) => {
   const { t } = useTranslation();
 
   return (
@@ -164,92 +192,89 @@ const Rules = () => {
   return (
     <div className={styles.scrollWrapper}>
       <div className={styles.container}>
-      <Typography variant="title" className={styles.pageTitle}>
-        {t("rules.title")}
-      </Typography>
-
-      {/* About the Game */}
-      <section className={styles.section}>
-        <Typography variant="subtitle" className={styles.sectionTitle}>
-          {t("rules.intro.title")}
+        <Typography variant="title" className={styles.pageTitle}>
+          {t("rules.title")}
         </Typography>
 
-        <div className={styles.introBlock}>
-          <img src={cardBack} alt="card" className={styles.introImage} />
-          <Typography variant="body" className={styles.introText}>
-            {t("rules.intro.text")}
+        {/* About the Game */}
+        <section className={styles.section}>
+          <Typography variant="subtitle" className={styles.sectionTitle}>
+            {t("rules.intro.title")}
           </Typography>
-        </div>
-      </section>
 
-      {/* How to Play */}
-      <section className={styles.section}>
-        <Typography variant="subtitle" className={styles.sectionTitle}>
-          {t("rules.flow.title")}
-        </Typography>
+          <div className={styles.introBlock}>
+            <img src={cardBack} alt="card" className={styles.introImage} />
+            <Typography variant="body" className={styles.introText}>
+              {t("rules.intro.text")}
+            </Typography>
+          </div>
+        </section>
 
-        <ol className={styles.stepsList}>
-          {FLOW_STEPS.map((step, index) => (
-            <li key={step.titleKey} className={styles.step}>
-              <span className={styles.stepEmoji}>{step.emoji}</span>
-              <div className={styles.stepContent}>
-                <Typography variant="h3" className={styles.stepTitle}>
-                  {`${index + 1}. ${t(step.titleKey)}`}
+        {/* How to Play */}
+        <section className={styles.section}>
+          <Typography variant="subtitle" className={styles.sectionTitle}>
+            {t("rules.flow.title")}
+          </Typography>
+
+          <ol className={styles.stepsList}>
+            {FLOW_STEPS.map((step, index) => (
+              <li key={step.titleKey} className={styles.step}>
+                <span className={styles.stepEmoji}>{step.emoji}</span>
+                <div className={styles.stepContent}>
+                  <Typography variant="h3" className={styles.stepTitle}>
+                    {`${index + 1}. ${t(step.titleKey)}`}
+                  </Typography>
+                  <Typography variant="caption" className={styles.stepText}>
+                    {t(step.textKey)}
+                  </Typography>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {/* Roles */}
+        <section className={styles.section}>
+          <Typography variant="subtitle" className={styles.sectionTitle}>
+            {t("rules.roles.title")}
+          </Typography>
+
+          <div className={styles.rolesGrid}>
+            {ROLES.map((role) => (
+              <RuleRoleCard
+                key={role.nameKey}
+                image={role.image}
+                name={t(role.nameKey)}
+                color={role.color}
+                tagline={t(role.taglineKey)}
+                night={t(role.nightKey)}
+                goal={t(role.goalKey)}
+                tip={t(role.tipKey)}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Tips */}
+        <section className={styles.section}>
+          <Typography variant="subtitle" className={styles.sectionTitle}>
+            {t("rules.tips.title")}
+          </Typography>
+
+          <ul className={styles.tipsList}>
+            {TIPS_KEYS.map(({ emoji, key }) => (
+              <li key={key} className={styles.tip}>
+                <span className={styles.tipEmoji}>{emoji}</span>
+                <Typography variant="caption" className={styles.tipText}>
+                  {t(key)}
                 </Typography>
-                <Typography variant="caption" className={styles.stepText}>
-                  {t(step.textKey)}
-                </Typography>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* Roles */}
-      <section className={styles.section}>
-        <Typography variant="subtitle" className={styles.sectionTitle}>
-          {t("rules.roles.title")}
-        </Typography>
-
-        <div className={styles.rolesGrid}>
-          {ROLES.map((role) => (
-            <RuleRoleCard
-              key={role.nameKey}
-              image={role.image}
-              name={t(role.nameKey)}
-              color={role.color}
-              tagline={t(role.taglineKey)}
-              night={t(role.nightKey)}
-              goal={t(role.goalKey)}
-              tip={t(role.tipKey)}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Tips */}
-      <section className={styles.section}>
-        <Typography variant="subtitle" className={styles.sectionTitle}>
-          {t("rules.tips.title")}
-        </Typography>
-
-        <ul className={styles.tipsList}>
-          {TIPS_KEYS.map(({ emoji, key }) => (
-            <li key={key} className={styles.tip}>
-              <span className={styles.tipEmoji}>{emoji}</span>
-              <Typography variant="caption" className={styles.tipText}>
-                {t(key)}
-              </Typography>
-            </li>
-          ))}
-        </ul>
-      </section>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
     </div>
-  </div>
   );
 };
 
 export default Rules;
-
-
-
