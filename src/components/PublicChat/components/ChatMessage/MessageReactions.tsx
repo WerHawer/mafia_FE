@@ -63,6 +63,8 @@ export const MessageReactions = ({
   // Whether the mouse is currently over a chip (to suppress picker opening)
   const isOverChipRef = useRef(false);
   const chipRowRef = useRef<HTMLDivElement>(null);
+  // Suppress tooltip after picker pick (chip appears under cursor synthetically)
+  const suppressTooltipUntilRef = useRef(0);
 
   const scheduleClose = useCallback(() => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -168,6 +170,9 @@ export const MessageReactions = ({
   }, [pickerOpen]);
 
   const handlePick = (emojiUnified: string) => {
+    suppressTooltipUntilRef.current = Date.now() + TOOLTIP_DELAY_MS + 100;
+    if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+    setTooltipEmoji(null);
     onToggle(emojiUnified);
     setPickerOpen(false);
   };
@@ -227,13 +232,20 @@ export const MessageReactions = ({
                 className={classNames(styles.chip, {
                   [styles.chipMine]: mineReacted,
                 })}
-                onClick={() => { isOverChipRef.current = false; onToggle(emojiUnified); }}
+                onClick={() => {
+                  isOverChipRef.current = false;
+                  if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+                  setTooltipEmoji(null);
+                  onToggle(emojiUnified);
+                }}
                 onMouseEnter={() => {
                   handleChipMouseEnter();
-                  tooltipTimer.current = setTimeout(
-                    () => setTooltipEmoji(emojiUnified),
-                    TOOLTIP_DELAY_MS
-                  );
+                  if (Date.now() >= suppressTooltipUntilRef.current) {
+                    tooltipTimer.current = setTimeout(
+                      () => setTooltipEmoji(emojiUnified),
+                      TOOLTIP_DELAY_MS
+                    );
+                  }
                 }}
                 onMouseLeave={() => {
                   if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
