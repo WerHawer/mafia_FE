@@ -38,7 +38,7 @@
   min-width: 0;
   position: relative;
   background: theme.$color-dark-primary;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 /11.5;
   overflow: hidden;
 }
 
@@ -56,8 +56,8 @@
 
 .controllers {
   @include mixins.flex(column, flex-start);
-  width: 350px;
-  padding: 2rem;
+  width: 420px;
+  padding: 2.5rem;
   gap: 2rem;
   background: theme.$color-dark-secondary;
 }
@@ -66,6 +66,7 @@
   @include mixins.flex(row, flex-start);
   gap: 1.5rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .icon {
@@ -73,7 +74,7 @@
   @include mixins.rounded(theme.$border-radius);
   cursor: pointer;
   background: color.adjust(theme.$color-dark-tertiary, $lightness: 15%);
-  padding: 0.8rem;
+  padding: 0.5rem;
   transition: all 0.2s ease;
   border: 1px solid theme.$color-light-tertiary;
   box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
@@ -91,15 +92,15 @@
 .imageContainer {
   @include mixins.flex(row, flex-start);
   flex-wrap: wrap;
-  gap: 1rem;
-  margin: 1rem 0;
+  gap: 0.8rem;
+  padding: 1rem 0.1rem;
   max-height: 230px;
   overflow-y: auto;
   @include mixins.customScrollbar(6px, theme.$color-accent-secondary);
 }
 
 .imagePreview {
-  @include mixins.size(6.5rem);
+  @include mixins.size(8.2rem);
   @include mixins.rounded(theme.$border-radius);
   cursor: pointer;
   object-fit: cover;
@@ -124,13 +125,13 @@
   @include mixins.flex(row, center);
   gap: 0.5rem;
   width: 100%;
-  padding: 1rem 1.2rem;
+  padding: 1.2rem 1.4rem;
   background-color: color.adjust(
     theme.$color-accent-secondary,
     $lightness: -10%
   );
   color: theme.$color-text-primary;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 600;
   border-radius: theme.$border-radius;
   cursor: pointer;
@@ -151,8 +152,8 @@
   &::before {
     content: "";
     display: inline-block;
-    width: 1.4rem;
-    height: 1.4rem;
+    width: 1.6rem;
+    height: 1.6rem;
     margin-right: 0.5rem;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E");
     background-size: contain;
@@ -172,7 +173,7 @@
 }
 
 .sectionTitle {
-  font-size: 1.1rem;
+  font-size: 1.35rem;
   font-weight: 600;
   color: theme.$color-text-primary;
   margin-bottom: 0.5rem;
@@ -186,17 +187,21 @@
 // ─── Quality picker (badge + popover) ──────────────────────────────────
 .qualityBadge {
   @include mixins.flexCenter;
-  min-width: 5.5rem;
+  width: 5.5rem;
   height: 5.5rem;
   border-radius: theme.$border-radius;
   background: color.adjust(theme.$color-dark-tertiary, $lightness: 15%);
   border: 1px solid theme.$color-light-tertiary;
   color: theme.$color-text-primary;
-  font-size: 1rem;
+  font-size: 1.4rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 0.8rem;
+  padding: 0.5rem;
+
+  :global(.anticon) {
+    font-size: 2.4rem;
+  }
 
   &:hover {
     background: color.adjust(theme.$color-dark-tertiary, $lightness: 25%);
@@ -206,22 +211,22 @@
 
 .qualityPopover {
   @include mixins.flex(column, flex-start, stretch);
-  gap: 0.3rem;
-  padding: 0.6rem;
-  min-width: 160px;
+  gap: 0.4rem;
+  padding: 0.8rem;
+  min-width: 200px;
 }
 
 .qualityOption {
   @include mixins.flex(row, space-between);
-  padding: 0.55rem 0.8rem;
+  padding: 0.8rem 1.1rem;
   border-radius: theme.$border-radius;
   border: 1px solid transparent;
   background: transparent;
   color: theme.$color-text-primary;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.15s ease;
-  gap: 0.5rem;
+  gap: 0.6rem;
 
   &:hover {
     background: rgba(255, 255, 255, 0.08);
@@ -236,8 +241,8 @@
 }
 
 .autoTag {
-  font-size: 0.7rem;
-  padding: 0.1rem 0.45rem;
+  font-size: 0.9rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 999px;
   background: theme.$color-accent-secondary;
   color: theme.$color-text-primary;
@@ -248,13 +253,57 @@
 }
 
 .qualityActual {
-  font-size: 0.8rem;
+  font-size: 1.05rem;
   color: theme.$color-text-secondary;
   margin-top: 0.3rem;
-  padding: 0 0.4rem;
+  padding: 0 0.5rem;
 }
 
 .qualityHint {
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: theme.$color-text-secondary;
+}
+
+// ─── Stream status (loader + error) ────────────────────────────────────────
+.streamStatus {
+  @include mixins.flex(column, center, center);
+  gap: 1.5rem;
+  padding: 2.5rem;
+  text-align: center;
+  position: absolute;
+  inset: 0;
+}
+
+.statusText {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: theme.$color-text-primary;
+  max-width: 26ch;
+  line-height: 1.4;
+}
+
+.statusHint {
+  font-size: 1.05rem;
+  color: theme.$color-text-secondary;
+}
+
+.errorIcon {
+  font-size: 4rem;
+  color: #e05c5c;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: 4rem;
+  height: 4rem;
+  border: 4px solid rgba(255, 255, 255, 0.15);
+  border-top-color: theme.$color-accent-primary;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
 }

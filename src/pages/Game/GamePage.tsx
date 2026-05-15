@@ -34,6 +34,7 @@ const GamePage = observer(() => {
   const { isJoinedToGame } = useGameSession(id);
   const {
     originalStream,
+    streamError,
     quality,
     videoDeviceId,
     audioInputDeviceId,
@@ -97,6 +98,9 @@ const GamePage = observer(() => {
                 onCloseVideoConfig={() => setShouldShowVideoConfig(false)}
                 showAudioConfig={shouldShowAudioConfig}
                 onCloseAudioConfig={() => setShouldShowAudioConfig(false)}
+                streamError={streamError}
+                videoDeviceId={videoDeviceId}
+                onSelectVideoDevice={setVideoDevice}
               />
             </div>
 

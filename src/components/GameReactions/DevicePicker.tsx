@@ -21,7 +21,7 @@ export const DevicePicker = ({
   activeDeviceId,
   onSelect,
 }: DevicePickerProps) => {
-  const devices = useDeviceList(kind);
+  const { devices } = useDeviceList(kind);
 
   if (devices.length <= 1) {
     // Only one device available — no point showing the picker

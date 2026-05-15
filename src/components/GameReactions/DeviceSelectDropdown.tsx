@@ -23,7 +23,7 @@ export const DeviceSelectDropdown = ({
   placeholder = "Device",
 }: DeviceSelectDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const devices = useDeviceList(kind);
+  const { devices } = useDeviceList(kind);
 
   const activeDevice = devices.find(
     (d) => d.deviceId === activeDeviceId || (activeDeviceId === "" && d.deviceId === "default")

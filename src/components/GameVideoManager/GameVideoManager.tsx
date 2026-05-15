@@ -5,6 +5,7 @@ import { GameVideoContainer } from "@/components/GameVideoContainer";
 import { VideoConfig } from "@/components/VideoConfig";
 import { AudioConfig } from "@/components/AudioConfig/AudioConfig.tsx";
 import { useAdaptiveQuality } from "@/hooks/useAdaptiveQuality.ts";
+import { MediaStreamError } from "@/hooks/useUserMediaStream.ts";
 
 type GameVideoManagerProps = {
   originalStream: MediaStream | null;
@@ -14,6 +15,9 @@ type GameVideoManagerProps = {
   onCloseVideoConfig: () => void;
   showAudioConfig: boolean;
   onCloseAudioConfig: () => void;
+  streamError?: MediaStreamError | null;
+  videoDeviceId?: string;
+  onSelectVideoDevice?: (id: string) => void;
 };
 
 export const GameVideoManager = observer(
@@ -25,6 +29,9 @@ export const GameVideoManager = observer(
     onCloseVideoConfig,
     showAudioConfig,
     onCloseAudioConfig,
+    streamError,
+    videoDeviceId,
+    onSelectVideoDevice,
   }: GameVideoManagerProps) => {
     const handleCloseVideoConfig = useCallback(() => {
       onCloseVideoConfig();
@@ -42,6 +49,9 @@ export const GameVideoManager = observer(
           onClose={handleCloseVideoConfig}
           isShown={showVideoConfig}
           quality={quality}
+          streamError={streamError}
+          videoDeviceId={videoDeviceId}
+          onSelectVideoDevice={onSelectVideoDevice}
         />
 
         <AudioConfig

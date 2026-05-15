@@ -1,5 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 
+export type MediaStreamError =
+  | { type: "notAllowed" }
+  | { type: "notReadable" }
+  | { type: "notFound" }
+  | { type: "overconstrained" }
+  | { type: "generic" };
+
+function classifyError(err: unknown): MediaStreamError {
+  if (err instanceof DOMException) {
+    if (err.name === "NotAllowedError") return { type: "notAllowed" };
+    if (err.name === "NotReadableError") return { type: "notReadable" };
+    if (err.name === "NotFoundError") return { type: "notFound" };
+    if (err.name === "OverconstrainedError") return { type: "overconstrained" };
+  }
+  return { type: "generic" };
+}
+
 /**
  * Reactive camera stream hook.
  * Re-requests getUserMedia whenever the constraint dimensions change
@@ -8,6 +25,7 @@ import { useEffect, useRef, useState } from "react";
  */
 export const useUserMediaStream = (options: MediaStreamConstraints) => {
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [error, setError] = useState<MediaStreamError | null>(null);
 
   // Use width/height/fps/deviceId as the restart key
   const video = options.video as MediaTrackConstraints | undefined;
@@ -27,6 +45,7 @@ export const useUserMediaStream = (options: MediaStreamConstraints) => {
       currentStreamRef.current = null;
       setStream(null);
     }
+    setError(null);
 
     const enableStream = async () => {
       try {
@@ -41,6 +60,7 @@ export const useUserMediaStream = (options: MediaStreamConstraints) => {
         setStream(newStream);
       } catch (err) {
         console.error("[useUserMediaStream] Error accessing media devices:", err);
+        if (!cancelled) setError(classifyError(err));
       }
     };
 
@@ -57,5 +77,5 @@ export const useUserMediaStream = (options: MediaStreamConstraints) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [width, height, fps, deviceId]);
 
-  return stream;
+  return { stream, error };
 };

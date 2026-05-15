@@ -167,7 +167,18 @@
     "effectsTitle": "Effects",
     "backgroundsTitle": "Backgrounds",
     "auto": "Auto",
-    "qualityTitle": "Video Quality"
+    "qualityTitle": "Video Quality",
+    "cameraSource": "Camera",
+    "cameraSourceTitle": "Select camera",
+    "streamLoading": "Preparing your stream…",
+    "streamLoadingHint": "Connecting to camera",
+    "error": {
+      "notAllowed": "Camera access denied. Please allow camera permissions in your browser settings.",
+      "notReadable": "Your camera is being used by another application. Close other apps that may be using it and try again.",
+      "notFound": "No camera found. Please connect a camera and try again.",
+      "overconstrained": "Camera doesn't support the selected quality. Try switching to a lower quality.",
+      "generic": "Couldn't access the camera. Please check your device and try again."
+    }
   },
 
   "videoMenu": {

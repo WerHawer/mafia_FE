@@ -22,7 +22,7 @@ export const DeviceMenuItems = ({
   placeholder = "Default device",
   closeMenu,
 }: DeviceMenuItemsProps) => {
-  const devices = useDeviceList(kind);
+  const { devices } = useDeviceList(kind);
 
   if (devices.length === 0) {
     return null;

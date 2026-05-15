@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAdaptiveQuality } from "@/hooks/useAdaptiveQuality.ts";
 import { useSelectedDevices } from "@/hooks/useSelectedDevices.ts";
 import { useUserMediaStream } from "@/hooks/useUserMediaStream.ts";
@@ -32,7 +32,7 @@ export const useGameMediaSetup = (gameId: string) => {
 
   const quality = useAdaptiveQuality();
 
-  const originalStream = useUserMediaStream({
+  const { stream: originalStream, error: streamError } = useUserMediaStream({
     audio: true,
     video: {
       width: { ideal: quality.settings.width },
@@ -53,17 +53,13 @@ export const useGameMediaSetup = (gameId: string) => {
   const [shouldShowVideoConfig, setShouldShowVideoConfig] = useState(false);
   const [shouldShowAudioConfig, setShouldShowAudioConfig] = useState(false);
 
-  const firstStreamRef = useRef(false);
-
+  // Open immediately on mount if no saved settings exist for this game
   useEffect(() => {
-    if (!originalStream || firstStreamRef.current) return;
-    firstStreamRef.current = true;
-
-    const savedSettings = getSavedSettings();
-    if (!savedSettings) {
+    if (!getSavedSettings()) {
       setShouldShowVideoConfig(true);
     }
-  }, [originalStream, getSavedSettings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Preload visual effect images exactly once when page loads
   useEffect(() => {
@@ -75,6 +71,7 @@ export const useGameMediaSetup = (gameId: string) => {
 
   return {
     originalStream,
+    streamError,
     quality,
     videoDeviceId,
     audioInputDeviceId,

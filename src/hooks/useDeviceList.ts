@@ -26,5 +26,5 @@ export const useDeviceList = (kind: MediaDeviceKind) => {
     };
   }, [refresh]);
 
-  return devices;
+  return { devices, refresh };
 };
