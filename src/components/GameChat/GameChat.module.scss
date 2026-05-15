@@ -2,10 +2,50 @@
 @use "../../styles/mixins.scss";
 
 .chatContainer {
-  @include mixins.flex(column, stretch, center);
+  @include mixins.flex(column, flex-start, stretch);
   height: 100%;
   width: 100%;
   position: relative;
+}
+
+.messagesArea {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes scrollBtnIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.85); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+.scrollBtn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(28, 28, 32, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 5;
+  animation: scrollBtnIn 0.18s ease both;
+
+  &:hover {
+    background: rgba(50, 50, 56, 0.98);
+    color: rgba(255, 255, 255, 0.95);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 }
 
 .toasterContainer {

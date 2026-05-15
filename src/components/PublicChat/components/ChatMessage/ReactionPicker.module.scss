@@ -1,0 +1,68 @@
+@use "../../../../styles/theme.scss" as *;
+
+/* ─── picker panel ───────────────────────────────────────────────────────────── */
+
+.picker {
+  /* position / coordinates are injected via inline style (position: fixed + computed coords) */
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 5px;
+  background: $color-dark-primary;
+  border: 1px solid rgba($color-accent-primary, 0.35);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+
+  /* animation origin — default: opens downward from top-left */
+  transform-origin: top left;
+  transform: translateY(-4px) scale(0.88);
+  opacity: 0;
+  transition:
+    transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.3),
+    opacity 0.12s;
+}
+
+/* Right-aligned (own messages) */
+.pickerMine {
+  transform-origin: top right;
+}
+
+/* Flip upward when not enough space below */
+.pickerUp {
+  transform-origin: bottom left;
+  transform: translateY(4px) scale(0.88);
+}
+
+.pickerMine.pickerUp {
+  transform-origin: bottom right;
+}
+
+.pickerOpen {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* ─── emoji buttons ──────────────────────────────────────────────────────────── */
+
+.btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.12s,
+    background 0.12s;
+
+  &:hover {
+    transform: scale(1.15) translateY(-1px);
+    background: rgba(255, 255, 255, 0.08);
+  }
+}

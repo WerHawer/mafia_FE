@@ -1,6 +1,6 @@
 import { wsEvents } from "../config/wsEvents.ts";
 import { GameId, IGame, IGameShort, IRoomConnectInfo } from "./game.types.ts";
-import { IMessage, IMessageDTO } from "./message.types.ts";
+import { IMessage, IMessageDTO, ReactionMap } from "./message.types.ts";
 import { IUser, UserId, UserStreamId } from "./user.types.ts";
 
 export type OffParams = "self" | "other";
@@ -137,6 +137,12 @@ export interface WSSentEventData {
   [wsEvents.manualWake]: { gameId: GameId; userId: UserId; gm: UserId };
   [wsEvents.gameReaction]: { gameId: GameId; userId: UserId; emoji: string };
   [wsEvents.setObserverMode]: { gameId: GameId; userId: UserId };
+  [wsEvents.messageReactionToggle]: {
+    messageId: string;
+    roomId: string;
+    emojiUnified: string;
+    userId: string;
+  };
 }
 
 export type SendMessageFunction = <T extends keyof WSSentEventData>(
@@ -187,6 +193,11 @@ export interface WSSubscribedEventData {
   [wsEvents.voteTimerExpired]: { gameId: GameId; finalVoted: { [candidateId: string]: string[] } };
   [wsEvents.gmChanged]: { newGMId: UserId; reason: string };
   [wsEvents.userOnlineStatusChanged]: { userId: UserId; isOnline: boolean };
+  [wsEvents.messageReactionToggle]: {
+    messageId: string;
+    roomId: string;
+    reactions: ReactionMap;
+  };
 }
 
 export type SubscribeEvent = keyof WSSubscribedEventData;

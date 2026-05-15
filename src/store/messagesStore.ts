@@ -5,6 +5,7 @@ import {
   IMessage,
   IMessageWithLocal,
   MessageTypes,
+  ReactionMap,
 } from "../types/message.types.ts";
 
 const PUBLIC = "public";
@@ -53,6 +54,35 @@ export class MessagesStore {
       this.messages[key]?.filter(({ isLocal }) => !isLocal) ?? [];
 
     this.messages[key] = [...messagesNoLocal, message];
+  }
+
+  patchMessageReactions(roomKey: string, messageId: string, reactions: ReactionMap) {
+    const list = this.messages[roomKey];
+    if (!list) return;
+    this.messages[roomKey] = list.map((m) =>
+      m.id === messageId ? { ...m, reactions } : m
+    );
+  }
+
+  toggleReactionLocal(
+    roomKey: string,
+    messageId: string,
+    emojiUnified: string,
+    userId: string
+  ) {
+    const msg = this.messages[roomKey]?.find((m) => m.id === messageId);
+    if (!msg) return;
+
+    const reactions = { ...(msg.reactions ?? {}) };
+    const existing = reactions[emojiUnified] ?? [];
+    const next = existing.includes(userId)
+      ? existing.filter((u) => u !== userId)
+      : [...existing, userId];
+
+    if (next.length === 0) delete reactions[emojiUnified];
+    else reactions[emojiUnified] = next;
+
+    this.patchMessageReactions(roomKey, messageId, reactions);
   }
 
   get publicMessages() {

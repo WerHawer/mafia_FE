@@ -8,15 +8,15 @@
   height: 100vh;
   max-height: 100%;
   background-color: $color-dark-secondary;
-  padding: 16px;
+  padding: 16px 8px;
 }
 
 .chatHeader {
   @include flex(row, flex-start, center);
-  width: calc(100% + 32px);
+  width: calc(100% + 16px);
   color: $color-text-primary;
   font-size: 14px;
-  padding: 0 8px 16px 16px;
+  padding: 0 8px 16px 8px;
   border-bottom: 1px solid rgba($color-accent-primary, 0.5);
   cursor: pointer;
   transition: all 0.2s;
@@ -33,6 +33,7 @@
 .onlineIndicatorWrapper {
   @include flex(row, flex-start, center);
   gap: 6px;
+  margin-left: 8px;
 }
 
 .chevron {
@@ -46,6 +47,14 @@
   }
 }
 
+.messagesArea {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .chatMessages {
   @include flex(column);
   @include customScrollbar;
@@ -54,7 +63,47 @@
   min-height: 0;
   overflow-y: auto;
   margin-bottom: 16px;
-  padding: 16px 8px;
+  padding: 16px 4px;
+}
+
+@keyframes scrollBtnIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.scrollBtn {
+  position: absolute;
+  bottom: 20px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(28, 28, 32, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 5;
+  animation: scrollBtnIn 0.18s ease both;
+
+  &:hover {
+    background: rgba(50, 50, 56, 0.98);
+    color: rgba(255, 255, 255, 0.95);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 }
 
 .messageWrapper {
@@ -74,7 +123,7 @@
   @include flex(column);
   @include rounded;
   position: relative;
-  max-width: 70%;
+  max-width: 80%;
   padding: 8px 12px;
   margin-left: 46px;
   background-color: $color-dark-tertiary;
@@ -148,11 +197,29 @@
   }
 }
 
+.messageHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+
+  .myMessage & {
+    flex-direction: row-reverse;
+  }
+}
+
+.timestamp {
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.4);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2px;
+}
+
 .strong {
   font-weight: 500;
-  font-size: 12px;
+  font-size: 11px;
   color: rgba($color-text-primary, 0.7);
-  margin-bottom: 4px;
 }
 
 // Wraps all text/emoji segments so they stay inline within the column-flex parent.

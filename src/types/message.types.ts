@@ -1,5 +1,7 @@
 import { IUser } from "./user.types.ts";
 
+export type ReactionMap = Record<string, string[]>; // emojiUnified → userId[]
+
 export enum MessageTypes {
   User = "user",
   Room = "room",
@@ -22,6 +24,7 @@ export interface IMessageDTO {
   createdAt: number;
   isRead: boolean;
   id?: string;
+  reactions?: ReactionMap;
 }
 
 export interface IMessage extends Omit<IMessageDTO, "sender"> {

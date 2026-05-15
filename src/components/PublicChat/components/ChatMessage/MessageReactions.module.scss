@@ -1,0 +1,146 @@
+@use "../../../../styles/theme.scss" as *;
+
+$mine-accent: #58a6ff;
+
+@keyframes chipIn {
+  from {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ─── chip row ──────────────────────────────────────────────────────────────── */
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 6px;
+  align-self: stretch;
+  user-select: none;
+}
+
+.chipRowMine {
+  flex-direction: row-reverse;
+}
+
+/* ─── individual chip ───────────────────────────────────────────────────────── */
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px 2px 4px;
+  background: rgba(255, 255, 255, 0.14);
+  border: none;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.14s;
+  animation: chipIn 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.4) both;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+}
+
+.chipMine {
+  background: rgba($mine-accent, 0.22);
+  color: $mine-accent;
+
+  &:hover {
+    background: rgba($mine-accent, 0.32);
+  }
+}
+
+.chipEmoji {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.chipCount {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── tooltip ───────────────────────────────────────────────────────────────── */
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 20, 24, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  pointer-events: none;
+  z-index: 300;
+  backdrop-filter: blur(6px);
+  animation: chipIn 0.15s ease both;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 110px;
+}
+
+// For "mine" messages (RTL layout) — keep tooltip readable left-to-right
+.tooltipMine {
+  left: auto;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.tooltipUser {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.tooltipExtra {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+  padding-top: 1px;
+}
+
+/* ─── hover "react" smiley button ───────────────────────────────────────────── */
+
+.reactBtn {
+  position: absolute;
+  top: -2px;
+  right: -34px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(28, 28, 32, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+
+  &:hover {
+    color: $color-text-primary;
+    background: rgba(40, 40, 44, 0.96);
+  }
+}
+
+.reactBtnMine {
+  right: auto;
+  left: -34px;
+}
