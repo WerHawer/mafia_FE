@@ -37,11 +37,9 @@ const RoleInfoCard = ({ entry }: { entry: RoleEntry }) => {
             </Typography>
           )}
         </div>
-        {entry.count > 1 && (
-          <Typography variant="caption" className={styles.badge}>
-            ×{entry.count}
-          </Typography>
-        )}
+        <Typography variant="caption" className={styles.badge}>
+          {entry.count}
+        </Typography>
       </div>
     </div>
   );

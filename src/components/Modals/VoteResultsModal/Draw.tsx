@@ -23,7 +23,7 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
 
   const candidates = useMemo(() => result.map((res) => res[0]), [result]);
-  
+
   // Track if an action was explicitly taken, so we don't trigger the fallback on unmount
   const actionTakenRef = useRef(false);
 
@@ -105,14 +105,20 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
       </Typography>
 
       {gameFlow.isReVote ? (
-        <Typography variant="body" className={styles.warningHeader}>{t("voteResults.noDecision")}</Typography>
+        <Typography variant="body" className={styles.warningHeader}>
+          {t("voteResults.noDecision")}
+        </Typography>
       ) : (
         <>
           <Typography variant="body" className={styles.secondaryHeader}>
             {t("voteResults.usersToRevote")}
           </Typography>
 
-          <div className={classNames(styles.votersList, { [styles.twoColumns]: candidates.length > 4 })}>
+          <div
+            className={classNames(styles.votersList, {
+              [styles.twoColumns]: candidates.length > 4,
+            })}
+          >
             {candidates.map((candidate) => {
               const user = getUser(candidate);
               const name = getUserName(candidate);
@@ -136,8 +142,8 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
         {gameFlow.isReVote ? (
           <Button
             onClick={onFinishVoting}
-            variant={ButtonVariant.Secondary}
-            size={ButtonSize.Medium}
+            variant={ButtonVariant.Outline}
+            size={ButtonSize.MS}
             uppercase
           >
             {t("voteResults.finishVoting")}
@@ -147,15 +153,15 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
             <Button
               onClick={onCandidateSpeeches}
               variant={ButtonVariant.Primary}
-              size={ButtonSize.Medium}
+              size={ButtonSize.MS}
               uppercase
             >
               {t("gm.candidateSpeeches", "Промови кандидатів")}
             </Button>
             <Button
               onClick={onInstantRevote}
-              variant={ButtonVariant.Secondary}
-              size={ButtonSize.Medium}
+              variant={ButtonVariant.Outline}
+              size={ButtonSize.MS}
               uppercase
             >
               {t("voteResults.restartVote")}

@@ -1,8 +1,8 @@
-import { AudioMutedOutlined } from "@ant-design/icons";
+import { AudioMutedOutlined, DislikeFilled } from "@ant-design/icons";
 import classNames from "classnames";
 import { Participant, Track } from "livekit-client";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import deadBg from "@/assets/images/dead_bg.avif";
@@ -30,6 +30,8 @@ import styles from "./GameVideo.module.scss";
 import { VideoMenu } from "./VideoMenu.tsx";
 import { RoleCardMini } from "./RoleCardMini.tsx";
 import { VideoUserInfo } from "./VideoUserInfo.tsx";
+
+type ClickAnim = { id: number; x: number; y: number; dx: number; dy: number };
 
 type GameVideoProps = {
   participant: Participant;
@@ -68,6 +70,8 @@ export const GameVideo = observer(
     const [investigateRole, setInvestigateRole] = useState<Roles | null>(null);
     // GM-only: peek at dead player's real video instead of the dead overlay
     const [showDeadVideo, setShowDeadVideo] = useState(false);
+    const [voteAnims, setVoteAnims] = useState<ClickAnim[]>([]);
+    const [proposeAnims, setProposeAnims] = useState<ClickAnim[]>([]);
     const {
       userId,
       currentUser,
@@ -90,8 +94,11 @@ export const GameVideo = observer(
       speakerServerEndTime,
       shouldShowMafiaGlow,
       isDimmedDuringMafiaIntro,
+      canPropose,
+      onPropose,
       isVotableTarget,
       isDimmedDuringVote,
+      onVote,
       onShootUser,
       onBlockUser,
       onHealUser,
@@ -127,6 +134,26 @@ export const GameVideo = observer(
 
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+      if (canPropose) {
+        onPropose();
+        const TARGET_X = 40;
+        const TARGET_Y = 40;
+        const dx = TARGET_X - (x / 100) * rect.width;
+        const dy = TARGET_Y - (y / 100) * rect.height;
+        setProposeAnims((prev) => [...prev, { id: Date.now(), x, y, dx, dy }]);
+        return;
+      }
+
+      if (isVotableTarget) {
+        onVote();
+        const TARGET_X = 40;
+        const TARGET_Y = 40;
+        const dx = TARGET_X - (x / 100) * rect.width;
+        const dy = TARGET_Y - (y / 100) * rect.height;
+        setVoteAnims((prev) => [...prev, { id: Date.now(), x, y, dx, dy }]);
+        return;
+      }
 
       if (isShootEnabled && !isIGM) {
         setLocalClickPos({ x, y });
@@ -165,6 +192,8 @@ export const GameVideo = observer(
     };
 
     const isInteractive =
+      canPropose ||
+      isVotableTarget ||
       (isShootEnabled && !isIGM) ||
       isKissEnabled ||
       isHealEnabled ||
@@ -188,6 +217,7 @@ export const GameVideo = observer(
           [styles.healable]: isHealEnabled,
           [styles.checkable]: isInvestigateEnabled,
           [styles.mafiaGlow]: shouldShowMafiaGlow,
+          [styles.proposable]: canPropose,
           [styles.votableTarget]: isVotableTarget,
           [styles.dimmedTarget]: isDimmedDuringVote || isDimmedDuringMafiaIntro,
           [styles.sightedNightShoot]: sightedNightFlash === "shoot",
@@ -199,6 +229,46 @@ export const GameVideo = observer(
         onClick={isInteractive ? handleVideoClick : undefined}
       >
         <VoteFlow isMyStream={isMyStream} userId={userId} />
+
+        {proposeAnims.map((anim) => (
+          <div
+            key={anim.id}
+            className={styles.flyingProposeIcon}
+            style={
+              {
+                left: `${anim.x}%`,
+                top: `${anim.y}%`,
+                "--dx": `${anim.dx}px`,
+                "--dy": `${anim.dy}px`,
+              } as CSSProperties
+            }
+            onAnimationEnd={() =>
+              setProposeAnims((prev) => prev.filter((a) => a.id !== anim.id))
+            }
+          >
+            <DislikeFilled />
+          </div>
+        ))}
+
+        {voteAnims.map((anim) => (
+          <div
+            key={anim.id}
+            className={styles.flyingVoteIcon}
+            style={
+              {
+                left: `${anim.x}%`,
+                top: `${anim.y}%`,
+                "--dx": `${anim.dx}px`,
+                "--dy": `${anim.dy}px`,
+              } as CSSProperties
+            }
+            onAnimationEnd={() =>
+              setVoteAnims((prev) => prev.filter((a) => a.id !== anim.id))
+            }
+          >
+            <DislikeFilled />
+          </div>
+        ))}
 
         <RoleCardMini userId={userId} role={participantRole} />
 

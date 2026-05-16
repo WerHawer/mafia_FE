@@ -1,10 +1,13 @@
 import { Participant } from "livekit-client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useAddUserToProposedMutation, useVoteForUserMutation } from "@/api/game/queries.ts";
 import { getSpeakerTimerServerEndMs } from "@/helpers/gameFlowTimer.ts";
 import { useMediaControls } from "@/hooks/useMediaControls.ts";
 import { useNightTargetAction } from "@/hooks/useNightTargetAction.ts";
+import { useSpeechProposePlayer } from "@/hooks/useSpeechProposePlayer.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { SoundEffect } from "@/store/soundStore.ts";
 import { Roles } from "@/types/game.types.ts";
 
 type UseGameVideoParams = {
@@ -34,9 +37,10 @@ export const useGameVideo = ({
     gamesStore,
     isIGM,
     myRole,
+    soundStore,
   } = rootStore;
   const { getUser, me, myId } = usersStore;
-  const { isUserGM, isMeObserver, gameFlow, activeGameId } = gamesStore;
+  const { isUserGM, isMeObserver, gameFlow, activeGameId, addVoted, speaker, setToProposed } = gamesStore;
   const {
     shoot = {},
     killed = [],
@@ -187,6 +191,10 @@ export const useGameVideo = ({
     requesterId: myId,
   });
 
+  const { mutate: voteForUser } = useVoteForUserMutation();
+  const { mutate: addUserToProposed } = useAddUserToProposedMutation();
+  const { canPropose } = useSpeechProposePlayer({ userId });
+
   const isVoting = gameFlow.isVote;
   const amIVoted = Object.values(gameFlow.voted ?? {})
     .flat()
@@ -203,6 +211,23 @@ export const useGameVideo = ({
     userId !== myId &&
     !isUserDead;
   const isDimmedDuringVote = isVoter && !isVotableTarget;
+
+  const onPropose = useCallback(() => {
+    if (!canPropose || !activeGameId || !speaker) return;
+
+    addUserToProposed({ gameId: activeGameId, userId, proposerId: speaker });
+    setTimeout(() => setToProposed(userId, speaker), 600);
+  }, [canPropose, activeGameId, userId, speaker, addUserToProposed, setToProposed]);
+
+  const onVote = useCallback(() => {
+    if (!isVotableTarget || !activeGameId) return;
+
+    voteForUser({ gameId: activeGameId, targetUserId: userId, voterId: myId });
+    soundStore.playSfx(SoundEffect.Vote);
+    setTimeout(() => {
+      addVoted({ targetUserId: userId, voterId: myId });
+    }, 350);
+  }, [isVotableTarget, activeGameId, userId, myId, addVoted, voteForUser, soundStore]);
 
   // During re-vote or extra-speech, candidate speak time applies.
   const actualSpeakTime =
@@ -234,8 +259,11 @@ export const useGameVideo = ({
     speakerServerEndTime,
     shouldShowMafiaGlow,
     isDimmedDuringMafiaIntro,
+    canPropose,
+    onPropose,
     isVotableTarget,
     isDimmedDuringVote,
+    onVote,
     onShootUser,
     onBlockUser,
     onHealUser,

@@ -2,7 +2,10 @@ import { makeAutoObservable, toJS } from "mobx";
 
 import { GModalData, ModalNames } from "@/components/Modals/Modal.types.ts";
 
+export const MODAL_CLOSE_ANIMATION_MS = 250;
+
 export class ModalStore {
+  _isOpen: boolean = false;
   _openedModal: ModalNames | null = null;
   _modalData: GModalData<ModalNames> | null = null;
 
@@ -13,15 +16,19 @@ export class ModalStore {
   openModal<T extends ModalNames>(modal: T, data?: GModalData<T>) {
     this._openedModal = modal;
     this._modalData = data ?? null;
+    this._isOpen = true;
   }
 
   closeModal() {
-    this._openedModal = null;
-    this._modalData = null;
+    this._isOpen = false;
+    setTimeout(() => {
+      this._openedModal = null;
+      this._modalData = null;
+    }, MODAL_CLOSE_ANIMATION_MS);
   }
 
   get isModalOpen() {
-    return toJS(this._openedModal !== null);
+    return this._isOpen;
   }
 
   get openedModal() {

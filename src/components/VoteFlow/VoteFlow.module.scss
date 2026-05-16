@@ -12,6 +12,7 @@
 
 .voteIconScaledWrapper {
   transform-origin: top left;
+  transform: scale(1.3);
 }
 
 .proposeIconContainer {
@@ -48,7 +49,6 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  transform: scale(1.3);
   transform-origin: top left;
 
   width: 30px;

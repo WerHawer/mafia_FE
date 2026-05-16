@@ -11,6 +11,16 @@
   z-index: 99;
   background-color: rgba(theme.$color-dark-primary, 0.75);
   backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+
+.overlayAfterOpen {
+  opacity: 1;
+}
+
+.overlayBeforeClose {
+  opacity: 0;
 }
 
 .modal {
@@ -24,4 +34,17 @@
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   padding: 2rem 3.6rem;
   overflow-y: auto;
+  opacity: 0;
+  transform: scale(0.96) translateY(10px);
+  transition: opacity 250ms ease, transform 250ms ease;
+}
+
+.modalAfterOpen {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.modalBeforeClose {
+  opacity: 0;
+  transform: scale(0.96) translateY(10px);
 }

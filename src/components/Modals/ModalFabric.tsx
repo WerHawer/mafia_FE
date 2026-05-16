@@ -6,7 +6,7 @@ import {
   NightResultsModalProps,
 } from "@/components/Modals/Modal.types.ts";
 import { NightResultsModal } from "@/components/Modals/NightResultsModal/NightResultsModal.tsx";
-import { modalStore } from "@/store/modalStore.ts";
+import { modalStore, MODAL_CLOSE_ANIMATION_MS } from "@/store/modalStore.ts";
 
 import { CreateGameModal } from "./CreateGameModal";
 import { EnterPasswordModal } from "./EnterPasswordModal";
@@ -41,8 +41,17 @@ export const ModalFabric = observer(() => {
     <ReactModal
       isOpen={isModalOpen}
       onRequestClose={closeModal}
-      className={styles.modal}
-      overlayClassName={styles.overlay}
+      closeTimeoutMS={MODAL_CLOSE_ANIMATION_MS}
+      className={{
+        base: styles.modal,
+        afterOpen: styles.modalAfterOpen,
+        beforeClose: styles.modalBeforeClose,
+      }}
+      overlayClassName={{
+        base: styles.overlay,
+        afterOpen: styles.overlayAfterOpen,
+        beforeClose: styles.overlayBeforeClose,
+      }}
       shouldCloseOnOverlayClick
     >
       <div>{openedModal && modals[openedModal]}</div>

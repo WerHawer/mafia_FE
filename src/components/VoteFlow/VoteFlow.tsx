@@ -1,15 +1,10 @@
 import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  useVoteForUserMutation,
-} from "@/api/game/queries.ts";
-import { useSpeechProposePlayer } from "@/hooks/useSpeechProposePlayer.ts";
 import { rootStore } from "@/store/rootStore.ts";
-import { SoundEffect } from "@/store/soundStore.ts";
 import { UserId } from "@/types/user.types.ts";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
 import { VoteIcon } from "@/UI/VoteIcon";
@@ -23,18 +18,13 @@ type VoteFlowProps = {
 
 export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
   const { t } = useTranslation();
-  const { usersStore, gamesStore, isIGM, isIDead, soundStore } = rootStore;
+  const { usersStore, gamesStore, isIGM, isIDead } = rootStore;
   const { myId, getUser } = usersStore;
-  const { gameFlow, activeGameId, addVoted } = gamesStore;
+  const { gameFlow } = gamesStore;
   const { isVote, isReVote, proposed, voted } = gameFlow;
   const isVotingActive = isVote || isReVote;
   const isTargetDead = gamesStore.activeGameKilledPlayers.includes(userId);
   const { isIBlocked } = rootStore;
-  const { playSfx } = soundStore;
-  const { mutate: voteForUser, isPending: isVoting } = useVoteForUserMutation();
-  const { canPropose, onPropose } = useSpeechProposePlayer({
-    userId,
-  });
 
   const votesForThisUser = useMemo(
     () => voted?.[userId] ?? [],
@@ -62,12 +52,9 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     ? getUser(proposerId)?.nikName || "Anonimus"
     : undefined;
 
-  const shouldShowInteractiveProposeBtn = canPropose;
-
   /**
    * STATIC proposed badge: visible to ALL users once this player has been proposed,
    * but ONLY before voting starts and before any votes have been cast.
-   * Once voting begins or votes exist → hidden permanently for this round.
    */
   const hasVotingOccurred = Object.keys(voted ?? {}).length > 0;
   const shouldShowProposedBadge =
@@ -83,68 +70,22 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
     !isTargetDead &&
     !isIBlocked;
 
-  const onVote = useCallback(() => {
-    if (!userId || !myId || !activeGameId || userId === myId) return;
-    if (amIVoted || isIGM || isIBlocked || isVoting || isTargetDead) return;
-
-    addVoted({ targetUserId: userId, voterId: myId });
-    voteForUser({
-      gameId: activeGameId,
-      targetUserId: userId,
-      voterId: myId,
-    });
-    playSfx(SoundEffect.Vote);
-  }, [
-    userId,
-    myId,
-    activeGameId,
-    amIVoted,
-    isIGM,
-    isIBlocked,
-    isVoting,
-    isTargetDead,
-    addVoted,
-    voteForUser,
-    playSfx,
-  ]);
-
   return (
     <>
-      {/* Interactive propose button — speaker/GM only, before anyone is proposed */}
-      {shouldShowInteractiveProposeBtn && (
-        <div className={styles.proposeIconContainer}>
-          <Tippy
-            content={t("vote.proposePlayer")}
-            theme="role-tooltip"
-            delay={[500, 0]}
-          >
-            <div>
-              <VoteIcon
-                className={classNames(styles.voteIcon, styles.voteIconScaled)}
-                size={ButtonSize.Small}
-                variant={ButtonVariant.Secondary}
-                isVoted={false}
-                onClick={onPropose}
-              />
-            </div>
-          </Tippy>
-        </div>
-      )}
-
       {/* Static proposed badge — visible to EVERYONE once the player is proposed */}
-      {shouldShowProposedBadge && !shouldShowInteractiveProposeBtn && (
+      {shouldShowProposedBadge && (
         <div className={styles.proposeIconContainer}>
           <VoteIcon
             className={classNames(styles.voteIcon, styles.voteIconScaled)}
             size={ButtonSize.Small}
-            variant={ButtonVariant.Secondary}
+            variant={ButtonVariant.Outline}
             isVoted={true}
           />
         </div>
       )}
 
-      {/* Vote icon — visible to eligible voters, OR if there are votes to show */}
-      {(shouldShowVoteIcon || votesForThisUser.length > 0) && (
+      {/* Vote icon — shown only after voting (filled state), or if votes exist to display */}
+      {(isVotedByThisUser || votesForThisUser.length > 0) && (
         <div
           className={classNames(
             styles.iconContainer,
@@ -163,8 +104,7 @@ export const VoteFlow = observer(({ isMyStream, userId }: VoteFlowProps) => {
                   [styles.voteIconDisabled]: !shouldShowVoteIcon,
                 })}
                 size={ButtonSize.Small}
-                variant={ButtonVariant.Secondary}
-                onClick={shouldShowVoteIcon ? onVote : undefined}
+                variant={ButtonVariant.Outline}
                 isVoted={isVotedByThisUser}
               />
             </div>
