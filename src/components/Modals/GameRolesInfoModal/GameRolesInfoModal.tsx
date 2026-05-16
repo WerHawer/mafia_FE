@@ -120,7 +120,7 @@ export const GameRolesInfoModal = observer(() => {
 
   return (
     <div className={styles.container}>
-      <Typography variant="h2" className={styles.title}>
+      <Typography variant="sectionHeader" className={styles.title}>
         {t("gameRolesInfo.title")}
       </Typography>
 
@@ -132,8 +132,8 @@ export const GameRolesInfoModal = observer(() => {
 
       <div className={styles.actions}>
         <Button
-          variant={ButtonVariant.Primary}
-          size={ButtonSize.Medium}
+          variant={ButtonVariant.Tertiary}
+          size={ButtonSize.Small}
           onClick={modalStore.closeModal}
         >
           {t("gameRolesInfo.confirm")}

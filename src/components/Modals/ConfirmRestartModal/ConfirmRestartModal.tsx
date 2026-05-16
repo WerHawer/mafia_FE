@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import { modalStore } from "@/store/modalStore.ts";
 import { Button } from "@/UI/Button";
-import { ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { Typography } from "@/UI/Typography";
 
 import styles from "./ConfirmRestartModal.module.scss";
 
@@ -21,14 +22,23 @@ export const ConfirmRestartModal = observer(() => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>{t("confirmRestartModal.title")}</h2>
-      <p className={styles.warning}>{t("confirmRestartModal.warning")}</p>
+      <Typography variant="sectionHeader">
+        {t("confirmRestartModal.title")}
+      </Typography>
+
+      <Typography variant="body" className={styles.warning}>
+        {t("confirmRestartModal.warning")}
+      </Typography>
 
       <div className={styles.footer}>
-        <Button variant={ButtonVariant.Secondary} onClick={closeModal} fullWidth>
+        <Button
+          variant={ButtonVariant.Outline}
+          onClick={closeModal}
+          size={ButtonSize.MS}
+        >
           {t("confirmRestartModal.cancel")}
         </Button>
-        <Button onClick={handleConfirm} fullWidth>
+        <Button onClick={handleConfirm} size={ButtonSize.MS}>
           {t("confirmRestartModal.confirm")}
         </Button>
       </div>

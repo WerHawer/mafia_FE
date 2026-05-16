@@ -13,7 +13,8 @@ type TypographyProps = PropsWithChildren<{
     | "body"
     | "caption"
     | "p"
-    | "span";
+    | "span"
+    | "sectionHeader";
   className?: string;
 }>;
 
@@ -29,6 +30,7 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
       caption: "span",
       p: "p",
       span: "span",
+      sectionHeader: "p",
     };
 
     const Tag = variantsMap[variant] as React.ElementType;

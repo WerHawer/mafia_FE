@@ -15,14 +15,19 @@ import { modalStore } from "@/store/modalStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
 import { GameType } from "@/types/game.types.ts";
 import { Button } from "@/UI/Button";
-import { ButtonSize, ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import {
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@/UI/Button/ButtonTypes.ts";
 import { Input } from "@/UI/Input";
 import { Switcher } from "@/UI/Switcher";
+import { Typography } from "@/UI/Typography";
 
 import {
-    ADDITIONAL_ROLES_OPTIONS,
-    DEFAULT_VALUES,
-    FormValues
+  ADDITIONAL_ROLES_OPTIONS,
+  DEFAULT_VALUES,
+  FormValues,
 } from "./CreateGameModal.config.ts";
 import styles from "./CreateGameModal.module.scss";
 
@@ -33,10 +38,9 @@ export const CreateGameModal = observer(() => {
   const { myId } = usersStore;
   const { closeModal } = modalStore;
 
-  const { control, handleSubmit, watch } =
-    useForm<FormValues>({
-      defaultValues: DEFAULT_VALUES,
-    });
+  const { control, handleSubmit, watch } = useForm<FormValues>({
+    defaultValues: DEFAULT_VALUES,
+  });
 
   const isPrivate = watch("isPrivate");
 
@@ -70,7 +74,7 @@ export const CreateGameModal = observer(() => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>{t("createGame")}</h2>
+        <Typography variant="sectionHeader" className={styles.title}>{t("createGame")}</Typography>
         <Tippy
           content={t("maxPlayersNote", "Максимум 12 людей (з ведучим)")}
           theme="nav-tooltip"
@@ -81,7 +85,6 @@ export const CreateGameModal = observer(() => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-
         <div className={styles.row}>
           <label className={styles.label}>{t("additionalRoles")}</label>
           <div className={styles.rolesContainer}>
@@ -142,7 +145,9 @@ export const CreateGameModal = observer(() => {
                 <Switcher checked={value} onChange={() => onChange(!value)} />
               )}
             />
-            <label className={styles.label}>{t("game.skipFirstNight", "Активна перша ніч (якщо 1 мафія)")}</label>
+            <label className={styles.label}>
+              {t("game.skipFirstNight", "Активна перша ніч (якщо 1 мафія)")}
+            </label>
           </div>
         </div>
 
@@ -171,18 +176,38 @@ export const CreateGameModal = observer(() => {
         </AnimatePresence>
 
         <div className={styles.row}>
-          <label className={styles.label}>{t("game.timings", "Налаштування часу")}</label>
+          <label className={styles.label}>
+            {t("game.timings", "Налаштування часу")}
+          </label>
           <div className={styles.timingsGrid}>
             <Controller
               name="speakTime"
               control={control}
               render={({ field }) => (
                 <div className={styles.timingItem}>
-                  <span className={styles.timingLabel}>{t("game.speakTime", "Промова (сек)")}</span>
+                  <span className={styles.timingLabel}>
+                    {t("game.speakTime", "Промова (сек)")}
+                  </span>
                   <div className={styles.timingControl}>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.max(10, field.value - 5))}>−</button>
+                    <button
+                      type="button"
+                      className={styles.timingBtn}
+                      onClick={() =>
+                        field.onChange(Math.max(10, field.value - 5))
+                      }
+                    >
+                      −
+                    </button>
                     <span className={styles.timingValue}>{field.value}</span>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.min(300, field.value + 5))}>+</button>
+                    <button
+                      type="button"
+                      className={styles.timingBtn}
+                      onClick={() =>
+                        field.onChange(Math.min(300, field.value + 5))
+                      }
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
               )}
@@ -192,11 +217,29 @@ export const CreateGameModal = observer(() => {
               control={control}
               render={({ field }) => (
                 <div className={styles.timingItem}>
-                  <span className={styles.timingLabel}>{t("game.votesTime", "Голосування (сек)")}</span>
+                  <span className={styles.timingLabel}>
+                    {t("game.votesTime", "Голосування (сек)")}
+                  </span>
                   <div className={styles.timingControl}>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.max(5, field.value - 5))}>−</button>
+                    <button
+                      type="button"
+                      className={styles.timingBtn}
+                      onClick={() =>
+                        field.onChange(Math.max(5, field.value - 5))
+                      }
+                    >
+                      −
+                    </button>
                     <span className={styles.timingValue}>{field.value}</span>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.min(120, field.value + 5))}>+</button>
+                    <button
+                      type="button"
+                      className={styles.timingBtn}
+                      onClick={() =>
+                        field.onChange(Math.min(120, field.value + 5))
+                      }
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
               )}
@@ -206,11 +249,29 @@ export const CreateGameModal = observer(() => {
               control={control}
               render={({ field }) => (
                 <div className={styles.timingItem}>
-                  <span className={styles.timingLabel}>{t("game.candidateSpeakTime", "Захист (сек)")}</span>
+                  <span className={styles.timingLabel}>
+                    {t("game.candidateSpeakTime", "Захист (сек)")}
+                  </span>
                   <div className={styles.timingControl}>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.max(5, field.value - 5))}>−</button>
+                    <button
+                      type="button"
+                      className={styles.timingBtn}
+                      onClick={() =>
+                        field.onChange(Math.max(5, field.value - 5))
+                      }
+                    >
+                      −
+                    </button>
                     <span className={styles.timingValue}>{field.value}</span>
-                    <button type="button" className={styles.timingBtn} onClick={() => field.onChange(Math.min(120, field.value + 5))}>+</button>
+                    <button
+                      type="button"
+                      className={styles.timingBtn}
+                      onClick={() =>
+                        field.onChange(Math.min(120, field.value + 5))
+                      }
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
               )}
@@ -220,9 +281,9 @@ export const CreateGameModal = observer(() => {
 
         <div className={styles.footer}>
           <Button
-            variant={ButtonVariant.Secondary}
+            variant={ButtonVariant.Outline}
             onClick={closeModal}
-            size={ButtonSize.Medium}
+            size={ButtonSize.MS}
             disabled={isPending}
             type={ButtonType.Button}
           >
@@ -230,7 +291,7 @@ export const CreateGameModal = observer(() => {
           </Button>
           <Button
             variant={ButtonVariant.Primary}
-            size={ButtonSize.Medium}
+            size={ButtonSize.MS}
             type={ButtonType.Submit}
             disabled={isPending}
           >

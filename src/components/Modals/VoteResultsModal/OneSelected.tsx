@@ -13,6 +13,7 @@ import { usersStore } from "@/store/usersStore.ts";
 import { UserAvatar } from "@/UI/Avatar/UserAvatar.tsx";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { Typography } from "@/UI/Typography";
 
 export const OneSelected = observer(({ result }: { result: Result[] }) => {
   const { mutate: updateGameFlow } = useUpdateGameFlowMutation();
@@ -61,7 +62,9 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
           className={styles.chosenAvatar}
         />
         <div className={styles.chosenInfo}>
-          <span className={styles.chosenLabel}>{t("voteResults.chosen", "Обраний")}</span>
+          <span className={styles.chosenLabel}>
+            {t("voteResults.chosen", "Обраний")}
+          </span>
           <span className={styles.chosenName}>{playerName}</span>
         </div>
       </div>
@@ -69,15 +72,21 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
       {/* Who voted */}
       {voted.length > 0 ? (
         <div className={styles.votersSection}>
-          <p className={styles.secondaryHeader}>
+          <Typography variant="body" className={styles.secondaryHeader}>
             <Trans
               i18nKey={getUkrainianPluralKey(voted.length)}
               values={{ count: voted.length }}
-              components={{ span: <span key="span" className={styles.accentText} /> }}
+              components={{
+                span: <span key="span" className={styles.accentText} />,
+              }}
             />
-          </p>
+          </Typography>
 
-          <div className={classNames(styles.votersList, { [styles.twoColumns]: voted.length > 4 })}>
+          <div
+            className={classNames(styles.votersList, {
+              [styles.twoColumns]: voted.length > 4,
+            })}
+          >
             {voted.map((voterId) => {
               const voterUser = getUser(voterId);
               const voterName = getUserName(voterId);
@@ -96,15 +105,15 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
           </div>
         </div>
       ) : (
-        <h4 className={styles.secondaryHeader}>
+        <Typography variant="body" className={styles.secondaryHeader}>
           {t("voteResults.singleUserProposed")}
-        </h4>
+        </Typography>
       )}
 
       <div className={styles.buttonContainer}>
         <Button
           onClick={giveLastSpeech}
-          variant={ButtonVariant.Secondary}
+          variant={ButtonVariant.Outline}
           size={ButtonSize.Medium}
           uppercase
         >

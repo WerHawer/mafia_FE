@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Draw } from "@/components/Modals/VoteResultsModal/Draw.tsx";
 import { OneSelected } from "@/components/Modals/VoteResultsModal/OneSelected.tsx";
 import { gamesStore } from "@/store/gamesStore.ts";
+import { Typography } from "@/UI/Typography";
 
 export type Result = [string, string[]];
 
@@ -35,7 +36,7 @@ export const VoteResultsModal = observer(() => {
     );
   }, [gameFlow]);
 
-  if (!result) return <h2>{t("voteResults.unexpectedResult")}</h2>;
+  if (!result) return <Typography variant="sectionHeader">{t("voteResults.unexpectedResult")}</Typography>;
 
   if (result.length > 1) return <Draw result={result} />;
 

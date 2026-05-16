@@ -1,5 +1,4 @@
 @use "../../../styles/theme.scss" as theme;
-@use "../../../styles/mixins.scss" as mixins;
 
 .container {
   font-size: 1.6rem;
@@ -7,14 +6,6 @@
 }
 
 .header {
-  font-family: "Oswald", sans-serif;
-  font-size: 2.2rem;
-  font-weight: 500;
-  color: theme.$color-text-secondary;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  padding-bottom: 1.2rem;
-  border-bottom: 1px solid rgba(theme.$color-text-primary, 0.08);
   margin-bottom: 2.4rem;
 }
 
@@ -76,13 +67,12 @@
   gap: 1.2rem;
 }
 
-
 .secondaryHeader {
-  text-align: center;
   font-size: 2rem;
   font-weight: 500;
   color: theme.$color-text-secondary;
   margin-bottom: 1.6rem;
+  padding-left: 1.5rem;
 }
 
 .warningHeader {
@@ -137,7 +127,7 @@
 }
 
 .voterName {
-  font-size: 2.0rem;
+  font-size: 2rem;
   font-weight: 600;
   color: theme.$color-text-primary;
   overflow: hidden;

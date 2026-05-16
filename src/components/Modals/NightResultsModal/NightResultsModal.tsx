@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -99,14 +100,16 @@ export const NightResultsModal = observer(
 
     return (
       <div className={styles.container}>
-        <p className={styles.title}>{t("nightResults.summaryTitle")}</p>
+        <Typography variant="sectionHeader" className={styles.title}>
+          {t("nightResults.summaryTitle")}
+        </Typography>
 
         {/* ── Night action log ── */}
         <div className={styles.logsContainer}>
           {nightActionLogs?.targetedByMafia &&
             nightActionLogs.targetedByMafia.length > 0 && (
-              <div className={`${styles.logRow} ${styles.logRow_mafia}`}>
-                <p className={styles.logText}>
+              <div className={classNames(styles.logRow, styles.logRow_mafia)}>
+                <Typography variant="body" className={styles.logText}>
                   <Trans
                     i18nKey="nightResults.logMafia"
                     values={{
@@ -116,13 +119,15 @@ export const NightResultsModal = observer(
                     }}
                     components={{ strong: <strong key="strong" /> }}
                   />
-                </p>
+                </Typography>
               </div>
             )}
 
           {nightActionLogs?.blockedByProstitute && (
-            <div className={`${styles.logRow} ${styles.logRow_prostitute}`}>
-              <p className={styles.logText}>
+            <div
+              className={classNames(styles.logRow, styles.logRow_prostitute)}
+            >
+              <Typography variant="body" className={styles.logText}>
                 <Trans
                   i18nKey="nightResults.logProstitute"
                   values={{
@@ -132,13 +137,13 @@ export const NightResultsModal = observer(
                   }}
                   components={{ strong: <strong key="strong" /> }}
                 />
-              </p>
+              </Typography>
             </div>
           )}
 
           {nightActionLogs?.savedByDoctor && (
-            <div className={`${styles.logRow} ${styles.logRow_doctor}`}>
-              <p className={styles.logText}>
+            <div className={classNames(styles.logRow, styles.logRow_doctor)}>
+              <Typography variant="body" className={styles.logText}>
                 <Trans
                   i18nKey="nightResults.logDoctor"
                   values={{
@@ -146,13 +151,13 @@ export const NightResultsModal = observer(
                   }}
                   components={{ strong: <strong key="strong" /> }}
                 />
-              </p>
+              </Typography>
             </div>
           )}
 
           {nightActionLogs?.donChecked && (
-            <div className={`${styles.logRow} ${styles.logRow_don}`}>
-              <p className={styles.logText}>
+            <div className={classNames(styles.logRow, styles.logRow_don)}>
+              <Typography variant="body" className={styles.logText}>
                 <Trans
                   i18nKey="nightResults.logDon"
                   values={{
@@ -161,13 +166,13 @@ export const NightResultsModal = observer(
                   }}
                   components={{ strong: <strong key="strong" /> }}
                 />
-              </p>
+              </Typography>
             </div>
           )}
 
           {nightActionLogs?.sheriffChecked && (
-            <div className={`${styles.logRow} ${styles.logRow_sheriff}`}>
-              <p className={styles.logText}>
+            <div className={classNames(styles.logRow, styles.logRow_sheriff)}>
+              <Typography variant="body" className={styles.logText}>
                 <Trans
                   i18nKey="nightResults.logSheriff"
                   values={{
@@ -176,15 +181,15 @@ export const NightResultsModal = observer(
                   }}
                   components={{ strong: <strong key="strong" /> }}
                 />
-              </p>
+              </Typography>
             </div>
           )}
         </div>
 
         {/* ── Outcome ── */}
-        <div className={`${styles.outcome} ${styles[outcomeType]}`}>
+        <div className={classNames(styles.outcome, styles[outcomeType])}>
           <span className={styles.outcomeIcon}>{outcomeIcon}</span>
-          <p className={styles.outcomeText}>
+          <Typography variant="body" className={styles.outcomeText}>
             {isSomeoneKilled ? (
               <Trans
                 i18nKey="nightResults.mafiaKilled"
@@ -211,16 +216,16 @@ export const NightResultsModal = observer(
             ) : (
               t("nightResults.mafiaMissed")
             )}
-          </p>
+          </Typography>
         </div>
 
         {/* ── Action ── */}
-        <div className={styles.actions}>
+        <div className={classNames(styles.actions)}>
           {isSomeoneKilled ? (
             <Button
               onClick={giveLastSpeech}
               variant={ButtonVariant.Primary}
-              size={ButtonSize.MS}
+              size={ButtonSize.Medium}
             >
               <Trans
                 i18nKey="nightResults.lastSpeech"
@@ -231,7 +236,7 @@ export const NightResultsModal = observer(
           ) : (
             <Button
               onClick={closeModal}
-              variant={ButtonVariant.Primary}
+              variant={ButtonVariant.Tertiary}
               size={ButtonSize.MS}
             >
               {t("nightResults.close")}

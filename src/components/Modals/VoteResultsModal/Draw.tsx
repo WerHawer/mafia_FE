@@ -11,6 +11,7 @@ import { usersStore } from "@/store/usersStore.ts";
 import { UserAvatar } from "@/UI/Avatar/UserAvatar.tsx";
 import { Button } from "@/UI/Button";
 import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import { Typography } from "@/UI/Typography";
 
 import styles from "./VoteResultsModal.module.scss";
 
@@ -97,19 +98,19 @@ export const Draw = observer(({ result }: { result: Result[] }) => {
 
   return (
     <div className={styles.container}>
-      <h4 className={styles.header}>
+      <Typography variant="sectionHeader" className={styles.header}>
         {gameFlow.isReVote
           ? t("voteResults.secondDraw")
           : t("voteResults.draw")}
-      </h4>
+      </Typography>
 
       {gameFlow.isReVote ? (
-        <p className={styles.warningHeader}>{t("voteResults.noDecision")}</p>
+        <Typography variant="body" className={styles.warningHeader}>{t("voteResults.noDecision")}</Typography>
       ) : (
         <>
-          <p className={styles.secondaryHeader}>
+          <Typography variant="body" className={styles.secondaryHeader}>
             {t("voteResults.usersToRevote")}
-          </p>
+          </Typography>
 
           <div className={classNames(styles.votersList, { [styles.twoColumns]: candidates.length > 4 })}>
             {candidates.map((candidate) => {
