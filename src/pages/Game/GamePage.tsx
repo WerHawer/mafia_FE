@@ -18,7 +18,7 @@ import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocketContext } from "@/context/SocketProvider.tsx";
 import { modalStore } from "@/store/modalStore.ts";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import styles from "./GamePage.module.scss";
 import { useGameAccess } from "./hooks/useGameAccess.ts";
 import { useGameMediaSetup } from "./hooks/useGameMediaSetup.ts";
@@ -54,6 +54,27 @@ const GamePage = observer(() => {
   const myId = rootStore.usersStore.myId;
   const isKilled = gamesStore.activeGameKilledPlayers.includes(myId || "");
   const isMeObserver = gamesStore.isMeObserver;
+
+  const didShowRolesModal = useRef(false);
+  const isStarted = !!gamesStore.activeGame?.gameFlow?.isStarted;
+
+  useEffect(() => {
+    if (!isStarted) {
+      didShowRolesModal.current = false;
+      return;
+    }
+
+    if (didShowRolesModal.current) return;
+
+    const timer = setTimeout(() => {
+      if (!modalStore.isModalOpen) {
+        didShowRolesModal.current = true;
+        modalStore.openModal(ModalNames.GameRolesInfoModal);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [isStarted]);
 
   useEffect(() => {
     if (isKilled && !isMeObserver && !modalStore.isModalOpen) {

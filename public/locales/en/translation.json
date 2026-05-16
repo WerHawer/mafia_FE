@@ -385,6 +385,10 @@
       "5": "Town only wins together — build trust and collaborate."
     }
   },
+  "gameRolesInfo": {
+    "title": "Game Composition",
+    "confirm": "Got it"
+  },
   "ghostMode": {
     "title": "Become a Ghost? 👻",
     "description": "You can now see the roles of all players and their night actions. This knowledge is only for you!",
