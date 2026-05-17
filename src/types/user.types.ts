@@ -15,5 +15,6 @@ export interface IUser {
   isOnline: boolean;
   avatar?: string;
   id: UserId;
+  showRoleTutorial?: boolean;
   // history: [],
 }

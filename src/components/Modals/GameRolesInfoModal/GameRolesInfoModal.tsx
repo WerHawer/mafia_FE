@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import mafia1 from "@/assets/images/cards/mafia_1.webp";
@@ -50,6 +50,12 @@ export const GameRolesInfoModal = observer(() => {
   const { gamesStore, modalStore } = rootStore;
   const roles = gamesStore.activeGameRoles;
   const { shuffledCitizens, getRoleImages } = useShuffledRoleImages();
+
+  useEffect(() => {
+    const timer = setTimeout(modalStore.closeModal, 10_000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const entries = useMemo((): RoleEntry[] => {
     if (!roles) return [];

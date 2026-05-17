@@ -4,29 +4,35 @@ import { i18nextPlugin } from 'translation-check'
 
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
-// don't want to use this?
-// have a look at the Quick start guide
-// for passing in lng and translations on init
+
+const SUPPORTED_LANGUAGES = ['en', 'uk'];
+
+function convertDetectedLanguage(lng) {
+    const base = lng.split('-')[0].toLowerCase();
+    return SUPPORTED_LANGUAGES.includes(base) ? base : 'en';
+}
 
 i18n
-    // load translation using http -> see /public/locales (i.e. https://github.com/i18next/react-i18next/tree/master/example/react/public/locales)
-    // learn more: https://github.com/i18next/i18next-http-backend
-    // want your translations to be loaded from a professional CDN? => https://github.com/locize/react-tutorial#step-2---use-the-locize-cdn
     .use(Backend)
-    // detect user language
-    // learn more: https://github.com/i18next/i18next-browser-languageDetector
     .use(LanguageDetector)
-    // pass the i18n instance to react-i18next.
     .use(initReactI18next)
-    // init i18next
-    // for all options read: https://www.i18next.com/overview/configuration-options
     .use(i18nextPlugin)
     .init({
         fallbackLng: 'en',
+        supportedLngs: SUPPORTED_LANGUAGES,
         debug: true,
 
+        detection: {
+            // localStorage is checked first — user's manual choice wins.
+            // navigator is the browser/system language used when no saved preference exists.
+            order: ['localStorage', 'navigator'],
+            caches: ['localStorage'],
+            lookupLocalStorage: 'i18nextLng',
+            convertDetectedLanguage,
+        },
+
         interpolation: {
-            escapeValue: false, // not needed for react as it escapes by default
+            escapeValue: false,
         }
     });
 

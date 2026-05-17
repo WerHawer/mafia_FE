@@ -52,7 +52,6 @@
   "maxPlayersNote": "Maximum 12 people (including GM)",
   "mafiaCount": "Mafia Count",
   "additionalRoles": "Additional Roles",
-
   "auth": {
     "login": "Login",
     "nickname": "Nickname",
@@ -63,12 +62,10 @@
     "password": "Password",
     "repeatPassword": "Repeat your password"
   },
-
   "nav": {
     "home": "Home",
     "rules": "Rules"
   },
-
   "settings": {
     "title": "Settings",
     "profile": "Profile",
@@ -94,18 +91,15 @@
     "muteAll": "Mute All",
     "unmuteAll": "Unmute All"
   },
-
   "notFound": {
     "title": "Page Not Found",
     "description": "Sorry, but the page you are looking for does not exist.",
     "returnHome": "Return to Home"
   },
-
   "common": {
     "back": "Back",
     "done": "Done"
   },
-
   "game": {
     "startGame": "Start Game",
     "minPlayersNote": "Minimum 5 people (including GM)",
@@ -131,9 +125,48 @@
       "info1": "Videos are hidden during the night",
       "info2": "Only GM can see and control the game",
       "info3": "Wait for the morning to continue"
+    },
+    "roleTutorial": {
+      "skip": "Skip",
+      "next": "Next",
+      "done": "Done",
+      "dontShowAgain": "Don't show again",
+      "slides": {
+        "don": [
+          "The town thinks it knows you. A respectable man, a quiet neighbor, harmless. But the family knows the truth — you are the Don. Don't worry, we're alone here. Everyone else sleeps. The night hides our work.",
+          "Your men wake with you and choose the target. But you have one more move — yours alone. In that moment you may check one player: is he the Sheriff?",
+          "And remember the family’s core rule: a shot only counts if every living mafia member fires at the same person. Split votes mean the target survives. Agree with your team before you pull the trigger.",
+          "The Sheriff sees you as mafia — no special treatment. So don't stand out, don't speak first, and don't give him a reason to look your way.",
+          "Good night, Don. The town must fall."
+        ],
+        "mafia": [
+          "Welcome to the family. You're not a criminal — you're a man of rules. Just slightly different rules than the rest of the town. By day, an ordinary resident. By night, you do the work.",
+          "When your time comes, all of the mafia wakes together — and only them. The other players sleep and see nothing. This moment is yours.",
+          "But there's one rule: the shot only counts if every living mafioso fires at the same person. Disagreement — and the target lives. Agree first.",
+          "If the Sheriff checks you, he learns the truth. So by day: calm, smile, not a word out of place.",
+          "Good night. Don't let the family down."
+        ],
+        "sheriff": [
+          "Officer, glad you're on the line. The situation in town is critical. The mafia is already among us, and no resident knows who to trust. Your job is to find them before they find you.",
+          "When your turn comes, only you wake up — the rest of the town is asleep. Pick one suspect to check. We'll give you an answer: civilian or mafia.",
+          "One more thing — the Don is hunting you specifically. Don't reveal yourself to the first person you meet. But when the moment is right — one bold move can decide everything.",
+          "The town is counting on you. Good night, officer."
+        ],
+        "doctor": [
+          "You're on the night shift. The town is restless — the mafia doesn't sleep, and every night someone might not make it to morning. Your scalpel and your watchfulness are all that stands between them and death.",
+          "When your turn comes, only you wake — the rest sleep. Pick one player to protect tonight. If the mafia targets that same person, they survive.",
+          "And remember: you can heal yourself, but only once the entire game. Don't waste it.",
+          "Good shift, doctor. The town survives — if you don't make a mistake."
+        ],
+        "prostitute": [
+          "Welcome, dear. The town is in danger, and everyone fights how they can. You're on the side of the townspeople. Your methods are just... your own. No shooting, no healing here — here we know how to make a person go quiet.",
+          "When your time comes, only you wake — the rest of the town sleeps and sees nothing. Pick one player — and tomorrow they won't be able to speak or vote.",
+          "Silence a mafioso before he can spin lies — and the town will make the right choice on its own. Just make sure no one figures out where the wind is blowing from.",
+          "Good client, dear. The night will be long."
+        ]
+      }
     }
   },
-
   "speaker": {
     "speaker": "Speaker",
     "startSpeeches": "Start speeches",
@@ -142,7 +175,6 @@
     "previousSpeaker": "Previous speaker",
     "noNextSpeakerRoundComplete": "All living players have already spoken in this circle; there is no next speaker"
   },
-
   "vote": {
     "voting": "Voting",
     "startVoting": "Start Voting",
@@ -157,7 +189,6 @@
     "voteAgainst": "Vote against player",
     "proposedBy": "Proposed by: {{name}}"
   },
-
   "videoConfig": {
     "background": "background",
     "removeEffect": "Remove effect",
@@ -180,7 +211,6 @@
       "generic": "Couldn't access the camera. Please check your device and try again."
     }
   },
-
   "videoMenu": {
     "title": "Video menu",
     "doGM": "Make GM",
@@ -197,7 +227,6 @@
     "removeImmunity": "Remove immunity",
     "immunityTaken": "Immunity is already granted to another player"
   },
-
   "nightResults": {
     "mafiaKilled": "Mafia killed <strong>{{playerName}}</strong>",
     "mafiaMissed": "Mafia missed and all citizens still alive after night",
@@ -218,7 +247,6 @@
     "notAllShot": "Not all mafia members shot ({{shots}} of {{alive}})",
     "noShots": "Mafia didn't make any shots"
   },
-
   "voteResults": {
     "chosen": "Chosen",
     "unexpectedResult": "Unexpected result",
@@ -234,7 +262,6 @@
     "finishVoting": "Finish voting",
     "restartVote": "Restart vote"
   },
-
   "roles": {
     "mafia": "Mafia",
     "don": "Don",
@@ -246,7 +273,6 @@
     "gm": "Game Master",
     "unknown": "Unknown"
   },
-
   "checkRole": {
     "mafia": "Mafia",
     "notMafia": "Not Mafia",
@@ -258,13 +284,11 @@
     "doctorSavedGM": "Saved by Doctor",
     "shotByMafia": "Shot by mafia ({{count}}x)"
   },
-
   "gameVideo": {
     "dead": "Dead",
     "immunityBadge": "Immunity",
     "immunityBadgeDescription": "This player cannot be killed by mafia at night and cannot be put up for voting"
   },
-
   "mediaControls": {
     "microphone": "Microphone",
     "speaker": "Speaker",
@@ -298,27 +322,23 @@
     "addTestUsersLoading": "Adding test users…",
     "viewNightResults": "View Night Results"
   },
-
   "confirmRestartModal": {
     "title": "Restart Game",
     "warning": "Are you sure you want to restart the game? All roles, effects, and progress will be permanently reset. Players will be returned to the starting lobby.",
     "confirm": "Yes, restart",
     "cancel": "Cancel"
   },
-
   "confirmChangeGMModal": {
     "title": "Transfer GM Rights",
     "warning": "Are you sure you want to transfer GM rights to this player? You will become a regular player (if the game hasn't started) or an observer.",
     "confirm": "Yes, transfer",
     "cancel": "Cancel"
   },
-
   "prostituteAction": {
     "blocked": "You blocked this player",
     "blockedByProstitute": "Blocked by Prostitute",
     "blockedResult": "The prostitute blocked <strong>{{playerName}}</strong>"
   },
-
   "rules": {
     "title": "Game Rules",
     "label": {
@@ -331,11 +351,26 @@
     },
     "flow": {
       "title": "How to Play",
-      "step1": { "title": "First Night", "text": "The Mafia sees each other and silently gets acquainted." },
-      "step2": { "title": "Day — Discussion & Vote", "text": "Everyone debates. The GM gives the floor in turn. After discussion, a vote decides who is eliminated." },
-      "step3": { "title": "Night — Secret Actions", "text": "The GM disables cameras. Roles act in order: Mafia shoots, Don investigates, Doctor heals, Sheriff investigates, Prostitute visits." },
-      "step4": { "title": "Morning", "text": "The GM announces the night results. A new day begins." },
-      "step5": { "title": "Victory", "text": "Town wins when all Mafia are eliminated. Mafia wins when their count equals or outnumbers the remaining townspeople." }
+      "step1": {
+        "title": "First Night",
+        "text": "The Mafia sees each other and silently gets acquainted."
+      },
+      "step2": {
+        "title": "Day — Discussion & Vote",
+        "text": "Everyone debates. The GM gives the floor in turn. After discussion, a vote decides who is eliminated."
+      },
+      "step3": {
+        "title": "Night — Secret Actions",
+        "text": "The GM disables cameras. Roles act in order: Mafia shoots, Don investigates, Doctor heals, Sheriff investigates, Prostitute visits."
+      },
+      "step4": {
+        "title": "Morning",
+        "text": "The GM announces the night results. A new day begins."
+      },
+      "step5": {
+        "title": "Victory",
+        "text": "Town wins when all Mafia are eliminated. Mafia wins when their count equals or outnumbers the remaining townspeople."
+      }
     },
     "roles": {
       "title": "Roles",
@@ -398,5 +433,10 @@
     "confirm": "Become a Ghost",
     "activeIndicator": "Ghost Mode Active",
     "openEyes": "Become a Ghost"
+  },
+  "tutorialStatus": {
+    "inProgress": "Reading onboarding: slide {{slide}} of {{total}}",
+    "completed": "Onboarding completed",
+    "skipped": "Skipped onboarding"
   }
 }

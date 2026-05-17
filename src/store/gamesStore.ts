@@ -14,6 +14,8 @@ import {
   IGame,
   IGameFlow,
   IGameShort,
+  ITutorialProgressEntry,
+  ITutorialProgressPayload,
   NightRoles,
   Roles,
 } from "../types/game.types.ts";
@@ -29,6 +31,8 @@ export class GamesStore {
   mockStreamsEnabled: boolean = false;
   // Stores the last night's action logs so the GM can reopen the modal during the day
   lastNightActionLogs: NightActionLogs | null = null;
+  // Per-player tutorial progress visible to GM during first night
+  tutorialProgress: Map<UserId, ITutorialProgressEntry> = new Map();
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -86,6 +90,11 @@ export class GamesStore {
     this.isRoleRevealed = false;
     this.mockStreamsEnabled = false;
     this.lastNightActionLogs = null;
+    this.tutorialProgress = new Map();
+  }
+
+  updateTutorialProgress({ userId, status, slideIndex, totalSlides }: ITutorialProgressPayload) {
+    this.tutorialProgress.set(userId, { status, slideIndex, totalSlides });
   }
 
   // TODO: remove — toggled by the test users feature for layout stress-testing

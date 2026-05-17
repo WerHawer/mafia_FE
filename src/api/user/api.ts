@@ -35,6 +35,19 @@ export const updateAvatar = async (
   return response.data;
 };
 
+export type UpdateUserSettingsPayload = {
+  showRoleTutorial?: boolean;
+};
+
+export const updateUserSettings = async (
+  userId: string,
+  payload: UpdateUserSettingsPayload
+): Promise<IUser> => {
+  const response = await axios.patch<IUser>(`${USER_URL}/${userId}`, payload);
+
+  return response.data;
+};
+
 export const deleteAvatar = async (
   avatarId: string
 ): Promise<UpdateAvatarResponse> => {

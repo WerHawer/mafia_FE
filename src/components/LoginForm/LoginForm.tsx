@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { SubmitHandler } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useLoginMutation } from "@/api/auth/queries.ts";
 import { Form } from "@/components/Form/Form.tsx";
@@ -27,6 +27,9 @@ export const LoginForm = observer(() => {
   const { t } = useTranslation();
 
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const from: string | undefined = state?.from;
+  const redirectTo = !from || from === routes.login || from === routes.singUp ? routes.home : from;
 
   const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
     mutate(data, {
@@ -43,7 +46,7 @@ export const LoginForm = observer(() => {
           connect();
         }
 
-        navigate(routes.home);
+        navigate(redirectTo);
       },
     });
   };

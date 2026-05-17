@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { LoginFormInputs } from "@/components/LoginForm/config.ts";
 import { addErrorFromBEToForm } from "@/helpers/addErrorFromBEToForm.ts";
 import { Button } from "@/UI/Button";
-import { ButtonType } from "@/UI/Button/ButtonTypes.ts";
+import { ButtonRadius, ButtonType } from "@/UI/Button/ButtonTypes.ts";
 import { FormError } from "@/UI/FormError";
 import { Input } from "@/UI/Input";
 import { InputPassword } from "@/UI/Input/InputPassword";
@@ -81,7 +81,12 @@ export const SignUpFormFields = ({
 
       {errors.root && <FormError error={errors.root.message} />}
 
-      <Button type={ButtonType.Submit} disabled={isPending} width="fullWidth">
+      <Button
+        type={ButtonType.Submit}
+        disabled={isPending}
+        radius={ButtonRadius.Large}
+        width="fullWidth"
+      >
         {t("auth.signUp")}
       </Button>
     </>

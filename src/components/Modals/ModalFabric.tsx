@@ -17,6 +17,7 @@ import styles from "./ModalBase.module.scss";
 import { VoteResultsModal } from "./VoteResultsModal";
 import { GhostModeModal } from "./GhostModeModal/GhostModeModal";
 import { GameRolesInfoModal } from "./GameRolesInfoModal";
+import { RoleTutorialModal } from "./RoleTutorialModal/RoleTutorialModal.tsx";
 
 ReactModal.setAppElement("#root");
 
@@ -35,6 +36,7 @@ export const ModalFabric = observer(() => {
     [ModalNames.ConfirmChangeGMModal]: <ConfirmChangeGMModal />,
     [ModalNames.GhostModeModal]: <GhostModeModal />,
     [ModalNames.GameRolesInfoModal]: <GameRolesInfoModal />,
+    [ModalNames.RoleTutorialModal]: <RoleTutorialModal />,
   };
 
   return (
@@ -52,7 +54,7 @@ export const ModalFabric = observer(() => {
         afterOpen: styles.overlayAfterOpen,
         beforeClose: styles.overlayBeforeClose,
       }}
-      shouldCloseOnOverlayClick
+      shouldCloseOnOverlayClick={openedModal !== ModalNames.RoleTutorialModal}
     >
       <div>{openedModal && modals[openedModal]}</div>
     </ReactModal>

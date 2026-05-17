@@ -1,3 +1,4 @@
+import { Roles } from "@/types/game.types.ts";
 import { UserId } from "@/types/user.types.ts";
 
 export type MafiaMissReason =
@@ -32,6 +33,7 @@ export enum ModalNames {
   ConfirmChangeGMModal = "ConfirmChangeGMModal",
   GhostModeModal = "GhostModeModal",
   GameRolesInfoModal = "GameRolesInfoModal",
+  RoleTutorialModal = "RoleTutorialModal",
 }
 
 export type ModalData = {
@@ -44,6 +46,7 @@ export type ModalData = {
   [ModalNames.ConfirmChangeGMModal]: { onConfirm: () => void };
   [ModalNames.GhostModeModal]: { onConfirm: () => void };
   [ModalNames.GameRolesInfoModal]: object;
+  [ModalNames.RoleTutorialModal]: { role: Roles };
 };
 
 export type GModalData<T extends ModalNames> = ModalData[T];

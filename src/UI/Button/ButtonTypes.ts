@@ -21,3 +21,11 @@ export enum ButtonType {
   Submit = "submit",
   Reset = "reset",
 }
+
+export enum ButtonRadius {
+  None = "radiusNone",
+  Small = "radiusSmall",
+  Medium = "radiusMedium",
+  Large = "radiusLarge",
+  Full = "radiusFull",
+}

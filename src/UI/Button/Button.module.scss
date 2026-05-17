@@ -6,7 +6,6 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: theme.$border-radius-big;
   transition: background-color, opacity;
   transition-duration: 250ms;
   text-wrap: nowrap;
@@ -16,6 +15,12 @@
   svg, path {
     pointer-events: none;
   }
+
+  &.radiusNone   { border-radius: 0; }
+  &.radiusSmall  { border-radius: theme.$border-radius-small; }
+  &.radiusMedium { border-radius: theme.$border-radius-medium; }
+  &.radiusLarge  { border-radius: theme.$border-radius-large; }
+  &.radiusFull   { border-radius: 9999px; }
 
   &.fullWidth {
     width: 100%;

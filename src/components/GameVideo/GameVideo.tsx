@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import deadBg from "@/assets/images/dead_bg.avif";
 import { CheckRole } from "@/components/CheckRole/CheckRole.tsx";
+import { TutorialStatusBadge } from "@/components/TutorialStatusBadge/TutorialStatusBadge.tsx";
 import { ReactionCornerBadge } from "@/components/GameReactions";
 import { HealEffect } from "@/components/HealEffect";
 import { ImmunityBadge } from "@/components/ImmunityBadge/ImmunityBadge.tsx";
@@ -273,6 +274,7 @@ export const GameVideo = observer(
         <RoleCardMini userId={userId} role={participantRole} />
 
         {isCheckRoleEnabled ? <CheckRole userId={userId} /> : null}
+        <TutorialStatusBadge userId={userId} />
 
         <ReactionCornerBadge userId={userId} />
 

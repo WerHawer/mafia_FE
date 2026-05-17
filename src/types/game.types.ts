@@ -114,3 +114,19 @@ export interface IRoomConnectInfo {
 }
 
 export interface IGameDTO extends Omit<IGame, "id"> {}
+
+export type TutorialProgressStatus = "started" | "advanced" | "skipped" | "completed";
+
+export interface ITutorialProgressPayload {
+  gameId: GameId;
+  userId: UserId;
+  status: TutorialProgressStatus;
+  slideIndex?: number;
+  totalSlides?: number;
+}
+
+export interface ITutorialProgressEntry {
+  status: TutorialProgressStatus;
+  slideIndex?: number;
+  totalSlides?: number;
+}

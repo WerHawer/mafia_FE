@@ -10,7 +10,6 @@ export const useNightMode = () => {
   const isNight = gameFlow.isNight;
   const isGM = isUserGM(myId);
 
-  // Перевіряємо, чи користувач прокинувся (в масиві wakeUp)
   const isAwake = useMemo(() => {
     if (isIDead) return false;
 

@@ -3,6 +3,7 @@ import { HTMLProps, PropsWithChildren } from "react";
 
 import styles from "./Button.module.scss";
 import {
+  ButtonRadius,
   ButtonSize,
   ButtonType,
   ButtonVariant,
@@ -18,6 +19,7 @@ type ButtonProps = Omit<HTMLProps<HTMLButtonElement>, "size"> &
     width?: ButtonWidth;
     uppercase?: boolean;
     rounded?: boolean;
+    radius?: ButtonRadius;
     className?: string;
     type?: ButtonType;
     fullWidth?: boolean;
@@ -33,6 +35,7 @@ export const Button = ({
   width = "auto",
   variant = ButtonVariant.Primary,
   rounded = false,
+  radius = ButtonRadius.Small,
   className,
   type = ButtonType.Button,
   fullWidth = false,
@@ -46,6 +49,7 @@ export const Button = ({
         styles[size],
         styles[variant],
         styles[width],
+        styles[radius],
         {
           [styles.disabled]: disabled,
           [styles.uppercase]: uppercase,

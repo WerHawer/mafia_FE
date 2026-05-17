@@ -29,7 +29,7 @@ export const OneSelected = observer(({ result }: { result: Result[] }) => {
 
   const getUkrainianPluralKey = (count: number) => {
     const currentLang = i18n.language;
-    if (currentLang !== "ua") return "voteResults.playersVotedAgainst";
+    if (currentLang !== "uk") return "voteResults.playersVotedAgainst";
     if (count === 1) return "voteResults.playersVotedAgainst_one";
     if (count >= 2 && count <= 4) return "voteResults.playersVotedAgainst_few";
     return "voteResults.playersVotedAgainst_many";

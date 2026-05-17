@@ -45,4 +45,5 @@ export enum wsEvents {
   voteTimerExpired = "voteTimerExpired",
   videoRepublishRequired = "videoRepublishRequired",
   userOnlineStatusChanged = "userOnlineStatusChanged",
+  roleTutorialProgress = "roleTutorialProgress",
 }

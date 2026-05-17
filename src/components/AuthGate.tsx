@@ -11,8 +11,6 @@ import { usersStore } from "../store/usersStore.ts";
 
 const authFreeRoutes = [routes.login, routes.singUp];
 
-// TODO: remember initial path and fo to this path after login
-
 export const AuthGate = observer(({ children }: PropsWithChildren) => {
   const { pathname } = useLocation();
   const { token, me, setMyUser, logout } = usersStore;
@@ -41,7 +39,7 @@ export const AuthGate = observer(({ children }: PropsWithChildren) => {
     disconnect();
 
     return !authFreeRoutes.includes(pathname) ? (
-      <Navigate to={routes.login} />
+      <Navigate to={routes.login} state={{ from: pathname }} />
     ) : (
       children
     );

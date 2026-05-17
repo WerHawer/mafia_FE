@@ -1,20 +1,24 @@
 import { LogoutOutlined } from "@ant-design/icons";
+import { useQueryClient } from "@tanstack/react-query";
 import Tippy from "@tippyjs/react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 
+import { userLogout } from "@/api/auth/api.ts";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher/LanguageSwitcher.tsx";
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
-import { userLogout } from "@/api/auth/api.ts";
 import { removeTokenFromAxios } from "@/helpers/removeTokenFromAxios.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { routes } from "@/router/routs.ts";
 import { modalStore } from "@/store/modalStore.ts";
 import { usersStore } from "@/store/usersStore.ts";
 import { Button } from "@/UI/Button/Button.tsx";
-import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import {
+  ButtonRadius,
+  ButtonSize,
+  ButtonVariant,
+} from "@/UI/Button/ButtonTypes.ts";
 import { Logo } from "@/UI/Logo";
 
 import { HeaderNav } from "../Nav";
@@ -62,7 +66,8 @@ export const Header = () => {
       <Button
         onClick={handleCreateGame}
         variant={ButtonVariant.Primary}
-        size={ButtonSize.Medium}
+        size={ButtonSize.MS}
+        radius={ButtonRadius.Large}
         uppercase
       >
         {t("createGame")}

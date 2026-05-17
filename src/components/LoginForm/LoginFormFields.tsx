@@ -5,7 +5,11 @@ import { useTranslation } from "react-i18next";
 import { LoginFormInputs } from "@/components/LoginForm/config.ts";
 import { addErrorFromBEToForm } from "@/helpers/addErrorFromBEToForm.ts";
 import { Button } from "@/UI/Button";
-import { ButtonType, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import {
+  ButtonRadius,
+  ButtonType,
+  ButtonVariant,
+} from "@/UI/Button/ButtonTypes.ts";
 import { FormError } from "@/UI/FormError";
 import { Input } from "@/UI/Input";
 import { InputPassword } from "@/UI/Input/InputPassword";
@@ -66,6 +70,7 @@ export const LoginFormFields = ({
       <Button
         type={ButtonType.Submit}
         variant={ButtonVariant.Primary}
+        radius={ButtonRadius.Large}
         disabled={isPending}
         width="fullWidth"
       >

@@ -5,7 +5,11 @@ import { useTranslation } from "react-i18next";
 import { useStartGameMutation } from "@/api/game/queries.ts";
 import { rootStore } from "@/store/rootStore.ts";
 import { Button } from "@/UI/Button";
-import { ButtonSize, ButtonVariant } from "@/UI/Button/ButtonTypes.ts";
+import {
+  ButtonRadius,
+  ButtonSize,
+  ButtonVariant,
+} from "@/UI/Button/ButtonTypes.ts";
 
 import styles from "./GmPanel.module.scss";
 
@@ -27,7 +31,7 @@ export const InitialPanel = observer(() => {
     <div className={styles.initialPanelContainer}>
       <div className={styles.startButtonWrapper}>
         <Button
-          size={ButtonSize.Large}
+          size={ButtonSize.Medium}
           variant={ButtonVariant.Success}
           onClick={onStartGame}
           disabled={!canStartGame}

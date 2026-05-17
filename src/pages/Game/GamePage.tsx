@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useEffect, useRef } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
 import { useGetUsersWithAddToStore } from "@/api/user/queries.ts";
@@ -11,14 +12,13 @@ import { VideoGridHealthMonitor } from "@/components/GameVideoContainer/VideoGri
 import { GameVideoManager } from "@/components/GameVideoManager/GameVideoManager.tsx";
 import { GameVote } from "@/components/GameVote";
 import { LiveKitMafiaRoom } from "@/components/LiveKitMafiaRoom/LiveKitMafiaRoom.tsx";
-import { routes } from "@/router/routs.ts";
-import { rootStore } from "@/store/rootStore.ts";
-
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocketContext } from "@/context/SocketProvider.tsx";
+import { routes } from "@/router/routs.ts";
 import { modalStore } from "@/store/modalStore.ts";
-import { useEffect, useRef } from "react";
+import { rootStore } from "@/store/rootStore.ts";
+
 import styles from "./GamePage.module.scss";
 import { useGameAccess } from "./hooks/useGameAccess.ts";
 import { useGameMediaSetup } from "./hooks/useGameMediaSetup.ts";
@@ -71,7 +71,7 @@ const GamePage = observer(() => {
         didShowRolesModal.current = true;
         modalStore.openModal(ModalNames.GameRolesInfoModal);
       }
-    }, 3000);
+    }, 2800);
 
     return () => clearTimeout(timer);
   }, [isStarted]);

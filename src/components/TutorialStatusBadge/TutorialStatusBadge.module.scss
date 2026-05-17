@@ -1,0 +1,61 @@
+@use "../../styles/theme.scss";
+
+// Matches CheckRole's .gmIconsRow night position — day 1 night only, CheckRole is empty then
+.wrapper {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+}
+
+.iconCompleted {
+  font-size: 28px;
+  color: theme.$color-success;
+  background-color: rgba(theme.$color-dark-tertiary, 0.5);
+  border-radius: 50%;
+  padding: 3px;
+  cursor: default;
+}
+
+.iconSkipped {
+  font-size: 28px;
+  color: theme.$color-light-tertiary;
+  background-color: rgba(theme.$color-dark-tertiary, 0.5);
+  border-radius: 50%;
+  padding: 3px;
+  cursor: default;
+}
+
+.iconInProgress {
+  font-size: 28px;
+  color: theme.$color-accent-primary;
+  background-color: rgba(theme.$color-dark-tertiary, 0.5);
+  border-radius: 50%;
+  padding: 3px;
+  cursor: default;
+}
+
+.inProgressWrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.slideCounter {
+  position: absolute;
+  bottom: -5px;
+  right: -8px;
+  min-width: 26px;
+  height: 19px;
+  border-radius: 10px;
+  background-color: theme.$color-accent-primary;
+  color: theme.$color-dark-primary;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+}

@@ -7,6 +7,9 @@ import { useTranslation } from "react-i18next";
 import { wsEvents } from "@/config/wsEvents.ts";
 import { useSocket } from "@/hooks/useSocket.ts";
 import { rootStore } from "@/store/rootStore.ts";
+import { ModalNames } from "@/components/Modals/Modal.types.ts";
+import { modalStore } from "@/store/modalStore.ts";
+import { ROLE_TUTORIAL_BUBBLES } from "@/components/Modals/RoleTutorialModal/roleTutorialContent.ts";
 
 import styles from "./NightMode.module.scss";
 import { StarryCanvas } from "./StarryCanvas.tsx";
@@ -20,9 +23,9 @@ export const NightMode = observer(({ isVisible = true }: NightModeProps) => {
   const [isHiding, setIsHiding] = useState(false);
   const { sendMessage } = useSocket();
 
-  const { gamesStore, usersStore, isIGM } = rootStore;
-  const { activeGameId } = gamesStore;
-  const { myId } = usersStore;
+  const { gamesStore, usersStore, isIGM, myRole } = rootStore;
+  const { activeGameId, gameFlow } = gamesStore;
+  const { myId, me } = usersStore;
 
   useEffect(() => {
     if (!isVisible) {
@@ -31,6 +34,18 @@ export const NightMode = observer(({ isVisible = true }: NightModeProps) => {
       setIsHiding(false);
     }
   }, [isVisible]);
+
+  useEffect(() => {
+    const isFirstNight = gameFlow.day === 1 && gameFlow.isNight;
+    const hasTutorialContent = Boolean(ROLE_TUTORIAL_BUBBLES[myRole]);
+    const shouldShow = me?.showRoleTutorial !== false;
+    const sessionKey = activeGameId ? `roleTutorial_${activeGameId}_${myRole}` : null;
+    const isDone = !!sessionKey && ['skipped', 'completed'].includes(sessionStorage.getItem(sessionKey) ?? '');
+
+    if (isFirstNight && hasTutorialContent && shouldShow && !isDone) {
+      modalStore.openModal(ModalNames.RoleTutorialModal, { role: myRole });
+    }
+  }, [gameFlow.day, gameFlow.isNight, myRole, me?.showRoleTutorial, activeGameId]);
 
   useEffect(() => {
     if (!activeGameId || !myId || isIGM || rootStore.isIDead) return;

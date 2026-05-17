@@ -6,7 +6,7 @@ import styles from "./LanguageSwitcher.module.scss";
 
 const languages = [
   { label: "En", code: "en" },
-  { label: "Укр", code: "ua" },
+  { label: "Ua", code: "uk" },
 ];
 
 export const LanguageSwitcher = memo(() => {
@@ -30,7 +30,7 @@ export const LanguageSwitcher = memo(() => {
             })}
             onClick={handleLanguageChange(code)}
           >
-            {code}
+            {label}
           </button>
 
           {i + 1 !== languages.length && (

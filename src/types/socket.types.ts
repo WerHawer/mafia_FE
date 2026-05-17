@@ -1,5 +1,5 @@
 import { wsEvents } from "../config/wsEvents.ts";
-import { GameId, IGame, IGameShort, IRoomConnectInfo } from "./game.types.ts";
+import { GameId, IGame, IGameShort, IRoomConnectInfo, ITutorialProgressPayload } from "./game.types.ts";
 import { IMessage, IMessageDTO, ReactionMap } from "./message.types.ts";
 import { IUser, UserId, UserStreamId } from "./user.types.ts";
 
@@ -143,6 +143,7 @@ export interface WSSentEventData {
     emojiUnified: string;
     userId: string;
   };
+  [wsEvents.roleTutorialProgress]: ITutorialProgressPayload;
 }
 
 export type SendMessageFunction = <T extends keyof WSSentEventData>(
@@ -198,6 +199,7 @@ export interface WSSubscribedEventData {
     roomId: string;
     reactions: ReactionMap;
   };
+  [wsEvents.roleTutorialProgress]: ITutorialProgressPayload;
 }
 
 export type SubscribeEvent = keyof WSSubscribedEventData;

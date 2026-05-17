@@ -1,10 +1,20 @@
 import classNames from "classnames";
 import { memo, useCallback, useMemo, useState } from "react";
 
-
 import { AvatarSize } from "@/types/user.types.ts";
 
 import styles from "./UserAvatar.module.scss";
+
+function getAvatarBgColor(name?: string): string | undefined {
+  if (!name) return undefined;
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash) % 360;
+
+  return `hsl(${hue}, 45%, 40%)`;
+}
 
 type UserAvatarProps = {
   avatar?: string | null;
@@ -42,14 +52,19 @@ export const UserAvatar = memo(({ avatar, name, size = "sm", customSize, classNa
   }, []);
 
   const initials = getInitials(name);
-  
-  // Custom styles for size override
+
+  const bgColor = useMemo(() => (showInitial ? getAvatarBgColor(name) : undefined), [showInitial, name]);
+
   const customStyles = customSize ? { width: customSize, height: customSize } : undefined;
+  const avatarStyle = {
+    ...customStyles,
+    ...(bgColor ? { backgroundColor: bgColor } : {}),
+  };
 
   return (
     <span
       className={classNames(styles.avatar, { [styles[size]]: !customSize }, className)}
-      style={customStyles}
+      style={avatarStyle}
       role={onClick ? "button" : "img"}
       tabIndex={onClick ? 0 : undefined}
       aria-label={name ?? "User avatar"}

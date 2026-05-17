@@ -44,7 +44,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
   const queryClient = useQueryClient();
 
   const { setNewMessage, replaceMessages } = messagesStore;
-  const { updateGame, updateGames, setToProposed, addVoted, addShoot } =
+  const { updateGame, updateGames, setToProposed, addVoted, addShoot, updateTutorialProgress } =
     gamesStore;
   const { setSocketConnectedCount, updateOnlineUsers, updateUserOnlineStatus, myId } = usersStore;
 
@@ -183,6 +183,9 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
       [wsEvents.userOnlineStatusChanged]: ({ userId, isOnline }) => {
         updateUserOnlineStatus(userId, isOnline);
       },
+      [wsEvents.roleTutorialProgress]: (payload) => {
+        updateTutorialProgress(payload);
+      },
     };
   }, [
     socket,
@@ -196,6 +199,7 @@ export const SocketProvider = observer(({ children }: PropsWithChildren) => {
     setToProposed,
     addVoted,
     addShoot,
+    updateTutorialProgress,
   ]);
 
   useEffect(() => {
