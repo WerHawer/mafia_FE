@@ -245,6 +245,33 @@ export const useConfigureVideo = (
       SEGMENTATION_WIDTH * SEGMENTATION_HEIGHT
     );
 
+    // ── Software mask feathering (Safari / no-filter path) ────────────────────
+    //
+    // Bilinear upscale from 256×144 → vw×vh alone is NOT sufficient for smooth
+    // edges: the model's near-binary confidence values create ~3px hard steps
+    // that follow the 256×144 grid (visually: blocky staircase at full size).
+    //
+    // Instead we do a 3-step pass, all in destination pixel space:
+    //   1. maskCanvas (256×144) → maskUpCanvas (vw×vh)   — initial upscale
+    //   2. maskUpCanvas (vw×vh) → maskSoftSmall (vw/4 × vh/4)  — downscale
+    //   3. maskSoftSmall → maskUpCanvas (vw×vh)           — upscale = ~4px blur
+    //
+    // Step 3 approximates a Gaussian blur of radius ≈ 4px in destination space,
+    // matching the GPU path's blur(3px) → contrast(200%) result without any
+    // pixel-loop overhead.
+    const maskUpCanvas = document.createElement("canvas");
+    maskUpCanvas.width = canvasWidth;
+    maskUpCanvas.height = canvasHeight;
+    let maskUpCtx = maskUpCanvas.getContext("2d");
+    enableSmoothing(maskUpCtx);
+
+    // Intermediate tiny canvas for the dest-space blur pass (~vw/4 × vh/4).
+    const maskSoftSmall = document.createElement("canvas");
+    maskSoftSmall.width = Math.max(1, Math.round(canvasWidth / 4));
+    maskSoftSmall.height = Math.max(1, Math.round(canvasHeight / 4));
+    const maskSoftSmallCtx = maskSoftSmall.getContext("2d");
+    enableSmoothing(maskSoftSmallCtx);
+
     // ── Isolated mask-filter canvas (cross-browser safety) ────────────────────
     //
     // Even when ctx.filter is supported, Safari/WebKit shows rendering glitches
@@ -541,19 +568,19 @@ export const useConfigureVideo = (
 
       // ── Build the filtered mask at destination size ──────────────────────
       //
-      // [Task 2 — "ghost" edge fix]
-      // MASK_FILTER must be applied at the destination (video) resolution so
-      // its blur(3px)/contrast(200%) operate in destination pixel space. If we
-      // ran the filter at SEGMENTATION resolution and then up-scaled the
-      // result, the blur radius would be effectively multiplied by the scale
-      // factor and bilinear up-scaling would soften the edge once more — that
-      // combination is exactly what produced the translucent "ghost" silhouette.
+      // GPU path  (supportsCanvasFilter): upscale maskCanvas → maskFilteredCanvas
+      //   (vw×vh) and apply CSS MASK_FILTER (blur → contrast → brightness) entirely
+      //   in destination pixel space — gives a clean feathered edge.
       //
-      // Software path: skip the maskBlur down/up step entirely. Bilinear upscale
-      // when drawing maskCanvas (256×144) → personCanvas (vw×vh) already provides
-      // ~3 px feathering in destination space — identical to the GPU blur(3px)
-      // result. Adding a second downscale→upscale in mask space doubled the
-      // feathering radius and caused the translucent "ghost head" artifact on Safari.
+      // Software path (Safari): CSS filters unavailable.
+      //   • We upscale maskCanvas (256×144) → maskUpCanvas (vw×vh) first so that all
+      //     subsequent blur steps operate in destination pixels.
+      //   • A second down/up pass (vw×vh → vw/4×vh/4 → vw×vh) approximates a
+      //     ~4 px Gaussian in destination space, matching the GPU blur(3px) result.
+      //   • Doing blur BEFORE upscale (old approach) multiplied the blur radius by
+      //     the scale factor and caused the translucent "ghost" silhouette.
+      //   • Doing NO blur + raw bilinear upscale left near-binary mask values that
+      //     created blocky staircase edges at destination resolution.
       let maskSource: HTMLCanvasElement = maskCanvas;
       let maskSourceW = SEGMENTATION_WIDTH;
       let maskSourceH = SEGMENTATION_HEIGHT;
@@ -575,6 +602,43 @@ export const useConfigureVideo = (
           maskFilteredCtx.drawImage(maskCanvas, 0, 0, vw, vh);
           maskFilteredCtx.filter = "none";
           maskSource = maskFilteredCanvas;
+          maskSourceW = vw;
+          maskSourceH = vh;
+        }
+      } else if (!supportsCanvasFilter && maskSoftSmallCtx) {
+        // Resize maskUpCanvas lazily to match live video dimensions.
+        if (maskUpCanvas.width !== vw || maskUpCanvas.height !== vh) {
+          maskUpCanvas.width = vw;
+          maskUpCanvas.height = vh;
+          maskUpCtx = maskUpCanvas.getContext("2d");
+          enableSmoothing(maskUpCtx);
+        }
+
+        if (maskUpCtx) {
+          // Step 1: 256×144 → vw×vh  (initial bilinear upscale)
+          maskUpCtx.clearRect(0, 0, vw, vh);
+          maskUpCtx.drawImage(maskCanvas, 0, 0, vw, vh);
+
+          // Step 2: vw×vh → vw/4×vh/4  (downscale — captures the blurred content)
+          maskSoftSmallCtx.clearRect(
+            0,
+            0,
+            maskSoftSmall.width,
+            maskSoftSmall.height
+          );
+          maskSoftSmallCtx.drawImage(
+            maskUpCanvas,
+            0,
+            0,
+            maskSoftSmall.width,
+            maskSoftSmall.height
+          );
+
+          // Step 3: vw/4×vh/4 → vw×vh  (upscale = ~4 px Gaussian blur in dest space)
+          maskUpCtx.clearRect(0, 0, vw, vh);
+          maskUpCtx.drawImage(maskSoftSmall, 0, 0, vw, vh);
+
+          maskSource = maskUpCanvas;
           maskSourceW = vw;
           maskSourceH = vh;
         }
@@ -974,6 +1038,8 @@ export const useConfigureVideo = (
       // which can balloon when the user toggles streams repeatedly.
       segInputCanvas.width = segInputCanvas.height = 0;
       maskCanvas.width = maskCanvas.height = 0;
+      maskUpCanvas.width = maskUpCanvas.height = 0;
+      maskSoftSmall.width = maskSoftSmall.height = 0;
       maskFilteredCanvas.width = maskFilteredCanvas.height = 0;
       bgBlurCanvas.width = bgBlurCanvas.height = 0;
       bgBlurCanvas2.width = bgBlurCanvas2.height = 0;
