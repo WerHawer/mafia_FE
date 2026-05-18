@@ -35,8 +35,6 @@ const MASK_CONTRACT_BRIGHTNESS = 0.97;
 // blur-first then contrast: feathers the edge, then contracts it inward — eliminates the bright halo
 const MASK_FILTER = `blur(${MASK_EDGE_FEATHER_PX}px) contrast(${MASK_SHARPEN_CONTRAST}%) brightness(${MASK_CONTRACT_BRIGHTNESS})`;
 
-
-
 const bgEffects = {
   blur: "blur",
   img: "img",
@@ -107,9 +105,11 @@ const isSafari = (() => {
     const ua = navigator.userAgent;
     // Excludes Chrome on iOS (CriOS), Firefox on iOS (FxiOS), Edge / Opera
     // forks, and Android (whose browsers may also include "Safari" in the UA).
-    return /AppleWebKit/i.test(ua)
-      && /Safari/i.test(ua)
-      && !/Chrome|Chromium|CriOS|FxiOS|EdgiOS|Edg\/|OPR\/|Android/i.test(ua);
+    return (
+      /AppleWebKit/i.test(ua) &&
+      /Safari/i.test(ua) &&
+      !/Chrome|Chromium|CriOS|FxiOS|EdgiOS|Edg\/|OPR\/|Android/i.test(ua)
+    );
   } catch {
     return false;
   }
@@ -244,8 +244,6 @@ export const useConfigureVideo = (
     const float32Buf = new Float32Array(
       SEGMENTATION_WIDTH * SEGMENTATION_HEIGHT
     );
-
-
 
     // ── Isolated mask-filter canvas (cross-browser safety) ────────────────────
     //
@@ -507,36 +505,29 @@ export const useConfigureVideo = (
         }
         console.log(
           `[useConfigureVideo] mask diag — min=${lo.toFixed(3)} max=${hi.toFixed(3)} ` +
-          `midband=${mid} normalized=${isNormalized} bg=${bgEffectsRef.current} ` +
-          `vw=${vw} vh=${vh} isSafari=${isSafari} ` +
-          `canvasFilter=${supportsCanvasFilter}`
+            `midband=${mid} normalized=${isNormalized} bg=${bgEffectsRef.current} ` +
+            `vw=${vw} vh=${vh} isSafari=${isSafari} ` +
+            `canvasFilter=${supportsCanvasFilter}`
         );
       }
 
       // ── Build RGBA mask buffer ────────────────────────────────────────────
       //
-      // When ctx.filter is supported: write raw confidence values — the CSS
-      // filter chain (contrast → brightness → blur) runs on the GPU later.
+      // Both GPU and software paths write raw confidence values here.
       //
-      // When ctx.filter is NOT supported (Safari / old WebViews): bake the
-      // contrast and brightness transforms directly into each pixel value here,
-      // then approximate the blur step via downscale→upscale below.
+      // GPU path: the CSS filter chain (blur(3px) → contrast(200%) → brightness)
+      //   runs on the GPU at full destination resolution via maskFilteredCanvas.
+      //
+      // Software path (Safari): raw values must reach maskCanvas unchanged so
+      //   that bilinear interpolation during the 256×144 → vw×vh upscale acts as
+      //   the "blur" step. Baking contrast(200%) before the upscale pushes edge
+      //   pixels to near-binary (0/255), which turns the bilinear stretch into a
+      //   staircase — exactly the "blocky edges" artifact. Without pre-baked
+      //   contrast the model's own fractional confidence outputs spread naturally
+      //   across ~3-4 destination pixels, giving smooth feathering.
       for (let i = 0; i < float32.length; i++) {
         const rawVal = isNormalized ? float32[i] * 255 : float32[i];
-        let val: number;
-
-        if (!supportsCanvasFilter) {
-          // contrast(150%): (x − 0.5) × 1.5 + 0.5, clamped to [0, 1]
-          const contrasted =
-            ((rawVal / 255 - 0.5) * (MASK_SHARPEN_CONTRAST / 100) + 0.5) * 255;
-          // brightness(0.95)
-          val = Math.max(
-            0,
-            Math.min(255, contrasted * MASK_CONTRACT_BRIGHTNESS)
-          );
-        } else {
-          val = rawVal;
-        }
+        const val = Math.max(0, Math.min(255, rawVal));
 
         const base = i << 2;
         maskRgba[base] =
@@ -606,7 +597,7 @@ export const useConfigureVideo = (
         }
 
         if (bgFilterCtx) {
-          bgFilterCtx.filter = "blur(20px) brightness(0.97) saturate(1.1)";
+          bgFilterCtx.filter = "blur(10px) brightness(0.97) saturate(1.1)";
           bgFilterCtx.drawImage(video, 0, 0, vw, vh);
           bgFilterCtx.filter = "none";
         }
