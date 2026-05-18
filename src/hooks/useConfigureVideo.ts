@@ -60,25 +60,46 @@ type BackgroundEffects = keyof typeof bgEffects;
 
 // ─── Canvas filter feature detection ────────────────────────────────────────
 //
-// Safari on iOS < 17 and some Android WebViews silently ignore ctx.filter:
-// the property is set but the getter returns "none" or "" instead of the
-// assigned value. We probe once at module load — no per-frame overhead.
+// Two-stage probe, run once at module load:
 //
-// Affected operations when supportsCanvasFilter === false:
-//   • MASK_FILTER (contrast + brightness + blur on the grayscale mask)
-//   • blur(20px) background effect
-//   • contrast/brightness enhancement in the raw-video fallback path
+//   1) SYNTACTIC — assign `ctx.filter = "blur(1px)"` and verify the getter
+//      returns the value. Old Safari / Android WebViews report "none" or "" .
 //
-// Each has a dedicated software fallback below.
+//   2) SEMANTIC — actually render a small white rectangle WITH a blur filter
+//      and read a pixel just outside the rectangle. If the filter is honored,
+//      the white "leaks" outward and that pixel picks up alpha. If the filter
+//      is silently ignored (a real Safari quirk where the property setter +
+//      getter both work, but the renderer never applies it), the outside
+//      pixel stays transparent — the visual probe catches it and we fall back
+//      to the software pipeline (downscale/upscale + pixel-loop contrast).
+//
+// Without stage 2, modern Safari passes stage 1 with flying colors but
+// produces hard-edged masks (no MASK_FILTER) and unblurred backgrounds (no
+// blur(20px) on bgFilterCanvas). Stage 2 is what makes the software path
+// kick in on those Safari builds.
 const supportsCanvasFilter = (() => {
   try {
     const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 10;
     const ctx = canvas.getContext("2d");
     if (!ctx) return false;
+
     ctx.filter = "blur(1px)";
     const value = ctx.filter;
-    // Older Safari / WebViews: undefined or reset to "none"/"" → unsupported.
-    return typeof value === "string" && value !== "" && value !== "none";
+    if (typeof value !== "string" || value === "" || value === "none") {
+      return false;
+    }
+
+    // 6 × 6 opaque white square with a 2 px transparent border on each side.
+    // blur(3px) should diffuse the white into the border. Pixel (1, 1) sits
+    // 1 px from the square's edge — well within the blur radius.
+    ctx.filter = "blur(3px)";
+    ctx.fillStyle = "white";
+    ctx.fillRect(2, 2, 6, 6);
+    ctx.filter = "none";
+
+    const px = ctx.getImageData(1, 1, 1, 1).data;
+    return px[3] > 10; // alpha > 10 ⇒ blur actually rendered
   } catch {
     return false;
   }
@@ -183,6 +204,23 @@ export const useConfigureVideo = (
     let intervalId: ReturnType<typeof setInterval> | null = null;
     let passthroughRafId: number | null = null;
 
+    // Defensive helper — Safari has been observed shipping with
+    // `imageSmoothingEnabled = false` on freshly-acquired offscreen 2D
+    // contexts. With smoothing off, every `drawImage` that changes size
+    // falls back to nearest-neighbor sampling, which is what gives the
+    // mask its blocky / "square" edge. Re-set the flag every time we
+    // (re-)acquire a context.
+    const enableSmoothing = (ctx: CanvasRenderingContext2D | null): void => {
+      if (!ctx) return;
+      ctx.imageSmoothingEnabled = true;
+      try {
+        ctx.imageSmoothingQuality = "high";
+      } catch {
+        // imageSmoothingQuality is not part of the OffscreenCanvas spec on
+        // some platforms — ignore if assignment throws.
+      }
+    };
+
     // ── Offscreen canvases ────────────────────────────────────────────────────
 
     // Downscaled input fed to the segmentation model (reduces Float32 loop by ~8×)
@@ -196,6 +234,7 @@ export const useConfigureVideo = (
     maskCanvas.width = SEGMENTATION_WIDTH;
     maskCanvas.height = SEGMENTATION_HEIGHT;
     const maskCtx = maskCanvas.getContext("2d");
+    enableSmoothing(maskCtx);
 
     // Pre-allocated RGBA buffer — avoids per-frame GC pressure.
     const maskRgba = new Uint8ClampedArray(
@@ -232,6 +271,7 @@ export const useConfigureVideo = (
     maskBlurCanvas.width = MASK_BLUR_W;
     maskBlurCanvas.height = MASK_BLUR_H;
     const maskBlurCtx = maskBlurCanvas.getContext("2d");
+    enableSmoothing(maskBlurCtx);
 
     // ── Isolated mask-filter canvas (cross-browser safety) ────────────────────
     //
@@ -251,6 +291,7 @@ export const useConfigureVideo = (
     maskFilteredCanvas.width = canvasWidth;
     maskFilteredCanvas.height = canvasHeight;
     let maskFilteredCtx = maskFilteredCanvas.getContext("2d");
+    enableSmoothing(maskFilteredCtx);
 
     // ── Person cut-out canvas (Safari compositing safety) ─────────────────────
     //
@@ -264,6 +305,7 @@ export const useConfigureVideo = (
     personCanvas.width = canvasWidth;
     personCanvas.height = canvasHeight;
     let personCtx = personCanvas.getContext("2d", { alpha: true });
+    enableSmoothing(personCtx);
 
     // ── Software background-blur fallback ─────────────────────────────────────
     //
@@ -275,6 +317,7 @@ export const useConfigureVideo = (
     bgBlurCanvas.width = Math.max(1, Math.round(canvasWidth / 8));
     bgBlurCanvas.height = Math.max(1, Math.round(canvasHeight / 8));
     const bgBlurCtx = bgBlurCanvas.getContext("2d");
+    enableSmoothing(bgBlurCtx);
 
     // ── Isolated bg-filter canvas (GPU blur path) ─────────────────────────────
     //
@@ -286,6 +329,7 @@ export const useConfigureVideo = (
     bgFilterCanvas.width = canvasWidth;
     bgFilterCanvas.height = canvasHeight;
     let bgFilterCtx = bgFilterCanvas.getContext("2d");
+    enableSmoothing(bgFilterCtx);
 
     // All mask/person/background layering happens in normal (non-mirrored) space.
     // The result is blitted to mainCanvas with a horizontal mirror at the end.
@@ -293,6 +337,7 @@ export const useConfigureVideo = (
     compCanvas.width = canvasWidth;
     compCanvas.height = canvasHeight;
     let compCtx = compCanvas.getContext("2d", { alpha: true });
+    enableSmoothing(compCtx);
 
     // Cached main-canvas context — avoids calling getContext() on every frame.
     // Nulled out whenever the canvas is resized (resize forces a new context object).
@@ -317,7 +362,10 @@ export const useConfigureVideo = (
           mainCtx = null; // invalidate cached ctx on resize
         }
 
-        if (!mainCtx) mainCtx = mainCanvas.getContext("2d");
+        if (!mainCtx) {
+          mainCtx = mainCanvas.getContext("2d");
+          enableSmoothing(mainCtx);
+        }
 
         if (mainCtx && !video.paused && video.readyState >= 2) {
           // Always draw the mirrored raw video regardless of the chosen effect.
@@ -367,7 +415,10 @@ export const useConfigureVideo = (
           mainCtx = null;
         }
 
-        if (!mainCtx) mainCtx = mainCanvas.getContext("2d");
+        if (!mainCtx) {
+          mainCtx = mainCanvas.getContext("2d");
+          enableSmoothing(mainCtx);
+        }
 
         if (mainCtx) {
           mainCtx.clearRect(0, 0, vw, vh);
@@ -468,7 +519,8 @@ export const useConfigureVideo = (
         console.log(
           `[useConfigureVideo] mask diag — min=${lo.toFixed(3)} max=${hi.toFixed(3)} ` +
           `midband=${mid} normalized=${isNormalized} bg=${bgEffectsRef.current} ` +
-          `vw=${vw} vh=${vh} isSafari=${isSafari}`
+          `vw=${vw} vh=${vh} isSafari=${isSafari} ` +
+          `canvasFilter=${supportsCanvasFilter}`
         );
       }
 
@@ -547,6 +599,7 @@ export const useConfigureVideo = (
           maskFilteredCanvas.width = vw;
           maskFilteredCanvas.height = vh;
           maskFilteredCtx = maskFilteredCanvas.getContext("2d");
+          enableSmoothing(maskFilteredCtx);
         }
 
         if (maskFilteredCtx) {
@@ -573,6 +626,7 @@ export const useConfigureVideo = (
           bgFilterCanvas.width = vw;
           bgFilterCanvas.height = vh;
           bgFilterCtx = bgFilterCanvas.getContext("2d");
+          enableSmoothing(bgFilterCtx);
         }
 
         if (bgFilterCtx) {
@@ -614,6 +668,7 @@ export const useConfigureVideo = (
         personCanvas.width = vw;
         personCanvas.height = vh;
         personCtx = personCanvas.getContext("2d", { alpha: true });
+        enableSmoothing(personCtx);
       }
 
       if (!personCtx) return;
@@ -645,6 +700,7 @@ export const useConfigureVideo = (
         compCanvas.width = vw;
         compCanvas.height = vh;
         compCtx = compCanvas.getContext("2d", { alpha: true });
+        enableSmoothing(compCtx);
       }
 
       if (!compCtx) return;
