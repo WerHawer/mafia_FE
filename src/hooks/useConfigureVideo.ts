@@ -42,6 +42,11 @@ const MASK_BODY_THRESHOLD = 178; // 0.70 × 255
 const MASK_BG_THRESHOLD = 76; // 0.30 × 255
 const MASK_FEATHER_RANGE = MASK_BODY_THRESHOLD - MASK_BG_THRESHOLD;
 
+// Separable box-blur radius for the software mask path.
+// Window = 2r+1 = 13 px, applied horizontally then vertically — variance
+// ≈ 2·r(r+1)/3 ≈ 28, σ ≈ 5.3 — matches the GPU path's blur(5px).
+const MASK_BLUR_RADIUS = 6;
+
 const bgEffects = {
   blur: "blur",
   img: "img",
@@ -254,38 +259,33 @@ export const useConfigureVideo = (
 
     // ── Software mask feathering (Safari / no-filter path) ────────────────────
     //
-    // Bilinear upscale from 256×144 → vw×vh alone is NOT sufficient for smooth
-    // edges: the model's near-binary confidence values create ~3px hard steps
-    // that follow the 256×144 grid (visually: blocky staircase at full size).
+    // Pipeline (replaces the old downscale → upscale chain which capped effective
+    // mask resolution at vw/8 and produced visible blockiness across the silhouette):
     //
-    // We use a 4-step multi-pass in destination pixel space:
-    //   1. maskCanvas (256×144) → maskUpCanvas (vw×vh)       — initial upscale
-    //   2. maskUpCanvas (vw×vh) → maskSoftSmall (vw/8×vh/8)  — 8× downscale
-    //   3. maskSoftSmall        → maskSoftMid   (vw/4×vh/4)  — 2× upscale
-    //   4. maskSoftMid          → maskUpCanvas  (vw×vh)      — 4× upscale
+    //   1. maskCanvas (256×144) → maskUpCanvas (vw×vh)         — bilinear upscale
+    //   2. extract alpha channel into single-channel buffer
+    //   3. separable box-blur (H pass, then V pass) with running sum
+    //      — constant cost per pixel regardless of MASK_BLUR_RADIUS
+    //   4. piecewise threshold remap (see MASK_BODY_THRESHOLD / MASK_BG_THRESHOLD)
+    //   5. write the remapped alpha back into the RGBA buffer + putImageData
     //
-    // Two gentle 2-4× upscale passes give a smooth Gaussian-like blur of ~8 px
-    // in destination space — softer than a single harsh 8× stretch which would
-    // itself produce visible blocks in the blur kernel.
+    // For 854×480 at radius 6: ~4M ops total per frame (~3 ms on M1/M2,
+    // ~10 ms on older Intel). Scales linearly with canvas resolution, so
+    // auto-degraded quality (640×360) is correspondingly cheaper.
     const maskUpCanvas = document.createElement("canvas");
     maskUpCanvas.width = canvasWidth;
     maskUpCanvas.height = canvasHeight;
     let maskUpCtx = maskUpCanvas.getContext("2d");
     enableSmoothing(maskUpCtx);
 
-    // Smallest intermediate (1/8): captures the blurred content cheaply.
-    const maskSoftSmall = document.createElement("canvas");
-    maskSoftSmall.width = Math.max(1, Math.round(canvasWidth / 8));
-    maskSoftSmall.height = Math.max(1, Math.round(canvasHeight / 8));
-    const maskSoftSmallCtx = maskSoftSmall.getContext("2d");
-    enableSmoothing(maskSoftSmallCtx);
-
-    // Mid intermediate (1/4): smooth 2× step between 1/8 and full.
-    const maskSoftMid = document.createElement("canvas");
-    maskSoftMid.width = Math.max(1, Math.round(canvasWidth / 4));
-    maskSoftMid.height = Math.max(1, Math.round(canvasHeight / 4));
-    const maskSoftMidCtx = maskSoftMid.getContext("2d");
-    enableSmoothing(maskSoftMidCtx);
+    // Two single-channel ping-pong buffers for the separable blur passes.
+    // Resized lazily inside processFrame to match the live video dimensions
+    // (vw / vh may differ from the initial canvasWidth / canvasHeight when
+    // the camera reports a non-standard resolution).
+    let maskBlurBufA = new Uint8ClampedArray(canvasWidth * canvasHeight);
+    let maskBlurBufB = new Uint8ClampedArray(canvasWidth * canvasHeight);
+    let maskBlurBufW = canvasWidth;
+    let maskBlurBufH = canvasHeight;
 
     // ── Isolated mask-filter canvas (cross-browser safety) ────────────────────
     //
@@ -620,7 +620,7 @@ export const useConfigureVideo = (
           maskSourceW = vw;
           maskSourceH = vh;
         }
-      } else if (!supportsCanvasFilter && maskSoftSmallCtx && maskSoftMidCtx) {
+      } else if (!supportsCanvasFilter) {
         // Resize maskUpCanvas lazily to match live video dimensions.
         if (maskUpCanvas.width !== vw || maskUpCanvas.height !== vh) {
           maskUpCanvas.width = vw;
@@ -629,79 +629,95 @@ export const useConfigureVideo = (
           enableSmoothing(maskUpCtx);
         }
 
+        // Reallocate single-channel blur buffers if the video resolution changed.
+        if (maskBlurBufW !== vw || maskBlurBufH !== vh) {
+          maskBlurBufA = new Uint8ClampedArray(vw * vh);
+          maskBlurBufB = new Uint8ClampedArray(vw * vh);
+          maskBlurBufW = vw;
+          maskBlurBufH = vh;
+        }
+
         if (maskUpCtx) {
-          // Step 1: 256×144 → vw×vh  (initial bilinear upscale — preserves edge
-          // positions in destination pixel space before any blurring)
+          // Step 1: 256×144 → vw×vh  (initial bilinear upscale)
           maskUpCtx.clearRect(0, 0, vw, vh);
           maskUpCtx.drawImage(maskCanvas, 0, 0, vw, vh);
 
-          // Step 2: vw×vh → vw/8×vh/8  (8× downscale)
-          maskSoftSmallCtx.clearRect(
-            0,
-            0,
-            maskSoftSmall.width,
-            maskSoftSmall.height
-          );
-          maskSoftSmallCtx.drawImage(
-            maskUpCanvas,
-            0,
-            0,
-            maskSoftSmall.width,
-            maskSoftSmall.height
-          );
+          // Step 2: pull alpha channel into single-channel buffer A.
+          const imgData = maskUpCtx.getImageData(0, 0, vw, vh);
+          const d = imgData.data;
+          for (let i = 0, j = 3; j < d.length; i++, j += 4) {
+            maskBlurBufA[i] = d[j];
+          }
 
-          // Step 3: vw/8×vh/8 → vw/4×vh/4  (2× smooth upscale)
-          maskSoftMidCtx.clearRect(0, 0, maskSoftMid.width, maskSoftMid.height);
-          maskSoftMidCtx.drawImage(
-            maskSoftSmall,
-            0,
-            0,
-            maskSoftMid.width,
-            maskSoftMid.height
-          );
+          // Step 3a: horizontal box-blur pass (A → B) with running sum.
+          //
+          // For each row, the sliding window of width 2r+1 stays in `sum`;
+          // each pixel costs ~4 ops (one add, one sub, one mul, one write)
+          // regardless of the radius. Edges use clamp-to-edge sampling
+          // (out-of-range reads return the row's first or last pixel).
+          const r = MASK_BLUR_RADIUS;
+          const div = 1 / (2 * r + 1);
 
-          // Step 4: piecewise threshold remap at vw/4 resolution.
+          for (let y = 0; y < vh; y++) {
+            const rowBase = y * vw;
+            // Initialise window: r copies of the left-edge pixel plus
+            // pixels 0..r from the row.
+            let sum = maskBlurBufA[rowBase] * r;
+            for (let x = 0; x <= r; x++) {
+              sum += maskBlurBufA[rowBase + (x < vw ? x : vw - 1)];
+            }
+            for (let x = 0; x < vw; x++) {
+              maskBlurBufB[rowBase + x] = sum * div;
+              const xOut = x - r;
+              const xIn = x + r + 1;
+              const vOut =
+                maskBlurBufA[rowBase + (xOut < 0 ? 0 : xOut)];
+              const vIn =
+                maskBlurBufA[rowBase + (xIn >= vw ? vw - 1 : xIn)];
+              sum += vIn - vOut;
+            }
+          }
+
+          // Step 3b: vertical box-blur pass (B → A).
+          for (let x = 0; x < vw; x++) {
+            let sum = maskBlurBufB[x] * r;
+            for (let y = 0; y <= r; y++) {
+              sum += maskBlurBufB[(y < vh ? y : vh - 1) * vw + x];
+            }
+            for (let y = 0; y < vh; y++) {
+              maskBlurBufA[y * vw + x] = sum * div;
+              const yOut = y - r;
+              const yIn = y + r + 1;
+              const vOut =
+                maskBlurBufB[(yOut < 0 ? 0 : yOut) * vw + x];
+              const vIn =
+                maskBlurBufB[(yIn >= vh ? vh - 1 : yIn) * vw + x];
+              sum += vIn - vOut;
+            }
+          }
+
+          // Step 4: piecewise threshold remap, written back to RGBA.
           //
-          // Previous approach used contrast(200%) + brightness(0.97), but a
-          // model confidence of 0.7 (common over clothing / shadowed skin)
-          // mapped to alpha ≈ 222 — i.e. the body was permanently 13%
-          // translucent and the background image showed through as a "ghost"
-          // double-exposure. brightness(0.97) shaved another 3% off every
-          // pixel, including those already at 255.
-          //
-          // The remap below snaps high-confidence pixels to fully opaque
-          // and low-confidence to fully transparent, with a smooth linear
-          // ramp across the 0.3–0.7 feather band:
-          //   raw ≥ 178 (≥0.70 conf)  →  255  (solid body, no see-through)
-          //   raw ≤  76 (≤0.30 conf)  →    0  (clean background)
-          //   76 < raw < 178          →  linear 0..255 (anti-aliased edge)
-          //
-          // The ramp keeps the same ~3-px feather width the bilinear upscale
-          // produces, so the edge stays smooth — we only remove translucency
-          // in the body interior.
-          const midW = maskSoftMid.width;
-          const midH = maskSoftMid.height;
-          const midData = maskSoftMidCtx.getImageData(0, 0, midW, midH);
-          const md = midData.data;
-          for (let i = 3; i < md.length; i += 4) {
-            const raw = md[i];
+          // Body (≥0.70 conf) snaps fully opaque — eliminates translucency
+          // that previously showed an image background through clothing.
+          // Background (≤0.30 conf) snaps fully transparent.
+          // The 0.30–0.70 band keeps a smooth linear ramp, giving the edge
+          // its anti-aliased look without losing the body interior.
+          for (let i = 0, j = 0; i < maskBlurBufA.length; i++, j += 4) {
+            const raw = maskBlurBufA[i];
             let val: number;
             if (raw >= MASK_BODY_THRESHOLD) {
               val = 255;
             } else if (raw <= MASK_BG_THRESHOLD) {
               val = 0;
             } else {
-              val = Math.round(
-                ((raw - MASK_BG_THRESHOLD) * 255) / MASK_FEATHER_RANGE
-              );
+              val =
+                ((raw - MASK_BG_THRESHOLD) * 255) / MASK_FEATHER_RANGE;
             }
-            md[i - 3] = md[i - 2] = md[i - 1] = md[i] = val;
+            d[j] = d[j + 1] = d[j + 2] = d[j + 3] = val;
           }
-          maskSoftMidCtx.putImageData(midData, 0, 0);
 
-          // Step 5: vw/4×vh/4 → vw×vh  (4× bilinear upscale = smooth final edge)
-          maskUpCtx.clearRect(0, 0, vw, vh);
-          maskUpCtx.drawImage(maskSoftMid, 0, 0, vw, vh);
+          maskUpCtx.putImageData(imgData, 0, 0);
 
           maskSource = maskUpCanvas;
           maskSourceW = vw;
@@ -1104,8 +1120,6 @@ export const useConfigureVideo = (
       segInputCanvas.width = segInputCanvas.height = 0;
       maskCanvas.width = maskCanvas.height = 0;
       maskUpCanvas.width = maskUpCanvas.height = 0;
-      maskSoftSmall.width = maskSoftSmall.height = 0;
-      maskSoftMid.width = maskSoftMid.height = 0;
       maskFilteredCanvas.width = maskFilteredCanvas.height = 0;
       bgBlurCanvas.width = bgBlurCanvas.height = 0;
       bgBlurCanvas2.width = bgBlurCanvas2.height = 0;
