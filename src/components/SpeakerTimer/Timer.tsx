@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { getAudioPath } from "@/helpers/getAudioPath";
 import { soundStore, SoundEffect } from "@/store/soundStore.ts";
@@ -47,26 +47,36 @@ export const Timer = memo(
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const startTime = useMemo(() => Date.now(), [reset]);
 
-    // When serverEndTime is provided we use it as the absolute end-point so that
-    // all clients count down to the same moment, regardless of network lag.
+    // When serverEndTime is provided and still in the future, use it as the
+    // absolute end-point so all clients stay in sync. If it's already in the
+    // past (e.g. stale timerStartedAt during revote), fall back to a local
+    // countdown from startTime to avoid an instant diff=0 on mount.
     const endTime = useMemo(
-      () => (serverEndTime != null ? serverEndTime : time * 1000 + startTime),
+      () =>
+        serverEndTime != null && serverEndTime > Date.now()
+          ? serverEndTime
+          : time * 1000 + startTime,
       [startTime, time, serverEndTime]
     );
+
+    const serverEndTimeRef = useRef(serverEndTime);
+    serverEndTimeRef.current = serverEndTime;
 
     const resetTime = useCallback(() => {
       setReset((prev) => !prev);
       // Derive initial seconds from server end-time when available so the
       // timer starts at the correct remaining value (not the full duration).
       const initialDiff =
-        serverEndTime != null
-          ? Math.ceil(Math.max(0, serverEndTime - Date.now()) / 1000)
+        serverEndTimeRef.current != null
+          ? Math.ceil(Math.max(0, serverEndTimeRef.current - Date.now()) / 1000)
           : time;
-      setDiff(initialDiff);
+      // If serverEndTime is already in the past, fall back to the full duration
+      // so the timer doesn't start (and alarm doesn't fire) at zero.
+      setDiff(initialDiff > 0 ? initialDiff : time);
       setHasCalledTimeUp(false);
       setHasCalledLowTime(false);
       onTimerStart?.();
-    }, [time, serverEndTime, onTimerStart]);
+    }, [time, onTimerStart]);
 
     useEffect(() => {
       if (serverEndTime == null) {

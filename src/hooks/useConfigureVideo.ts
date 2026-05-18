@@ -29,11 +29,18 @@ const SELFIE_SEGMENTATION_MODEL_URL =
  * Only used when supportsCanvasFilter === true (Chrome, Firefox, modern Edge).
  * Safari fallback uses the software pipeline below.
  */
-const MASK_EDGE_FEATHER_PX = 3;
+const MASK_EDGE_FEATHER_PX = 5;
 const MASK_SHARPEN_CONTRAST = 200; // percent, for CSS string
 const MASK_CONTRACT_BRIGHTNESS = 0.97;
 // blur-first then contrast: feathers the edge, then contracts it inward — eliminates the bright halo
 const MASK_FILTER = `blur(${MASK_EDGE_FEATHER_PX}px) contrast(${MASK_SHARPEN_CONTRAST}%) brightness(${MASK_CONTRACT_BRIGHTNESS})`;
+
+// Software-path threshold remap (Safari, no ctx.filter support).
+// Confidence above HIGH → fully opaque body, below LOW → background,
+// linear ramp in between preserves a soft anti-aliased edge.
+const MASK_BODY_THRESHOLD = 178; // 0.70 × 255
+const MASK_BG_THRESHOLD = 76; // 0.30 × 255
+const MASK_FEATHER_RANGE = MASK_BODY_THRESHOLD - MASK_BG_THRESHOLD;
 
 const bgEffects = {
   blur: "blur",
@@ -653,35 +660,42 @@ export const useConfigureVideo = (
             maskSoftMid.height
           );
 
-          // Step 4: contrast(200%) + brightness(0.97) at vw/4 resolution.
+          // Step 4: piecewise threshold remap at vw/4 resolution.
           //
-          // Mirrors the GPU path's CSS MASK_FILTER applied at dest resolution.
-          // Running it at vw/4 instead of full size costs ~16× fewer pixels
-          // (~26 K vs ~410 K at 854×480) while giving the same visual result
-          // after the final 4× upscale below.
+          // Previous approach used contrast(200%) + brightness(0.97), but a
+          // model confidence of 0.7 (common over clothing / shadowed skin)
+          // mapped to alpha ≈ 222 — i.e. the body was permanently 13%
+          // translucent and the background image showed through as a "ghost"
+          // double-exposure. brightness(0.97) shaved another 3% off every
+          // pixel, including those already at 255.
           //
-          // Effect: pushes semi-transparent boundary pixels toward 0 (fully
-          // transparent) or 255 (fully opaque), eliminating the semi-transparent
-          // "gap/halo" between person and background that blur alone leaves.
+          // The remap below snaps high-confidence pixels to fully opaque
+          // and low-confidence to fully transparent, with a smooth linear
+          // ramp across the 0.3–0.7 feather band:
+          //   raw ≥ 178 (≥0.70 conf)  →  255  (solid body, no see-through)
+          //   raw ≤  76 (≤0.30 conf)  →    0  (clean background)
+          //   76 < raw < 178          →  linear 0..255 (anti-aliased edge)
+          //
+          // The ramp keeps the same ~3-px feather width the bilinear upscale
+          // produces, so the edge stays smooth — we only remove translucency
+          // in the body interior.
           const midW = maskSoftMid.width;
           const midH = maskSoftMid.height;
           const midData = maskSoftMidCtx.getImageData(0, 0, midW, midH);
           const md = midData.data;
           for (let i = 3; i < md.length; i += 4) {
-            const raw = md[i]; // alpha channel carries the mask value
-            // contrast(200%): (x − 0.5) × 2.0 + 0.5, clamped to [0, 255]
-            const contrasted = Math.max(
-              0,
-              Math.min(
-                255,
-                ((raw / 255 - 0.5) * (MASK_SHARPEN_CONTRAST / 100) + 0.5) * 255
-              )
-            );
-            // brightness(0.97): slightly contracts the mask inward
-            const finalVal = Math.round(
-              Math.max(0, Math.min(255, contrasted * MASK_CONTRACT_BRIGHTNESS))
-            );
-            md[i - 3] = md[i - 2] = md[i - 1] = md[i] = finalVal;
+            const raw = md[i];
+            let val: number;
+            if (raw >= MASK_BODY_THRESHOLD) {
+              val = 255;
+            } else if (raw <= MASK_BG_THRESHOLD) {
+              val = 0;
+            } else {
+              val = Math.round(
+                ((raw - MASK_BG_THRESHOLD) * 255) / MASK_FEATHER_RANGE
+              );
+            }
+            md[i - 3] = md[i - 2] = md[i - 1] = md[i] = val;
           }
           maskSoftMidCtx.putImageData(midData, 0, 0);
 

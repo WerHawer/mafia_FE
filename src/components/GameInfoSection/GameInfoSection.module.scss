@@ -3,6 +3,7 @@
 .container {
   @include mixins.flexCenter;
   height: 100%;
+  position: relative;
 }
 
 .fakeCard {

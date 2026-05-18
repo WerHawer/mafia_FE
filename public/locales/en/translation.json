@@ -119,6 +119,8 @@
     "wakeUp": "Wake up:",
     "sleepAll": "All sleep",
     "inProgress": "Game in progress",
+    "copyLink": "Copy game link",
+    "linkCopied": "Link copied!",
     "nightMode": {
       "title": "Night Time",
       "playerSubtitle": "The city sleeps, but evil is awake...",

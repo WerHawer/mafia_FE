@@ -1,0 +1,33 @@
+@use "../../styles/theme.scss" as theme;
+
+.copyButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: theme.$color-light-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.3rem;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: theme.$color-light-primary;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  &.copied {
+    color: theme.$color-success;
+    border-color: rgba(46, 160, 67, 0.4);
+  }
+}
