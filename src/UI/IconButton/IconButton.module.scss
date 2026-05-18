@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "../../styles/theme.scss" as theme;
 @use "../../styles/mixins.scss" as mixins;
 
@@ -73,8 +74,8 @@
     }
 
     &:hover:not(:disabled) {
-      background-color: darken(theme.$color-accent-primary, 10%);
-      border-color: darken(theme.$color-accent-primary, 10%);
+      background-color: color.adjust(theme.$color-accent-primary, $lightness: -10%);
+      border-color: color.adjust(theme.$color-accent-primary, $lightness: -10%);
     }
   }
 

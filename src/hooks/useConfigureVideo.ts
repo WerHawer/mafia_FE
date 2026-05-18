@@ -70,7 +70,9 @@ const supportsCanvasFilter = (() => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return false;
     ctx.filter = "blur(1px)";
-    return ctx.filter !== "" && ctx.filter !== "none";
+    const value = ctx.filter;
+    // Older Safari / WebViews: undefined or reset to "none"/"" → unsupported.
+    return typeof value === "string" && value !== "" && value !== "none";
   } catch {
     return false;
   }
@@ -164,6 +166,10 @@ export const useConfigureVideo = (
     const maskRgba = new Uint8ClampedArray(SEGMENTATION_WIDTH * SEGMENTATION_HEIGHT * 4);
     for (let i = 3; i < maskRgba.length; i += 4) maskRgba[i] = 255;
 
+    // Pre-allocated ImageData wrapper — avoids one allocation per frame.
+    // The wrapper aliases `maskRgba`, so mutations to the array propagate.
+    const maskImageData = new ImageData(maskRgba, SEGMENTATION_WIDTH, SEGMENTATION_HEIGHT);
+
     // Pre-allocated Float32 buffer for mask data copied from the WASM heap.
     // Without this, `new Float32Array(getAsFloat32Array())` allocates 144 KB
     // on every frame — at 24 fps that is ~3.4 MB/s of garbage for the GC,
@@ -184,6 +190,19 @@ export const useConfigureVideo = (
     maskBlurCanvas.height = MASK_BLUR_H;
     const maskBlurCtx = maskBlurCanvas.getContext("2d");
 
+    // ── Isolated mask-filter canvas (cross-browser safety) ────────────────────
+    //
+    // Even when ctx.filter is supported, Safari/WebKit shows rendering glitches
+    // when ctx.filter is combined with non-default globalCompositeOperation on
+    // the SAME context (the person disappears or the background isn't drawn).
+    // To avoid that interaction we apply MASK_FILTER on this dedicated context
+    // (composite always at default "source-over") and then blit the result onto
+    // compCanvas without any filter set there.
+    const maskFilteredCanvas = document.createElement("canvas");
+    maskFilteredCanvas.width  = SEGMENTATION_WIDTH;
+    maskFilteredCanvas.height = SEGMENTATION_HEIGHT;
+    const maskFilteredCtx = maskFilteredCanvas.getContext("2d");
+
     // ── Software background-blur fallback ─────────────────────────────────────
     //
     // Canvas filter "blur(20px)" fails on Safari. Drawing the video frame at
@@ -194,6 +213,17 @@ export const useConfigureVideo = (
     bgBlurCanvas.width  = Math.max(1, Math.round(canvasWidth  / 8));
     bgBlurCanvas.height = Math.max(1, Math.round(canvasHeight / 8));
     const bgBlurCtx = bgBlurCanvas.getContext("2d");
+
+    // ── Isolated bg-filter canvas (GPU blur path) ─────────────────────────────
+    //
+    // Same Safari rationale as maskFilteredCanvas: apply blur/brightness/saturate
+    // on a dedicated context (no composite changes here) so compCanvas can then
+    // do destination-over without any active filter.
+    // Resized lazily inside processFrame to match the live video dimensions.
+    const bgFilterCanvas = document.createElement("canvas");
+    bgFilterCanvas.width  = canvasWidth;
+    bgFilterCanvas.height = canvasHeight;
+    let bgFilterCtx = bgFilterCanvas.getContext("2d");
 
     // All mask/person/background layering happens in normal (non-mirrored) space.
     // The result is blitted to mainCanvas with a horizontal mirror at the end.
@@ -228,19 +258,20 @@ export const useConfigureVideo = (
         if (!mainCtx) mainCtx = mainCanvas.getContext("2d");
 
         if (mainCtx && !video.paused && video.readyState >= 2) {
+          // Always draw the mirrored raw video regardless of the chosen effect.
+          // If the segmenter is still loading (3–8 s) or has permanently failed
+          // (Safari with no GPU/CPU delegate available), we still need to push
+          // visible frames into the captureStream so peers see us at all.
           mainCtx.clearRect(0, 0, vw, vh);
+          mainCtx.save();
+          mainCtx.translate(vw, 0);
+          mainCtx.scale(-1, 1);
+          mainCtx.drawImage(video, 0, 0, vw, vh);
+          mainCtx.restore();
 
-          if (bgEffectsRef.current === bgEffects.none) {
-            mainCtx.save();
-            mainCtx.translate(vw, 0);
-            mainCtx.scale(-1, 1);
-            mainCtx.drawImage(video, 0, 0, vw, vh);
-            mainCtx.restore();
-
-            if (!isBackgroundReadyRef.current) {
-              isBackgroundReadyRef.current = true;
-              setIsBackgroundReady(true);
-            }
+          if (!isBackgroundReadyRef.current) {
+            isBackgroundReadyRef.current = true;
+            setIsBackgroundReady(true);
           }
         }
       }
@@ -293,7 +324,7 @@ export const useConfigureVideo = (
       }
 
       // ── Segmentation ──────────────────────────────────────────────────────
-      segInputCtx.clearRect(0, 0, SEGMENTATION_WIDTH, SEGMENTATION_HEIGHT);
+      // No clearRect: drawImage at full canvas size overwrites every pixel.
       segInputCtx.drawImage(video, 0, 0, SEGMENTATION_WIDTH, SEGMENTATION_HEIGHT);
 
       let result;
@@ -370,13 +401,9 @@ export const useConfigureVideo = (
         maskRgba[base] = maskRgba[base + 1] = maskRgba[base + 2] = maskRgba[base + 3] = val;
       }
 
-      maskCtx.putImageData(
-        new ImageData(maskRgba, SEGMENTATION_WIDTH, SEGMENTATION_HEIGHT),
-        0,
-        0
-      );
+      maskCtx.putImageData(maskImageData, 0, 0);
 
-      // ── Software mask blur (Safari fallback) ──────────────────────────────
+      // ── Software mask blur (no-filter fallback) ───────────────────────────
       //
       // Replaces the blur(5px) component of MASK_FILTER.
       // Downscale maskCanvas to MASK_BLUR_W×MASK_BLUR_H, then upscale back to
@@ -389,7 +416,49 @@ export const useConfigureVideo = (
         maskCtx.drawImage(maskBlurCanvas, 0, 0, SEGMENTATION_WIDTH, SEGMENTATION_HEIGHT);
       }
 
+      // ── Pre-filter the mask on an isolated context ────────────────────────
+      //
+      // Safari/WebKit produces broken output when ctx.filter is combined with
+      // a non-default globalCompositeOperation on the SAME context. To stay
+      // safe across browsers we apply MASK_FILTER on a dedicated canvas whose
+      // composite operation never changes from the default, then use it as a
+      // plain image source on compCanvas below.
+      let maskSource: HTMLCanvasElement = maskCanvas;
+
+      if (supportsCanvasFilter && maskFilteredCtx) {
+        maskFilteredCtx.clearRect(0, 0, SEGMENTATION_WIDTH, SEGMENTATION_HEIGHT);
+        maskFilteredCtx.filter = MASK_FILTER;
+        maskFilteredCtx.drawImage(maskCanvas, 0, 0);
+        maskFilteredCtx.filter = "none";
+        maskSource = maskFilteredCanvas;
+      }
+
+      // ── Pre-render the blurred background on its own context (GPU path) ──
+      //
+      // Same Safari rationale as above: keep filter and composite on different
+      // contexts. Software path keeps using bgBlurCanvas's downscale trick.
+      if (bgEffectsRef.current === bgEffects.blur && supportsCanvasFilter && bgFilterCtx) {
+        if (bgFilterCanvas.width !== vw || bgFilterCanvas.height !== vh) {
+          bgFilterCanvas.width  = vw;
+          bgFilterCanvas.height = vh;
+          bgFilterCtx = bgFilterCanvas.getContext("2d");
+        }
+
+        if (bgFilterCtx) {
+          bgFilterCtx.filter = "blur(20px) brightness(0.97) saturate(1.1)";
+          bgFilterCtx.drawImage(video, 0, 0, vw, vh);
+          bgFilterCtx.filter = "none";
+        }
+      } else if (bgEffectsRef.current === bgEffects.blur && bgBlurCtx) {
+        // No-filter path: redraw the downscaled frame so the next compCanvas
+        // step reads fresh pixels (canvas is otherwise stale across frames).
+        bgBlurCtx.drawImage(video, 0, 0, bgBlurCanvas.width, bgBlurCanvas.height);
+      }
+
       // ── Compositing on compCanvas (normal / non-mirrored space) ──────────
+      //
+      // compCanvas never has a non-"none" ctx.filter while a custom composite
+      // operation is active — this is the invariant that keeps Safari happy.
 
       if (compCanvas.width !== vw || compCanvas.height !== vh) {
         compCanvas.width  = vw;
@@ -402,41 +471,30 @@ export const useConfigureVideo = (
       const img = imgRef.current;
 
       compCtx.clearRect(0, 0, vw, vh);
+      compCtx.filter = "none";
 
-      // Step 1: Draw feathered mask, scaled from segmentation → full video resolution.
-      // CSS filter path: GPU handles contrast + brightness + blur in one pass.
-      // Software path: values already baked into maskRgba; blur applied via downscale.
-      compCtx.filter = supportsCanvasFilter ? MASK_FILTER : "none";
-      compCtx.drawImage(maskCanvas, 0, 0, vw, vh);
+      // Step 1: Draw the (already-filtered) feathered mask, scaled to video res.
+      compCtx.drawImage(maskSource, 0, 0, vw, vh);
 
       // Step 2: Cut out person using the mask as an alpha channel
       compCtx.globalCompositeOperation = "source-in";
-      compCtx.filter = "none";
       compCtx.drawImage(video, 0, 0, vw, vh);
 
       if (bgEffectsRef.current === bgEffects.blur) {
-        // Step 3a: Blurred background video
+        // Step 3a: Blurred background video (already pre-rendered above)
         compCtx.globalCompositeOperation = "destination-over";
 
         if (supportsCanvasFilter) {
-          // Chrome / Firefox: native GPU filter
-          compCtx.filter = "blur(20px) brightness(0.97) saturate(1.1)";
-          compCtx.drawImage(video, 0, 0, vw, vh);
+          compCtx.drawImage(bgFilterCanvas, 0, 0, vw, vh);
         } else if (bgBlurCtx) {
-          // Safari fallback: draw at 1/8 resolution, stretch back.
-          // Bilinear upscale creates a soft, naturally blurred look.
-          compCtx.filter = "none";
-          bgBlurCtx.drawImage(video, 0, 0, bgBlurCanvas.width, bgBlurCanvas.height);
           compCtx.drawImage(bgBlurCanvas, 0, 0, vw, vh);
         } else {
-          compCtx.filter = "none";
           compCtx.drawImage(video, 0, 0, vw, vh);
         }
 
         // Subtle vignette on the mirrored right edge (drawn in unmirrored space
         // so the fillRect intentionally targets negative x coordinates)
         compCtx.globalCompositeOperation = "source-over";
-        compCtx.filter = "none";
         const gradient = compCtx.createRadialGradient(
           -vw / 2, vh / 2, vh * 0.3,
           -vw / 2, vh / 2, vh * 0.8
@@ -463,29 +521,18 @@ export const useConfigureVideo = (
           }
 
           compCtx.globalCompositeOperation = "destination-over";
-          compCtx.filter = "none";
           compCtx.drawImage(img, dx, dy, dw, dh);
         }
 
       } else {
-        // Step 3c: Raw video as background
+        // Step 3c: Raw video as background (no enhancement — keeps compCtx
+        // composite-only, avoiding the Safari filter+composite interaction).
         compCtx.globalCompositeOperation = "destination-over";
-        compCtx.filter = "none";
         compCtx.drawImage(video, 0, 0, vw, vh);
-
-        // Subtle enhancement pass — cosmetic only, skipped when filter unavailable
-        if (supportsCanvasFilter) {
-          compCtx.globalCompositeOperation = "source-over";
-          compCtx.filter = "contrast(1.05) brightness(1.02)";
-          compCtx.globalAlpha = 0.2;
-          compCtx.drawImage(video, 0, 0, vw, vh);
-          compCtx.globalAlpha = 1.0;
-        }
       }
 
       // Reset compositing state
       compCtx.globalCompositeOperation = "source-over";
-      compCtx.filter = "none";
 
       // ── Blit compCanvas → mainCanvas with horizontal mirror ───────────────
       //
@@ -663,6 +710,28 @@ export const useConfigureVideo = (
       stopInterval();
       document.removeEventListener("visibilitychange", onVisibilityChange);
       imageSegmenter?.close();
+      imageSegmenter = null;
+
+      // Release the MediaStream reference so the camera track can be GC'd
+      // when the parent unmounts or switches streams (e.g. quality change).
+      // Without this Safari keeps the previous capture alive for a few seconds.
+      try {
+        video.pause();
+      } catch {
+        // ignore — video may already be detached
+      }
+      video.srcObject = null;
+
+      // Shrink offscreen canvases to free GPU-backed buffers eagerly.
+      // Some browsers (Safari/iOS especially) hold canvas memory until GC,
+      // which can balloon when the user toggles streams repeatedly.
+      segInputCanvas.width = segInputCanvas.height = 0;
+      maskCanvas.width = maskCanvas.height = 0;
+      maskBlurCanvas.width = maskBlurCanvas.height = 0;
+      maskFilteredCanvas.width = maskFilteredCanvas.height = 0;
+      bgBlurCanvas.width = bgBlurCanvas.height = 0;
+      bgFilterCanvas.width = bgFilterCanvas.height = 0;
+      compCanvas.width = compCanvas.height = 0;
     };
   }, [myOriginalStream]);
 

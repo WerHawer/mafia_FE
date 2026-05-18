@@ -74,15 +74,9 @@ export const usePublishVideoTrack = (qualitySettings?: QualitySettings) => {
         const fps = qualitySettings?.fps ?? DEFAULT_ENCODING.fps;
         const maxBitrate = qualitySettings?.maxBitrate ?? DEFAULT_ENCODING.maxBitrate;
 
-        const videoStream = canvasElement.captureStream(fps);
-        const [canvasVideoTrack] = videoStream.getVideoTracks();
-
-        if (!canvasVideoTrack) {
-          return;
-        }
-
-        localVideoTrack = new LocalVideoTrack(canvasVideoTrack);
-
+        // Check for an existing publication BEFORE allocating a new
+        // captureStream — calling captureStream() creates a fresh
+        // MediaStreamTrack that we'd otherwise leak on the early return below.
         const existingVideoTracks = Array.from(
           room.localParticipant.trackPublications.values()
         ).filter(
@@ -98,6 +92,15 @@ export const usePublishVideoTrack = (qualitySettings?: QualitySettings) => {
           // Unpublishing and republishing here causes severe video dropouts for peers.
           return;
         }
+
+        const videoStream = canvasElement.captureStream(fps);
+        const [canvasVideoTrack] = videoStream.getVideoTracks();
+
+        if (!canvasVideoTrack) {
+          return;
+        }
+
+        localVideoTrack = new LocalVideoTrack(canvasVideoTrack);
 
         // If forcing (e.g. after reconnect), unpublish stale tracks first
         if (force && existingVideoTracks.length > 0) {
