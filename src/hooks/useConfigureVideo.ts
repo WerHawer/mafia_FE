@@ -623,7 +623,8 @@ export const useConfigureVideo = (
         }
 
         if (maskUpCtx) {
-          // Step 1: 256×144 → vw×vh  (initial bilinear upscale)
+          // Step 1: 256×144 → vw×vh  (initial bilinear upscale — preserves edge
+          // positions in destination pixel space before any blurring)
           maskUpCtx.clearRect(0, 0, vw, vh);
           maskUpCtx.drawImage(maskCanvas, 0, 0, vw, vh);
 
@@ -652,7 +653,39 @@ export const useConfigureVideo = (
             maskSoftMid.height
           );
 
-          // Step 4: vw/4×vh/4 → vw×vh  (4× upscale = ~8px Gaussian-like blur)
+          // Step 4: contrast(200%) + brightness(0.97) at vw/4 resolution.
+          //
+          // Mirrors the GPU path's CSS MASK_FILTER applied at dest resolution.
+          // Running it at vw/4 instead of full size costs ~16× fewer pixels
+          // (~26 K vs ~410 K at 854×480) while giving the same visual result
+          // after the final 4× upscale below.
+          //
+          // Effect: pushes semi-transparent boundary pixels toward 0 (fully
+          // transparent) or 255 (fully opaque), eliminating the semi-transparent
+          // "gap/halo" between person and background that blur alone leaves.
+          const midW = maskSoftMid.width;
+          const midH = maskSoftMid.height;
+          const midData = maskSoftMidCtx.getImageData(0, 0, midW, midH);
+          const md = midData.data;
+          for (let i = 3; i < md.length; i += 4) {
+            const raw = md[i]; // alpha channel carries the mask value
+            // contrast(200%): (x − 0.5) × 2.0 + 0.5, clamped to [0, 255]
+            const contrasted = Math.max(
+              0,
+              Math.min(
+                255,
+                ((raw / 255 - 0.5) * (MASK_SHARPEN_CONTRAST / 100) + 0.5) * 255
+              )
+            );
+            // brightness(0.97): slightly contracts the mask inward
+            const finalVal = Math.round(
+              Math.max(0, Math.min(255, contrasted * MASK_CONTRACT_BRIGHTNESS))
+            );
+            md[i - 3] = md[i - 2] = md[i - 1] = md[i] = finalVal;
+          }
+          maskSoftMidCtx.putImageData(midData, 0, 0);
+
+          // Step 5: vw/4×vh/4 → vw×vh  (4× bilinear upscale = smooth final edge)
           maskUpCtx.clearRect(0, 0, vw, vh);
           maskUpCtx.drawImage(maskSoftMid, 0, 0, vw, vh);
 
