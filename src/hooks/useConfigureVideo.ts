@@ -84,6 +84,29 @@ const supportsCanvasFilter = (() => {
   }
 })();
 
+// ─── Safari / WebKit runtime detection ──────────────────────────────────────
+//
+// MediaPipe's WebGL (GPU) delegate has known issues on WebKit-based browsers:
+// the segmentation post-processor logs "NONE activation function chosen on
+// GPU" and frequently returns a degenerate confidence mask (all 1.0), which
+// renders as "person covers everything → background invisible".
+//
+// We force the CPU delegate on Safari and skip GPU entirely. CPU runs through
+// WASM and is reliable across all platforms. Chrome / Firefox / Edge keep the
+// "GPU first, CPU fallback" order for best performance.
+const isSafari = (() => {
+  try {
+    const ua = navigator.userAgent;
+    // Excludes Chrome on iOS (CriOS), Firefox on iOS (FxiOS), Edge / Opera
+    // forks, and Android (whose browsers may also include "Safari" in the UA).
+    return /AppleWebKit/i.test(ua)
+      && /Safari/i.test(ua)
+      && !/Chrome|Chromium|CriOS|FxiOS|EdgiOS|Edg\/|OPR\/|Android/i.test(ua);
+  } catch {
+    return false;
+  }
+})();
+
 export const useConfigureVideo = (
   videoSettings: UserVideoSettings,
   myOriginalStream: MediaStream | null,
@@ -110,6 +133,8 @@ export const useConfigureVideo = (
   const bgEffectsRef = useRef<BackgroundEffects>(bgFirstEffect);
   const isFirstRender = useRef(true);
   const lastFrameTimeRef = useRef<number>(0);
+  // Guards the one-shot mask diagnostic so it only fires once per stream lifecycle.
+  const diagLoggedRef = useRef(false);
   const withoutEffects = !imageURL && !withBlur;
   const [isBackgroundReady, setIsBackgroundReady] = useState(withoutEffects);
   const isBackgroundReadyRef = useRef(withoutEffects);
@@ -136,6 +161,10 @@ export const useConfigureVideo = (
       isBackgroundReadyRef.current = false;
       return;
     }
+
+    // Re-arm the one-shot diagnostic for each new stream so we get a fresh
+    // mask sample (helps when the user changes camera / quality).
+    diagLoggedRef.current = false;
 
     const video = videoRef.current;
     if (!video) return;
@@ -409,12 +438,38 @@ export const useConfigureVideo = (
       if (!float32) return;
 
       // Detect normalization: some model versions return [0,1], others [0,255]
+      // Sample across the full mask (not just the first 100 px which may all
+      // be background) to catch logits-style outputs reliably.
       let isNormalized = true;
-      for (let i = 0; i < 100 && i < float32.length; i += 10) {
+      const sampleStride = Math.max(1, Math.floor(float32.length / 200));
+      for (let i = 0; i < float32.length; i += sampleStride) {
         if (float32[i] > 1.0) {
           isNormalized = false;
           break;
         }
+      }
+
+      // ── One-shot diagnostic ────────────────────────────────────────────────
+      // Logs once after the first successful segmentation so we can verify
+      // remotely that the mask actually contains a person vs. is degenerate
+      // (e.g. uniformly 1.0, which renders as "person covers everything").
+      if (!diagLoggedRef.current) {
+        diagLoggedRef.current = true;
+        let lo = Infinity;
+        let hi = -Infinity;
+        let mid = 0;
+        const probeStride = Math.max(1, Math.floor(float32.length / 500));
+        for (let i = 0; i < float32.length; i += probeStride) {
+          const v = float32[i];
+          if (v < lo) lo = v;
+          if (v > hi) hi = v;
+          if (v > 0.4 && v < 0.6) mid++;
+        }
+        console.log(
+          `[useConfigureVideo] mask diag — min=${lo.toFixed(3)} max=${hi.toFixed(3)} ` +
+          `midband=${mid} normalized=${isNormalized} bg=${bgEffectsRef.current} ` +
+          `vw=${vw} vh=${vh} isSafari=${isSafari}`
+        );
       }
 
       // ── Build RGBA mask buffer ────────────────────────────────────────────
@@ -540,12 +595,20 @@ export const useConfigureVideo = (
       // ── Cut out the person on a dedicated canvas ─────────────────────────
       //
       // [Task 1 — Safari "no background" fix]
-      // personCanvas performs the only `source-in` operation in the pipeline.
-      // The previous version chained `source-in` and `destination-over` on the
-      // same compCanvas, which Safari/WebKit renders inconsistently — the bg
-      // either fails to appear at all (blur and image modes alike) or wipes
-      // the person out. By splitting them across two canvases each context
-      // sees AT MOST one custom globalCompositeOperation per frame.
+      // personCanvas performs the only custom composite operation in the
+      // pipeline. The previous version chained `source-in` and
+      // `destination-over` on the same compCanvas, which Safari/WebKit renders
+      // inconsistently — the bg either fails to appear at all (blur and image
+      // modes alike) or wipes the person out. By splitting them across two
+      // canvases each context sees AT MOST one custom
+      // globalCompositeOperation per frame.
+      //
+      // We use `destination-in` (draw the video first, then keep only the
+      // pixels where the mask has alpha) rather than the logically-equivalent
+      // `source-in` (draw mask first, then video). They produce the same
+      // result, but multiple public WebKit bugs trace back to source-in
+      // misbehaving with non-square sources; destination-in is more reliable
+      // in practice.
 
       if (personCanvas.width !== vw || personCanvas.height !== vh) {
         personCanvas.width = vw;
@@ -557,6 +620,8 @@ export const useConfigureVideo = (
 
       personCtx.globalCompositeOperation = "source-over";
       personCtx.clearRect(0, 0, vw, vh);
+      personCtx.drawImage(video, 0, 0, vw, vh);
+      personCtx.globalCompositeOperation = "destination-in";
       personCtx.drawImage(
         maskSource,
         0,
@@ -568,8 +633,6 @@ export const useConfigureVideo = (
         vw,
         vh
       );
-      personCtx.globalCompositeOperation = "source-in";
-      personCtx.drawImage(video, 0, 0, vw, vh);
       personCtx.globalCompositeOperation = "source-over"; // reset for next frame
 
       // ── Layer compositing on compCanvas (default "source-over" only) ─────
@@ -772,7 +835,11 @@ export const useConfigureVideo = (
       // ── Step 2: Create ImageSegmenter — GPU first, CPU fallback ──────────
       //
       // GPU delegate (WebGL) is significantly faster but fails on:
-      //   • Safari iOS — restricted WebGL2 + no WASM SIMD in older versions
+      //   • Safari / WebKit — `createFromOptions` reports "ready" but the
+      //     post-processor (segmentation_postprocessor_gl.cc) frequently
+      //     returns a degenerate confidence mask. The end result is that the
+      //     mask is effectively "everything is person" and the background
+      //     never appears. Skip GPU on Safari entirely.
       //   • Android WebViews — often lack full WebGL support
       //   • Low-end hardware — GPU context creation may be refused
       //
@@ -780,7 +847,9 @@ export const useConfigureVideo = (
       // We request confidenceMasks only (outputCategoryMask: false) since the
       // pixel loop prefers the float confidence values; this halves the output
       // buffer size and reduces memory pressure on mobile.
-      const delegates = ["GPU", "CPU"] as const;
+      const delegates: ReadonlyArray<"GPU" | "CPU"> = isSafari
+        ? ["CPU"]
+        : ["GPU", "CPU"];
       let initialized = false;
 
       for (const delegate of delegates) {
