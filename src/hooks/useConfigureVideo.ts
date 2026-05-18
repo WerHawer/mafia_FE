@@ -48,6 +48,21 @@ const MASK_FEATHER_RANGE = MASK_BODY_THRESHOLD - MASK_BG_THRESHOLD;
 const MASK_BLUR_RADIUS_PX = 6;
 const MASK_GPU_BLUR_PX = 6;
 
+// CSS filter applied only to the person blit on the composite canvas.
+// Operates on the person draw alone (the background was drawn in a prior
+// step with no filter) — gives the silhouette a slight "pop" against
+// image backgrounds without touching the background colours.
+//
+// All running on the GPU during the drawImage step → zero JS cost.
+// Silently ignored on browsers without supportsCanvasFilter (older Safari);
+// person just renders flat there, no error.
+//
+// Tune to taste:
+//   contrast(N%)  — 100% = unchanged. >100% boosts midtone separation.
+//   saturate(N%)  — 100% = unchanged. >100% punches up colour intensity.
+//   brightness(N%) — 100% = unchanged. Slight lift can help dim cameras.
+const PERSON_FILTER = "contrast(112%) saturate(110%) brightness(102%)";
+
 // 256-entry lookup table for the threshold remap. Built once at module
 // load — replaces per-pixel branches + a division in the hot loop with a
 // single array read. Saves ~0.3 ms per frame at 854×480 and keeps the
@@ -941,7 +956,15 @@ export const useConfigureVideo = (
       }
 
       // Step 2: Person on top
+      //
+      // Apply PERSON_FILTER (contrast / saturate / brightness) at this single
+      // drawImage step so the person silhouette gets a subtle "pop" while the
+      // background drawn above stays untouched. The filter runs on the GPU
+      // during the blit — zero JS cost. Reset to "none" right after so any
+      // later draws on compCtx (none today, but defensive) aren't affected.
+      compCtx.filter = PERSON_FILTER;
       compCtx.drawImage(personCanvas, 0, 0);
+      compCtx.filter = "none";
 
       // ── Blit compCanvas → mainCanvas with horizontal mirror ───────────────
       //
