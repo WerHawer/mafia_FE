@@ -251,26 +251,34 @@ export const useConfigureVideo = (
     // edges: the model's near-binary confidence values create ~3px hard steps
     // that follow the 256×144 grid (visually: blocky staircase at full size).
     //
-    // Instead we do a 3-step pass, all in destination pixel space:
-    //   1. maskCanvas (256×144) → maskUpCanvas (vw×vh)   — initial upscale
-    //   2. maskUpCanvas (vw×vh) → maskSoftSmall (vw/4 × vh/4)  — downscale
-    //   3. maskSoftSmall → maskUpCanvas (vw×vh)           — upscale = ~4px blur
+    // We use a 4-step multi-pass in destination pixel space:
+    //   1. maskCanvas (256×144) → maskUpCanvas (vw×vh)       — initial upscale
+    //   2. maskUpCanvas (vw×vh) → maskSoftSmall (vw/8×vh/8)  — 8× downscale
+    //   3. maskSoftSmall        → maskSoftMid   (vw/4×vh/4)  — 2× upscale
+    //   4. maskSoftMid          → maskUpCanvas  (vw×vh)      — 4× upscale
     //
-    // Step 3 approximates a Gaussian blur of radius ≈ 4px in destination space,
-    // matching the GPU path's blur(3px) → contrast(200%) result without any
-    // pixel-loop overhead.
+    // Two gentle 2-4× upscale passes give a smooth Gaussian-like blur of ~8 px
+    // in destination space — softer than a single harsh 8× stretch which would
+    // itself produce visible blocks in the blur kernel.
     const maskUpCanvas = document.createElement("canvas");
     maskUpCanvas.width = canvasWidth;
     maskUpCanvas.height = canvasHeight;
     let maskUpCtx = maskUpCanvas.getContext("2d");
     enableSmoothing(maskUpCtx);
 
-    // Intermediate tiny canvas for the dest-space blur pass (~vw/4 × vh/4).
+    // Smallest intermediate (1/8): captures the blurred content cheaply.
     const maskSoftSmall = document.createElement("canvas");
-    maskSoftSmall.width = Math.max(1, Math.round(canvasWidth / 4));
-    maskSoftSmall.height = Math.max(1, Math.round(canvasHeight / 4));
+    maskSoftSmall.width = Math.max(1, Math.round(canvasWidth / 8));
+    maskSoftSmall.height = Math.max(1, Math.round(canvasHeight / 8));
     const maskSoftSmallCtx = maskSoftSmall.getContext("2d");
     enableSmoothing(maskSoftSmallCtx);
+
+    // Mid intermediate (1/4): smooth 2× step between 1/8 and full.
+    const maskSoftMid = document.createElement("canvas");
+    maskSoftMid.width = Math.max(1, Math.round(canvasWidth / 4));
+    maskSoftMid.height = Math.max(1, Math.round(canvasHeight / 4));
+    const maskSoftMidCtx = maskSoftMid.getContext("2d");
+    enableSmoothing(maskSoftMidCtx);
 
     // ── Isolated mask-filter canvas (cross-browser safety) ────────────────────
     //
@@ -605,7 +613,7 @@ export const useConfigureVideo = (
           maskSourceW = vw;
           maskSourceH = vh;
         }
-      } else if (!supportsCanvasFilter && maskSoftSmallCtx) {
+      } else if (!supportsCanvasFilter && maskSoftSmallCtx && maskSoftMidCtx) {
         // Resize maskUpCanvas lazily to match live video dimensions.
         if (maskUpCanvas.width !== vw || maskUpCanvas.height !== vh) {
           maskUpCanvas.width = vw;
@@ -619,7 +627,7 @@ export const useConfigureVideo = (
           maskUpCtx.clearRect(0, 0, vw, vh);
           maskUpCtx.drawImage(maskCanvas, 0, 0, vw, vh);
 
-          // Step 2: vw×vh → vw/4×vh/4  (downscale — captures the blurred content)
+          // Step 2: vw×vh → vw/8×vh/8  (8× downscale)
           maskSoftSmallCtx.clearRect(
             0,
             0,
@@ -634,9 +642,19 @@ export const useConfigureVideo = (
             maskSoftSmall.height
           );
 
-          // Step 3: vw/4×vh/4 → vw×vh  (upscale = ~4 px Gaussian blur in dest space)
+          // Step 3: vw/8×vh/8 → vw/4×vh/4  (2× smooth upscale)
+          maskSoftMidCtx.clearRect(0, 0, maskSoftMid.width, maskSoftMid.height);
+          maskSoftMidCtx.drawImage(
+            maskSoftSmall,
+            0,
+            0,
+            maskSoftMid.width,
+            maskSoftMid.height
+          );
+
+          // Step 4: vw/4×vh/4 → vw×vh  (4× upscale = ~8px Gaussian-like blur)
           maskUpCtx.clearRect(0, 0, vw, vh);
-          maskUpCtx.drawImage(maskSoftSmall, 0, 0, vw, vh);
+          maskUpCtx.drawImage(maskSoftMid, 0, 0, vw, vh);
 
           maskSource = maskUpCanvas;
           maskSourceW = vw;
@@ -1040,6 +1058,7 @@ export const useConfigureVideo = (
       maskCanvas.width = maskCanvas.height = 0;
       maskUpCanvas.width = maskUpCanvas.height = 0;
       maskSoftSmall.width = maskSoftSmall.height = 0;
+      maskSoftMid.width = maskSoftMid.height = 0;
       maskFilteredCanvas.width = maskFilteredCanvas.height = 0;
       bgBlurCanvas.width = bgBlurCanvas.height = 0;
       bgBlurCanvas2.width = bgBlurCanvas2.height = 0;
