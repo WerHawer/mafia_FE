@@ -35,20 +35,7 @@ const MASK_CONTRACT_BRIGHTNESS = 0.97;
 // blur-first then contrast: feathers the edge, then contracts it inward — eliminates the bright halo
 const MASK_FILTER = `blur(${MASK_EDGE_FEATHER_PX}px) contrast(${MASK_SHARPEN_CONTRAST}%) brightness(${MASK_CONTRACT_BRIGHTNESS})`;
 
-/**
- * Downscale factor for the software mask-blur fallback.
- * Drawing maskCanvas at 1/MASK_BLUR_SCALE then upscaling back approximates
- * a ~5 px Gaussian via bilinear interpolation — no pixel-loop needed.
- */
-const MASK_BLUR_SCALE = 5;
-const MASK_BLUR_W = Math.max(
-  1,
-  Math.round(SEGMENTATION_WIDTH / MASK_BLUR_SCALE)
-);
-const MASK_BLUR_H = Math.max(
-  1,
-  Math.round(SEGMENTATION_HEIGHT / MASK_BLUR_SCALE)
-);
+
 
 const bgEffects = {
   blur: "blur",
@@ -258,20 +245,7 @@ export const useConfigureVideo = (
       SEGMENTATION_WIDTH * SEGMENTATION_HEIGHT
     );
 
-    // ── Software mask-blur fallback (Safari / old Android WebViews) ───────────
-    //
-    // When ctx.filter is unavailable we cannot apply MASK_FILTER in one call.
-    // Instead we:
-    //   1. Bake contrast + brightness directly into maskRgba during the pixel loop.
-    //   2. Put the processed pixels to maskCanvas.
-    //   3. Draw maskCanvas → maskBlurCanvas (1/6 size) → maskCanvas (full size).
-    //      Bilinear interpolation during the upscale acts as a cheap box-blur,
-    //      approximating the blur(5px) component without any pixel-loop overhead.
-    const maskBlurCanvas = document.createElement("canvas");
-    maskBlurCanvas.width = MASK_BLUR_W;
-    maskBlurCanvas.height = MASK_BLUR_H;
-    const maskBlurCtx = maskBlurCanvas.getContext("2d");
-    enableSmoothing(maskBlurCtx);
+
 
     // ── Isolated mask-filter canvas (cross-browser safety) ────────────────────
     //
@@ -309,15 +283,30 @@ export const useConfigureVideo = (
 
     // ── Software background-blur fallback ─────────────────────────────────────
     //
-    // Canvas filter "blur(20px)" fails on Safari. Drawing the video frame at
-    // 1/8 resolution and stretching it back to full size gives a naturally soft,
-    // pixelated look that's visually close enough and fully cross-browser.
+    // Canvas filter "blur(20px)" fails on Safari. Instead we use a multi-pass
+    // downscale→upscale chain: video → 1/8 → 1/4 → 1/2 → full.
+    // Each 2× bilinear upscale step blends neighbours, approximating a Gaussian.
+    // A single 8× stretch in one pass gives visible pixelated blocks; 3 passes
+    // of 2× each produces a smooth, film-like defocus instead.
     // Pre-allocated here to avoid per-frame canvas creation / GC pressure.
     const bgBlurCanvas = document.createElement("canvas");
     bgBlurCanvas.width = Math.max(1, Math.round(canvasWidth / 8));
     bgBlurCanvas.height = Math.max(1, Math.round(canvasHeight / 8));
     const bgBlurCtx = bgBlurCanvas.getContext("2d");
     enableSmoothing(bgBlurCtx);
+
+    // Intermediate upscale steps for the multi-pass software blur (1/4 and 1/2 size).
+    const bgBlurCanvas2 = document.createElement("canvas");
+    bgBlurCanvas2.width = Math.max(1, Math.round(canvasWidth / 4));
+    bgBlurCanvas2.height = Math.max(1, Math.round(canvasHeight / 4));
+    const bgBlurCtx2 = bgBlurCanvas2.getContext("2d");
+    enableSmoothing(bgBlurCtx2);
+
+    const bgBlurCanvas3 = document.createElement("canvas");
+    bgBlurCanvas3.width = Math.max(1, Math.round(canvasWidth / 2));
+    bgBlurCanvas3.height = Math.max(1, Math.round(canvasHeight / 2));
+    const bgBlurCtx3 = bgBlurCanvas3.getContext("2d");
+    enableSmoothing(bgBlurCtx3);
 
     // ── Isolated bg-filter canvas (GPU blur path) ─────────────────────────────
     //
@@ -559,25 +548,6 @@ export const useConfigureVideo = (
 
       maskCtx.putImageData(maskImageData, 0, 0);
 
-      // ── Software mask blur (no-filter fallback) ───────────────────────────
-      //
-      // Replaces the blur(5px) component of MASK_FILTER.
-      // Downscale maskCanvas to MASK_BLUR_W×MASK_BLUR_H, then upscale back to
-      // SEGMENTATION_WIDTH×SEGMENTATION_HEIGHT. Bilinear interpolation during
-      // the upscale spreads edge pixels, approximating Gaussian feathering.
-      if (!supportsCanvasFilter && maskBlurCtx) {
-        maskBlurCtx.clearRect(0, 0, MASK_BLUR_W, MASK_BLUR_H);
-        maskBlurCtx.drawImage(maskCanvas, 0, 0, MASK_BLUR_W, MASK_BLUR_H);
-        maskCtx.clearRect(0, 0, SEGMENTATION_WIDTH, SEGMENTATION_HEIGHT);
-        maskCtx.drawImage(
-          maskBlurCanvas,
-          0,
-          0,
-          SEGMENTATION_WIDTH,
-          SEGMENTATION_HEIGHT
-        );
-      }
-
       // ── Build the filtered mask at destination size ──────────────────────
       //
       // [Task 2 — "ghost" edge fix]
@@ -587,6 +557,12 @@ export const useConfigureVideo = (
       // result, the blur radius would be effectively multiplied by the scale
       // factor and bilinear up-scaling would soften the edge once more — that
       // combination is exactly what produced the translucent "ghost" silhouette.
+      //
+      // Software path: skip the maskBlur down/up step entirely. Bilinear upscale
+      // when drawing maskCanvas (256×144) → personCanvas (vw×vh) already provides
+      // ~3 px feathering in destination space — identical to the GPU blur(3px)
+      // result. Adding a second downscale→upscale in mask space doubled the
+      // feathering radius and caused the translucent "ghost head" artifact on Safari.
       let maskSource: HTMLCanvasElement = maskCanvas;
       let maskSourceW = SEGMENTATION_WIDTH;
       let maskSourceH = SEGMENTATION_HEIGHT;
@@ -616,7 +592,7 @@ export const useConfigureVideo = (
       // ── Pre-render the blurred background on its own context (GPU path) ──
       //
       // Same Safari rationale as above: keep filter and composite on different
-      // contexts. Software path keeps using bgBlurCanvas's downscale trick.
+      // contexts. Software path uses the multi-pass bgBlurCanvas chain below.
       if (
         bgEffectsRef.current === bgEffects.blur &&
         supportsCanvasFilter &&
@@ -635,8 +611,8 @@ export const useConfigureVideo = (
           bgFilterCtx.filter = "none";
         }
       } else if (bgEffectsRef.current === bgEffects.blur && bgBlurCtx) {
-        // No-filter path: redraw the downscaled frame so the next compCanvas
-        // step reads fresh pixels (canvas is otherwise stale across frames).
+        // No-filter path: multi-pass upscale for smooth blur.
+        // Step 1: downsample to 1/8 — captures blur content cheaply.
         bgBlurCtx.drawImage(
           video,
           0,
@@ -644,6 +620,28 @@ export const useConfigureVideo = (
           bgBlurCanvas.width,
           bgBlurCanvas.height
         );
+
+        // Step 2: 1/8 → 1/4 (2× bilinear stretch)
+        if (bgBlurCtx2) {
+          bgBlurCtx2.drawImage(
+            bgBlurCanvas,
+            0,
+            0,
+            bgBlurCanvas2.width,
+            bgBlurCanvas2.height
+          );
+        }
+
+        // Step 3: 1/4 → 1/2 (2× bilinear stretch)
+        if (bgBlurCtx3) {
+          bgBlurCtx3.drawImage(
+            bgBlurCanvas2,
+            0,
+            0,
+            bgBlurCanvas3.width,
+            bgBlurCanvas3.height
+          );
+        }
       }
 
       // ── Cut out the person on a dedicated canvas ─────────────────────────
@@ -715,8 +713,11 @@ export const useConfigureVideo = (
       if (bgEffectsRef.current === bgEffects.blur) {
         if (supportsCanvasFilter) {
           compCtx.drawImage(bgFilterCanvas, 0, 0, vw, vh);
-        } else if (bgBlurCtx) {
-          compCtx.drawImage(bgBlurCanvas, 0, 0, vw, vh);
+        } else if (bgBlurCtx3) {
+          // Final pass: 1/2 → full (2× bilinear stretch).
+          // Three 2× passes give a smooth Gaussian-like defocus instead of
+          // the blocky result from a single 8× stretch.
+          compCtx.drawImage(bgBlurCanvas3, 0, 0, vw, vh);
         } else {
           compCtx.drawImage(video, 0, 0, vw, vh);
         }
@@ -982,9 +983,10 @@ export const useConfigureVideo = (
       // which can balloon when the user toggles streams repeatedly.
       segInputCanvas.width = segInputCanvas.height = 0;
       maskCanvas.width = maskCanvas.height = 0;
-      maskBlurCanvas.width = maskBlurCanvas.height = 0;
       maskFilteredCanvas.width = maskFilteredCanvas.height = 0;
       bgBlurCanvas.width = bgBlurCanvas.height = 0;
+      bgBlurCanvas2.width = bgBlurCanvas2.height = 0;
+      bgBlurCanvas3.width = bgBlurCanvas3.height = 0;
       bgFilterCanvas.width = bgFilterCanvas.height = 0;
       personCanvas.width = personCanvas.height = 0;
       compCanvas.width = compCanvas.height = 0;
