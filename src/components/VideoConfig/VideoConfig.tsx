@@ -62,6 +62,8 @@ export const VideoConfig = observer(
       setWithBlur,
       videoSettings,
       applySettings,
+      canvasKey,
+      isBackgroundReady,
     } = useCustomVideo(originalStream, getSavedSettings(), quality?.settings);
 
     // Apply saved settings exactly once — when the stream first becomes available.
@@ -139,7 +141,7 @@ export const VideoConfig = observer(
         );
       }
 
-      if (!isStreamReady) {
+      if (!isStreamReady || !isBackgroundReady) {
         return (
           <div className={styles.streamStatus}>
             <div className={styles.spinner} />
@@ -172,7 +174,7 @@ export const VideoConfig = observer(
             {renderVideoArea()}
 
             <canvas
-              key={`${quality?.settings.width}x${quality?.settings.height}`}
+              key={`${quality?.settings.width}x${quality?.settings.height}-${canvasKey}`}
               ref={canvasRef}
               className={classNames(
                 styles.canvas,
