@@ -29,7 +29,7 @@ export const useCustomVideo = (
     imgRef,
     canvasRef,
     isBackgroundReady,
-  } = useConfigureVideo(videoSettings, originalStream);
+  } = useConfigureVideo(videoSettings, originalStream, qualitySettings);
 
   const applySettings = useCallback(
     (settings: UserVideoSettings) => {

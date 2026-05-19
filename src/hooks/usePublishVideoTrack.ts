@@ -84,7 +84,9 @@ export const usePublishVideoTrack = (qualitySettings?: QualitySettings) => {
             pub.kind === Track.Kind.Video && pub.source === Track.Source.Camera
         );
 
-        if (existingVideoTracks.length > 0 && !force) {
+        const isNewCanvas = lastPublishedCanvasRef.current !== canvasElement;
+
+        if (existingVideoTracks.length > 0 && !force && !isNewCanvas) {
           // A camera track is already published for this participant!
           // Since we are continuously drawing to the same `canvasElement` using
           // `requestAnimationFrame`, the original `MediaStreamTrack` we passed
@@ -102,8 +104,8 @@ export const usePublishVideoTrack = (qualitySettings?: QualitySettings) => {
 
         localVideoTrack = new LocalVideoTrack(canvasVideoTrack);
 
-        // If forcing (e.g. after reconnect), unpublish stale tracks first
-        if (force && existingVideoTracks.length > 0) {
+        // If forcing (e.g. after reconnect) or canvas changed, unpublish stale tracks first
+        if ((force || isNewCanvas) && existingVideoTracks.length > 0) {
           await Promise.all(
             existingVideoTracks.map(async (pub) => {
               if (pub.track) {

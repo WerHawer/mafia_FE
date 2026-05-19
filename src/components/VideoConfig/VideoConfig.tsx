@@ -172,6 +172,7 @@ export const VideoConfig = observer(
             {renderVideoArea()}
 
             <canvas
+              key={`${quality?.settings.width}x${quality?.settings.height}`}
               ref={canvasRef}
               className={classNames(
                 styles.canvas,

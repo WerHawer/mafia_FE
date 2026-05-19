@@ -24,78 +24,28 @@ const TASKS_VISION_WASM_CDN =
 const SELFIE_SEGMENTATION_MODEL_URL =
   "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter_landscape/float16/latest/selfie_segmenter_landscape.tflite";
 
-// ─── Mask post-processing constants ─────────────────────────────────────────
-//
-// Both render paths (GPU CSS-filter on Chrome, software pixel-loop on Safari)
-// blur the raw segmentation mask, then run the SAME piecewise threshold remap
-// via `applyMaskThreshold` below. This guarantees identical body-opacity and
-// edge-softness behaviour across browsers.
-//
-// Threshold band:
-//   alpha ≥ MASK_BODY_THRESHOLD → 255 (fully opaque body, no see-through)
-//   alpha ≤ MASK_BG_THRESHOLD   →   0 (fully transparent background)
-//   between                      → linear ramp (anti-aliased feather)
+/**
+ * CSS filter applied to the segmentation mask before alpha compositing.
+ * Only used when supportsCanvasFilter === true (Chrome, Firefox, modern Edge).
+ * Safari fallback uses the software pipeline below.
+ */
+const MASK_EDGE_FEATHER_PX = 5;
+const MASK_SHARPEN_CONTRAST = 220; // percent, for CSS string
+const MASK_CONTRACT_BRIGHTNESS = 1.1;
+// blur-first then contrast: feathers the edge, then contracts it inward — eliminates the bright halo
+const MASK_FILTER = `blur(${MASK_EDGE_FEATHER_PX}px) contrast(${MASK_SHARPEN_CONTRAST}%) brightness(${MASK_CONTRACT_BRIGHTNESS})`;
+
+// Software-path threshold remap (Safari, no ctx.filter support).
+// Confidence above HIGH → fully opaque body, below LOW → background,
+// linear ramp in between preserves a soft anti-aliased edge.
 const MASK_BODY_THRESHOLD = 178; // 0.70 × 255
 const MASK_BG_THRESHOLD = 76; // 0.30 × 255
 const MASK_FEATHER_RANGE = MASK_BODY_THRESHOLD - MASK_BG_THRESHOLD;
 
-// Edge-smoothing radii. Different value per path, calibrated so the visible
-// feather looks the same in both browsers:
-//   • MASK_BLUR_RADIUS_PX (software, box-blur): radius of separable box-blur.
-//     Equivalent Gaussian σ ≈ √(r(r+1)/3) = √14 ≈ 3.7 px.
-//   • MASK_GPU_BLUR_PX (GPU, CSS filter): Gaussian std-dev — matches the
-//     box-blur σ above so both paths produce a visually identical edge.
-const MASK_BLUR_RADIUS_PX = 6;
-const MASK_GPU_BLUR_PX = 6;
-
-// CSS filter applied only to the person blit on the composite canvas.
-// Operates on the person draw alone (the background was drawn in a prior
-// step with no filter) — gives the silhouette a slight "pop" against
-// image backgrounds without touching the background colours.
-//
-// All running on the GPU during the drawImage step → zero JS cost.
-// Silently ignored on browsers without supportsCanvasFilter (older Safari);
-// person just renders flat there, no error.
-//
-// Tune to taste:
-//   contrast(N%)  — 100% = unchanged. >100% boosts midtone separation.
-//   saturate(N%)  — 100% = unchanged. >100% punches up colour intensity.
-//   brightness(N%) — 100% = unchanged. Slight lift can help dim cameras.
-const PERSON_FILTER = "contrast(112%) saturate(110%) brightness(102%)";
-
-// 256-entry lookup table for the threshold remap. Built once at module
-// load — replaces per-pixel branches + a division in the hot loop with a
-// single array read. Saves ~0.3 ms per frame at 854×480 and keeps the
-// loop body trivial enough for V8/JSC to keep tight.
-const MASK_THRESHOLD_LUT = (() => {
-  const lut = new Uint8ClampedArray(256);
-  const mul = 255 / MASK_FEATHER_RANGE;
-  for (let raw = 0; raw < 256; raw++) {
-    if (raw >= MASK_BODY_THRESHOLD) lut[raw] = 255;
-    else if (raw <= MASK_BG_THRESHOLD) lut[raw] = 0;
-    else lut[raw] = (raw - MASK_BG_THRESHOLD) * mul;
-  }
-  return lut;
-})();
-
-/**
- * In-place piecewise threshold remap on the alpha channel of an RGBA buffer.
- *
- * Reads each pixel's alpha (carrying the current mask confidence after blur),
- * snaps high-confidence pixels to fully opaque, low-confidence to fully
- * transparent, and linearly ramps the in-between band. The remapped value is
- * written to R, G, B, and A so the buffer is a valid grayscale alpha mask
- * for downstream `destination-in` compositing.
- *
- * Shared by both render paths — single source of truth for edge / body
- * appearance across Chrome and Safari.
- */
-const applyMaskThreshold = (rgba: Uint8ClampedArray): void => {
-  for (let i = 3; i < rgba.length; i += 4) {
-    const val = MASK_THRESHOLD_LUT[rgba[i]];
-    rgba[i - 3] = rgba[i - 2] = rgba[i - 1] = rgba[i] = val;
-  }
-};
+// Separable box-blur radius for the software mask path.
+// Window = 2r+1 = 13 px, applied horizontally then vertically — variance
+// ≈ 2·r(r+1)/3 ≈ 28, σ ≈ 5.3 — matches the GPU path's blur(5px).
+const MASK_BLUR_RADIUS = 6;
 
 const bgEffects = {
   blur: "blur",
@@ -121,9 +71,9 @@ type BackgroundEffects = keyof typeof bgEffects;
 //      to the software pipeline (downscale/upscale + pixel-loop contrast).
 //
 // Without stage 2, modern Safari passes stage 1 with flying colors but
-// produces hard-edged masks (no GPU blur(MASK_GPU_BLUR_PX px) on the mask)
-// and unblurred backgrounds (no blur(20px) on bgFilterCanvas). Stage 2 is
-// what makes the software path kick in on those Safari builds.
+// produces hard-edged masks (no MASK_FILTER) and unblurred backgrounds (no
+// blur(20px) on bgFilterCanvas). Stage 2 is what makes the software path
+// kick in on those Safari builds.
 const supportsCanvasFilter = (() => {
   try {
     const canvas = document.createElement("canvas");
@@ -342,13 +292,13 @@ export const useConfigureVideo = (
     // Even when ctx.filter is supported, Safari/WebKit shows rendering glitches
     // when ctx.filter is combined with non-default globalCompositeOperation on
     // the SAME context (the person disappears or the background isn't drawn).
-    // To avoid that interaction we apply the GPU blur filter on this dedicated
-    // context (composite always at default "source-over") and then blit the
-    // result onto compCanvas without any filter set there.
+    // To avoid that interaction we apply MASK_FILTER on this dedicated context
+    // (composite always at default "source-over") and then blit the result onto
+    // compCanvas without any filter set there.
     //
-    // Sized to match the live video (vw × vh) so the CSS blur radius is in
+    // Sized to match the live video (vw × vh) so MASK_FILTER's blur(3px) is in
     // destination pixels — keeps the original edge sharpness. If the filter
-    // ran at SEGMENTATION resolution (256 × 144), the blur would be
+    // ran at SEGMENTATION resolution (256 × 144), the 3 px blur would be
     // proportionally ~3× wider and produce a translucent "ghost" silhouette
     // when subsequently scaled up.
     const maskFilteredCanvas = document.createElement("canvas");
@@ -634,8 +584,8 @@ export const useConfigureVideo = (
       // ── Build the filtered mask at destination size ──────────────────────
       //
       // GPU path  (supportsCanvasFilter): upscale maskCanvas → maskFilteredCanvas
-      //   (vw×vh) with `ctx.filter = blur(MASK_GPU_BLUR_PX)`, then read pixels
-      //   back and run `applyMaskThreshold` for the body / edge snap.
+      //   (vw×vh) and apply CSS MASK_FILTER (blur → contrast → brightness) entirely
+      //   in destination pixel space — gives a clean feathered edge.
       //
       // Software path (Safari): CSS filters unavailable.
       //   • We upscale maskCanvas (256×144) → maskUpCanvas (vw×vh) first so that all
@@ -662,29 +612,10 @@ export const useConfigureVideo = (
         }
 
         if (maskFilteredCtx) {
-          // Step 1: GPU Gaussian blur on upscale.
-          //
-          // Only `blur()` is applied here — we used to chain
-          // `contrast(200%) brightness(0.97)` to harden the edge, but those
-          // CSS filters never push a 0.7-confidence body pixel to fully
-          // opaque, leaving the body permanently ~10% translucent (visible
-          // as a "ghost" double-exposure against image backgrounds).
-          // Instead we read the pixels back and run the shared
-          // `applyMaskThreshold` below — same body / edge behaviour as the
-          // software path.
           maskFilteredCtx.clearRect(0, 0, vw, vh);
-          maskFilteredCtx.filter = `blur(${MASK_GPU_BLUR_PX}px)`;
+          maskFilteredCtx.filter = MASK_FILTER;
           maskFilteredCtx.drawImage(maskCanvas, 0, 0, vw, vh);
           maskFilteredCtx.filter = "none";
-
-          // Step 2: piecewise threshold remap (shared with software path).
-          // Adds one getImageData / putImageData round-trip — ~1–2 ms on
-          // M2 at 854×480 — in exchange for solid body interior and a
-          // browser-symmetric mask appearance.
-          const imgData = maskFilteredCtx.getImageData(0, 0, vw, vh);
-          applyMaskThreshold(imgData.data);
-          maskFilteredCtx.putImageData(imgData, 0, 0);
-
           maskSource = maskFilteredCanvas;
           maskSourceW = vw;
           maskSourceH = vh;
@@ -724,7 +655,7 @@ export const useConfigureVideo = (
           // each pixel costs ~4 ops (one add, one sub, one mul, one write)
           // regardless of the radius. Edges use clamp-to-edge sampling
           // (out-of-range reads return the row's first or last pixel).
-          const r = MASK_BLUR_RADIUS_PX;
+          const r = MASK_BLUR_RADIUS;
           const div = 1 / (2 * r + 1);
 
           for (let y = 0; y < vh; y++) {
@@ -761,16 +692,25 @@ export const useConfigureVideo = (
             }
           }
 
-          // Step 4: copy the blurred alpha back into the RGBA buffer so the
-          // shared `applyMaskThreshold` can operate on it. Splitting the
-          // copy + remap into two trivial loops costs <1 ms at 854×480 and
-          // keeps both render paths going through the same final step.
-          for (let i = 0, j = 3; i < maskBlurBufA.length; i++, j += 4) {
-            d[j] = maskBlurBufA[i];
+          // Step 4: piecewise threshold remap, written back to RGBA.
+          //
+          // Body (≥0.70 conf) snaps fully opaque — eliminates translucency
+          // that previously showed an image background through clothing.
+          // Background (≤0.30 conf) snaps fully transparent.
+          // The 0.30–0.70 band keeps a smooth linear ramp, giving the edge
+          // its anti-aliased look without losing the body interior.
+          for (let i = 0, j = 0; i < maskBlurBufA.length; i++, j += 4) {
+            const raw = maskBlurBufA[i];
+            let val: number;
+            if (raw >= MASK_BODY_THRESHOLD) {
+              val = 255;
+            } else if (raw <= MASK_BG_THRESHOLD) {
+              val = 0;
+            } else {
+              val = ((raw - MASK_BG_THRESHOLD) * 255) / MASK_FEATHER_RANGE;
+            }
+            d[j] = d[j + 1] = d[j + 2] = d[j + 3] = val;
           }
-
-          // Step 5: piecewise threshold remap (shared with GPU path).
-          applyMaskThreshold(d);
 
           maskUpCtx.putImageData(imgData, 0, 0);
 
@@ -956,15 +896,7 @@ export const useConfigureVideo = (
       }
 
       // Step 2: Person on top
-      //
-      // Apply PERSON_FILTER (contrast / saturate / brightness) at this single
-      // drawImage step so the person silhouette gets a subtle "pop" while the
-      // background drawn above stays untouched. The filter runs on the GPU
-      // during the blit — zero JS cost. Reset to "none" right after so any
-      // later draws on compCtx (none today, but defensive) aren't affected.
-      compCtx.filter = PERSON_FILTER;
       compCtx.drawImage(personCanvas, 0, 0);
-      compCtx.filter = "none";
 
       // ── Blit compCanvas → mainCanvas with horizontal mirror ───────────────
       //
