@@ -273,8 +273,10 @@ export const GameVideo = observer(
 
         <RoleCardMini userId={userId} role={participantRole} />
 
-        {isCheckRoleEnabled ? <CheckRole userId={userId} /> : null}
-        <TutorialStatusBadge userId={userId} />
+        <div className={classNames(styles.gmOverlayRow, { [styles.night]: gameFlow.isNight })}>
+          {isCheckRoleEnabled && <CheckRole userId={userId} />}
+          <TutorialStatusBadge userId={userId} />
+        </div>
 
         <ReactionCornerBadge userId={userId} />
 

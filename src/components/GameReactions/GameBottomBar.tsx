@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
+import { CopyGameLinkButton } from "@/components/GameInfoSection/CopyGameLinkButton.tsx";
 import { GMMenu } from "@/components/GMMenu";
 import { ModalNames } from "@/components/Modals/Modal.types.ts";
 import { useGameReactions } from "@/hooks/useGameReactions.ts";
@@ -89,6 +90,10 @@ export const GameBottomBar = observer(
         <div className={styles.divider} />
 
         <GameReactionsBar sendReaction={sendReaction} />
+
+        <div className={styles.divider} />
+
+        <CopyGameLinkButton />
 
         <div className={styles.divider} />
 

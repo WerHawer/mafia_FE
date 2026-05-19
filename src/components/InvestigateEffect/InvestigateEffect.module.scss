@@ -16,7 +16,7 @@ $safe-color: theme.$color-role-doctor;
   left: 50%;
   translate: -50% -50%;
   padding: 10px 22px;
-  border-radius: 12px;
+  border-radius: 50px;
   font-size: 1.8rem;
   font-weight: 700;
   white-space: nowrap;
@@ -33,16 +33,17 @@ $safe-color: theme.$color-role-doctor;
   &[data-found="true"] {
     background-color: rgba($safe-color, 0.9);
     box-shadow: 0 4px 16px rgba($safe-color, 0.5);
-  }
-}
+  }}
 
 .roleIconWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(white, 0.2);
+  width: 36px;
+  height: 36px;
+  background: rgba(white, 0.25);
   border-radius: 50%;
-  padding: 4px;
+  flex-shrink: 0;
 }
 
 // Flashing border — safe (green)

@@ -19,7 +19,7 @@ export const CopyGameLinkButton = () => {
   return (
     <Tippy
       content={copied ? t("game.linkCopied") : t("game.copyLink")}
-      placement="left"
+      placement="top"
       theme="role-tooltip"
       animation="scale"
       duration={[200, 150]}

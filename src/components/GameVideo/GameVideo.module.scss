@@ -32,6 +32,21 @@
   }
 }
 
+// GM overlay row — top-left, holds CheckRole icons + TutorialStatusBadge in a single flex row
+.gmOverlayRow {
+  position: absolute;
+  top: 45px;
+  left: 10px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  column-gap: 6px;
+
+  &.night {
+    top: 10px;
+  }
+}
+
 // Sound indicator overlay — bottom-right corner, shown for all when camera ON + speaking
 .speakingOverlay {
   position: absolute;

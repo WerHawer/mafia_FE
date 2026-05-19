@@ -1,11 +1,8 @@
 @use "../../styles/theme.scss";
 
 // Matches CheckRole's .gmIconsRow night position — day 1 night only, CheckRole is empty then
+// Positioning is handled by the parent gmOverlayRow in GameVideo
 .wrapper {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 10;
   display: flex;
   align-items: center;
 }

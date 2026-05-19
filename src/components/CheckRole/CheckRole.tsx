@@ -1,6 +1,5 @@
 import { EyeOutlined } from "@ant-design/icons";
 import Tippy from "@tippyjs/react";
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 
@@ -29,7 +28,7 @@ export const CheckRole = observer(({ userId }: CheckRoleProps) => {
   if (!isIGM && !gamesStore.isMeObserver) return null;
 
   return (
-    <div className={classNames(styles.gmIconsRow, { [styles.night]: gameFlow.isNight })}>
+    <div className={styles.gmIconsRow}>
       {shotCount > 0 && (
         <Tippy theme="role-tooltip" content={t("checkRole.shotByMafia", { count: shotCount })}>
           <div className={styles.gmIconWrapper}>

@@ -1,19 +1,8 @@
 @use "../../styles/theme.scss";
 
-// GM icons row — positioned at top-left, icons stack horizontally with gap
+// GM icons row — positioning is handled by the parent gmOverlayRow in GameVideo
 .gmIconsRow {
-  display: flex;
-  align-items: center;
-  column-gap: 6px;
-
-  position: absolute;
-  top: 45px;
-  left: 10px;
-  z-index: 10;
-
-  &.night {
-    top: 10px;
-  }
+  display: contents;
 }
 
 .gmIcon {
