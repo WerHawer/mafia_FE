@@ -272,7 +272,9 @@ export const useConfigureVideo = (
     // For 854×480 at radius 6: ~4M ops total per frame (~3 ms on M1/M2,
     // ~10 ms on older Intel). Scales linearly with canvas resolution, so
     // auto-degraded quality (640×360) is correspondingly cheaper.
-    const maskUpCanvas = !supportsCanvasFilter ? document.createElement("canvas") : null;
+    const maskUpCanvas = !supportsCanvasFilter
+      ? document.createElement("canvas")
+      : null;
     if (maskUpCanvas) {
       maskUpCanvas.width = canvasWidth;
       maskUpCanvas.height = canvasHeight;
@@ -303,12 +305,16 @@ export const useConfigureVideo = (
     // ran at SEGMENTATION resolution (256 × 144), the 3 px blur would be
     // proportionally ~3× wider and produce a translucent "ghost" silhouette
     // when subsequently scaled up.
-    const maskFilteredCanvas = supportsCanvasFilter ? document.createElement("canvas") : null;
+    const maskFilteredCanvas = supportsCanvasFilter
+      ? document.createElement("canvas")
+      : null;
     if (maskFilteredCanvas) {
       maskFilteredCanvas.width = canvasWidth;
       maskFilteredCanvas.height = canvasHeight;
     }
-    let maskFilteredCtx = maskFilteredCanvas ? maskFilteredCanvas.getContext("2d") : null;
+    let maskFilteredCtx = maskFilteredCanvas
+      ? maskFilteredCanvas.getContext("2d")
+      : null;
     enableSmoothing(maskFilteredCtx);
 
     // ── Person cut-out canvas (Safari compositing safety) ─────────────────────
@@ -333,7 +339,9 @@ export const useConfigureVideo = (
     // A single 8× stretch in one pass gives visible pixelated blocks; 3 passes
     // of 2× each produces a smooth, film-like defocus instead.
     // Pre-allocated here to avoid per-frame canvas creation / GC pressure.
-    const bgBlurCanvas = !supportsCanvasFilter ? document.createElement("canvas") : null;
+    const bgBlurCanvas = !supportsCanvasFilter
+      ? document.createElement("canvas")
+      : null;
     if (bgBlurCanvas) {
       bgBlurCanvas.width = Math.max(1, Math.round(canvasWidth / 8));
       bgBlurCanvas.height = Math.max(1, Math.round(canvasHeight / 8));
@@ -342,7 +350,9 @@ export const useConfigureVideo = (
     enableSmoothing(bgBlurCtx);
 
     // Intermediate upscale steps for the multi-pass software blur (1/4 and 1/2 size).
-    const bgBlurCanvas2 = !supportsCanvasFilter ? document.createElement("canvas") : null;
+    const bgBlurCanvas2 = !supportsCanvasFilter
+      ? document.createElement("canvas")
+      : null;
     if (bgBlurCanvas2) {
       bgBlurCanvas2.width = Math.max(1, Math.round(canvasWidth / 4));
       bgBlurCanvas2.height = Math.max(1, Math.round(canvasHeight / 4));
@@ -350,7 +360,9 @@ export const useConfigureVideo = (
     const bgBlurCtx2 = bgBlurCanvas2 ? bgBlurCanvas2.getContext("2d") : null;
     enableSmoothing(bgBlurCtx2);
 
-    const bgBlurCanvas3 = !supportsCanvasFilter ? document.createElement("canvas") : null;
+    const bgBlurCanvas3 = !supportsCanvasFilter
+      ? document.createElement("canvas")
+      : null;
     if (bgBlurCanvas3) {
       bgBlurCanvas3.width = Math.max(1, Math.round(canvasWidth / 2));
       bgBlurCanvas3.height = Math.max(1, Math.round(canvasHeight / 2));
@@ -364,7 +376,9 @@ export const useConfigureVideo = (
     // on a dedicated context (no composite changes here) so compCanvas can then
     // do destination-over without any active filter.
     // Resized lazily inside processFrame to match the live video dimensions.
-    const bgFilterCanvas = supportsCanvasFilter ? document.createElement("canvas") : null;
+    const bgFilterCanvas = supportsCanvasFilter
+      ? document.createElement("canvas")
+      : null;
     if (bgFilterCanvas) {
       bgFilterCanvas.width = canvasWidth;
       bgFilterCanvas.height = canvasHeight;
@@ -612,14 +626,14 @@ export const useConfigureVideo = (
       let maskSourceW = SEGMENTATION_WIDTH;
       let maskSourceH = SEGMENTATION_HEIGHT;
 
-      if (supportsCanvasFilter && maskFilteredCtx) {
+      if (supportsCanvasFilter && maskFilteredCtx && maskFilteredCanvas) {
         if (
           maskFilteredCanvas.width !== vw ||
           maskFilteredCanvas.height !== vh
         ) {
           maskFilteredCanvas.width = vw;
           maskFilteredCanvas.height = vh;
-          maskFilteredCtx = maskFilteredCanvas.getContext("2d");
+          maskFilteredCtx = maskFilteredCanvas?.getContext("2d");
           enableSmoothing(maskFilteredCtx);
         }
 
@@ -634,10 +648,11 @@ export const useConfigureVideo = (
         }
       } else if (!supportsCanvasFilter) {
         // Resize maskUpCanvas lazily to match live video dimensions.
-        if (maskUpCanvas.width !== vw || maskUpCanvas.height !== vh) {
-          maskUpCanvas.width = vw;
-          maskUpCanvas.height = vh;
-          maskUpCtx = maskUpCanvas.getContext("2d");
+        // maskUpCanvas is guaranteed non-null when !supportsCanvasFilter (see creation logic above).
+        if (maskUpCanvas!.width !== vw || maskUpCanvas!.height !== vh) {
+          maskUpCanvas!.width = vw;
+          maskUpCanvas!.height = vh;
+          maskUpCtx = maskUpCanvas!.getContext("2d");
           enableSmoothing(maskUpCtx);
         }
 
@@ -726,7 +741,7 @@ export const useConfigureVideo = (
 
           maskUpCtx.putImageData(imgData, 0, 0);
 
-          maskSource = maskUpCanvas;
+          maskSource = maskUpCanvas!;
           maskSourceW = vw;
           maskSourceH = vh;
         }
@@ -741,10 +756,11 @@ export const useConfigureVideo = (
         supportsCanvasFilter &&
         bgFilterCtx
       ) {
-        if (bgFilterCanvas.width !== vw || bgFilterCanvas.height !== vh) {
-          bgFilterCanvas.width = vw;
-          bgFilterCanvas.height = vh;
-          bgFilterCtx = bgFilterCanvas.getContext("2d");
+        // bgFilterCanvas is guaranteed non-null when supportsCanvasFilter (see creation logic above).
+        if (bgFilterCanvas!.width !== vw || bgFilterCanvas!.height !== vh) {
+          bgFilterCanvas!.width = vw;
+          bgFilterCanvas!.height = vh;
+          bgFilterCtx = bgFilterCanvas!.getContext("2d");
           enableSmoothing(bgFilterCtx);
         }
 
@@ -756,33 +772,34 @@ export const useConfigureVideo = (
       } else if (bgEffectsRef.current === bgEffects.blur && bgBlurCtx) {
         // No-filter path: multi-pass upscale for smooth blur.
         // Step 1: downsample to 1/8 — captures blur content cheaply.
+        // bgBlurCanvas is guaranteed non-null when bgBlurCtx is non-null (see creation logic above).
         bgBlurCtx.drawImage(
           video,
           0,
           0,
-          bgBlurCanvas.width,
-          bgBlurCanvas.height
+          bgBlurCanvas!.width,
+          bgBlurCanvas!.height
         );
 
         // Step 2: 1/8 → 1/4 (2× bilinear stretch)
         if (bgBlurCtx2) {
           bgBlurCtx2.drawImage(
-            bgBlurCanvas,
+            bgBlurCanvas!,
             0,
             0,
-            bgBlurCanvas2.width,
-            bgBlurCanvas2.height
+            bgBlurCanvas2!.width,
+            bgBlurCanvas2!.height
           );
         }
 
         // Step 3: 1/4 → 1/2 (2× bilinear stretch)
         if (bgBlurCtx3) {
           bgBlurCtx3.drawImage(
-            bgBlurCanvas2,
+            bgBlurCanvas2!,
             0,
             0,
-            bgBlurCanvas3.width,
-            bgBlurCanvas3.height
+            bgBlurCanvas3!.width,
+            bgBlurCanvas3!.height
           );
         }
       }
@@ -855,12 +872,12 @@ export const useConfigureVideo = (
       // Step 1: Background
       if (bgEffectsRef.current === bgEffects.blur) {
         if (supportsCanvasFilter) {
-          compCtx.drawImage(bgFilterCanvas, 0, 0, vw, vh);
+          compCtx.drawImage(bgFilterCanvas!, 0, 0, vw, vh);
         } else if (bgBlurCtx3) {
           // Final pass: 1/2 → full (2× bilinear stretch).
           // Three 2× passes give a smooth Gaussian-like defocus instead of
           // the blocky result from a single 8× stretch.
-          compCtx.drawImage(bgBlurCanvas3, 0, 0, vw, vh);
+          compCtx.drawImage(bgBlurCanvas3!, 0, 0, vw, vh);
         } else {
           compCtx.drawImage(video, 0, 0, vw, vh);
         }
@@ -1127,7 +1144,8 @@ export const useConfigureVideo = (
       segInputCanvas.width = segInputCanvas.height = 0;
       maskCanvas.width = maskCanvas.height = 0;
       if (maskUpCanvas) maskUpCanvas.width = maskUpCanvas.height = 0;
-      if (maskFilteredCanvas) maskFilteredCanvas.width = maskFilteredCanvas.height = 0;
+      if (maskFilteredCanvas)
+        maskFilteredCanvas.width = maskFilteredCanvas.height = 0;
       if (bgBlurCanvas) bgBlurCanvas.width = bgBlurCanvas.height = 0;
       if (bgBlurCanvas2) bgBlurCanvas2.width = bgBlurCanvas2.height = 0;
       if (bgBlurCanvas3) bgBlurCanvas3.width = bgBlurCanvas3.height = 0;
