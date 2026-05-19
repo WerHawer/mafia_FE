@@ -272,10 +272,12 @@ export const useConfigureVideo = (
     // For 854×480 at radius 6: ~4M ops total per frame (~3 ms on M1/M2,
     // ~10 ms on older Intel). Scales linearly with canvas resolution, so
     // auto-degraded quality (640×360) is correspondingly cheaper.
-    const maskUpCanvas = document.createElement("canvas");
-    maskUpCanvas.width = canvasWidth;
-    maskUpCanvas.height = canvasHeight;
-    let maskUpCtx = maskUpCanvas.getContext("2d");
+    const maskUpCanvas = !supportsCanvasFilter ? document.createElement("canvas") : null;
+    if (maskUpCanvas) {
+      maskUpCanvas.width = canvasWidth;
+      maskUpCanvas.height = canvasHeight;
+    }
+    let maskUpCtx = maskUpCanvas ? maskUpCanvas.getContext("2d") : null;
     enableSmoothing(maskUpCtx);
 
     // Two single-channel ping-pong buffers for the separable blur passes.
@@ -301,10 +303,12 @@ export const useConfigureVideo = (
     // ran at SEGMENTATION resolution (256 × 144), the 3 px blur would be
     // proportionally ~3× wider and produce a translucent "ghost" silhouette
     // when subsequently scaled up.
-    const maskFilteredCanvas = document.createElement("canvas");
-    maskFilteredCanvas.width = canvasWidth;
-    maskFilteredCanvas.height = canvasHeight;
-    let maskFilteredCtx = maskFilteredCanvas.getContext("2d");
+    const maskFilteredCanvas = supportsCanvasFilter ? document.createElement("canvas") : null;
+    if (maskFilteredCanvas) {
+      maskFilteredCanvas.width = canvasWidth;
+      maskFilteredCanvas.height = canvasHeight;
+    }
+    let maskFilteredCtx = maskFilteredCanvas ? maskFilteredCanvas.getContext("2d") : null;
     enableSmoothing(maskFilteredCtx);
 
     // ── Person cut-out canvas (Safari compositing safety) ─────────────────────
@@ -329,23 +333,29 @@ export const useConfigureVideo = (
     // A single 8× stretch in one pass gives visible pixelated blocks; 3 passes
     // of 2× each produces a smooth, film-like defocus instead.
     // Pre-allocated here to avoid per-frame canvas creation / GC pressure.
-    const bgBlurCanvas = document.createElement("canvas");
-    bgBlurCanvas.width = Math.max(1, Math.round(canvasWidth / 8));
-    bgBlurCanvas.height = Math.max(1, Math.round(canvasHeight / 8));
-    const bgBlurCtx = bgBlurCanvas.getContext("2d");
+    const bgBlurCanvas = !supportsCanvasFilter ? document.createElement("canvas") : null;
+    if (bgBlurCanvas) {
+      bgBlurCanvas.width = Math.max(1, Math.round(canvasWidth / 8));
+      bgBlurCanvas.height = Math.max(1, Math.round(canvasHeight / 8));
+    }
+    const bgBlurCtx = bgBlurCanvas ? bgBlurCanvas.getContext("2d") : null;
     enableSmoothing(bgBlurCtx);
 
     // Intermediate upscale steps for the multi-pass software blur (1/4 and 1/2 size).
-    const bgBlurCanvas2 = document.createElement("canvas");
-    bgBlurCanvas2.width = Math.max(1, Math.round(canvasWidth / 4));
-    bgBlurCanvas2.height = Math.max(1, Math.round(canvasHeight / 4));
-    const bgBlurCtx2 = bgBlurCanvas2.getContext("2d");
+    const bgBlurCanvas2 = !supportsCanvasFilter ? document.createElement("canvas") : null;
+    if (bgBlurCanvas2) {
+      bgBlurCanvas2.width = Math.max(1, Math.round(canvasWidth / 4));
+      bgBlurCanvas2.height = Math.max(1, Math.round(canvasHeight / 4));
+    }
+    const bgBlurCtx2 = bgBlurCanvas2 ? bgBlurCanvas2.getContext("2d") : null;
     enableSmoothing(bgBlurCtx2);
 
-    const bgBlurCanvas3 = document.createElement("canvas");
-    bgBlurCanvas3.width = Math.max(1, Math.round(canvasWidth / 2));
-    bgBlurCanvas3.height = Math.max(1, Math.round(canvasHeight / 2));
-    const bgBlurCtx3 = bgBlurCanvas3.getContext("2d");
+    const bgBlurCanvas3 = !supportsCanvasFilter ? document.createElement("canvas") : null;
+    if (bgBlurCanvas3) {
+      bgBlurCanvas3.width = Math.max(1, Math.round(canvasWidth / 2));
+      bgBlurCanvas3.height = Math.max(1, Math.round(canvasHeight / 2));
+    }
+    const bgBlurCtx3 = bgBlurCanvas3 ? bgBlurCanvas3.getContext("2d") : null;
     enableSmoothing(bgBlurCtx3);
 
     // ── Isolated bg-filter canvas (GPU blur path) ─────────────────────────────
@@ -354,10 +364,12 @@ export const useConfigureVideo = (
     // on a dedicated context (no composite changes here) so compCanvas can then
     // do destination-over without any active filter.
     // Resized lazily inside processFrame to match the live video dimensions.
-    const bgFilterCanvas = document.createElement("canvas");
-    bgFilterCanvas.width = canvasWidth;
-    bgFilterCanvas.height = canvasHeight;
-    let bgFilterCtx = bgFilterCanvas.getContext("2d");
+    const bgFilterCanvas = supportsCanvasFilter ? document.createElement("canvas") : null;
+    if (bgFilterCanvas) {
+      bgFilterCanvas.width = canvasWidth;
+      bgFilterCanvas.height = canvasHeight;
+    }
+    let bgFilterCtx = bgFilterCanvas ? bgFilterCanvas.getContext("2d") : null;
     enableSmoothing(bgFilterCtx);
 
     // All mask/person/background layering happens in normal (non-mirrored) space.
@@ -1114,12 +1126,12 @@ export const useConfigureVideo = (
       // which can balloon when the user toggles streams repeatedly.
       segInputCanvas.width = segInputCanvas.height = 0;
       maskCanvas.width = maskCanvas.height = 0;
-      maskUpCanvas.width = maskUpCanvas.height = 0;
-      maskFilteredCanvas.width = maskFilteredCanvas.height = 0;
-      bgBlurCanvas.width = bgBlurCanvas.height = 0;
-      bgBlurCanvas2.width = bgBlurCanvas2.height = 0;
-      bgBlurCanvas3.width = bgBlurCanvas3.height = 0;
-      bgFilterCanvas.width = bgFilterCanvas.height = 0;
+      if (maskUpCanvas) maskUpCanvas.width = maskUpCanvas.height = 0;
+      if (maskFilteredCanvas) maskFilteredCanvas.width = maskFilteredCanvas.height = 0;
+      if (bgBlurCanvas) bgBlurCanvas.width = bgBlurCanvas.height = 0;
+      if (bgBlurCanvas2) bgBlurCanvas2.width = bgBlurCanvas2.height = 0;
+      if (bgBlurCanvas3) bgBlurCanvas3.width = bgBlurCanvas3.height = 0;
+      if (bgFilterCanvas) bgFilterCanvas.width = bgFilterCanvas.height = 0;
       personCanvas.width = personCanvas.height = 0;
       compCanvas.width = compCanvas.height = 0;
     };
